@@ -1,0 +1,22 @@
+{
+  "@@locale": "en",
+  "appTitle": "MoveM",
+  "login": "Login",
+  "logout": "Logout",
+  "email": "Email",
+  "password": "Password",
+  "home": "Home",
+  "task": "Task",
+  "fitness": "Fitness",
+  "trip": "Trip",
+  "settings": "Settings",
+  "welcome": "Welcome!",
+  "welcomeUser": "Welcome, {name}!",
+  "@welcomeUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
+}
