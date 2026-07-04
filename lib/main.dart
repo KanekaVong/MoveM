@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:movem/core/utils/Constants.dart';
 import 'l10n/app_localizations.dart';
 import 'package:get/get.dart';
 import 'core/theme/app_theme.dart';
@@ -14,22 +15,33 @@ void main() async {
   await LocalStorage().init();
 
   final savedLocale = Locale(UserManager().languageCode);
+  final savedTheme = UserManager().themeMode;
   
-  runApp(MyApp(savedLocale: savedLocale));
+  ThemeMode initialThemeMode;
+  if (savedTheme == Constants.lightMode) {
+    initialThemeMode = ThemeMode.light;
+  } else if (savedTheme == Constants.darkMode) {
+    initialThemeMode = ThemeMode.dark;
+  } else {
+    initialThemeMode = ThemeMode.system;
+  }
+  
+  runApp(MyApp(savedLocale: savedLocale, savedThemeMode: initialThemeMode));
 }
 
 class MyApp extends StatelessWidget {
   final Locale savedLocale;
+  final ThemeMode savedThemeMode;
 
-  const MyApp({super.key, required this.savedLocale});
+  const MyApp({super.key, required this.savedLocale, required this.savedThemeMode});
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'MoveM App',
+      title: Constants.appName,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: savedThemeMode,
       locale: savedLocale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
