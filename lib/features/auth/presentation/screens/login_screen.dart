@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:movem/l10n/app_localizations.dart';
 
 import '../controllers/auth_controller.dart';
 
@@ -8,12 +9,12 @@ class LoginScreen extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
+    final localize = AppLocalizations.of(context)!;
     return Scaffold(
-      // appBar: AppBar(title: const Text('Login')),
       body: Center(
         child: ElevatedButton(
           onPressed: () => controller.login("", ""),
-          child: const Text('Login'),
+          child: Text(localize.login),
         ),
       ),
     );

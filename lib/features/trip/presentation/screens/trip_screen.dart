@@ -6,7 +6,6 @@ class TripScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Trip Feature')),
       body: const Center(
         child: Text('Welcome to Trips!', style: TextStyle(fontSize: 24)),
       ),

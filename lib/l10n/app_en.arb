@@ -18,5 +18,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "helloYoulong": "Hello, Youlong",
+  "test": "Test"
 }

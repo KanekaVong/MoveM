@@ -45,4 +45,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String welcomeUser(String name) {
     return 'Welcome, $name!';
   }
+
+  @override
+  String get helloYoulong => 'Hello, Youlong';
+
+  @override
+  String get test => 'Test';
 }

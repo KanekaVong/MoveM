@@ -6,7 +6,6 @@ class TaskScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tasks')),
       body: const Center(
         child: Text('Welcome to Tasks!', style: TextStyle(fontSize: 24)),
       ),

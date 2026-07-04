@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../controllers/main_nav_controller.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 import '../../../task/presentation/screens/task_screen.dart';
@@ -13,6 +14,9 @@ class BottomNavScreen extends GetView<MainNavController> {
 
   @override
   Widget build(BuildContext context) {
+
+    final localize = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: Obx(() {
         return IndexedStack(
@@ -36,26 +40,26 @@ class BottomNavScreen extends GetView<MainNavController> {
             currentIndex: controller.currentIndex.value,
             onTap: controller.changeTab,
             type: BottomNavigationBarType.fixed,
-            items: const [
+            items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Home',
+                icon: const Icon(Icons.home),
+                label: localize.home,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.assignment),
-                label: 'Task',
+                icon: const Icon(Icons.assignment),
+                label: localize.task,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.fitness_center),
-                label: 'Fitness',
+                icon: const Icon(Icons.fitness_center),
+                label: localize.fitness,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.map),
-                label: 'Trip',
+                icon: const Icon(Icons.map),
+                label: localize.trip,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
-                label: 'Settings',
+                icon: const Icon(Icons.settings),
+                label: localize.settings,
               ),
             ],
           );

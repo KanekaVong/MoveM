@@ -45,4 +45,10 @@ class AppLocalizationsKm extends AppLocalizations {
   String welcomeUser(String name) {
     return 'សូមស្វាគមន៍, $name!';
   }
+
+  @override
+  String get helloYoulong => 'សួស្តី Youlong';
+
+  @override
+  String get test => 'ការសាកល្បង';
 }

@@ -6,7 +6,6 @@ class FitnessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Fitness')),
       body: const Center(
         child: Text('Welcome to Fitness!', style: TextStyle(fontSize: 24)),
       ),

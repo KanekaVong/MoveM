@@ -169,6 +169,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Welcome, {name}!'**
   String welcomeUser(String name);
+
+  /// No description provided for @helloYoulong.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello, Youlong'**
+  String get helloYoulong;
+
+  /// No description provided for @test.
+  ///
+  /// In en, this message translates to:
+  /// **'Test'**
+  String get test;
 }
 
 class _AppLocalizationsDelegate
