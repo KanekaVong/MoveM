@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:movem/l10n/app_localizations.dart';
-
 import '../controllers/auth_controller.dart';
 
 class LoginScreen extends GetView<AuthController> {

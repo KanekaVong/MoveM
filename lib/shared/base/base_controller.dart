@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 import '../../core/network/api_exceptions.dart';
 import '../../core/network/api_result.dart';
 import '../../core/routes/app_routes.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/utils/app_dialogs.dart';
 
 enum ViewState { idle, loading, success, error }
 
@@ -30,13 +30,13 @@ abstract class BaseController extends GetxController {
     onLoading?.call();
     if (showLoading) {
       state.value = ViewState.loading;
-      _showLoadingDialog();
+      AppDialogs.showLoading();
     }
 
     final result = await apiCall();
 
     if (showLoading) {
-      _hideLoadingDialog();
+      AppDialogs.hideLoading();
     }
 
     switch (result) {
@@ -47,27 +47,7 @@ abstract class BaseController extends GetxController {
         _handleApiException(e, showErrorDialog: showErrorDialog);
         onError?.call(e);
       case ApiLoading():
-        break; // repositories never actually produce this
-    }
-  }
-
-  void _showLoadingDialog() {
-    Get.dialog(
-      const PopScope(
-        canPop: false,
-        child: Center(
-          child: CircularProgressIndicator(
-            color: AppColors.darkOnPrimary,
-          ),
-        ),
-      ),
-      barrierDismissible: false,
-    );
-  }
-
-  void _hideLoadingDialog() {
-    if (Get.isDialogOpen ?? false) {
-      Get.back();
+        break;
     }
   }
 
@@ -86,33 +66,12 @@ abstract class BaseController extends GetxController {
     }
 
     if (showErrorDialog) {
-      _showErrorDialog(exception.message);
+      AppDialogs.showError(exception.message);
     }
   }
 
-  void _showErrorDialog(String message, {VoidCallback? onConfirm}) {
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Get.back();
-              if (onConfirm != null) {
-                onConfirm();
-              }
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-      barrierDismissible: false,
-    );
-  }
-
   void _handleUnauthorized(String message) {
-    _showErrorDialog(message, onConfirm: () {
+    AppDialogs.showError(message, onConfirm: () {
       Get.offAllNamed(AppRoutes.login);
     });
   }
