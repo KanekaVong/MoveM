@@ -1,35 +1,30 @@
 import 'package:get/get.dart';
-import 'package:logger/logger.dart';
-import '../../../../core/network/api_exceptions.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../../../shared/base/base_controller.dart';
 import '../../data/dto/request/login_request.dart';
 import '../../data/dto/response/user_response.dart';
 import '../../domain/repositories/auth_repository.dart';
 
-class AuthController extends GetxController {
+class AuthController extends BaseController {
   final AuthRepository repository;
-  final _logger = Logger();
 
   AuthController({required this.repository});
 
-  final Rx<UserResponse?> currentUser = Rx<UserResponse?>(null);
-  final RxBool isLoading = false.obs;
+  final Rxn<UserResponse> currentUser = Rxn<UserResponse>();
 
   Future<void> login(String email, String password) async {
+    // await executeApi(
+    //   apiCall: () => repository.login(
+    //     LoginRequest(email: "emilys", password: "emilyspassi"),
+    //   ),
+    //   showLoading: true,
+    //   showErrorDialog: true,
+    //   onSuccess: (data) {
+    //     currentUser.value = data;
+    //     Get.offAllNamed(AppRoutes.main);
+    //   },
+    // );
     Get.offAllNamed(AppRoutes.main);
-    // try {
-    //   isLoading.value = true;
-    //   final user = await repository.login(
-    //       LoginRequest(email: email, password: password)
-    //   );
-    //
-    //   currentUser.value = user;
-    //   Get.offAllNamed(AppRoutes.main);
-    // } on ApiException catch (e) {
-    //   _logger.e("Login failed", error: e);
-    // } finally {
-    //
-    // }
   }
 
   void logout() {

@@ -42,9 +42,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcome => 'Welcome!';
 
   @override
-  String welcomeUser(String name) {
-    return 'Welcome, $name!';
-  }
+  String get gender => 'Gender';
 
   @override
   String get helloYoulong => 'Hello, Youlong';

@@ -1,4 +1,5 @@
 import 'local_storage.dart';
+import '../utils/Constants.dart';
 
 class UserManager {
   static final UserManager _instance = UserManager._internal();
@@ -10,24 +11,29 @@ class UserManager {
 
   UserManager._internal();
 
-  String get languageCode => _storage.getString('language_code') ?? 'en';
-  Future<void> setLanguage(String code) => _storage.setString('language_code', code);
+  // ─── Language ───
+  String get languageCode => _storage.getString(Constants.keyLanguageCode) ?? Constants.defaultLanguage;
+  Future<void> setLanguage(String code) => _storage.setString(Constants.keyLanguageCode, code);
 
-  String get themeMode => _storage.getString('theme_mode') ?? 'system';
-  Future<void> setThemeMode(String mode) => _storage.setString('theme_mode', mode);
+  // ─── Theme ───
+  String get themeMode => _storage.getString(Constants.keyThemeMode) ?? Constants.defaultTheme;
+  Future<void> setThemeMode(String mode) => _storage.setString(Constants.keyThemeMode, mode);
 
-  String? get userId => _storage.getString('user_id');
-  bool get isLoggedIn => userId != null;
-  Future<void> saveUserId(String id) => _storage.setString('user_id', id);
-  String? get userName => _storage.getString('user_name');
-  Future<void> saveUserName(String name) => _storage.setString('user_name', name);
+  // ─── User Session ───
+  String? get userId => _storage.getString(Constants.keyUserId);
+  bool get isLoggedIn => userId != null && userId!.isNotEmpty;
+  Future<void> saveUserId(String id) => _storage.setString(Constants.keyUserId, id);
+  String? get userName => _storage.getString(Constants.keyUserName);
+  Future<void> saveUserName(String name) => _storage.setString(Constants.keyUserName, name);
 
-  Future<String?> getToken() => _storage.getSecureString('access_token');
-  Future<void> saveToken(String token) => _storage.setSecureString('access_token', token);
+  // ─── Token (Secure) ───
+  Future<String?> getToken() => _storage.getSecureString(Constants.keyAccessToken);
+  Future<void> saveToken(String token) => _storage.setSecureString(Constants.keyAccessToken, token);
 
+  // ─── Clear Session (Logout) ───
   Future<void> clearSession() async {
-    await _storage.clearSecureString('access_token');
-    await _storage.setString('user_id', '');
-    await _storage.setString('user_name', '');
+    await _storage.clearSecureString(Constants.keyAccessToken);
+    await _storage.setString(Constants.keyUserId, '');
+    await _storage.setString(Constants.keyUserName, '');
   }
 }

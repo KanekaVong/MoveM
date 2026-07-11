@@ -6,7 +6,7 @@ class AuthService {
   final Dio dio = DioClient().dio;
 
   Future<Response> login(LoginRequest request) async {
-    return await dio.post('/login', data: request.toJson());
+    return await dio.post('auth/login', data: request.toJson());
   }
 
   Future<void> logout() async {

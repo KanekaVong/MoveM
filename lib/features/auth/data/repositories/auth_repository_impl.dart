@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import '../../../../core/network/api_result.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../dto/request/login_request.dart';
 import '../dto/response/user_response.dart';
@@ -11,21 +12,26 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({required this.authService});
 
   @override
-  Future<UserResponse?> login(LoginRequest request) async {
+  Future<ApiResult<UserResponse?>> login(LoginRequest request) async {
     try {
       final response = await authService.login(request);
-      return UserResponse.fromJson(response.data);
+      return ApiSuccess(UserResponse.fromJson(response.data));
     } on DioException catch (e) {
-      throw ApiException.fromDioError(e);
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
     }
   }
 
   @override
-  Future<void> logout() async {
+  Future<ApiResult<void>> logout() async {
     try {
       await authService.logout();
+      return const ApiSuccess(null);
     } on DioException catch (e) {
-      throw ApiException.fromDioError(e);
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
     }
   }
 }

@@ -164,11 +164,11 @@ abstract class AppLocalizations {
   /// **'Welcome!'**
   String get welcome;
 
-  /// No description provided for @welcomeUser.
+  /// No description provided for @gender.
   ///
   /// In en, this message translates to:
-  /// **'Welcome, {name}!'**
-  String welcomeUser(String name);
+  /// **'Gender'**
+  String get gender;
 
   /// No description provided for @helloYoulong.
   ///

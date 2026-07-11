@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../storage/local_storage.dart';
+import '../config/app_config.dart';
 
 class DioClient {
   static final DioClient _instance = DioClient._internal();
@@ -12,9 +13,9 @@ class DioClient {
 
   DioClient._internal() {
     BaseOptions options = BaseOptions(
-      baseUrl: 'https://api.example.com',
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
+      baseUrl: AppConfig.baseUrl,
+      connectTimeout: const Duration(milliseconds: AppConfig.connectTimeout),
+      receiveTimeout: const Duration(milliseconds: AppConfig.receiveTimeout),
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

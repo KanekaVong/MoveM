@@ -17,5 +17,10 @@ class AppPages {
       page: () => const BottomNavScreen(),
       binding: MainNavBinding(),
     ),
+    GetPage(
+      name: AppRoutes.main,
+      page: () => const BottomNavScreen(),
+      binding: MainNavBinding(),
+    ),
   ];
 }

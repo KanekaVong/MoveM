@@ -42,9 +42,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get welcome => 'សូមស្វាគមន៍!';
 
   @override
-  String welcomeUser(String name) {
-    return 'សូមស្វាគមន៍, $name!';
-  }
+  String get gender => 'eឹេឹឹេសដ';
 
   @override
   String get helloYoulong => 'សួស្តី Youlong';
