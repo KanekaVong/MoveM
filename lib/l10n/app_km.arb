@@ -1,0 +1,19 @@
+{
+  "@@locale": "km",
+  "appTitle": "MoveM",
+  "login": "ចូល",
+  "logout": "ចាកចេញ",
+  "email": "អ៊ីមែល",
+  "password": "ពាក្យសម្ងាត់",
+  "home": "ទំព័រដើម",
+  "task": "កិច្ចការ",
+  "fitness": "សុខភាព",
+  "trip": "ដំណើរកម្សាន្ត",
+  "settings": "ការកំណត់",
+  "welcome": "សូមស្វាគមន៍!",
+  "testing": "asqe2",
+  "gender": "eឹេឹឹេសដ",
+  "welcomeUser": "សូមស្វាគមន៍, {name}!",
+  "helloYoulong": "សួស្តី Youlong",
+  "test": "ការសាកល្បង"
+}
