@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import '../../core/network/api_exceptions.dart';
@@ -72,7 +71,9 @@ abstract class BaseController extends GetxController {
 
   void _handleUnauthorized(String message) {
     AppDialogs.showError(message, onConfirm: () {
-      Get.offAllNamed(AppRoutes.login);
+      if (Get.currentRoute != AppRoutes.login) {
+        Get.offAllNamed(AppRoutes.login);
+      }
     });
   }
 }

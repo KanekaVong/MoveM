@@ -36,7 +36,16 @@ dependencies:
 
   # Assets
   flutter_svg: ^2.0.10
-
+  google_fonts: ^6.2.1
+  google_maps_flutter: ^2.18.0
+  geolocator: ^14.0.2
+  permission_handler: ^13.0.0
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
+  fl_chart: ^1.2.0
+  build_runner: ^2.4.13
+  isar_generator: ^3.1.0+1
+  path_provider: ^2.1.6
 dev_dependencies:
   flutter_test:
     sdk: flutter

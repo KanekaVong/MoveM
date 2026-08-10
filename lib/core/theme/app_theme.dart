@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 class AppTheme {
@@ -18,6 +19,7 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: AppColors.lightBackground,
       visualDensity: VisualDensity.adaptivePlatformDensity,
+      textTheme: GoogleFonts.robotoCondensedTextTheme(ThemeData.light().textTheme),
     );
   }
 
@@ -37,6 +39,7 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: AppColors.darkBackground,
       visualDensity: VisualDensity.adaptivePlatformDensity,
+      textTheme: GoogleFonts.robotoCondensedTextTheme(ThemeData.dark().textTheme),
     );
   }
 }

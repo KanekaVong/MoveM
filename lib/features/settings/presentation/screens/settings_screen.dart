@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:movem/core/utils/app_dialogs.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
