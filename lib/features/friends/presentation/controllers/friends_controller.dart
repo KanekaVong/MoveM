@@ -93,9 +93,9 @@ class FriendsController extends BaseController {
     );
   }
 
-  Future<void> sendRequest(int friendId) async {
+  Future<void> sendRequest(String username) async {
     await executeApi(
-      apiCall: () => repository.sendFriendRequest(friendId),
+      apiCall: () => repository.sendFriendRequest(username),
       onSuccess: (data) {
         // Optionally update UI to show request sent
         getOutgoingRequests();

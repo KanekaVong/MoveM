@@ -122,10 +122,10 @@ class FriendsRepositoryImpl implements FriendsRepository {
   }
 
   @override
-  Future<ApiResult<String>> sendFriendRequest(int friendId) async {
+  Future<ApiResult<String>> sendFriendRequest(String username) async {
     try {
-      _logger.i('Calling POST api/friends/requests with friendId: $friendId');
-      final response = await friendsService.sendFriendRequest(friendId);
+      _logger.i('Calling POST api/friends/request with username: $username');
+      final response = await friendsService.sendFriendRequest(username);
       return ApiSuccess(_parseSuccessMessage(response.data));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));

@@ -24,8 +24,8 @@ class FriendsService {
     return await dio.get('friends/requests/outgoing');
   }
 
-  Future<Response> sendFriendRequest(int friendId) async {
-    return await dio.post('friends/requests', data: {'receiverId': friendId}, options: Options(responseType: ResponseType.plain));
+  Future<Response> sendFriendRequest(String username) async {
+    return await dio.post('friends/request', data: {'username': username}, options: Options(responseType: ResponseType.plain));
   }
 
   Future<Response> acceptFriendRequest(int requestId) async {
