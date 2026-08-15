@@ -38,6 +38,7 @@ class AuthController extends BaseController {
         if (data.isFullyLoggedIn) {
           await UserManager().saveToken(data.accessToken!);
           await UserManager().saveTrustToken(data.trustToken!);
+          await UserManager().setLogged(true);
           Get.offAllNamed(AppRoutes.main);
         } else {
           Get.offNamed(AppRoutes.verifyOtp, arguments: {'mode': 'otp', 'identifier': username});
@@ -61,12 +62,13 @@ class AuthController extends BaseController {
       apiCall: () => repository.verifyOtp(
         OtpRequest(username: username, otp: otp, deviceId: deviceId),
       ),
-      onSuccess: (data) async{
+      onSuccess: (data) async {
         currentUser.value = data;
 
         if (data.accessToken != null && data.accessToken!.isNotEmpty) {
           await UserManager().saveToken(data.accessToken!);
           await UserManager().saveTrustToken(data.trustToken!);
+          await UserManager().setLogged(true);
         }
 
         AppDialogs.showSingleActionDialog(
@@ -120,6 +122,7 @@ class AuthController extends BaseController {
         if (data.accessToken != null && data.accessToken!.isNotEmpty) {
           await UserManager().saveToken(data.accessToken!);
           await UserManager().saveTrustToken(data.trustToken!);
+          await UserManager().setLogged(true);
         }
 
         AppDialogs.showSingleActionDialog(
@@ -180,6 +183,7 @@ class AuthController extends BaseController {
         if (data.accessToken != null && data.accessToken!.isNotEmpty) {
           await UserManager().saveToken(data.accessToken!);
           await UserManager().saveTrustToken(data.trustToken!);
+          await UserManager().setLogged(true);
         }
 
         AppDialogs.showSingleActionDialog(

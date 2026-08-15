@@ -19,10 +19,11 @@ class UserManager {
   // ─── Theme ───
   String get themeMode => _storage.getString(Constants.keyThemeMode) ?? Constants.defaultTheme;
   Future<void> setThemeMode(String mode) => _storage.setString(Constants.keyThemeMode, mode);
-
+\
   // ─── User Session ───
   String? get userId => _storage.getString(Constants.keyUserId);
-  bool get isLoggedIn => userId != null && userId!.isNotEmpty;
+  bool get isLoggedIn => _storage.getBool(Constants.keyIsLogged) ?? false;
+  Future<void> setLogged(bool value) => _storage.setBool(Constants.keyIsLogged, value);
   Future<void> saveUserId(String id) => _storage.setString(Constants.keyUserId, id);
   String? get userName => _storage.getString(Constants.keyUserName);
   Future<void> saveUserName(String name) => _storage.setString(Constants.keyUserName, name);
@@ -50,6 +51,7 @@ class UserManager {
     await _storage.clearSecureString(Constants.keyAccessToken);
     await _storage.setString(Constants.keyUserId, '');
     await _storage.setString(Constants.keyUserName, '');
+    await _storage.setBool(Constants.keyIsLogged, false);
     // trustToken intentionally NOT cleared — device stays trusted for next login
   }
 }

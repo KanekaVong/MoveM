@@ -13,6 +13,7 @@ abstract class Constants {
   static const keyThemeMode = 'theme_mode';
   static const keyUserId = 'user_id';
   static const keyUserName = 'user_name';
+  static const keyIsLogged = 'is_logged';
   static const keyAccessToken = 'access_token';
   static const String keyDeviceId = 'device_id';
   static const String keyTrustToken = 'trust_token';
