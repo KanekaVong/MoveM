@@ -52,6 +52,7 @@ class CreateTaskController extends BaseController {
       description: description,
       deadline: deadlineStr,
       checklists: checklists,
+      priority: 'URGENT', // Backend requires this field
     );
 
     await executeApi(
