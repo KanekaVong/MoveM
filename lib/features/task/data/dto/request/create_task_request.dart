@@ -39,7 +39,7 @@ class CreateTaskRequest {
     return {
       'activityName': activityName,
       'description': description,
-      if (startActivity != null) 'startActivity': startActivity,
+      'startActivity': startActivity ?? deadline, // Fallback to deadline if null
       if (deadline != null) 'deadline': deadline,
       if (locationName != null) 'locationName': locationName,
       if (locationAddress != null) 'locationAddress': locationAddress,
@@ -49,8 +49,8 @@ class CreateTaskRequest {
       if (coordinates != null) 'coordinates': coordinates,
       if (parentActivityId != null) 'parentActivityId': parentActivityId,
       if (priority != null) 'priority': priority,
-      if (isRecurring != null) 'isRecurring': isRecurring,
-      if (labelIds != null) 'labelIds': labelIds,
+      'isRecurring': isRecurring ?? false,
+      'labelIds': labelIds ?? [],
       'checklists': checklists,
       if (reminders != null) 'reminders': reminders,
     };
