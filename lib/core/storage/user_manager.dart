@@ -19,7 +19,7 @@ class UserManager {
   // ─── Theme ───
   String get themeMode => _storage.getString(Constants.keyThemeMode) ?? Constants.defaultTheme;
   Future<void> setThemeMode(String mode) => _storage.setString(Constants.keyThemeMode, mode);
-\
+
   // ─── User Session ───
   String? get userId => _storage.getString(Constants.keyUserId);
   bool get isLoggedIn => _storage.getBool(Constants.keyIsLogged) ?? false;

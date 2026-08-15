@@ -6,6 +6,7 @@ class FriendSuggestionTile extends StatelessWidget {
   final String name;
   final String username;
   final VoidCallback onAdd;
+  final String? friendStatus;
 
   const FriendSuggestionTile({
     super.key,
@@ -13,6 +14,7 @@ class FriendSuggestionTile extends StatelessWidget {
     required this.name,
     required this.username,
     required this.onAdd,
+    this.friendStatus,
   });
 
   @override
@@ -43,25 +45,46 @@ class FriendSuggestionTile extends StatelessWidget {
               ],
             ),
           ),
-          GestureDetector(
-            onTap: onAdd,
-            child: Container(
+          if (friendStatus == 'PENDING_REQUEST' || friendStatus == 'PENDING')
+            Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: const Color(0xFF1E293B).withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: const Color(0xFF1E293B)),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.person_add_alt_1, color: Color(0xFF3B82F6), size: 14),
-                  const SizedBox(width: 4),
-                  const Text('Add Friends', style: TextStyle(color: Color(0xFF3B82F6), fontSize: 12, fontWeight: FontWeight.bold)),
-                ],
+              child: const Text('Pending', style: TextStyle(color: Color(0xFFA0AAB2), fontSize: 12, fontWeight: FontWeight.bold)),
+            )
+          else if (friendStatus == 'ACCEPTED' || friendStatus == 'FRIEND')
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E293B).withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFF1E293B)),
+              ),
+              child: const Text('Friends', style: TextStyle(color: Color(0xFF34D399), fontSize: 12, fontWeight: FontWeight.bold)),
+            )
+          else
+            GestureDetector(
+              onTap: onAdd,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B).withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFF1E293B)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.person_add_alt_1, color: Color(0xFF3B82F6), size: 14),
+                    const SizedBox(width: 4),
+                    const Text('Add Friends', style: TextStyle(color: Color(0xFF3B82F6), fontSize: 12, fontWeight: FontWeight.bold)),
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

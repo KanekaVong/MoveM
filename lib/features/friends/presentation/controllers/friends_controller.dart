@@ -97,8 +97,21 @@ class FriendsController extends BaseController {
     await executeApi(
       apiCall: () => repository.sendFriendRequest(username),
       onSuccess: (data) {
-        // Optionally update UI to show request sent
         getOutgoingRequests();
+        
+        // Update the search results to show pending status
+        final index = searchResults.indexWhere((user) => user.username == username);
+        if (index != -1) {
+          final user = searchResults[index];
+          searchResults[index] = FriendResponse(
+            userId: user.userId,
+            username: user.username,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            profilePic: user.profilePic,
+            friendStatus: 'PENDING_REQUEST',
+          );
+        }
       },
     );
   }

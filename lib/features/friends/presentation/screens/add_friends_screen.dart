@@ -249,6 +249,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
                 imageUrl: user.profilePic.isNotEmpty ? user.profilePic : 'https://ui-avatars.com/api/?name=${user.firstname}+${user.lastname}',
                 name: '${user.firstname} ${user.lastname}'.trim().isEmpty ? user.username : '${user.firstname} ${user.lastname}',
                 username: '@${user.username}',
+                friendStatus: user.friendStatus,
                 onAdd: () => controller.sendRequest(user.username),
               ),
               if (!isLast) const Divider(color: Color(0xFF1E293B)),
