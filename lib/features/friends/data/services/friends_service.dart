@@ -24,9 +24,8 @@ class FriendsService {
     return await dio.get('friends/requests/outgoing');
   }
 
-  // Mocked endpoints based on assumptions since they were not in the screenshot
   Future<Response> sendFriendRequest(int friendId) async {
-    return await dio.post('friends/requests', data: {'friendId': friendId}, options: Options(responseType: ResponseType.plain));
+    return await dio.post('friends/requests', data: {'receiverId': friendId}, options: Options(responseType: ResponseType.plain));
   }
 
   Future<Response> acceptFriendRequest(int requestId) async {

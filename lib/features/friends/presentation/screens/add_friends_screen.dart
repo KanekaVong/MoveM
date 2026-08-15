@@ -171,10 +171,6 @@ class AddFriendsScreen extends GetView<FriendsController> {
   }
 
   Widget _buildRequestsList() {
-    if (controller.isLoading && controller.incomingRequests.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    
     if (controller.incomingRequests.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(24),
@@ -220,10 +216,6 @@ class AddFriendsScreen extends GetView<FriendsController> {
   }
 
   Widget _buildSuggestionsList() {
-    if (controller.isLoading && controller.searchResults.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     if (controller.searchResults.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(24),

@@ -45,10 +45,6 @@ class FriendsTabScreen extends GetView<FriendsController> {
   }
 
   Widget _buildRequestsTab() {
-    if (controller.isLoading && controller.incomingRequests.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     if (controller.incomingRequests.isEmpty) {
       return const Center(child: Text('No friend requests.', style: TextStyle(color: Color(0xFFA0AAB2))));
     }
@@ -85,10 +81,6 @@ class FriendsTabScreen extends GetView<FriendsController> {
   }
 
   Widget _buildSuggestionsTab() {
-    if (controller.isLoading && controller.searchResults.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     if (controller.searchResults.isEmpty) {
       return const Center(child: Text('No suggestions found.', style: TextStyle(color: Color(0xFFA0AAB2))));
     }
