@@ -160,27 +160,121 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
             }).toList(),
           )),
           const SizedBox(height: 24),
-          _buildPropertyRow('REPEAT', '', Icons.keyboard_arrow_up, hideText: true),
+          GestureDetector(
+            onTap: () => controller.toggleRecurring(),
+            child: Obx(() => _buildPropertyRow(
+              'REPEAT', 
+              controller.isRecurring.value ? 'Yes' : 'No', 
+              Icons.repeat,
+            )),
+          ),
           const SizedBox(height: 24),
-          _buildActionRow('PRIORITY', Icons.add),
+          GestureDetector(
+            onTap: () => _showPriorityPicker(),
+            child: Obx(() => _buildPropertyRow(
+              'PRIORITY', 
+              controller.priority.value, 
+              Icons.flag_outlined,
+            )),
+          ),
           const SizedBox(height: 24),
-          _buildActionRow('LABEL', Icons.add),
+          GestureDetector(
+            onTap: () => _showLabelPicker(),
+            child: Obx(() => _buildPropertyRow(
+              'LABEL', 
+              controller.selectedLabel.value?.name ?? 'Select Label', 
+              Icons.label_outline,
+            )),
+          ),
           const SizedBox(height: 32),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Get upcoming reminders about your due dates', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
-              Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            ],
+          GestureDetector(
+            onTap: () => controller.toggleReminders(),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Get upcoming reminders about your due dates', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+                Obx(() => Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: controller.remindersEnabled.value ? const Color(0xFF3B82F6) : Colors.transparent,
+                    border: Border.all(color: controller.remindersEnabled.value ? const Color(0xFF3B82F6) : Colors.white),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: controller.remindersEnabled.value ? const Icon(Icons.check, size: 16, color: Colors.white) : null,
+                )),
+              ],
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showPriorityPicker() {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Color(0xFF131B2F),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Select Priority', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            ...['URGENT', 'HIGH', 'NORMAL', 'LOW'].map((p) => ListTile(
+              title: Text(p, style: const TextStyle(color: Colors.white)),
+              onTap: () {
+                controller.priority.value = p;
+                Get.back();
+              },
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLabelPicker() {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Color(0xFF131B2F),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Select Label', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            Obx(() {
+              if (controller.availableLabels.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text('No labels found.', style: TextStyle(color: Colors.white54)),
+                );
+              }
+              return Column(
+                children: controller.availableLabels.map((l) => ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Color(int.parse(l.color.replaceFirst('#', '0xFF'))),
+                    radius: 12,
+                  ),
+                  title: Text(l.name, style: const TextStyle(color: Colors.white)),
+                  onTap: () {
+                    controller.selectedLabel.value = l;
+                    Get.back();
+                  },
+                )).toList(),
+              );
+            }),
+          ],
+        ),
       ),
     );
   }

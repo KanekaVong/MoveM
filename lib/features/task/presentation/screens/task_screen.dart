@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../shared/widgets/custom_image.dart';
 import 'create_task_screen.dart';
 
 class TaskScreen extends StatelessWidget {

@@ -4,6 +4,7 @@ import '../../../../core/network/api_exceptions.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../dto/request/create_task_request.dart';
 import '../dto/response/task_response.dart';
+import '../dto/response/label_response.dart';
 import '../services/task_service.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
@@ -17,6 +18,20 @@ class TaskRepositoryImpl implements TaskRepository {
       final response = await _service.createTask(request.toJson());
       final task = TaskResponse.fromJson(response.data);
       return ApiSuccess(task);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<ApiResult<List<LabelResponse>>> getLabels() async {
+    try {
+      final response = await _service.getLabels();
+      final List<dynamic> data = response.data;
+      final labels = data.map((e) => LabelResponse.fromJson(e)).toList();
+      return ApiSuccess(labels);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {

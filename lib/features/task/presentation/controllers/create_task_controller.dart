@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/network/api_result.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../data/dto/request/create_task_request.dart';
+import '../../data/dto/response/label_response.dart';
 import '../../data/services/task_service.dart';
 import '../../data/repositories/task_repository_impl.dart';
 
@@ -15,7 +17,22 @@ class CreateTaskController extends BaseController {
   
   final Rx<DateTime?> deadline = Rx<DateTime?>(null);
   
+  // A checklist item is just a string for now, but we use TextEditingControllers to manage the inputs dynamically
   final RxList<TextEditingController> checklistControllers = <TextEditingController>[].obs;
+
+  // New fields
+  final RxString priority = 'URGENT'.obs;
+  final RxBool isRecurring = false.obs;
+  final RxBool remindersEnabled = false.obs;
+  
+  final RxList<LabelResponse> availableLabels = <LabelResponse>[].obs;
+  final Rx<LabelResponse?> selectedLabel = Rx<LabelResponse?>(null);
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadLabels();
+  }
 
   @override
   void onClose() {
@@ -25,6 +42,23 @@ class CreateTaskController extends BaseController {
       controller.dispose();
     }
     super.onClose();
+  }
+
+  Future<void> _loadLabels() async {
+    final result = await repository.getLabels();
+    if (result is ApiSuccess<List<LabelResponse>>) {
+      availableLabels.value = result.data;
+    } else if (result is ApiError) {
+      debugPrint('Failed to load labels: ${(result as ApiError).exception.message}');
+    }
+  }
+
+  void toggleRecurring() {
+    isRecurring.value = !isRecurring.value;
+  }
+
+  void toggleReminders() {
+    remindersEnabled.value = !remindersEnabled.value;
   }
 
   Future<void> submitTask() async {
@@ -47,12 +81,23 @@ class CreateTaskController extends BaseController {
         .map((item) => {"itemName": item})
         .toList();
 
+    // Build reminders array
+    List<Map<String, dynamic>>? remindersArray;
+    if (remindersEnabled.value && deadlineStr != null) {
+      remindersArray = [
+        {"remindAt": deadlineStr, "type": "DUE_DATE"}
+      ];
+    }
+
     final request = CreateTaskRequest(
       activityName: activityName,
       description: description,
       deadline: deadlineStr,
       checklists: checklists,
-      priority: 'URGENT', // Backend requires this field
+      priority: priority.value,
+      isRecurring: isRecurring.value,
+      labelIds: selectedLabel.value != null ? [selectedLabel.value!.id] : null,
+      reminders: remindersArray,
     );
 
     await executeApi(

@@ -7,4 +7,8 @@ class TaskService {
   Future<Response> createTask(Map<String, dynamic> data) async {
     return await dio.post('tasks', data: data, options: Options(responseType: ResponseType.json));
   }
+
+  Future<Response> getLabels() async {
+    return await dio.get('task-labels', options: Options(responseType: ResponseType.json));
+  }
 }
