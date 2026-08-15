@@ -5,11 +5,14 @@ import '../../../../shared/base/base_controller.dart';
 import '../../data/dto/request/login_request.dart';
 import '../../data/dto/request/register_request.dart';
 import '../../data/dto/request/otp_request.dart';
+import '../../data/dto/request/email_verify_request.dart';
 import '../../data/dto/request/forgot_password_request.dart';
 import '../../data/dto/request/reset_password_request.dart';
 import '../../data/dto/response/user_response.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../../../core/utils/app_dialogs.dart';
+import '/../core/storage/user_manager.dart';
+
 
 class AuthController extends BaseController {
   final AuthRepository repository;
@@ -19,21 +22,32 @@ class AuthController extends BaseController {
   final Rxn<UserResponse> currentUser = Rxn<UserResponse>();
 
   Future<void> login(String username, String password) async {
+    final deviceId = await UserManager().getOrCreateDeviceId();
+    final savedTrustToken = await UserManager().getTrustToken();
+
     await executeApi(
       apiCall: () => repository.login(
-        LoginRequest(username: username, password: password),
+        LoginRequest(
+            username: username,
+            password: password,
+            deviceId: deviceId,
+            trustToken: savedTrustToken,
+        ),
       ),
-      onSuccess: (data) {
-        // Success means user is authenticated and verified. Go to main dashboard.
-        Get.offAllNamed(AppRoutes.main);
+      onSuccess: (data) async {
+        if (data.isFullyLoggedIn) {
+          await UserManager().saveToken(data.accessToken!);
+          await UserManager().saveTrustToken(data.trustToken!);
+          Get.offAllNamed(AppRoutes.main);
+        } else {
+          Get.offNamed(AppRoutes.verifyOtp, arguments: {'mode': 'otp', 'identifier': username});
+        }
       },
       showErrorDialog: false,
       onError: (e) {
-        // If the backend says the email is unverified (403), skip dialog/toast and go straight to OTP screen.
         if (e.statusCode == 403 && e.message.toLowerCase().contains('verify')) {
-          Get.toNamed(AppRoutes.verifyOtp, arguments: username);
+          Get.offNamed(AppRoutes.verifyOtp, arguments: {'mode': 'email', 'identifier': e.email});
         } else {
-          // Standard error dialog for other errors (like wrong password)
           AppDialogs.showError(e.message);
         }
       },
@@ -41,16 +55,36 @@ class AuthController extends BaseController {
   }
 
   Future<void> verifyOtp(String username, String otp) async {
+    final deviceId = await UserManager().getOrCreateDeviceId();
+
     await executeApi(
       apiCall: () => repository.verifyOtp(
-        OtpRequest(username: username, otp: otp),
+        OtpRequest(username: username, otp: otp, deviceId: deviceId),
       ),
-      onSuccess: (data) {
+      onSuccess: (data) async{
         currentUser.value = data;
+
+        if (data.accessToken != null && data.accessToken!.isNotEmpty) {
+          await UserManager().saveToken(data.accessToken!);
+          await UserManager().saveTrustToken(data.trustToken!);
+        }
+
         AppDialogs.showSingleActionDialog(
           title: 'Verified',
           message: 'OTP Verified Successfully!',
           onConfirm: () => Get.offAllNamed(AppRoutes.main),
+        );
+      },
+    );
+  }
+
+  Future<void> resendLoginOtp(String username) async {
+    await executeApi(
+      apiCall: () => repository.resendLoginOtp(username),
+      onSuccess: (data) {
+        AppDialogs.showSingleActionDialog(
+          title: 'Code Sent',
+          message: 'A new code has been sent to your email.',
         );
       },
     );
@@ -68,13 +102,50 @@ class AuthController extends BaseController {
         ),
       ),
       onSuccess: (data) {
-        Get.back(); // Go back to login screen
+        Get.offNamed(AppRoutes.verifyOtp, arguments: {'mode': 'email', 'identifier': email});
       },
     );
   }
 
-  void logout() {
-    repository.logout();
+  Future<void> verifyEmail(String email, String code) async {
+    final deviceId = await UserManager().getOrCreateDeviceId();
+
+    await executeApi(
+      apiCall: () => repository.verifyEmail(
+        EmailVerifyRequest(email: email, code: code, deviceId: deviceId),
+      ),
+      onSuccess: (data) async {
+        currentUser.value = data;
+
+        if (data.accessToken != null && data.accessToken!.isNotEmpty) {
+          await UserManager().saveToken(data.accessToken!);
+          await UserManager().saveTrustToken(data.trustToken!);
+        }
+
+        AppDialogs.showSingleActionDialog(
+          title: 'Verified',
+          message: 'Email Verified Successfully!',
+          onConfirm: () => Get.offAllNamed(AppRoutes.main),
+        );
+      },
+    );
+  }
+
+  Future<void> resendVerificationCode(String email) async {
+    await executeApi(
+      apiCall: () => repository.resendVerification(email),
+      onSuccess: (data) {
+        AppDialogs.showSingleActionDialog(
+          title: 'Code Sent',
+          message: 'A new verification code has been sent to your email.',
+        );
+      },
+    );
+  }
+
+  void logout() async {
+    await repository.logout();
+    await UserManager().clearSession();
     currentUser.value = null;
     Get.offAllNamed(AppRoutes.login);
   }
@@ -94,17 +165,29 @@ class AuthController extends BaseController {
   }
 
   Future<void> resetPassword(String email, String otp, String newPassword) async {
+    final deviceId = await UserManager().getOrCreateDeviceId();
+
     await executeApi(
       apiCall: () => repository.resetPassword(
-        ResetPasswordRequest(email: email, otp: otp, newPassword: newPassword),
+        ResetPasswordRequest(
+          email: email,
+          otp: otp,
+          newPassword: newPassword,
+          deviceId: deviceId,
+        ),
       ),
-      onSuccess: (data) {
+      onSuccess: (data) async {
+        if (data.accessToken != null && data.accessToken!.isNotEmpty) {
+          await UserManager().saveToken(data.accessToken!);
+          await UserManager().saveTrustToken(data.trustToken!);
+        }
+
         AppDialogs.showSingleActionDialog(
           title: 'Password Reset',
           message: 'Your password has been reset successfully.',
           onConfirm: () {
             Get.back();
-            Get.offAllNamed(AppRoutes.login);
+            Get.offAllNamed(AppRoutes.main); // auto-logged in, go straight to home
           },
         );
       },

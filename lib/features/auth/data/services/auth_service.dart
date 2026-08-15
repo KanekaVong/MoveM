@@ -4,6 +4,7 @@ import '../dto/request/register_request.dart';
 import '../dto/request/otp_request.dart';
 import '../dto/request/forgot_password_request.dart';
 import '../dto/request/reset_password_request.dart';
+import '../dto/request/email_verify_request.dart';
 import '../../../../core/network/dio_client.dart';
 
 class AuthService {
@@ -33,6 +34,14 @@ class AuthService {
     );
   }
 
+  Future<Response> verifyEmail(EmailVerifyRequest request) async {
+    return await dio.post(
+      'auth/verify-email',
+      data: request.toJson(),
+      options: Options(responseType: ResponseType.plain),
+    );
+  }
+
   Future<Response> forgotPassword(ForgotPasswordRequest request) async {
     return await dio.post(
       'auth/forgot-password',
@@ -45,6 +54,22 @@ class AuthService {
     return await dio.post(
       'auth/reset-password',
       data: request.toJson(),
+      options: Options(responseType: ResponseType.plain),
+    );
+  }
+
+  Future<Response> resendVerification(String email) async {
+    return await dio.post(
+      'auth/resend-verification',
+      data: {'email': email},
+      options: Options(responseType: ResponseType.plain),
+    );
+  }
+
+  Future<Response> resendLoginOtp(String username) async {
+    return await dio.post(
+      'auth/resend-login-otp',
+      data: {'username': username},
       options: Options(responseType: ResponseType.plain),
     );
   }

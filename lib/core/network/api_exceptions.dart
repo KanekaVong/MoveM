@@ -4,8 +4,9 @@ import 'package:dio/dio.dart';
 class ApiException implements Exception {
   final String message;
   final int? statusCode;
+  final String? email;
 
-  ApiException({required this.message, this.statusCode});
+  ApiException({required this.message, this.statusCode, this.email});
 
   factory ApiException.fromDioError(DioException dioError) {
     switch (dioError.type) {
@@ -31,14 +32,17 @@ class ApiException implements Exception {
 
   factory ApiException._handleError(int? statusCode, dynamic data) {
     String defaultMessage = "Unexpected error occurred";
+    String? email;
     if (data != null) {
       if (data is Map<String, dynamic> && data.containsKey('message')) {
         defaultMessage = data['message'];
+        email = data['email']?.toString();
       } else if (data is String && data.isNotEmpty) {
         try {
           final decoded = jsonDecode(data);
           if (decoded is Map<String, dynamic> && decoded.containsKey('message')) {
             defaultMessage = decoded['message'].toString();
+            email = decoded['email']?.toString();
           } else {
             defaultMessage = _cleanBackendError(data);
           }
@@ -52,17 +56,17 @@ class ApiException implements Exception {
 
     switch (statusCode) {
       case 400:
-        return ApiException(message: defaultMessage, statusCode: 400);
+        return ApiException(message: defaultMessage, statusCode: 400, email: email);
       case 401:
         return ApiException(message: hasCustomMessage ? defaultMessage : "Unauthorized: Please login again.", statusCode: 401);
       case 403:
-        return ApiException(message: hasCustomMessage ? defaultMessage : "Forbidden: You don't have access.", statusCode: 403);
+        return ApiException(message: hasCustomMessage ? defaultMessage : "Forbidden: You don't have access.", statusCode: 403, email: email);
       case 404:
         return ApiException(message: hasCustomMessage ? defaultMessage : "Resource not found", statusCode: 404);
       case 500:
         return ApiException(message: hasCustomMessage ? defaultMessage : "Internal server error", statusCode: 500);
       default:
-        return ApiException(message: defaultMessage, statusCode: statusCode);
+        return ApiException(message: defaultMessage, statusCode: statusCode, email: email);
     }
   }
 
