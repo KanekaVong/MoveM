@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../controllers/create_task_controller.dart';
 
-class CreateTaskScreen extends StatelessWidget {
+class CreateTaskScreen extends GetView<CreateTaskController> {
   const CreateTaskScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Get.put(CreateTaskController());
+
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
       body: SafeArea(
@@ -18,9 +21,9 @@ class CreateTaskScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInputField('TASK TITLE', 'Give your Work a name'),
+                    _buildInputField('TASK TITLE', 'Give your Work a name', controller.titleController),
                     const SizedBox(height: 32),
-                    _buildInputField('DESCRIPTION', 'Write down a note'),
+                    _buildInputField('DESCRIPTION', 'Write down a note', controller.descriptionController),
                     const SizedBox(height: 32),
                     _buildPropertiesCard(),
                   ],
@@ -78,13 +81,14 @@ class CreateTaskScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInputField(String label, String hint) {
+  Widget _buildInputField(String label, String hint, TextEditingController textController) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         TextField(
+          controller: textController,
           style: const TextStyle(color: Colors.white, fontSize: 14),
           decoration: InputDecoration(
             hintText: hint,
@@ -113,9 +117,48 @@ class CreateTaskScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildPropertyRow('DEADLINES', '13th August 2026', Icons.calendar_today),
+          GestureDetector(
+            onTap: () => controller.pickDeadline(Get.context!),
+            child: Obx(() => _buildPropertyRow('DEADLINES', controller.formattedDeadline, Icons.calendar_today)),
+          ),
           const SizedBox(height: 24),
-          _buildActionRow('CheckList', Icons.add),
+          GestureDetector(
+            onTap: () => controller.addChecklistItem(),
+            child: _buildActionRow('CheckList', Icons.add),
+          ),
+          const SizedBox(height: 16),
+          Obx(() => Column(
+            children: controller.checklistControllers.asMap().entries.map((entry) {
+              final index = entry.key;
+              final textController = entry.value;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_box_outline_blank, color: const Color(0xFF475569), size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextField(
+                        controller: textController,
+                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                        decoration: const InputDecoration(
+                          hintText: 'Add an item',
+                          hintStyle: TextStyle(color: Color(0xFF475569), fontSize: 14),
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => controller.removeChecklistItem(index),
+                      child: const Icon(Icons.close, color: Color(0xFF475569), size: 18),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          )),
           const SizedBox(height: 24),
           _buildPropertyRow('REPEAT', '', Icons.keyboard_arrow_up, hideText: true),
           const SizedBox(height: 24),
