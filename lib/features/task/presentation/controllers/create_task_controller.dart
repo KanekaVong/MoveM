@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../../shared/base/base_controller.dart';
+import '../../domain/repositories/task_repository.dart';
+import '../../data/dto/request/create_task_request.dart';
+import '../../data/services/task_service.dart';
+import '../../data/repositories/task_repository_impl.dart';
 
-class CreateTaskController extends GetxController {
+class CreateTaskController extends BaseController {
+  final TaskRepository repository = TaskRepositoryImpl(TaskService());
+
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   
@@ -18,6 +25,42 @@ class CreateTaskController extends GetxController {
       controller.dispose();
     }
     super.onClose();
+  }
+
+  Future<void> submitTask() async {
+    if (titleController.text.trim().isEmpty) {
+      Get.snackbar('Error', 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
+      return;
+    }
+
+    final String activityName = titleController.text.trim();
+    final String description = descriptionController.text.trim();
+    
+    // Format deadline if selected
+    String? deadlineStr;
+    if (deadline.value != null) {
+      deadlineStr = deadline.value!.toUtc().toIso8601String();
+    }
+
+    // Build checklist array
+    final List<Map<String, String>> checklists = getChecklistItems()
+        .map((item) => {"itemName": item})
+        .toList();
+
+    final request = CreateTaskRequest(
+      activityName: activityName,
+      description: description,
+      deadline: deadlineStr,
+      checklists: checklists,
+    );
+
+    await executeApi(
+      apiCall: () => repository.createTask(request),
+      onSuccess: (data) {
+        Get.snackbar('Success', 'Task created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        Get.back(); // Go back to the previous screen
+      },
+    );
   }
 
   Future<void> pickDeadline(BuildContext context) async {

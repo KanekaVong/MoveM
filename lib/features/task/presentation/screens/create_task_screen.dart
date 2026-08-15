@@ -36,7 +36,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(24.0),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () => controller.submitTask(),
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF1E293B),
             foregroundColor: Colors.white,
