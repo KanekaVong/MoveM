@@ -46,11 +46,11 @@ class UpcomingSection extends StatelessWidget {
               ),
               Column(
                 children: [
-                  _buildUpcomingItem(Icons.calendar_today, const Color(0xFF4C8DB3), 'No Due Date', 'No Task Yet', 'Task'),
+                  _buildUpcomingItem(Icons.assignment, const Color(0xFF4C8DB3), 'No Due Date', 'No Task Yet', 'Task'),
                   const Divider(color: Color(0xFF1E293B), indent: 40),
                   _buildUpcomingItem(Icons.fitness_center, const Color(0xFFE28743), 'No Date', 'No Challenges', 'Fitness'),
                   const Divider(color: Color(0xFF1E293B), indent: 40),
-                  _buildUpcomingItem(Icons.work_outline, const Color(0xFF9B5DE5), 'No Date', 'No Trip Plan', 'Trips'),
+                  _buildUpcomingItem(Icons.luggage, const Color(0xFF9B5DE5), 'No Date', 'No Trip Plan', 'Trips'),
                 ],
               ),
             ],

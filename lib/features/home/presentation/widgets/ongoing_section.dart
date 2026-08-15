@@ -37,6 +37,7 @@ class OngoingSection extends StatelessWidget {
                 Icons.check_box,
                 'Task',
                 'Create A New Task',
+                '',
                 'No Due Date',
               ),
               const SizedBox(width: 16),
@@ -46,7 +47,8 @@ class OngoingSection extends StatelessWidget {
                 Icons.directions_run,
                 'Fitness',
                 'Set Up Your Goals',
-                '0 / 5000 Steps',
+                '0 / 5000',
+                'Steps',
               ),
               const SizedBox(width: 16),
               _buildOngoingCard(
@@ -56,6 +58,7 @@ class OngoingSection extends StatelessWidget {
                 'Trip Plans',
                 'Set Up Your Trip Plans',
                 '0 Days left',
+                'Until Your Next Trip',
               ),
             ],
           ),
@@ -64,7 +67,7 @@ class OngoingSection extends StatelessWidget {
     );
   }
 
-  Widget _buildOngoingCard(String imageUrl, Color tintColor, IconData icon, String type, String title, String subtitle) {
+  Widget _buildOngoingCard(String imageUrl, Color tintColor, IconData icon, String type, String title, String mainStat, String subStat) {
     return Container(
       width: 160,
       height: 200,
@@ -100,7 +103,12 @@ class OngoingSection extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-            Text(subtitle, style: const TextStyle(color: Color(0xFFE2E8F0), fontSize: 10)),
+            if (mainStat.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(mainStat, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+            ],
+            if (subStat.isNotEmpty)
+              Text(subStat, style: const TextStyle(color: Color(0xFFE2E8F0), fontSize: 10)),
             const Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

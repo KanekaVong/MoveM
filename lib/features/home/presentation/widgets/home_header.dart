@@ -51,13 +51,13 @@ class HomeHeader extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Container(
-              width: 45,
-              height: 45,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: const DecorationImage(
                   image: CachedNetworkImageProvider(
-                    'https://images.unsplash.com/photo-1543852786-1cf6624b9987?q=80&w=200&auto=format&fit=crop', // placeholder leopard
+                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzYHgqociFLKFTZGayjmtyok4nwEp04pf_Vk3Nf7uosg&s=10', // placeholder leopard
                   ),
                   fit: BoxFit.cover,
                 ),

@@ -39,6 +39,7 @@ class DashboardSummaryGrid extends StatelessWidget {
   Widget _buildCardBase({required Widget child}) {
     return Container(
       width: double.infinity,
+      height: 260,
       decoration: BoxDecoration(
         color: const Color(0xFF131B2F),
         borderRadius: BorderRadius.circular(16),
@@ -68,11 +69,11 @@ class DashboardSummaryGrid extends StatelessWidget {
                 const Icon(Icons.person_add_alt_1, color: Colors.white, size: 14),
               ],
             ),
-            const SizedBox(height: 40),
+            const Spacer(),
             const Center(
               child: Text('No Friends', style: TextStyle(color: Color(0xFFA0AAB2), fontSize: 14)),
             ),
-            const SizedBox(height: 40),
+            const Spacer(),
             const Divider(color: Color(0xFF1E293B)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -126,13 +127,28 @@ class DashboardSummaryGrid extends StatelessWidget {
                       children: [
                         const Text('0 Days left', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
                         const Text('Until Your Next Trip', style: TextStyle(color: Color(0xFFE2E8F0), fontSize: 8)),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: List.generate(4, (index) => Align(
+                            widthFactor: 0.7,
+                            child: Container(
+                              width: 16,
+                              height: 16,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color(0xFFCBD5E1),
+                                border: Border.all(color: Colors.white, width: 1),
+                              ),
+                            ),
+                          )),
+                        ),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -150,12 +166,25 @@ class DashboardSummaryGrid extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Container(
-              height: 3,
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
-                borderRadius: BorderRadius.circular(1.5),
-              ),
+            Stack(
+              children: [
+                Container(
+                  height: 3,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(1.5),
+                  ),
+                ),
+                Container(
+                  height: 3,
+                  width: 20,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF9B5DE5),
+                    borderRadius: BorderRadius.circular(1.5),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -184,6 +213,7 @@ class DashboardSummaryGrid extends StatelessWidget {
             _buildScoreItem('3', const Color(0xFFCD7F32)),
             _buildScoreItem('4', const Color(0xFFA0AAB2)),
             _buildScoreItem('5', const Color(0xFFA0AAB2)),
+            const Spacer(),
             const Divider(color: Color(0xFF1E293B)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -258,7 +288,7 @@ class DashboardSummaryGrid extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 40),
+            const Spacer(),
             const Divider(color: Color(0xFF1E293B)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
