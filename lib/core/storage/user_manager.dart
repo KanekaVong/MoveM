@@ -1,4 +1,5 @@
 import 'local_storage.dart';
+import 'package:uuid/uuid.dart';
 import '../utils/Constants.dart';
 
 class UserManager {
@@ -30,10 +31,25 @@ class UserManager {
   Future<String?> getToken() => _storage.getSecureString(Constants.keyAccessToken);
   Future<void> saveToken(String token) => _storage.setSecureString(Constants.keyAccessToken, token);
 
-  // ─── Clear Session (Logout) ───
+  // ─── Trust Token (Secure) ───
+  Future<String?> getTrustToken() => _storage.getSecureString(Constants.keyTrustToken);
+  Future<void> saveTrustToken(String token) => _storage.setSecureString(Constants.keyTrustToken, token);
+
+  // ─── Device ID (Secure, generated once, persists forever) ───
+  Future<String> getOrCreateDeviceId() async {
+    String? deviceId = await _storage.getSecureString(Constants.keyDeviceId);
+    if (deviceId == null || deviceId.isEmpty) {
+      deviceId = const Uuid().v4();
+      await _storage.setSecureString(Constants.keyDeviceId, deviceId);
+    }
+    return deviceId;
+  }
+
+  // ─── Clear Session (Logout) — keeps trustToken so this device stays trusted ───
   Future<void> clearSession() async {
     await _storage.clearSecureString(Constants.keyAccessToken);
     await _storage.setString(Constants.keyUserId, '');
     await _storage.setString(Constants.keyUserName, '');
+    // trustToken intentionally NOT cleared — device stays trusted for next login
   }
 }

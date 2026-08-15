@@ -10,7 +10,9 @@ class VerifyOtpScreen extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
-    final String username = Get.arguments as String? ?? '';
+    final Map<String, dynamic> args = Get.arguments as Map<String, dynamic>? ?? {};
+    final String mode = args['mode'] ?? 'otp';
+    final String identifier = args['identifier'] ?? '';
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -110,7 +112,7 @@ class VerifyOtpScreen extends GetView<AuthController> {
                               const SizedBox(height: 10),
                               Center(
                                 child: Text(
-                                  'Enter the code sent to your email\nassociated with "$username"',
+                                  'Enter the code sent to your email\nassociated with "$identifier""',
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     color: Color(0xFFA0AAB2),
@@ -127,15 +129,37 @@ class VerifyOtpScreen extends GetView<AuthController> {
                                 keyboardType: TextInputType.number,
                               ),
                               const SizedBox(height: 40),
-                              
+
                               Center(
                                 child: GlassButton(
                                   text: 'Verify',
                                   onPressed: () {
                                     if (_otpController.text.isNotEmpty) {
-                                      controller.verifyOtp(username, _otpController.text);
+                                      if (mode == 'email') {
+                                        controller.verifyEmail(identifier, _otpController.text);
+                                      } else {
+                                        controller.verifyOtp(identifier, _otpController.text);
+                                      }
                                     }
                                   },
+                                ),
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              Center(
+                                child: TextButton(
+                                  onPressed: () {
+                                    if (mode == 'email') {
+                                      controller.resendVerificationCode(identifier);
+                                    } else {
+                                      controller.resendLoginOtp(identifier);
+                                    }
+                                  },
+                                  child: const Text(
+                                    'Resend Code',
+                                    style: TextStyle(color: Color(0xFF4C8DB3), fontWeight: FontWeight.w600),
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 20),
