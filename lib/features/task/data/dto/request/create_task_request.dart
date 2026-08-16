@@ -50,9 +50,9 @@ class CreateTaskRequest {
       if (parentActivityId != null) 'parentActivityId': parentActivityId,
       if (priority != null) 'priority': priority,
       'isRecurring': isRecurring ?? false,
-      'labelIds': labelIds ?? [],
-      'checklists': checklists,
-      if (reminders != null) 'reminders': reminders,
+      if (labelIds != null && labelIds!.isNotEmpty) 'labelIds': labelIds,
+      if (checklists.isNotEmpty) 'checklists': checklists,
+      if (reminders != null && reminders!.isNotEmpty) 'reminders': reminders,
     };
   }
 }
