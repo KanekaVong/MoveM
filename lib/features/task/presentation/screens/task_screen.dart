@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import '../../../../shared/widgets/custom_image.dart';
-import 'create_task_screen.dart';
+import 'package:intl/intl.dart';
 
 import '../controllers/task_controller.dart';
-import 'package:intl/intl.dart';
+import 'create_task_screen.dart';
 
 class TaskScreen extends GetView<TaskController> {
   const TaskScreen({super.key});
@@ -21,66 +19,110 @@ class TaskScreen extends GetView<TaskController> {
           return const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6)));
         }
         
-        return CustomScrollView(
-          slivers: [
-            _buildSliverAppBar(),
-            SliverToBoxAdapter(
-              child: Transform.translate(
-                offset: const Offset(0, -100), // Overlap content onto the image
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Progress',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                        ),
+        return Stack(
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 380,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.network(
+                    'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black45,
+                          Color(0xFF0F172A),
+                        ],
+                        stops: [0.0, 1.0],
                       ),
-                      const SizedBox(height: 16),
-                      _buildCreateTaskBanner(),
-                      const SizedBox(height: 16),
-                      Row(
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            CustomScrollView(
+              slivers: [
+                _buildSliverAppBar(),
+                SliverToBoxAdapter(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          const Color(0xFF0F172A).withValues(alpha: 0.0),
+                          const Color(0xFF0F172A),
+                        ],
+                        stops: const [0.0, 0.15],
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            flex: 5,
-                            child: _buildCompletedTasksCard(),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            flex: 4,
-                            child: Column(
-                              children: [
-                                _buildMiniCard('Upcoming Tasks', '${controller.upcomingTasksCount}'),
-                                const SizedBox(height: 16),
-                                _buildMiniCard('On-Going Tasks', '${controller.ongoingTasksCount}'),
-                              ],
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Progress',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              fontStyle: FontStyle.italic,
                             ),
                           ),
+                          const SizedBox(height: 16),
+                          _buildCreateTaskBanner(),
+                          const SizedBox(height: 16),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 5,
+                                child: _buildCompletedTasksCard(),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                flex: 4,
+                                child: Column(
+                                  children: [
+                                    _buildMiniCard('Upcoming Tasks', '${controller.upcomingTasksCount}'),
+                                    const SizedBox(height: 16),
+                                    _buildMiniCard('On-Going Tasks', '${controller.ongoingTasksCount}'),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          const Text(
+                            'All Tasks',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          _buildTaskList(),
+                          const SizedBox(height: 100),
                         ],
                       ),
-                      const SizedBox(height: 32),
-                      const Text(
-                        'All Tasks',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      _buildTaskList(),
-                      // Removed bottom padding since the Transform.translate(-100) shifts everything up by 100
-                    ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
           ],
         );
@@ -90,55 +132,23 @@ class TaskScreen extends GetView<TaskController> {
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
-      expandedHeight: 300, // Generous height to keep the image intact
-      backgroundColor: const Color(0xFF0F172A),
+      expandedHeight: 180,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
       pinned: true,
-      actions: [
-        const Padding(
-          padding: EdgeInsets.only(right: 24.0, top: 8.0),
-          child: CircleAvatar(
-            radius: 18,
-            backgroundImage: CachedNetworkImageProvider('https://images.unsplash.com/photo-1543852786-1cf6624b9987?q=80&w=200&auto=format&fit=crop'), // Placeholder leopard
+      flexibleSpace: const FlexibleSpaceBar(
+        background: Align(
+          alignment: Alignment.center,
+          child: Text(
+            'Ready To Elevate Your\nTask To Another Level?',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color(0xFFE2E8F0),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              fontStyle: FontStyle.italic,
+            ),
           ),
-        ),
-      ],
-      flexibleSpace: FlexibleSpaceBar(
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.network(
-              'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop', // Snowy mountain night
-              fit: BoxFit.cover,
-            ),
-            Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black45,
-                    Color(0xFF0F172A),
-                  ],
-                  stops: [0.0, 1.0],
-                ),
-              ),
-            ),
-            const Positioned(
-              top: 100,
-              left: 0,
-              right: 0,
-              child: Text(
-                'Ready To Elevate Your\nTask To Another Level?',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color(0xFFE2E8F0),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -150,7 +160,7 @@ class TaskScreen extends GetView<TaskController> {
         Get.to(() => const CreateTaskScreen())?.then((_) => controller.fetchTasks());
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: const Color(0xFF131B2F),
           borderRadius: BorderRadius.circular(16),
@@ -180,7 +190,7 @@ class TaskScreen extends GetView<TaskController> {
     final progress = total > 0 ? completed / total : 0.0;
     
     return Container(
-      height: 180,
+      height: 160,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xFF131B2F),
@@ -227,7 +237,7 @@ class TaskScreen extends GetView<TaskController> {
   Widget _buildMiniCard(String title, String subtitle) {
     return Container(
       width: double.infinity,
-      height: 82,
+      height: 72,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: const Color(0xFF131B2F),
@@ -262,6 +272,7 @@ class TaskScreen extends GetView<TaskController> {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
       itemCount: controller.tasks.length,
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
@@ -272,13 +283,11 @@ class TaskScreen extends GetView<TaskController> {
   }
 
   Widget _buildTaskTile(dynamic task) {
-    // Format deadline
     String formattedDate = 'Not set';
     if (task.deadline != null) {
       try {
         final date = DateTime.parse(task.deadline!);
         
-        // Format with ordinal suffix (st, nd, rd, th)
         String day = DateFormat('d').format(date.toLocal());
         String suffix = 'th';
         if (day.endsWith('1') && !day.endsWith('11')) {
@@ -293,23 +302,21 @@ class TaskScreen extends GetView<TaskController> {
       } catch (_) {}
     }
 
-    // Determine priority color
     Color priorityColor = Colors.grey;
     Color priorityBgColor = const Color(0xFF1E293B);
     String priorityText = task.priority ?? 'Low';
     
     if (priorityText.toUpperCase() == 'LOW') {
-      priorityColor = const Color(0xFF65A30D); // Green
-      priorityBgColor = const Color(0xFF1A2E20); // Dark Green
+      priorityColor = const Color(0xFF65A30D);
+      priorityBgColor = const Color(0xFF1A2E20);
     } else if (priorityText.toUpperCase() == 'NORMAL') {
-      priorityColor = const Color(0xFFEAB308); // Yellow
-      priorityBgColor = const Color(0xFF422006); // Dark Yellow/Brown
+      priorityColor = const Color(0xFFEAB308);
+      priorityBgColor = const Color(0xFF422006);
     } else if (priorityText.toUpperCase() == 'HIGH' || priorityText.toUpperCase() == 'URGENT') {
-      priorityColor = const Color(0xFFEF4444); // Red
-      priorityBgColor = const Color(0xFF450A0A); // Dark Red
+      priorityColor = const Color(0xFFEF4444);
+      priorityBgColor = const Color(0xFF450A0A);
     }
 
-    // Left indicator color (Orange in screenshot, maybe based on status)
     Color indicatorColor = task.status == 'COMPLETE' ? const Color(0xFF22C55E) : const Color(0xFFF97316);
 
     double progression = 0.0;
@@ -335,7 +342,6 @@ class TaskScreen extends GetView<TaskController> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Left side indicator
               Container(
                 width: 6,
                 height: 48,
@@ -392,11 +398,10 @@ class TaskScreen extends GetView<TaskController> {
                 ),
               ),
               const SizedBox(width: 12),
-              // Icon Container
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF131B2F), // Same as bg, using border to give depth
+                  color: const Color(0xFF131B2F),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: const Color(0xFF2A344A), width: 1.5),
                   boxShadow: [
@@ -416,11 +421,10 @@ class TaskScreen extends GetView<TaskController> {
             ],
           ),
           const SizedBox(height: 8),
-          // Progress bar track
           Container(
             height: 6,
             decoration: BoxDecoration(
-              color: const Color(0xFF1E293B), // Dark track
+              color: const Color(0xFF1E293B),
               borderRadius: BorderRadius.circular(3),
               border: Border.all(color: Colors.black.withValues(alpha: 0.5), width: 0.5),
             ),

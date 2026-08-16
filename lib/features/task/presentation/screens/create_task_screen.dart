@@ -59,23 +59,10 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
         children: [
           GestureDetector(
             onTap: () => Get.back(),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFF334155)),
-              ),
-              child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 16),
-            ),
+            child: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
           ),
           const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text('New Task', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-              Text('Step 1 of 2 - detail', style: TextStyle(color: Color(0xFFA0AAB2), fontSize: 12, fontStyle: FontStyle.italic)),
-            ],
-          ),
+          const Text('New Task', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
         ],
       ),
     );
