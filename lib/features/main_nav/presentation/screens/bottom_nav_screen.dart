@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -61,31 +62,36 @@ class BottomNavScreen extends GetView<MainNavController> {
               final visualIndex = _getVisualIndex(controller.currentIndex.value);
               return Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(40),
+                  borderRadius: BorderRadius.circular(35), // Radius 35
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 0.3), // White stroke inside
                   boxShadow: [
                     BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 5)),
                   ],
                 ),
                 child: ClipPath(
                   clipper: NavBarClipper(),
-                  child: CurvedNavigationBar(
-                    index: visualIndex,
-                    height: 60.0,
-                    items: <Widget>[
-                      Icon(Icons.home_filled, size: 28, color: visualIndex == 0 ? Colors.white : const Color(0xFFA0AAB2)),
-                      Icon(Icons.map_outlined, size: 28, color: visualIndex == 1 ? Colors.white : const Color(0xFFA0AAB2)),
-                      Icon(Icons.task, size: 28, color: visualIndex == 2 ? Colors.white : const Color(0xFFA0AAB2)),
-                      Icon(Icons.fitness_center, size: 28, color: visualIndex == 3 ? Colors.white : const Color(0xFFA0AAB2)),
-                      Icon(Icons.settings, size: 28, color: visualIndex == 4 ? Colors.white : const Color(0xFFA0AAB2)),
-                    ],
-                    color: const Color(0xFF1E1F22),
-                    backgroundColor: Colors.transparent,
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // Frost blur
+                    child: CurvedNavigationBar(
+                      index: visualIndex,
+                      height: 60.0,
+                      items: <Widget>[
+                        Icon(Icons.home_filled, size: 28, color: visualIndex == 0 ? Colors.white : const Color(0xFFA0AAB2)),
+                        Icon(Icons.map_outlined, size: 28, color: visualIndex == 1 ? Colors.white : const Color(0xFFA0AAB2)),
+                        Icon(Icons.task, size: 28, color: visualIndex == 2 ? Colors.white : const Color(0xFFA0AAB2)),
+                        Icon(Icons.fitness_center, size: 28, color: visualIndex == 3 ? Colors.white : const Color(0xFFA0AAB2)),
+                        Icon(Icons.settings, size: 28, color: visualIndex == 4 ? Colors.white : const Color(0xFFA0AAB2)),
+                      ],
+                      color: const Color(0xFFE8E8E8).withValues(alpha: 0.15), // E8E8E8 at 15%
+                      backgroundColor: Colors.transparent,
+                      buttonBackgroundColor: const Color(0xFF162341), // Dark circle for floating active item
                     animationCurve: Curves.easeInOut,
                     animationDuration: const Duration(milliseconds: 300),
                     onTap: (index) {
                       controller.changeTab(_getLogicIndex(index));
                     },
                     letIndexChange: (index) => true,
+                  ),
                   ),
                 ),
               );

@@ -12,6 +12,9 @@ class CreateTaskRequest {
   final String? parentActivityId;
   final String? priority;
   final bool? isRecurring;
+  final String? recurringType;
+  final int? recurringInterval;
+  final String? recurringEndDate;
   final List<int>? labelIds;
   final List<Map<String, String>> checklists;
   final List<Map<String, dynamic>>? reminders;
@@ -30,6 +33,9 @@ class CreateTaskRequest {
     this.parentActivityId,
     this.priority,
     this.isRecurring,
+    this.recurringType,
+    this.recurringInterval,
+    this.recurringEndDate,
     this.labelIds,
     required this.checklists,
     this.reminders,
@@ -50,6 +56,9 @@ class CreateTaskRequest {
       if (parentActivityId != null) 'parentActivityId': parentActivityId,
       if (priority != null) 'priority': priority,
       'isRecurring': isRecurring ?? false,
+      if (recurringType != null) 'recurringType': recurringType,
+      if (recurringInterval != null) 'recurringInterval': recurringInterval,
+      if (recurringEndDate != null) 'recurringEndDate': recurringEndDate,
       if (labelIds != null && labelIds!.isNotEmpty) 'labelIds': labelIds,
       if (checklists.isNotEmpty) 'checklists': checklists,
       if (reminders != null && reminders!.isNotEmpty) 'reminders': reminders,

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -97,9 +98,14 @@ class CreateTaskController extends BaseController {
       checklists: checklists,
       priority: priority.value,
       isRecurring: recurring,
+      recurringType: recurring ? repeatFrequency.value?.toUpperCase() : null,
+      recurringInterval: recurring ? 0 : null,
+      recurringEndDate: recurring && deadline.value != null ? DateFormat('yyyy-MM-dd').format(deadline.value!) : null,
       labelIds: selectedLabel.value != null ? [selectedLabel.value!.id] : [],
       reminders: remindersArray,
     );
+
+    debugPrint('Create Task Request: \n${const JsonEncoder.withIndent('  ').convert(request.toJson())}');
 
     await executeApi(
       apiCall: () => repository.createTask(request),

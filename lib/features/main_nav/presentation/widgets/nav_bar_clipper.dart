@@ -4,7 +4,7 @@ class NavBarClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    final double r = 24.0; // Corner radius
+    final double r = 35.0; // Corner radius
     
     // Start at top-left, just below the rounded corner
     path.moveTo(0, r);
