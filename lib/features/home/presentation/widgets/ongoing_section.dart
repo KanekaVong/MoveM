@@ -52,7 +52,7 @@ class OngoingSection extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               _buildOngoingCard(
-                'https://images.unsplash.com/photo-1600101487829-9e8550186173?q=80&w=600&auto=format&fit=crop', // Angkor Wat or sunrise
+                'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?q=80&w=600&auto=format&fit=crop', // Valid placeholder
                 const Color(0xFF9B5DE5),
                 Icons.flight,
                 'Trip Plans',
