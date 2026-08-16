@@ -7,4 +7,5 @@ import '../../data/dto/response/label_response.dart';
 abstract class TaskRepository {
   Future<ApiResult<TaskResponse>> createTask(CreateTaskRequest request);
   Future<ApiResult<List<LabelResponse>>> getLabels();
+  Future<ApiResult<List<TaskResponse>>> getTasks({Map<String, dynamic>? queryParameters});
 }

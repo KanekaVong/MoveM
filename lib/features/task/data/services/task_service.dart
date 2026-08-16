@@ -11,4 +11,8 @@ class TaskService {
   Future<Response> getLabels() async {
     return await dio.get('task-labels', options: Options(responseType: ResponseType.json));
   }
+
+  Future<Response> getTasks({Map<String, dynamic>? queryParameters}) async {
+    return await dio.get('tasks', queryParameters: queryParameters, options: Options(responseType: ResponseType.json));
+  }
 }

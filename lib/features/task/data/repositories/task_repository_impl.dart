@@ -38,4 +38,18 @@ class TaskRepositoryImpl implements TaskRepository {
       return ApiError(ApiException(message: e.toString()));
     }
   }
+
+  @override
+  Future<ApiResult<List<TaskResponse>>> getTasks({Map<String, dynamic>? queryParameters}) async {
+    try {
+      final response = await _service.getTasks(queryParameters: queryParameters);
+      final List<dynamic> data = response.data;
+      final tasks = data.map((json) => TaskResponse.fromJson(json)).toList();
+      return ApiSuccess(tasks);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
 }
