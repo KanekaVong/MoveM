@@ -25,57 +25,60 @@ class TaskScreen extends GetView<TaskController> {
           slivers: [
             _buildSliverAppBar(),
             SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Progress',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildCreateTaskBanner(),
-                    const SizedBox(height: 16),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 5,
-                          child: _buildCompletedTasksCard(),
+              child: Transform.translate(
+                offset: const Offset(0, -100), // Overlap content onto the image
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Progress',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          flex: 4,
-                          child: Column(
-                            children: [
-                              _buildMiniCard('Upcoming Tasks', '${controller.upcomingTasksCount}'),
-                              const SizedBox(height: 16),
-                              _buildMiniCard('On-Going Tasks', '${controller.ongoingTasksCount}'),
-                            ],
+                      ),
+                      const SizedBox(height: 16),
+                      _buildCreateTaskBanner(),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            flex: 5,
+                            child: _buildCompletedTasksCard(),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-                    const Text(
-                      'All Tasks',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic,
+                          const SizedBox(width: 16),
+                          Expanded(
+                            flex: 4,
+                            child: Column(
+                              children: [
+                                _buildMiniCard('Upcoming Tasks', '${controller.upcomingTasksCount}'),
+                                const SizedBox(height: 16),
+                                _buildMiniCard('On-Going Tasks', '${controller.ongoingTasksCount}'),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    _buildTaskList(),
-                    const SizedBox(height: 100), // Padding for bottom nav
-                  ],
+                      const SizedBox(height: 32),
+                      const Text(
+                        'All Tasks',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      _buildTaskList(),
+                      // Removed bottom padding since the Transform.translate(-100) shifts everything up by 100
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -87,7 +90,7 @@ class TaskScreen extends GetView<TaskController> {
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
-      expandedHeight: 180,
+      expandedHeight: 300, // Generous height to keep the image intact
       backgroundColor: const Color(0xFF0F172A),
       pinned: true,
       actions: [
@@ -120,8 +123,10 @@ class TaskScreen extends GetView<TaskController> {
                 ),
               ),
             ),
-            const Align(
-              alignment: Alignment.center,
+            const Positioned(
+              top: 100,
+              left: 0,
+              right: 0,
               child: Text(
                 'Ready To Elevate Your\nTask To Another Level?',
                 textAlign: TextAlign.center,
