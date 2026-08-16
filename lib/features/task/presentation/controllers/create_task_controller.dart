@@ -21,8 +21,9 @@ class CreateTaskController extends BaseController {
   final RxList<TextEditingController> checklistControllers = <TextEditingController>[].obs;
 
   // New fields
-  final RxString priority = 'URGENT'.obs;
+  final RxString priority = 'LOW'.obs;
   final RxBool isRecurring = false.obs;
+  final Rx<String?> repeatFrequency = Rx<String?>(null);
   final RxBool remindersEnabled = false.obs;
   
   final RxList<LabelResponse> availableLabels = <LabelResponse>[].obs;
@@ -51,10 +52,6 @@ class CreateTaskController extends BaseController {
     } else if (result is ApiError) {
       debugPrint('Failed to load labels: ${(result as ApiError).exception.message}');
     }
-  }
-
-  void toggleRecurring() {
-    isRecurring.value = !isRecurring.value;
   }
 
   void toggleReminders() {
@@ -89,14 +86,18 @@ class CreateTaskController extends BaseController {
       ];
     }
 
+    // Determine isRecurring based on repeatFrequency
+    final bool recurring = repeatFrequency.value != null;
+
     final request = CreateTaskRequest(
       activityName: activityName,
       description: description,
+      startActivity: deadlineStr, // Set start to same as deadline to avoid 400
       deadline: deadlineStr,
       checklists: checklists,
       priority: priority.value,
-      isRecurring: isRecurring.value,
-      labelIds: selectedLabel.value != null ? [selectedLabel.value!.id] : null,
+      isRecurring: recurring,
+      labelIds: selectedLabel.value != null ? [selectedLabel.value!.id] : [],
       reminders: remindersArray,
     );
 

@@ -160,31 +160,19 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
             }).toList(),
           )),
           const SizedBox(height: 24),
-          GestureDetector(
-            onTap: () => controller.toggleRecurring(),
-            child: Obx(() => _buildPropertyRow(
-              'REPEAT', 
-              controller.isRecurring.value ? 'Yes' : 'No', 
-              Icons.repeat,
-            )),
-          ),
           const SizedBox(height: 24),
-          GestureDetector(
-            onTap: () => _showPriorityPicker(),
-            child: Obx(() => _buildPropertyRow(
-              'PRIORITY', 
-              controller.priority.value, 
-              Icons.flag_outlined,
-            )),
-          ),
+          _buildRepeatDropdown(),
           const SizedBox(height: 24),
-          GestureDetector(
-            onTap: () => _showLabelPicker(),
-            child: Obx(() => _buildPropertyRow(
-              'LABEL', 
-              controller.selectedLabel.value?.name ?? 'Select Label', 
-              Icons.label_outline,
-            )),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _buildPriorityDropdown(),
+              ),
+              Expanded(
+                child: _buildLabelDropdown(),
+              ),
+            ],
           ),
           const SizedBox(height: 32),
           GestureDetector(
@@ -211,70 +199,204 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
     );
   }
 
-  void _showPriorityPicker() {
-    Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Color(0xFF131B2F),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Select Priority', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            ...['URGENT', 'HIGH', 'NORMAL', 'LOW'].map((p) => ListTile(
-              title: Text(p, style: const TextStyle(color: Colors.white)),
-              onTap: () {
-                controller.priority.value = p;
-                Get.back();
-              },
-            )),
-          ],
-        ),
+  Widget _buildRepeatDropdown() {
+    return PopupMenuButton<String>(
+      onSelected: (value) => controller.repeatFrequency.value = value,
+      offset: const Offset(0, 40),
+      color: const Color(0xFF131B2F),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Color(0xFF334155)),
+      ),
+      itemBuilder: (context) => ['Daily', 'Weekly', 'Monthly', 'Yearly']
+          .map((choice) => PopupMenuItem<String>(
+                value: choice,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(choice, style: const TextStyle(color: Colors.white, fontSize: 14)),
+                    const SizedBox(height: 8),
+                    Container(height: 1, color: const Color(0xFF334155)),
+                  ],
+                ),
+              ))
+          .toList(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('REPEAT', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Obx(() => Text(
+                controller.repeatFrequency.value ?? '', 
+                style: const TextStyle(color: Color(0xFF475569), fontSize: 14, fontStyle: FontStyle.italic)
+              )),
+              const Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 24),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Container(height: 1, color: Colors.white),
+        ],
       ),
     );
   }
 
-  void _showLabelPicker() {
-    Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Color(0xFF131B2F),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Select Label', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            Obx(() {
-              if (controller.availableLabels.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text('No labels found.', style: TextStyle(color: Colors.white54)),
-                );
-              }
-              return Column(
-                children: controller.availableLabels.map((l) => ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Color(int.parse(l.color.replaceFirst('#', '0xFF'))),
-                    radius: 12,
+  Widget _buildPriorityDropdown() {
+    return PopupMenuButton<String>(
+      onSelected: (value) => controller.priority.value = value,
+      offset: const Offset(0, 30),
+      color: const Color(0xFF131B2F),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Color(0xFF334155)),
+      ),
+      itemBuilder: (context) => ['URGENT', 'HIGH', 'NORMAL', 'LOW']
+          .map((choice) => PopupMenuItem<String>(
+                value: choice,
+                child: Text(choice, style: const TextStyle(color: Colors.white)),
+              ))
+          .toList(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: const [
+              Text('PRIORITY', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+              Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 16),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Obx(() {
+            Color pillColor = Colors.grey;
+            if (controller.priority.value == 'LOW') pillColor = const Color(0xFF86EFAC);
+            if (controller.priority.value == 'NORMAL') pillColor = const Color(0xFFFDE047);
+            if (controller.priority.value == 'HIGH') pillColor = const Color(0xFFFCA5A5);
+            if (controller.priority.value == 'URGENT') pillColor = const Color(0xFFEF4444);
+
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              decoration: BoxDecoration(
+                color: pillColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                controller.priority.value,
+                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLabelDropdown() {
+    return PopupMenuButton<dynamic>(
+      onSelected: (value) {
+        if (value != 'CREATE') {
+          controller.selectedLabel.value = value;
+        } else {
+          // Handle create label logic if necessary, or just ignore for now
+        }
+      },
+      offset: const Offset(0, 30),
+      color: const Color(0xFF131B2F),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Color(0xFF334155)),
+      ),
+      itemBuilder: (context) {
+        List<PopupMenuEntry<dynamic>> items = controller.availableLabels.map((l) {
+          final color = Color(int.parse(l.color.replaceFirst('#', '0xFF')));
+          return PopupMenuItem<dynamic>(
+            value: l,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(l.name, style: const TextStyle(color: Colors.white, fontSize: 12)),
+                  Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
-                  title: Text(l.name, style: const TextStyle(color: Colors.white)),
-                  onTap: () {
-                    controller.selectedLabel.value = l;
-                    Get.back();
-                  },
-                )).toList(),
+                ],
+              ),
+            ),
+          );
+        }).toList();
+
+        // Add create button at bottom
+        items.add(
+          PopupMenuItem<dynamic>(
+            value: 'CREATE',
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF334155),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Center(
+                child: Text('Create Label', style: TextStyle(color: Colors.white, fontSize: 12, fontStyle: FontStyle.italic)),
+              ),
+            ),
+          ),
+        );
+
+        return items;
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: const [
+              Text('LABEL', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+              Icon(Icons.add, color: Colors.white, size: 16),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Obx(() {
+            if (controller.selectedLabel.value == null) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF334155),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  'Select Label',
+                  style: TextStyle(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold),
+                ),
               );
-            }),
-          ],
-        ),
+            }
+            
+            final l = controller.selectedLabel.value!;
+            final color = Color(int.parse(l.color.replaceFirst('#', '0xFF')));
+            
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                l.name,
+                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+              ),
+            );
+          }),
+        ],
       ),
     );
   }
