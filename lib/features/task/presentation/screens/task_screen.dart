@@ -87,7 +87,7 @@ class TaskScreen extends GetView<TaskController> {
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
-      expandedHeight: 280,
+      expandedHeight: 180,
       backgroundColor: const Color(0xFF0F172A),
       pinned: true,
       actions: [
@@ -120,20 +120,16 @@ class TaskScreen extends GetView<TaskController> {
                 ),
               ),
             ),
-            const Positioned(
-              top: 100,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Text(
-                  'Ready To Elevate Your\nTask To Another Level?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFFE2E8F0),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    fontStyle: FontStyle.italic,
-                  ),
+            const Align(
+              alignment: Alignment.center,
+              child: Text(
+                'Ready To Elevate Your\nTask To Another Level?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xFFE2E8F0),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  fontStyle: FontStyle.italic,
                 ),
               ),
             ),
