@@ -322,7 +322,7 @@ class TaskScreen extends GetView<TaskController> {
     int progressionPercent = (progression * 100).toInt();
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 12),
       decoration: BoxDecoration(
         color: const Color(0xFF131B2F),
         borderRadius: BorderRadius.circular(16),
