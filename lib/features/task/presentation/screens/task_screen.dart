@@ -107,7 +107,6 @@ class TaskScreen extends GetView<TaskController> {
               'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop', // Snowy mountain night
               fit: BoxFit.cover,
             ),
-            // Gradient overlay to blend into background
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -200,7 +199,7 @@ class TaskScreen extends GetView<TaskController> {
                 fit: StackFit.expand,
                 children: [
                   CircularProgressIndicator(
-                    value: progress, // Dynamic progress
+                    value: progress,
                     strokeWidth: 8,
                     backgroundColor: const Color(0xFF1E293B),
                     valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF3B82F6)),
@@ -415,7 +414,7 @@ class TaskScreen extends GetView<TaskController> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           // Progress bar track
           Container(
             height: 6,
@@ -442,7 +441,7 @@ class TaskScreen extends GetView<TaskController> {
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
             'Progression : $progressionPercent%',
             style: const TextStyle(
