@@ -7,6 +7,7 @@ import '../../../../shared/base/base_controller.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../data/dto/request/create_task_request.dart';
 import '../../data/dto/response/label_response.dart';
+import '../../data/dto/response/task_response.dart';
 import '../../data/services/task_service.dart';
 import '../../data/repositories/task_repository_impl.dart';
 
@@ -59,6 +60,19 @@ class CreateTaskController extends BaseController {
     remindersEnabled.value = !remindersEnabled.value;
   }
 
+  Future<void> createLabel(String name, String color) async {
+    final formattedColor = color.startsWith('#') ? color : '#$color';
+    await executeApi<LabelResponse>(
+      apiCall: () => repository.createLabel(name, formattedColor),
+      onSuccess: (data) {
+        availableLabels.add(data);
+        selectedLabel.value = data;
+        Get.back(); // close dialog
+        Get.snackbar('Success', 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+      },
+    );
+  }
+
   Future<void> submitTask() async {
     if (titleController.text.trim().isEmpty) {
       Get.snackbar('Error', 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
@@ -95,7 +109,7 @@ class CreateTaskController extends BaseController {
       description: description,
       startActivity: deadlineStr, // Set start to same as deadline to avoid 400
       deadline: deadlineStr,
-      checklists: checklists,
+      checklists: const [], // BYPASS BACKEND BUG: Do not send checklists in the initial payload
       priority: priority.value,
       isRecurring: recurring,
       recurringType: recurring ? repeatFrequency.value?.toUpperCase() : null,
@@ -107,11 +121,18 @@ class CreateTaskController extends BaseController {
 
     debugPrint('Create Task Request: \n${const JsonEncoder.withIndent('  ').convert(request.toJson())}');
 
-    await executeApi(
+    await executeApi<TaskResponse>(
       apiCall: () => repository.createTask(request),
       onSuccess: (data) {
+        Get.back(result: true); // Go back to the previous screen immediately
         Get.snackbar('Success', 'Task created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
-        Get.back(); // Go back to the previous screen
+        
+        // Add checklist items sequentially via the separate API in the background
+        if (checklists.isNotEmpty) {
+          for (var item in checklists) {
+            repository.addChecklistItem(data.activityId, item); // No await, run in background
+          }
+        }
       },
     );
   }

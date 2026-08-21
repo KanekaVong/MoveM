@@ -1,3 +1,7 @@
+import 'checklist_response.dart';
+import 'reminder_response.dart';
+import 'label_response.dart';
+
 class TaskResponse {
   final String activityId;
   final String activityName;
@@ -10,7 +14,10 @@ class TaskResponse {
   final double checklistProgress;
   final String? priority;
   final bool recurring;
-  final List<dynamic>? labels; // Keep as dynamic for now, can map to LabelResponse if needed
+  final String? recurringType;
+  final List<LabelResponse>? labels;
+  final List<ChecklistResponse>? checklists;
+  final List<ReminderResponse>? reminders;
 
   TaskResponse({
     required this.activityId,
@@ -24,7 +31,10 @@ class TaskResponse {
     this.checklistProgress = 0.0,
     this.priority,
     this.recurring = false,
+    this.recurringType,
     this.labels,
+    this.checklists,
+    this.reminders,
   });
 
   factory TaskResponse.fromJson(Map<String, dynamic> json) {
@@ -39,8 +49,17 @@ class TaskResponse {
       completedChecklistItems: json['completedChecklistItems'] ?? 0,
       checklistProgress: (json['checklistProgress'] ?? 0.0).toDouble(),
       priority: json['priority'],
-      recurring: json['recurring'] ?? false,
-      labels: json['labels'],
+      recurring: json['recurring'] ?? json['isRecurring'] ?? false,
+      recurringType: json['recurringType'],
+      labels: json['labels'] != null 
+          ? (json['labels'] as List).map((e) => LabelResponse.fromJson(e)).toList() 
+          : null,
+      checklists: json['checklists'] != null 
+          ? (json['checklists'] as List).map((e) => ChecklistResponse.fromJson(e)).toList() 
+          : null,
+      reminders: json['reminders'] != null 
+          ? (json['reminders'] as List).map((e) => ReminderResponse.fromJson(e)).toList() 
+          : null,
     );
   }
 }

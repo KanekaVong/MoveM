@@ -6,6 +6,7 @@ class FriendSuggestionTile extends StatelessWidget {
   final String name;
   final String username;
   final VoidCallback onAdd;
+  final VoidCallback? onCancel;
   final String? friendStatus;
 
   const FriendSuggestionTile({
@@ -14,6 +15,7 @@ class FriendSuggestionTile extends StatelessWidget {
     required this.name,
     required this.username,
     required this.onAdd,
+    this.onCancel,
     this.friendStatus,
   });
 
@@ -46,14 +48,24 @@ class FriendSuggestionTile extends StatelessWidget {
             ),
           ),
           if (friendStatus == 'PENDING_REQUEST' || friendStatus == 'PENDING')
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E293B).withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFF1E293B)),
+            GestureDetector(
+              onTap: onCancel,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B).withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFF1E293B)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.close, color: Color(0xFFEF4444), size: 14),
+                    const SizedBox(width: 4),
+                    const Text('Cancel', style: TextStyle(color: Color(0xFFEF4444), fontSize: 12, fontWeight: FontWeight.bold)),
+                  ],
+                ),
               ),
-              child: const Text('Pending', style: TextStyle(color: Color(0xFFA0AAB2), fontSize: 12, fontWeight: FontWeight.bold)),
             )
           else if (friendStatus == 'ACCEPTED' || friendStatus == 'FRIEND')
             Container(

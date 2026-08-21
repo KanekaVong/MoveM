@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../data/dto/response/dashboard_response.dart';
 
 class HomeHeader extends StatelessWidget {
-  const HomeHeader({super.key});
+  final List<RecentActivityItem>? recentActivities;
+
+  const HomeHeader({super.key, this.recentActivities});
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +33,11 @@ class HomeHeader extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Stay Active Today!',
-              style: TextStyle(
+            Text(
+              recentActivities != null && recentActivities!.isNotEmpty
+                  ? (recentActivities!.first.message ?? 'Stay Active Today!')
+                  : 'Stay Active Today!',
+              style: const TextStyle(
                 color: Color(0xFFE2E8F0),
                 fontSize: 16,
               ),

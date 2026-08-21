@@ -35,4 +35,8 @@ class FriendsService {
   Future<Response> rejectFriendRequest(int requestId) async {
     return await dio.put('friends/requests/$requestId/reject', options: Options(responseType: ResponseType.plain));
   }
+
+  Future<Response> cancelFriendRequest(int requestId) async {
+    return await dio.delete('friends/friend-requests/$requestId', options: Options(responseType: ResponseType.plain));
+  }
 }

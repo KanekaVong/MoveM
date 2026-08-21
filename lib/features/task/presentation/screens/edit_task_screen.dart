@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/create_task_controller.dart';
+import '../controllers/edit_task_controller.dart';
 
-class CreateTaskScreen extends GetView<CreateTaskController> {
-  const CreateTaskScreen({super.key});
+class EditTaskScreen extends GetView<EditTaskController> {
+  const EditTaskScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Get.put(CreateTaskController());
+    Get.put(EditTaskController());
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
@@ -36,7 +36,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(24.0),
         child: ElevatedButton(
-          onPressed: () => controller.submitTask(),
+          onPressed: () => controller.saveChanges(),
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF1E293B),
             foregroundColor: Colors.white,
@@ -115,9 +115,9 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
           ),
           const SizedBox(height: 16),
           Obx(() => Column(
-            children: controller.checklistControllers.asMap().entries.map((entry) {
+            children: controller.checklists.asMap().entries.map((entry) {
               final index = entry.key;
-              final textController = entry.value;
+              final textController = entry.value['controller'] as TextEditingController;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: Row(

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../data/dto/response/dashboard_response.dart';
 
 class DashboardSummaryGrid extends StatelessWidget {
-  const DashboardSummaryGrid({super.key});
+  final TaskStatistics? taskStats;
+
+  const DashboardSummaryGrid({super.key, this.taskStats});
 
   @override
   Widget build(BuildContext context) {
@@ -277,12 +280,12 @@ class DashboardSummaryGrid extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Create New Tasks', style: TextStyle(color: Colors.white, fontSize: 12), overflow: TextOverflow.ellipsis),
-                      Text('No Due Date', style: TextStyle(color: Color(0xFFA0AAB2), fontSize: 10), overflow: TextOverflow.ellipsis),
+                      const Text('Tasks Overview', style: TextStyle(color: Colors.white, fontSize: 12), overflow: TextOverflow.ellipsis),
+                      Text('${taskStats?.activeTasks ?? 0} Active, ${taskStats?.completedTasks ?? 0} Completed', style: const TextStyle(color: Color(0xFFA0AAB2), fontSize: 10), overflow: TextOverflow.ellipsis),
                     ],
                   ),
                 ),

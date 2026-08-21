@@ -159,4 +159,17 @@ class FriendsRepositoryImpl implements FriendsRepository {
       return ApiError(ApiException(message: e.toString()));
     }
   }
+
+  @override
+  Future<ApiResult<String>> cancelFriendRequest(int requestId) async {
+    try {
+      _logger.i('Calling DELETE api/friends/friend-requests/$requestId');
+      final response = await friendsService.cancelFriendRequest(requestId);
+      return ApiSuccess(_parseSuccessMessage(response.data));
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
 }

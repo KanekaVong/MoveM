@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../data/dto/response/dashboard_response.dart';
 
 class TodaysProgressCard extends StatelessWidget {
-  const TodaysProgressCard({super.key});
+  final FitnessStatistics? fitnessStats;
+
+  const TodaysProgressCard({super.key, this.fitnessStats});
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +26,11 @@ class TodaysProgressCard extends StatelessWidget {
           const SizedBox(height: 20),
           Row(
             children: [
-              Expanded(child: _buildProgressStat(Icons.check_box, const Color(0xFF4C8DB3), '0 / 0', 'Task Completed', 0.0)),
+              Expanded(child: _buildProgressStat(Icons.check_box, const Color(0xFF4C8DB3), '${fitnessStats?.workoutsToday ?? 0} / ${fitnessStats?.workoutsThisWeek ?? 0}', 'Workouts (Today/Week)', 0.0)),
               Container(width: 1, height: 60, color: const Color(0xFF1E293B), margin: const EdgeInsets.symmetric(horizontal: 10)),
-              Expanded(child: _buildProgressStat(Icons.directions_run, const Color(0xFFE28743), '0 / 5000', 'Steps', 0.0)),
+              Expanded(child: _buildProgressStat(Icons.directions_run, const Color(0xFFE28743), '${fitnessStats?.stepsToday ?? 0} / 5000', 'Steps Today', 0.0)),
               Container(width: 1, height: 60, color: const Color(0xFF1E293B), margin: const EdgeInsets.symmetric(horizontal: 10)),
-              Expanded(child: _buildProgressStat(Icons.flight, const Color(0xFF9B5DE5), '0', 'Days Until Your Trip', 0.0)),
+              Expanded(child: _buildProgressStat(Icons.local_fire_department, const Color(0xFF9B5DE5), '${fitnessStats?.caloriesToday?.toStringAsFixed(0) ?? 0}', 'Calories', 0.0)),
             ],
           ),
           const SizedBox(height: 24),

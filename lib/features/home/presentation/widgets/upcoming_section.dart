@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../data/dto/response/dashboard_response.dart';
 
 class UpcomingSection extends StatelessWidget {
-  const UpcomingSection({super.key});
+  final List<DashboardTaskItem>? tasks;
+
+  const UpcomingSection({super.key, this.tasks});
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +49,21 @@ class UpcomingSection extends StatelessWidget {
               ),
               Column(
                 children: [
-                  _buildUpcomingItem(Icons.assignment, const Color(0xFF4C8DB3), 'No Due Date', 'No Task Yet', 'Task'),
-                  const Divider(color: Color(0xFF1E293B), indent: 40),
-                  _buildUpcomingItem(Icons.fitness_center, const Color(0xFFE28743), 'No Date', 'No Challenges', 'Fitness'),
-                  const Divider(color: Color(0xFF1E293B), indent: 40),
-                  _buildUpcomingItem(Icons.luggage, const Color(0xFF9B5DE5), 'No Date', 'No Trip Plan', 'Trips'),
+                  if (tasks != null && tasks!.isNotEmpty)
+                    ...tasks!.take(3).map((task) => Column(
+                      children: [
+                        _buildUpcomingItem(Icons.assignment, const Color(0xFF4C8DB3), task.deadline ?? 'No Due Date', task.activityName, 'Task'),
+                        if (task != tasks!.take(3).last)
+                          const Divider(color: Color(0xFF1E293B), indent: 40),
+                      ],
+                    )).toList()
+                  else ...[
+                    _buildUpcomingItem(Icons.assignment, const Color(0xFF4C8DB3), 'No Due Date', 'No Task Yet', 'Task'),
+                    const Divider(color: Color(0xFF1E293B), indent: 40),
+                    _buildUpcomingItem(Icons.fitness_center, const Color(0xFFE28743), 'No Date', 'No Challenges', 'Fitness'),
+                    const Divider(color: Color(0xFF1E293B), indent: 40),
+                    _buildUpcomingItem(Icons.luggage, const Color(0xFF9B5DE5), 'No Date', 'No Trip Plan', 'Trips'),
+                  ],
                 ],
               ),
             ],

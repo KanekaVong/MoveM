@@ -116,6 +116,34 @@ class FriendsController extends BaseController {
     );
   }
 
+  Future<void> cancelRequest(String username) async {
+    try {
+      final request = outgoingRequests.firstWhere((req) => req.receiverUsername == username);
+      await executeApi(
+        apiCall: () => repository.cancelFriendRequest(request.requestId),
+        onSuccess: (data) {
+          outgoingRequests.removeWhere((req) => req.requestId == request.requestId);
+          
+          final index = searchResults.indexWhere((user) => user.username == username);
+          if (index != -1) {
+            final user = searchResults[index];
+            searchResults[index] = FriendResponse(
+              userId: user.userId,
+              username: user.username,
+              firstname: user.firstname,
+              lastname: user.lastname,
+              profilePic: user.profilePic,
+              friendStatus: null,
+            );
+          }
+        },
+      );
+    } catch (e) {
+      // firstWhere throws StateError if no element is found.
+      Get.snackbar('Error', 'Unable to cancel request. Please try again later.');
+    }
+  }
+
   Future<void> deleteFriend(int friendId) async {
     await executeApi(
       apiCall: () => repository.deleteFriend(friendId),

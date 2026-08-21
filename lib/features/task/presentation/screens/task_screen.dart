@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../controllers/task_controller.dart';
 import 'create_task_screen.dart';
+import 'task_detail_screen.dart';
 
 class TaskScreen extends GetView<TaskController> {
   const TaskScreen({super.key});
@@ -329,133 +330,138 @@ class TaskScreen extends GetView<TaskController> {
     }
     int progressionPercent = (progression * 100).toInt();
 
-    return Container(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF131B2F),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF1E293B)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 6,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: indicatorColor,
-                  borderRadius: BorderRadius.circular(4),
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => TaskDetailScreen(activityId: task.activityId))?.then((_) => controller.fetchTasks());
+      },
+      child: Container(
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF131B2F),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFF1E293B)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 6,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: indicatorColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      task.activityName,
-                      style: TextStyle(
-                        color: task.status == 'COMPLETE' ? const Color(0xFFA0AAB2) : Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        fontStyle: FontStyle.italic,
-                        decoration: task.status == 'COMPLETE' ? TextDecoration.lineThrough : null,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        task.activityName,
+                        style: TextStyle(
+                          color: task.status == 'COMPLETE' ? const Color(0xFFA0AAB2) : Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          fontStyle: FontStyle.italic,
+                          decoration: task.status == 'COMPLETE' ? TextDecoration.lineThrough : null,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: priorityBgColor,
-                            borderRadius: BorderRadius.circular(12),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: priorityBgColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              priorityText.toLowerCase().capitalizeFirst ?? priorityText,
+                              style: TextStyle(
+                                color: priorityColor,
+                                fontSize: 12,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
                           ),
-                          child: Text(
-                            priorityText.toLowerCase().capitalizeFirst ?? priorityText,
-                            style: TextStyle(
-                              color: priorityColor,
+                          const SizedBox(width: 12),
+                          Text(
+                            'Dateline : $formattedDate',
+                            style: const TextStyle(
+                              color: Colors.white,
                               fontSize: 12,
                               fontStyle: FontStyle.italic,
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Dateline : $formattedDate',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF131B2F),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF2A344A), width: 1.5),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    )
-                  ],
-                ),
-                child: const Icon(
-                  Icons.assignment_outlined,
-                  color: Color(0xFF3B82F6),
-                  size: 24,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Container(
-            height: 6,
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
-              borderRadius: BorderRadius.circular(3),
-              border: Border.all(color: Colors.black.withValues(alpha: 0.5), width: 0.5),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: progressionPercent,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3B82F6),
-                      borderRadius: BorderRadius.circular(3),
-                    ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                Expanded(
-                  flex: 100 - progressionPercent,
-                  child: const SizedBox(),
+                const SizedBox(width: 12),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF131B2F),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFF2A344A), width: 1.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      )
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.assignment_outlined,
+                    color: Color(0xFF3B82F6),
+                    size: 24,
+                  ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Progression : $progressionPercent%',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontStyle: FontStyle.italic,
+            const SizedBox(height: 8),
+            Container(
+              height: 6,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E293B),
+                borderRadius: BorderRadius.circular(3),
+                border: Border.all(color: Colors.black.withValues(alpha: 0.5), width: 0.5),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: progressionPercent,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3B82F6),
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 100 - progressionPercent,
+                    child: const SizedBox(),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 4),
+            Text(
+              'Progression : $progressionPercent%',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

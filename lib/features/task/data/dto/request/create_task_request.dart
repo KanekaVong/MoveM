@@ -45,7 +45,7 @@ class CreateTaskRequest {
     return {
       'activityName': activityName,
       'description': description,
-      'startActivity': startActivity ?? deadline, // Fallback to deadline if null
+      if (startActivity != null || deadline != null) 'startActivity': startActivity ?? deadline,
       if (deadline != null) 'deadline': deadline,
       if (locationName != null) 'locationName': locationName,
       if (locationAddress != null) 'locationAddress': locationAddress,

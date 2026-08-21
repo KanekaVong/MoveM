@@ -21,7 +21,7 @@ class FriendRequestResponse {
 
   factory FriendRequestResponse.fromJson(Map<String, dynamic> json) {
     return FriendRequestResponse(
-      requestId: json['requestId'] ?? 0,
+      requestId: json['requestId'] ?? json['id'] ?? 0,
       senderId: json['senderId'] ?? 0,
       senderUsername: json['senderUsername'] ?? '',
       senderProfilePic: json['senderProfilePic'] ?? '',

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../controllers/home_controller.dart';
 import '../widgets/home_header.dart';
 import '../widgets/todays_progress_card.dart';
 import '../widgets/ongoing_section.dart';
@@ -6,7 +8,7 @@ import '../widgets/upcoming_section.dart';
 import '../widgets/quick_actions_grid.dart';
 import '../widgets/dashboard_summary_grid.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
 
   @override
@@ -14,26 +16,40 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A), // Dark navy background
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const HomeHeader(),
-              const SizedBox(height: 32),
-              const TodaysProgressCard(),
-              const SizedBox(height: 32),
-              const OngoingSection(),
-              const SizedBox(height: 32),
-              const UpcomingSection(),
-              const SizedBox(height: 32),
-              const QuickActionsGrid(),
-              const SizedBox(height: 32),
-              const DashboardSummaryGrid(),
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
+        child: Obx(() {
+          if (controller.isLoading && controller.dashboardData.value == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final data = controller.dashboardData.value;
+          if (data == null) {
+            return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => controller.fetchDashboard(),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  HomeHeader(recentActivities: data.recentActivities),
+                  const SizedBox(height: 32),
+                  TodaysProgressCard(fitnessStats: data.fitnessStatistics),
+                  const SizedBox(height: 32),
+                  OngoingSection(tasks: data.dueToday), // Use dueToday for ongoing for now
+                  const SizedBox(height: 32),
+                  UpcomingSection(tasks: data.upcomingTasks),
+                  const SizedBox(height: 32),
+                  const QuickActionsGrid(),
+                  const SizedBox(height: 32),
+                  DashboardSummaryGrid(taskStats: data.statistics),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          );
+        }),
       ),
     );
   }

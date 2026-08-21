@@ -12,4 +12,5 @@ abstract class FriendsRepository {
   Future<ApiResult<String>> sendFriendRequest(String username);
   Future<ApiResult<String>> acceptFriendRequest(int requestId);
   Future<ApiResult<String>> rejectFriendRequest(int requestId);
+  Future<ApiResult<String>> cancelFriendRequest(int requestId);
 }

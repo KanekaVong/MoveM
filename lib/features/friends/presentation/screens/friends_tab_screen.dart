@@ -106,6 +106,7 @@ class FriendsTabScreen extends GetView<FriendsController> {
                   username: '@${user.username}',
                   friendStatus: user.friendStatus,
                   onAdd: () => controller.sendRequest(user.username),
+                  onCancel: () => controller.cancelRequest(user.username),
                 ),
                 if (!isLast) const Divider(color: Color(0xFF1E293B)),
               ],
