@@ -46,7 +46,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
             ),
             elevation: 0,
           ),
-          child: const Text('Continue', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          child: const Text('Create Task', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         ),
       ),
     );
@@ -62,7 +62,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
             child: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
           ),
           const SizedBox(width: 16),
-          const Text('New Task', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+          const Text('Create Task', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
         ],
       ),
     );

@@ -271,21 +271,33 @@ class DashboardSummaryGrid extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                Container(
-                  width: 16,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFA0AAB2)),
+                SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        value: (taskStats?.completionRate ?? 0) > 1.0 
+                             ? (taskStats?.completionRate ?? 0) / 100 
+                             : (taskStats?.completionRate ?? 0),
+                        strokeWidth: 3,
+                        color: const Color(0xFF9B5DE5),
+                        backgroundColor: const Color(0xFF1E293B),
+                      ),
+                      Icon(Icons.task_alt, size: 14, color: const Color(0xFFA0AAB2).withValues(alpha: 0.5)),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Tasks Overview', style: TextStyle(color: Colors.white, fontSize: 12), overflow: TextOverflow.ellipsis),
-                      Text('${taskStats?.activeTasks ?? 0} Active, ${taskStats?.completedTasks ?? 0} Completed', style: const TextStyle(color: Color(0xFFA0AAB2), fontSize: 10), overflow: TextOverflow.ellipsis),
+                      Text('${taskStats?.activeTasks ?? 0} Active • ${taskStats?.completedTasks ?? 0} Done', style: const TextStyle(color: Color(0xFFA0AAB2), fontSize: 10), overflow: TextOverflow.ellipsis),
+                      if ((taskStats?.overdueTasks ?? 0) > 0)
+                        Text('${taskStats!.overdueTasks} Overdue', style: const TextStyle(color: Colors.redAccent, fontSize: 10), overflow: TextOverflow.ellipsis),
                     ],
                   ),
                 ),

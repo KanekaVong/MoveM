@@ -12,11 +12,11 @@ class NavBarClipper extends CustomClipper<Path> {
     // Top-left rounded corner
     path.arcToPoint(Offset(r, 0), radius: Radius.circular(r));
     
-    // Go UP to include the floating button space
-    path.lineTo(r, -60);
-    path.lineTo(size.width - r, -60);
-    
-    // Come back DOWN to the top edge for the top-right corner
+    // Expand left, up, right, and down to give plenty of room for the floating button without clipping it
+    path.lineTo(-50, 0);
+    path.lineTo(-50, -100);
+    path.lineTo(size.width + 50, -100);
+    path.lineTo(size.width + 50, 0);
     path.lineTo(size.width - r, 0);
     
     // Top-right rounded corner

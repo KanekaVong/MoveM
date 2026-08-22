@@ -7,6 +7,7 @@ import '../widgets/ongoing_section.dart';
 import '../widgets/upcoming_section.dart';
 import '../widgets/quick_actions_grid.dart';
 import '../widgets/dashboard_summary_grid.dart';
+import '../widgets/reminders_section.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
@@ -26,27 +27,28 @@ class HomeScreen extends GetView<HomeController> {
             return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
           }
 
-          return RefreshIndicator(
-            onRefresh: () => controller.fetchDashboard(),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  HomeHeader(recentActivities: data.recentActivities),
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                HomeHeader(recentActivities: data.recentActivities),
+                const SizedBox(height: 32),
+                TodaysProgressCard(fitnessStats: data.fitnessStatistics),
+                const SizedBox(height: 32),
+                OngoingSection(tasks: data.dueToday, fitnessStats: data.fitnessStatistics), // Use dueToday for ongoing for now
+                const SizedBox(height: 32),
+                UpcomingSection(tasks: data.upcomingTasks),
+                const SizedBox(height: 32),
+                if (data.upcomingReminders != null && data.upcomingReminders!.isNotEmpty) ...[
+                  RemindersSection(reminders: data.upcomingReminders!),
                   const SizedBox(height: 32),
-                  TodaysProgressCard(fitnessStats: data.fitnessStatistics),
-                  const SizedBox(height: 32),
-                  OngoingSection(tasks: data.dueToday), // Use dueToday for ongoing for now
-                  const SizedBox(height: 32),
-                  UpcomingSection(tasks: data.upcomingTasks),
-                  const SizedBox(height: 32),
-                  const QuickActionsGrid(),
-                  const SizedBox(height: 32),
-                  DashboardSummaryGrid(taskStats: data.statistics),
-                  const SizedBox(height: 24),
                 ],
-              ),
+                const QuickActionsGrid(),
+                const SizedBox(height: 32),
+                DashboardSummaryGrid(taskStats: data.statistics),
+                const SizedBox(height: 24),
+              ],
             ),
           );
         }),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../data/dto/response/dashboard_response.dart';
 
 class UpcomingSection extends StatelessWidget {
@@ -50,20 +51,23 @@ class UpcomingSection extends StatelessWidget {
               Column(
                 children: [
                   if (tasks != null && tasks!.isNotEmpty)
-                    ...tasks!.take(3).map((task) => Column(
-                      children: [
-                        _buildUpcomingItem(Icons.assignment, const Color(0xFF4C8DB3), task.deadline ?? 'No Due Date', task.activityName, 'Task'),
-                        if (task != tasks!.take(3).last)
+                    ...tasks!.take(5).toList().asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final task = entry.value;
+                      return Column(
+                        children: [
+                          _buildUpcomingItem(Icons.assignment, const Color(0xFF4C8DB3), _formatDate(task.deadline), task.activityName, 'Task', showIcon: index == 0),
                           const Divider(color: Color(0xFF1E293B), indent: 40),
-                      ],
-                    )).toList()
+                        ],
+                      );
+                    }).toList()
                   else ...[
-                    _buildUpcomingItem(Icons.assignment, const Color(0xFF4C8DB3), 'No Due Date', 'No Task Yet', 'Task'),
+                    _buildUpcomingItem(Icons.assignment, const Color(0xFF4C8DB3), 'No Due Date', 'No Task Yet', 'Task', showIcon: true),
                     const Divider(color: Color(0xFF1E293B), indent: 40),
-                    _buildUpcomingItem(Icons.fitness_center, const Color(0xFFE28743), 'No Date', 'No Challenges', 'Fitness'),
-                    const Divider(color: Color(0xFF1E293B), indent: 40),
-                    _buildUpcomingItem(Icons.luggage, const Color(0xFF9B5DE5), 'No Date', 'No Trip Plan', 'Trips'),
                   ],
+                  _buildUpcomingItem(Icons.fitness_center, const Color(0xFFE28743), 'No Date', 'No Challenges', 'Fitness', showIcon: true),
+                  const Divider(color: Color(0xFF1E293B), indent: 40),
+                  _buildUpcomingItem(Icons.luggage, const Color(0xFF9B5DE5), 'No Date', 'No Trip Plan', 'Trips', showIcon: true),
                 ],
               ),
             ],
@@ -73,19 +77,45 @@ class UpcomingSection extends StatelessWidget {
     );
   }
 
-  Widget _buildUpcomingItem(IconData icon, Color color, String dateStr, String title, String tag) {
+  String _formatDate(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return 'No Due Date';
+    try {
+      final date = DateTime.parse(dateStr).toLocal();
+      return DateFormat('MMM d, h:mm a').format(date);
+    } catch (e) {
+      return dateStr;
+    }
+  }
+
+  Widget _buildUpcomingItem(IconData icon, Color color, String dateStr, String title, String tag, {bool showIcon = true}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          margin: const EdgeInsets.only(top: 4),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.2),
-            shape: BoxShape.circle,
-          ),
-          padding: const EdgeInsets.all(4),
-          child: Icon(icon, color: color, size: 16),
-        ),
+        showIcon 
+          ? Container(
+              margin: const EdgeInsets.only(top: 4),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              padding: const EdgeInsets.all(4),
+              child: Icon(icon, color: color, size: 16),
+            )
+          : Container(
+              margin: const EdgeInsets.only(top: 4),
+              width: 24,
+              height: 24,
+              alignment: Alignment.center,
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFF131B2F), width: 2), // to create a gap from the line
+                ),
+              ),
+            ),
         const SizedBox(width: 16),
         Expanded(
           child: Column(

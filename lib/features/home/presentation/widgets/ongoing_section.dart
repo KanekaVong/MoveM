@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart';
 import '../../data/dto/response/dashboard_response.dart';
 
 class OngoingSection extends StatelessWidget {
   final List<DashboardTaskItem>? tasks;
+  final FitnessStatistics? fitnessStats;
 
-  const OngoingSection({super.key, this.tasks});
+  const OngoingSection({super.key, this.tasks, this.fitnessStats});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,7 @@ class OngoingSection extends StatelessWidget {
           child: Row(
             children: [
               if (tasks != null && tasks!.isNotEmpty)
-                ...tasks!.take(3).map((task) => Padding(
+                ...tasks!.take(5).map((task) => Padding(
                   padding: const EdgeInsets.only(right: 16.0),
                   child: _buildOngoingCard(
                     'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop', // placeholder
@@ -44,40 +46,60 @@ class OngoingSection extends StatelessWidget {
                     'Task',
                     task.activityName,
                     task.priority,
-                    task.deadline != null ? task.deadline! : 'No Due Date',
+                    task.deadline != null ? _formatDate(task.deadline) : 'No Due Date',
+                    progress: 0, // tasks don't have progress yet
                   ),
                 )).toList()
-              else ...[
-                _buildOngoingCard(
-                  'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop', // laptop
-                  const Color(0xFF4C8DB3),
-                  Icons.check_box,
-                  'Task',
-                  'Create A New Task',
-                  '',
-                  'No Due Date',
+              else
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: _buildOngoingCard(
+                    'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop', // laptop
+                    const Color(0xFF4C8DB3),
+                    Icons.check_box,
+                    'Task',
+                    'Create A New Task',
+                    '',
+                    'No Due Date',
+                  ),
                 ),
-                const SizedBox(width: 16),
-                _buildOngoingCard(
-                  'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=600&auto=format&fit=crop', // runner
-                  const Color(0xFFE28743),
-                  Icons.directions_run,
-                  'Fitness',
-                  'Set Up Your Goals',
-                  '0 / 5000',
-                  'Steps',
-                ),
-                const SizedBox(width: 16),
-                _buildOngoingCard(
-                  'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?q=80&w=600&auto=format&fit=crop', // Valid placeholder
-                  const Color(0xFF9B5DE5),
-                  Icons.flight,
-                  'Trip Plans',
-                  'Set Up Your Trip Plans',
-                  '0 Days left',
-                  'Until Your Next Trip',
-                ),
-              ],
+              Builder(
+                builder: (context) {
+                  MetricGoal? stepGoal;
+                  if (fitnessStats != null && fitnessStats!.metricGoals != null) {
+                    try {
+                      stepGoal = fitnessStats!.metricGoals!.firstWhere((goal) => goal.metricType == 'DAILY_STEPS');
+                    } catch (_) {}
+                  }
+                  
+                  final current = stepGoal?.current ?? 0;
+                  final target = stepGoal?.target ?? 5000;
+                  final progress = stepGoal != null ? (stepGoal!.progressPercent! * 100).toInt() : 0;
+                  
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 16.0),
+                    child: _buildOngoingCard(
+                      'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=600&auto=format&fit=crop', // runner
+                      const Color(0xFFE28743),
+                      Icons.directions_run,
+                      'Fitness',
+                      'Daily Steps Goal',
+                      '$current / $target',
+                      'Steps',
+                      progress: progress,
+                    ),
+                  );
+                }
+              ),
+              _buildOngoingCard(
+                'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?q=80&w=600&auto=format&fit=crop', // Valid placeholder
+                const Color(0xFF9B5DE5),
+                Icons.flight,
+                'Trip Plans',
+                'Set Up Your Trip Plans',
+                '0 Days left',
+                'Until Your Next Trip',
+              ),
             ],
           ),
         ),
@@ -85,7 +107,17 @@ class OngoingSection extends StatelessWidget {
     );
   }
 
-  Widget _buildOngoingCard(String imageUrl, Color tintColor, IconData icon, String type, String title, String mainStat, String subStat) {
+  String _formatDate(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return 'No Due Date';
+    try {
+      final date = DateTime.parse(dateStr).toLocal();
+      return DateFormat('MMM d, h:mm a').format(date);
+    } catch (e) {
+      return dateStr;
+    }
+  }
+
+  Widget _buildOngoingCard(String imageUrl, Color tintColor, IconData icon, String type, String title, String mainStat, String subStat, {int progress = 0}) {
     return Container(
       width: 160,
       height: 200,
@@ -147,7 +179,7 @@ class OngoingSection extends StatelessWidget {
                     border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
                   ),
                   child: Center(
-                    child: Text('0%', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                    child: Text('$progress%', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],

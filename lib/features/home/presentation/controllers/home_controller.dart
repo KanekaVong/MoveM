@@ -22,6 +22,7 @@ class HomeController extends BaseController {
       onSuccess: (data) {
         dashboardData.value = data;
       },
+      showLoading: false,
     );
   }
 }

@@ -196,6 +196,21 @@ class TaskDetailScreen extends StatelessWidget {
             onTap: () => Get.back(),
             child: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
           ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Obx(() {
+                final task = controller.task.value;
+                return Text(
+                  task?.activityName ?? 'Task Details',
+                  style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                );
+              }),
+            ),
+          ),
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
@@ -207,7 +222,7 @@ class TaskDetailScreen extends StatelessWidget {
                 if (controller.task.value != null) {
                   Get.to(() => const EditTaskScreen(), arguments: controller.task.value)?.then((value) {
                     if (value == true) {
-                      controller.fetchTaskDetail();
+                      controller.fetchTaskDetail(showLoading: false);
                     }
                   });
                 }

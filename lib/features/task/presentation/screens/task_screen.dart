@@ -14,7 +14,7 @@ class TaskScreen extends GetView<TaskController> {
     Get.put(TaskController());
     
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: const Color(0xFF0E0A07),
       body: Obx(() {
         if (controller.isLoading) {
           return const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6)));
@@ -41,7 +41,7 @@ class TaskScreen extends GetView<TaskController> {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.black45,
-                          Color(0xFF0F172A),
+                          Color(0xFF0E0A07),
                         ],
                         stops: [0.0, 1.0],
                       ),
@@ -61,8 +61,8 @@ class TaskScreen extends GetView<TaskController> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          const Color(0xFF0F172A).withValues(alpha: 0.0),
-                          const Color(0xFF0F172A),
+                          const Color(0xFF0E0A07).withValues(alpha: 0.0),
+                          const Color(0xFF0E0A07),
                         ],
                         stops: const [0.0, 0.15],
                       ),

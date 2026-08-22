@@ -50,10 +50,7 @@ class HomeHeader extends StatelessWidget {
               icon: const Icon(Icons.notifications_none, color: Colors.white),
               onPressed: () {},
             ),
-            IconButton(
-              icon: const Icon(Icons.person_add_alt_1_outlined, color: Colors.white),
-              onPressed: () {},
-            ),
+
             const SizedBox(width: 8),
             Container(
               width: 50,

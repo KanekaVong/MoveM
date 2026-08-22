@@ -45,12 +45,12 @@ class BottomNavScreen extends GetView<MainNavController> {
           Obx(() {
             return IndexedStack(
               index: controller.currentIndex.value,
-              children: const [
-                HomeScreen(),
-                TaskScreen(),
-                FitnessScreen(),
-                TripScreen(),
-                SettingsScreen(),
+              children: [
+                const HomeScreen(),
+                controller.visitedTabs.contains(1) ? const TaskScreen() : const SizedBox.shrink(),
+                controller.visitedTabs.contains(2) ? const FitnessScreen() : const SizedBox.shrink(),
+                controller.visitedTabs.contains(3) ? const TripScreen() : const SizedBox.shrink(),
+                controller.visitedTabs.contains(4) ? const SettingsScreen() : const SizedBox.shrink(),
               ],
             );
           }),
@@ -60,41 +60,58 @@ class BottomNavScreen extends GetView<MainNavController> {
             bottom: 24,
             child: Obx(() {
               final visualIndex = _getVisualIndex(controller.currentIndex.value);
-              return Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(35), // Radius 35
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 0.3), // White stroke inside
-                  boxShadow: [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 5)),
+              return Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.bottomCenter,
+                children: [
+                  // Glass background (only bottom 60px)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    height: 60,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(35),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: const Color(0xFFFFFFFF).withValues(alpha: 0.15),
+                              width: 0.5,
+                            ),
+                            borderRadius: BorderRadius.circular(35),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // The actual Navigation Bar
+                  ClipPath(
+                clipper: NavBarClipper(),
+                child: CurvedNavigationBar(
+                  index: visualIndex,
+                  height: 60.0,
+                  items: <Widget>[
+                    Icon(Icons.home_filled, size: 28, color: visualIndex == 0 ? Colors.white : const Color(0xFFA0AAB2)),
+                    Icon(Icons.map_outlined, size: 28, color: visualIndex == 1 ? Colors.white : const Color(0xFFA0AAB2)),
+                    Icon(Icons.task, size: 28, color: visualIndex == 2 ? Colors.white : const Color(0xFFA0AAB2)),
+                    Icon(Icons.fitness_center, size: 28, color: visualIndex == 3 ? Colors.white : const Color(0xFFA0AAB2)),
+                    Icon(Icons.settings, size: 28, color: visualIndex == 4 ? Colors.white : const Color(0xFFA0AAB2)),
                   ],
+                  color: const Color(0xFFE8E8E8).withValues(alpha: 0.15), // Glass color
+                  backgroundColor: Colors.transparent,
+                  buttonBackgroundColor: Colors.transparent, // Remove active background circle
+                  animationCurve: Curves.easeInOut,
+                  animationDuration: const Duration(milliseconds: 300),
+                  onTap: (index) {
+                    controller.changeTab(_getLogicIndex(index));
+                  },
+                  letIndexChange: (index) => true,
                 ),
-                child: ClipPath(
-                  clipper: NavBarClipper(),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // Frost blur
-                    child: CurvedNavigationBar(
-                      index: visualIndex,
-                      height: 60.0,
-                      items: <Widget>[
-                        Icon(Icons.home_filled, size: 28, color: visualIndex == 0 ? Colors.white : const Color(0xFFA0AAB2)),
-                        Icon(Icons.map_outlined, size: 28, color: visualIndex == 1 ? Colors.white : const Color(0xFFA0AAB2)),
-                        Icon(Icons.task, size: 28, color: visualIndex == 2 ? Colors.white : const Color(0xFFA0AAB2)),
-                        Icon(Icons.fitness_center, size: 28, color: visualIndex == 3 ? Colors.white : const Color(0xFFA0AAB2)),
-                        Icon(Icons.settings, size: 28, color: visualIndex == 4 ? Colors.white : const Color(0xFFA0AAB2)),
-                      ],
-                      color: const Color(0xFFE8E8E8).withValues(alpha: 0.15), // E8E8E8 at 15%
-                      backgroundColor: Colors.transparent,
-                      buttonBackgroundColor: const Color(0xFF162341), // Dark circle for floating active item
-                    animationCurve: Curves.easeInOut,
-                    animationDuration: const Duration(milliseconds: 300),
-                    onTap: (index) {
-                      controller.changeTab(_getLogicIndex(index));
-                    },
-                    letIndexChange: (index) => true,
-                  ),
-                  ),
-                ),
-              );
+              ),
+            ],
+          );
             }),
           ),
         ],
