@@ -11,6 +11,7 @@ abstract class Constants {
   // ─── Storage Keys ───
   static const keyLanguageCode = 'language_code';
   static const keyThemeMode = 'theme_mode';
+  static const String keyUserData = 'user_data';
   static const keyUserId = 'user_id';
   static const keyUserName = 'user_name';
   static const keyIsLogged = 'is_logged';

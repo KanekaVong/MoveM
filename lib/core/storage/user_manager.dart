@@ -1,6 +1,10 @@
 import 'local_storage.dart';
 import 'package:uuid/uuid.dart';
 import '../utils/Constants.dart';
+import 'dart:convert';
+
+import '../../features/auth/data/dto/response/user_response.dart';
+
 
 class UserManager {
   static final UserManager _instance = UserManager._internal();
@@ -27,6 +31,30 @@ class UserManager {
   Future<void> saveUserId(String id) => _storage.setString(Constants.keyUserId, id);
   String? get userName => _storage.getString(Constants.keyUserName);
   Future<void> saveUserName(String name) => _storage.setString(Constants.keyUserName, name);
+  Future<void> saveUser(UserResponse user) async {await _storage.setString(Constants.keyUserData, jsonEncode(user.toJson()),);}
+  UserResponse? getUser() {
+    final userJson = _storage.getString(Constants.keyUserData);
+
+    if (userJson == null || userJson.isEmpty) {
+      return null;
+    }
+
+    try {
+      final decoded = jsonDecode(userJson);
+
+      if (decoded is Map<String, dynamic>) {
+        return UserResponse.fromJson(decoded);
+      }
+    } catch (_) {
+      return null;
+    }
+
+    return null;
+  }
+
+  Future<void> clearUser() async {
+    await _storage.setString(Constants.keyUserData, '');
+  }
 
   // ─── Token (Secure) ───
   Future<String?> getToken() => _storage.getSecureString(Constants.keyAccessToken);

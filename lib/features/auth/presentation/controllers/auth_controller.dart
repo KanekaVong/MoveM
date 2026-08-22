@@ -28,26 +28,56 @@ class AuthController extends BaseController {
     await executeApi(
       apiCall: () => repository.login(
         LoginRequest(
-            username: username,
-            password: password,
-            deviceId: deviceId,
-            trustToken: savedTrustToken,
+          username: username,
+          password: password,
+          deviceId: deviceId,
+          trustToken: savedTrustToken,
         ),
       ),
       onSuccess: (data) async {
+        // Full login: accessToken + trustToken + user
         if (data.isFullyLoggedIn) {
+          if (data.user != null) {
+            await UserManager().saveUser(data.user!);
+          }
+
           await UserManager().saveToken(data.accessToken!);
           await UserManager().saveTrustToken(data.trustToken!);
           await UserManager().setLogged(true);
+
           Get.offAllNamed(AppRoutes.main);
-        } else {
-          Get.offNamed(AppRoutes.verifyOtp, arguments: {'mode': 'otp', 'identifier': username});
+          return;
         }
+
+        // Login OTP required
+        if (data.message != null &&
+            data.message!.toLowerCase().contains('otp')) {
+          Get.offNamed(
+            AppRoutes.verifyOtp,
+            arguments: {
+              'mode': 'otp',
+              'identifier': username,
+            },
+          );
+          return;
+        }
+
+        // Unexpected successful response
+        AppDialogs.showError(
+          data.message ?? 'Unexpected login response from server.',
+        );
       },
       showErrorDialog: false,
       onError: (e) {
-        if (e.statusCode == 403 && e.message.toLowerCase().contains('verify')) {
-          Get.offNamed(AppRoutes.verifyOtp, arguments: {'mode': 'email', 'identifier': e.email});
+        if (e.statusCode == 403 &&
+            e.message.toLowerCase().contains('verify')) {
+          Get.offNamed(
+            AppRoutes.verifyOtp,
+            arguments: {
+              'mode': 'email',
+              'identifier': e.email,
+            },
+          );
         } else {
           AppDialogs.showError(e.message);
         }
@@ -63,7 +93,10 @@ class AuthController extends BaseController {
         OtpRequest(username: username, otp: otp, deviceId: deviceId),
       ),
       onSuccess: (data) async {
-        currentUser.value = data;
+        currentUser.value = data.user;
+        if (data.user != null) {
+          await UserManager().saveUser(data.user!);
+        }
 
         if (data.accessToken != null && data.accessToken!.isNotEmpty) {
           await UserManager().saveToken(data.accessToken!);
@@ -117,7 +150,11 @@ class AuthController extends BaseController {
         EmailVerifyRequest(email: email, code: code, deviceId: deviceId),
       ),
       onSuccess: (data) async {
-        currentUser.value = data;
+        currentUser.value = data.user;
+        if (data.user != null) {
+          await UserManager().saveUser(data.user!);
+        }
+
 
         if (data.accessToken != null && data.accessToken!.isNotEmpty) {
           await UserManager().saveToken(data.accessToken!);
@@ -180,6 +217,11 @@ class AuthController extends BaseController {
         ),
       ),
       onSuccess: (data) async {
+        currentUser.value = data.user;
+        if (data.user != null) {
+          await UserManager().saveUser(data.user!);
+        }
+
         if (data.accessToken != null && data.accessToken!.isNotEmpty) {
           await UserManager().saveToken(data.accessToken!);
           await UserManager().saveTrustToken(data.trustToken!);
