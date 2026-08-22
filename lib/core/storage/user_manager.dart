@@ -80,6 +80,7 @@ class UserManager {
     await _storage.setString(Constants.keyUserId, '');
     await _storage.setString(Constants.keyUserName, '');
     await _storage.setBool(Constants.keyIsLogged, false);
+    await clearUser();
     // trustToken intentionally NOT cleared — device stays trusted for next login
   }
 }

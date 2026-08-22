@@ -1,9 +1,10 @@
 import 'dart:ui';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:movem/features/auth/data/dto/response/user_response.dart';
 import 'package:movem/core/storage/user_manager.dart';
+import 'package:movem/features/auth/data/dto/response/user_response.dart';
 import 'package:movem/features/settings/presentation/screens/EditProfileScreen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -12,34 +13,24 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UserResponse? user = UserManager().getUser();
+    print('ProfileScreen: Retrieved user from UserManager: ${user?.toJson() ?? "null"}');
 
-    if (user == null) {
-      return const Scaffold(
-        backgroundColor: Color(0xFF0F172A),
-        body: Center(
-          child: Text(
-            'No saved user data',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      );
-    }
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 24.0, vertical: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   InkWell(
-                    onTap: () => Get.back(), // Pops back to SettingsScreen
+                    onTap: () => Get.back(),
                     borderRadius: BorderRadius.circular(30),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 4.0),
                       child: Row(
                         children: const [
                           Icon(
@@ -61,8 +52,8 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                 ],
-              ), // <-- Properly closed the Row here!
-              _buildProfileSection(context,user),
+              ),
+              _buildProfileSection(context, user),
               const SizedBox(height: 32),
               _buildPersonalInformation(user),
               const SizedBox(height: 32),
@@ -71,7 +62,7 @@ class ProfileScreen extends StatelessWidget {
               _buildAchievements(),
               const SizedBox(height: 32),
               _buildBottomStats(),
-              const SizedBox(height: 100), // Padding for bottom nav
+              const SizedBox(height: 100)
             ],
           ),
         ),
@@ -79,13 +70,14 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileSection(BuildContext context,UserResponse user) {
+  Widget _buildProfileSection(BuildContext context, UserResponse? user) {
     final fullName = [
-      user.firstName,
-      user.lastName,
-    ].where((value) => value != null && value!.trim().isNotEmpty).join(' ');
+      user?.firstName,
+      user?.lastName,
+    ].where((value) => value != null && value.trim().isNotEmpty).join(' ');
 
-    final displayName = fullName.isNotEmpty ? fullName : user.username;
+    final displayName =
+        fullName.isNotEmpty ? fullName : (user?.username ?? 'Unknown User');
 
     return Row(
       children: [
@@ -109,7 +101,6 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-
                   GlassContainer(
                     borderRadius: 9.0, // <-- Pass a double here directly
                     padding: const EdgeInsets.symmetric(
@@ -118,12 +109,15 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditProfileScreen(user: user),
-                          ),
-                        );
+                        if (user != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  EditProfileScreen(user: user),
+                            ),
+                          );
+                        }
                       },
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -150,7 +144,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '@${user.username}',
+                '@${user?.username ?? 'unknown'}',
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: Color(0xFF3B82F6),
@@ -164,7 +158,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPersonalInformation(UserResponse user) {
+  Widget _buildPersonalInformation(UserResponse? user) {
     return SettingsCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,25 +177,25 @@ class ProfileScreen extends StatelessWidget {
           _buildInfoTile(
             icon: Icons.email_outlined,
             title: 'Email',
-            subtitle: _displayValue(user.email),
+            subtitle: _displayValue(user?.email),
           ),
           _buildDivider(),
           _buildInfoTile(
             icon: Icons.phone_outlined,
             title: 'Phone Number',
-            subtitle: _displayValue(user.phone),
+            subtitle: _displayValue(user?.phone),
           ),
           _buildDivider(),
           _buildInfoTile(
             icon: Icons.calendar_today_outlined,
             title: 'Date Of Birth',
-            subtitle: _displayValue(user.dateOfBirth),
+            subtitle: _displayValue(user?.dateOfBirth),
           ),
           _buildDivider(),
           _buildInfoTile(
             icon: Icons.location_on_outlined,
             title: 'Location',
-            subtitle: _displayValue(user.cityProvince),
+            subtitle: _displayValue(user?.cityProvince),
             showDivider: false,
           ),
         ],
@@ -217,8 +211,8 @@ class ProfileScreen extends StatelessWidget {
     return value;
   }
 
-  Widget _buildProfileImage(UserResponse user) {
-    final profilePic = user.profilePic;
+  Widget _buildProfileImage(UserResponse? user) {
+    final profilePic = user?.profilePic;
 
     return Container(
       width: 80,
@@ -233,21 +227,21 @@ class ProfileScreen extends StatelessWidget {
       child: ClipOval(
         child: profilePic != null && profilePic.isNotEmpty
             ? Image.network(
-          profilePic,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) {
-            return const Icon(
-              Icons.person,
-              color: Colors.white,
-              size: 40,
-            );
-          },
-        )
+                profilePic,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) {
+                  return const Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 40,
+                  );
+                },
+              )
             : const Icon(
-          Icons.person,
-          color: Colors.white,
-          size: 40,
-        ),
+                Icons.person,
+                color: Colors.white,
+                size: 40,
+              ),
       ),
     );
   }
@@ -343,18 +337,23 @@ class ProfileScreen extends StatelessWidget {
                 title: 'Task Completed',
                 value: '0',
                 total: '0',
-                imageUrl: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=600&auto=format&fit=crop', // Desk laptop
+                imageUrl:
+                    'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=600&auto=format&fit=crop',
+                // Desk laptop
                 progress: 0.0,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _buildActivityCard(
-                icon: Icons.directions_run, // Close to running shoe
+                icon: Icons.directions_run,
+                // Close to running shoe
                 title: 'Steps',
                 value: '0',
                 total: '5000',
-                imageUrl: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=600&auto=format&fit=crop', // Running
+                imageUrl:
+                    'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=600&auto=format&fit=crop',
+                // Running
                 progress: 0.0,
               ),
             ),
@@ -365,7 +364,9 @@ class ProfileScreen extends StatelessWidget {
                 title: 'Days Until Your Trip',
                 value: '0',
                 total: null,
-                imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop', // Travel mountain
+                imageUrl:
+                    'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop',
+                // Travel mountain
                 progress: 0.0,
               ),
             ),
@@ -391,12 +392,14 @@ class ProfileScreen extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(6), // Fit inside the glass card inner radius
+              borderRadius: BorderRadius.circular(6),
+              // Fit inside the glass card inner radius
               child: Image(
                 image: CachedNetworkImageProvider(imageUrl),
                 fit: BoxFit.cover,
                 colorBlendMode: BlendMode.darken,
-                color: const Color(0xFF0F172A).withValues(alpha: 0.6), // Darken the image
+                color: const Color(0xFF0F172A)
+                    .withValues(alpha: 0.6), // Darken the image
               ),
             ),
             Padding(
@@ -407,9 +410,12 @@ class ProfileScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF3B82F6).withValues(alpha: 0.2), // Light blue tint
+                      color: const Color(0xFF3B82F6).withValues(alpha: 0.2),
+                      // Light blue tint
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFF3B82F6).withValues(alpha: 0.5)),
+                      border: Border.all(
+                          color:
+                              const Color(0xFF3B82F6).withValues(alpha: 0.5)),
                     ),
                     child: Icon(icon, color: const Color(0xFF3B82F6), size: 20),
                   ),
@@ -584,8 +590,8 @@ class ProfileScreen extends StatelessWidget {
       color: const Color(0xFF1E293B),
     );
   }
-
 }
+
 class SettingsCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -623,7 +629,8 @@ class SettingsCard extends StatelessWidget {
               padding: padding,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6), // 7 - 1 (padding)
-                color: const Color(0xFF162341).withValues(alpha: 0.60), // Exact fill from Figma
+                color: const Color(0xFF162341)
+                    .withValues(alpha: 0.60), // Exact fill from Figma
               ),
               child: child,
             ),
@@ -680,7 +687,8 @@ class GlassContainer extends StatelessWidget {
               padding: padding,
               alignment: alignment,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(borderRadius > 0 ? borderRadius - 1 : 0),
+                borderRadius: BorderRadius.circular(
+                    borderRadius > 0 ? borderRadius - 1 : 0),
                 color: const Color(0xFF3C66C0).withValues(alpha: 0.40),
               ),
               child: child,

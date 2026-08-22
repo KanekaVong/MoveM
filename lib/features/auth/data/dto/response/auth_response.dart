@@ -1,4 +1,5 @@
 import 'user_response.dart';
+
 class AuthResponse {
   final String? accessToken;
   final String? trustToken;
@@ -27,7 +28,5 @@ class AuthResponse {
       accessToken != null &&
       accessToken!.isNotEmpty &&
       trustToken != null &&
-      trustToken!.isNotEmpty &&
-      user != null;
-
+      trustToken!.isNotEmpty;
 }

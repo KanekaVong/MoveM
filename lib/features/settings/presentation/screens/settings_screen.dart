@@ -3,6 +3,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
 import 'package:movem/shared/widgets/glass_container.dart';
 import 'package:movem/features/settings/presentation/screens/ProfileScreen.dart' hide GlassContainer;
+import 'package:movem/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:movem/core/storage/user_manager.dart';
+import 'package:movem/core/routes/app_routes.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -72,7 +75,14 @@ class SettingsScreen extends StatelessWidget {
                   _buildDivider(),
                   _buildSettingItem(
                     title: 'Log Out',
-                    onTap: () {},
+                    onTap: () {
+                      if (Get.isRegistered<AuthController>()) {
+                        Get.find<AuthController>().logout();
+                      } else {
+                        UserManager().clearSession();
+                        Get.offAllNamed(AppRoutes.login);
+                      }
+                    },
                   ),
                 ]),
 
@@ -80,14 +90,6 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 100),
               ],
             ),
-          ),
-
-          // --- Bottom Floating Navigation Bar ---
-          Positioned(
-            left: 20,
-            right: 20,
-            bottom: 24,
-            child: _buildFloatingNavBar(),
           ),
         ],
       ),
@@ -155,49 +157,6 @@ class SettingsScreen extends StatelessWidget {
       height: 1,
       thickness: 1,
       color: Colors.white.withOpacity(0.06),
-    );
-  }
-
-  Widget _buildFloatingNavBar() {
-    return GlassContainer(
-      borderRadius: BorderRadius.circular(35),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      opacity: 0.12,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.home_outlined, color: Colors.white70),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.map_outlined, color: Colors.white70),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.assignment_outlined, color: Colors.white70),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.fitness_center, color: Colors.white70),
-            onPressed: () {},
-          ),
-          // Active Settings Tab Icon with background bubble
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E2640),
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
-            ),
-            child: const Icon(
-              Icons.settings,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
