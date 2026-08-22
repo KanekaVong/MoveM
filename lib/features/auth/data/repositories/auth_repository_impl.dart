@@ -10,6 +10,7 @@ import '../dto/request/email_verify_request.dart';
 import '../dto/request/forgot_password_request.dart';
 import '../dto/request/reset_password_request.dart';
 import '../dto/response/user_response.dart';
+import '../dto/response/auth_response.dart';
 import '../dto/response/login_response.dart';
 import '../services/auth_service.dart';
 import '../../../../core/network/api_exceptions.dart';
@@ -36,24 +37,25 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<ApiResult<LoginResponse>> login(LoginRequest request) async {
+  Future<ApiResult<AuthResponse>> login(LoginRequest request) async {
     try {
       _logger.i('Calling POST auth/login with data: ${request.toJson()}');
       final response = await authService.login(request);
       _logger.i('Login Response [${response.statusCode}]: ${response.data}');
 
       if (response.data is Map<String, dynamic>) {
-        return ApiSuccess(LoginResponse.fromJson(response.data));
+        return ApiSuccess(AuthResponse.fromJson(response.data));
       } else if (response.data is String) {
         try {
           final decoded = jsonDecode(response.data);
           if (decoded is Map<String, dynamic>) {
-            return ApiSuccess(LoginResponse.fromJson(decoded));
+            return ApiSuccess(AuthResponse.fromJson(decoded));
           }
         } catch (_) {}
       }
       // Fallback — shouldn't normally hit this if backend always returns JSON
-      return ApiSuccess(LoginResponse(message: response.data.toString()));
+      //return ApiSuccess(LoginResponse(message: response.data.toString()));
+      return ApiError(ApiException(message: 'Invalid login response from server.'),);
     } on DioException catch (e) {
       _logger.e('Login Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
@@ -80,24 +82,25 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<ApiResult<UserResponse>> verifyEmail(EmailVerifyRequest request) async {
+  Future<ApiResult<AuthResponse>> verifyEmail(EmailVerifyRequest request) async {
     try {
       _logger.i('Calling POST auth/verify-email with data: ${request.toJson()}');
       final response = await authService.verifyEmail(request);
       _logger.i('Verify Email Response [${response.statusCode}]: ${response.data}');
 
       if (response.data is Map<String, dynamic>) {
-        return ApiSuccess(UserResponse.fromJson(response.data));
+        return ApiSuccess(AuthResponse.fromJson(response.data));
       } else if (response.data is String) {
         try {
           final decoded = jsonDecode(response.data);
           if (decoded is Map<String, dynamic>) {
-            return ApiSuccess(UserResponse.fromJson(decoded));
+            return ApiSuccess(AuthResponse.fromJson(decoded));
           }
         } catch (_) {}
       }
 
-      return ApiSuccess(UserResponse(id: '0', email: request.email, name: request.email));
+      //return ApiSuccess(UserResponse(id: '0', email: request.email, name: request.email));
+      return ApiError(ApiException(message: 'Invalid email verification response from server.'),);
     } on DioException catch (e) {
       _logger.e('Verify Email Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
@@ -108,7 +111,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<ApiResult<UserResponse>> verifyOtp(OtpRequest request) async {
+  Future<ApiResult<AuthResponse>> verifyOtp(OtpRequest request) async {
     try {
       _logger.i('Calling POST auth/verify-otp with data: ${request.toJson()}');
       final response = await authService.verifyOtp(request);
@@ -117,18 +120,19 @@ class AuthRepositoryImpl implements AuthRepository {
       // Attempt to parse JSON response. If it returns plain text, it will fail here.
       // If the backend returns a token, it usually comes in a JSON object.
       if (response.data is Map<String, dynamic>) {
-        return ApiSuccess(UserResponse.fromJson(response.data));
+        return ApiSuccess(AuthResponse.fromJson(response.data));
       } else if (response.data is String) {
         try {
           final decoded = jsonDecode(response.data);
           if (decoded is Map<String, dynamic>) {
-            return ApiSuccess(UserResponse.fromJson(decoded));
+            return ApiSuccess(AuthResponse.fromJson(decoded));
           }
         } catch (_) {}
       }
       
       // Fallback if it returns plain text just like the other endpoints for now
-      return ApiSuccess(UserResponse(id: '0', email: request.username, name: request.username));
+      //return ApiSuccess(UserResponse(id: '0', email: request.username, name: request.username));
+      return ApiError(ApiException(message: 'Invalid OTP verification response from server.'),);
     } on DioException catch (e) {
       _logger.e('Verify OTP Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
@@ -187,24 +191,25 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<ApiResult<UserResponse>> resetPassword(ResetPasswordRequest request) async {
+  Future<ApiResult<AuthResponse>> resetPassword(ResetPasswordRequest request) async {
     try {
       _logger.i('Calling POST auth/reset-password with data: ${request.toJson()}');
       final response = await authService.resetPassword(request);
       _logger.i('Reset Password Response [${response.statusCode}]: ${response.data}');
 
       if (response.data is Map<String, dynamic>) {
-        return ApiSuccess(UserResponse.fromJson(response.data));
+        return ApiSuccess(AuthResponse.fromJson(response.data));
       } else if (response.data is String) {
         try {
           final decoded = jsonDecode(response.data);
           if (decoded is Map<String, dynamic>) {
-            return ApiSuccess(UserResponse.fromJson(decoded));
+            return ApiSuccess(AuthResponse.fromJson(decoded));
           }
         } catch (_) {}
       }
 
-      return ApiSuccess(UserResponse(id: '0', email: request.email, name: request.email));
+      //return ApiSuccess(UserResponse(id: '0', email: request.email, name: request.email));
+      return ApiError(ApiException(message: 'Invalid reset password response from server.'),);
     } on DioException catch (e) {
       _logger.e('Reset Password Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
