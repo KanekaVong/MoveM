@@ -1,9 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:movem/features/auth/presentation/controllers/auth_controller.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
