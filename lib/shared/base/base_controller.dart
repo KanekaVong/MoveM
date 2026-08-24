@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import '../../core/network/api_exceptions.dart';
@@ -28,26 +27,38 @@ abstract class BaseController extends GetxController {
     bool showErrorDialog = true,
   }) async {
     onLoading?.call();
+    state.value = ViewState.loading;
+    
     if (showLoading) {
-      state.value = ViewState.loading;
       AppDialogs.showLoading();
     }
 
-    final result = await apiCall();
+    try {
+      final result = await apiCall();
 
-    if (showLoading) {
-      AppDialogs.hideLoading();
-    }
+      if (showLoading) {
+        AppDialogs.hideLoading();
+      }
 
-    switch (result) {
-      case ApiSuccess(data: final data):
-        state.value = ViewState.success;
-        onSuccess(data);
-      case ApiError(exception: final e):
-        _handleApiException(e, showErrorDialog: showErrorDialog);
-        onError?.call(e);
-      case ApiLoading():
-        break;
+      switch (result) {
+        case ApiSuccess(data: final data):
+          state.value = ViewState.success;
+          onSuccess(data);
+        case ApiError(exception: final e):
+          _handleApiException(e, showErrorDialog: showErrorDialog);
+          onError?.call(e);
+        case ApiLoading():
+          break;
+      }
+    } catch (e, stack) {
+      if (showLoading) {
+        AppDialogs.hideLoading();
+      }
+      state.value = ViewState.error;
+      _logger.e('Unexpected API execution error', error: e, stackTrace: stack);
+      if (showErrorDialog) {
+        AppDialogs.showError('An unexpected error occurred.');
+      }
     }
   }
 
@@ -70,9 +81,17 @@ abstract class BaseController extends GetxController {
     }
   }
 
+  static bool _isUnauthorizedHandling = false;
+
   void _handleUnauthorized(String message) {
+    if (_isUnauthorizedHandling) return;
+    _isUnauthorizedHandling = true;
+    
     AppDialogs.showError(message, onConfirm: () {
-      Get.offAllNamed(AppRoutes.login);
+      _isUnauthorizedHandling = false;
+      if (Get.currentRoute != AppRoutes.login) {
+        Get.offAllNamed(AppRoutes.login);
+      }
     });
   }
 }

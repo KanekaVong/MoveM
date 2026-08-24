@@ -1,70 +1,57 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:movem/core/utils/AppIcons.dart';
-import 'package:movem/shared/widgets/custom_image.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../../core/storage/user_manager.dart';
+import '../controllers/home_controller.dart';
+import '../widgets/home_header.dart';
+import '../widgets/todays_progress_card.dart';
+import '../widgets/ongoing_section.dart';
+import '../widgets/upcoming_section.dart';
+import '../widgets/quick_actions_grid.dart';
+import '../widgets/dashboard_summary_grid.dart';
+import '../widgets/reminders_section.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final localize = AppLocalizations.of(context)!;
-    final isKhmer = Get.locale?.languageCode == 'km';
-    final newLanguage = isKhmer ? 'en' : 'km';
-    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    String newTheme = isDarkMode ? 'light' : 'dark';
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Text(
-            //   localize.gender,
-            //   style: TextStyle(
-            //     fontSize: 24,
-            //     fontWeight: FontWeight.bold,
-            //     color: Theme.of(context).colorScheme.secondary,
-            //   ),
-            // ),
-            // const SizedBox(height: 12),
-            // SvgPicture.asset(
-            //   AppIcons.icTickIcon,
-            //   width: 24.0,
-            //   height: 24.0,
-            // ),
-            // const SizedBox(height: 10),
-            // Image.asset(
-            //   AppIcons.icPlaceHolderProfile,
-            //   width: 24,
-            //   height: 24,
-            // ),
-            // const SizedBox(height: 10),
-            // CustomImage(
-            //   imageUrl: "https://img.a.transfermarkt.technology/portrait/big/8198-1748102259.jpg?lm=1",
-            //   width: 250.0,
-            //   height: 300.0,
-            // ),
-            // const SizedBox(height: 32),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     UserManager().setLanguage(newLanguage);
-            //     Get.updateLocale(Locale(newLanguage));
-            //   },
-            //   child: Text(isKhmer ? '🇺🇸 English' : '🇰🇭 ខ្មែរ'),
-            // ),
-            // const SizedBox(height: 12),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     UserManager().setThemeMode(newTheme);
-            //     Get.changeThemeMode(isDarkMode ? ThemeMode.light : ThemeMode.dark);
-            //   },
-            //   child: Text(isDarkMode ? 'Dark Mode' : 'Light Mode'),
-            // ),
-          ],
-        ),
+      backgroundColor: const Color(0xFF0F172A), // Dark navy background
+      body: SafeArea(
+        child: Obx(() {
+          if (controller.isLoading && controller.dashboardData.value == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final data = controller.dashboardData.value;
+          if (data == null) {
+            return const Center(child: Text('No data available', style: TextStyle(color: Colors.white)));
+          }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                HomeHeader(recentActivities: data.recentActivities),
+                const SizedBox(height: 32),
+                TodaysProgressCard(fitnessStats: data.fitnessStatistics),
+                const SizedBox(height: 32),
+                OngoingSection(tasks: data.dueToday, fitnessStats: data.fitnessStatistics), // Use dueToday for ongoing for now
+                const SizedBox(height: 32),
+                UpcomingSection(tasks: data.upcomingTasks),
+                const SizedBox(height: 32),
+                if (data.upcomingReminders != null && data.upcomingReminders!.isNotEmpty) ...[
+                  RemindersSection(reminders: data.upcomingReminders!),
+                  const SizedBox(height: 32),
+                ],
+                const QuickActionsGrid(),
+                const SizedBox(height: 32),
+                DashboardSummaryGrid(taskStats: data.statistics),
+                const SizedBox(height: 24),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }

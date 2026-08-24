@@ -25,6 +25,14 @@ class LocalStorage {
     return _sharedPrefs.getString(key);
   }
 
+  Future<void> setBool(String key, bool value) async {
+    await _sharedPrefs.setBool(key, value);
+  }
+
+  bool? getBool(String key) {
+    return _sharedPrefs.getBool(key);
+  }
+
   Future<void> setSecureString(String key, String value) async {
     await _secureStorage.write(key: key, value: value);
   }

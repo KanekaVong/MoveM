@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../storage/local_storage.dart';
@@ -48,9 +50,22 @@ class DioClient {
       _dio.interceptors.add(LogInterceptor(
         request: true,
         requestBody: true,
-        responseBody: true,
+        responseBody: false, // Handled by custom formatter below
         responseHeader: false,
         error: true,
+        logPrint: (object) => log(object.toString(), name: 'DIO-REQ'),
+      ));
+
+      _dio.interceptors.add(InterceptorsWrapper(
+        onResponse: (response, handler) {
+          try {
+            final prettyString = const JsonEncoder.withIndent('  ').convert(response.data);
+            log('URI: ${response.requestOptions.uri}\n$prettyString', name: 'DIO-RES');
+          } catch (e) {
+            log('URI: ${response.requestOptions.uri}\n${response.data}', name: 'DIO-RES');
+          }
+          return handler.next(response);
+        },
       ));
     }
   }

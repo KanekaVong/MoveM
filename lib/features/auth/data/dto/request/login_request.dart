@@ -1,16 +1,22 @@
 class LoginRequest {
-  final String email;
+  final String username;
   final String password;
+  final String deviceId;
+  final String? trustToken;
 
   LoginRequest({
-    required this.email,
+    required this.username,
     required this.password,
+    required this.deviceId,
+    this.trustToken,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'username': email,
+      'username': username,
       'password': password,
+      'deviceId': deviceId,
+      'trustToken': trustToken,
     };
   }
 }
