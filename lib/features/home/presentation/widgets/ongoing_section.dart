@@ -40,21 +40,21 @@ class OngoingSection extends StatelessWidget {
                 ...tasks!.take(5).map((task) => Padding(
                   padding: const EdgeInsets.only(right: 16.0),
                   child: _buildOngoingCard(
-                    'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop', // placeholder
+                    'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop',
                     const Color(0xFF4C8DB3),
                     Icons.check_box,
                     'Task',
                     task.activityName,
                     task.priority,
                     task.deadline != null ? _formatDate(task.deadline) : 'No Due Date',
-                    progress: 0, // tasks don't have progress yet
+                    progress: 0,
                   ),
-                )).toList()
+                ))
               else
                 Padding(
                   padding: const EdgeInsets.only(right: 16.0),
                   child: _buildOngoingCard(
-                    'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop', // laptop
+                    'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop',
                     const Color(0xFF4C8DB3),
                     Icons.check_box,
                     'Task',
@@ -71,15 +71,15 @@ class OngoingSection extends StatelessWidget {
                       stepGoal = fitnessStats!.metricGoals!.firstWhere((goal) => goal.metricType == 'DAILY_STEPS');
                     } catch (_) {}
                   }
-                  
+
                   final current = stepGoal?.current ?? 0;
                   final target = stepGoal?.target ?? 5000;
-                  final progress = stepGoal != null ? (stepGoal!.progressPercent! * 100).toInt() : 0;
-                  
+                  final progress = (stepGoal?.progressPercent != null) ? (stepGoal!.progressPercent * 100).toInt() : 0;
+
                   return Padding(
                     padding: const EdgeInsets.only(right: 16.0),
                     child: _buildOngoingCard(
-                      'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=600&auto=format&fit=crop', // runner
+                      'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=600&auto=format&fit=crop',
                       const Color(0xFFE28743),
                       Icons.directions_run,
                       'Fitness',
@@ -92,7 +92,7 @@ class OngoingSection extends StatelessWidget {
                 }
               ),
               _buildOngoingCard(
-                'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?q=80&w=600&auto=format&fit=crop', // Valid placeholder
+                'https://images.unsplash.com/photo-1542281286-9e0a16bb7366?q=80&w=600&auto=format&fit=crop',
                 const Color(0xFF9B5DE5),
                 Icons.flight,
                 'Trip Plans',

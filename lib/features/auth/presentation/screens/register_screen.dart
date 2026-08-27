@@ -33,7 +33,7 @@ class RegisterScreen extends GetView<AuthController> {
           bottom: false,
           child: Column(
             children: [
-              // Top Section (Logo)
+
               Padding(
                 padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
                 child: Column(
@@ -44,8 +44,7 @@ class RegisterScreen extends GetView<AuthController> {
                   ],
                 ),
               ),
-              
-              // Bottom Section (Form)
+
               Expanded(
                 child: Container(
                   width: double.infinity,
@@ -63,7 +62,7 @@ class RegisterScreen extends GetView<AuthController> {
                     ),
                   child: Stack(
                       children: [
-                        // Background decorations
+
                         Positioned(
                           bottom: -100,
                           right: -100,
@@ -72,7 +71,7 @@ class RegisterScreen extends GetView<AuthController> {
                             painter: RegisterConcentricCirclesPainter(),
                           ),
                         ),
-                        // Stars around the view
+
                         Positioned(top: 40, right: 30, child: _buildStarIcon()),
                         Positioned(top: 70, left: 40, child: _buildStarIcon(size: 20)),
                         Positioned(bottom: 120, left: 10, child: _buildStarIcon(size: 40)),
@@ -80,7 +79,6 @@ class RegisterScreen extends GetView<AuthController> {
                         Positioned(bottom: 10, left: -20, child: _buildStarIcon(size: 80, opacity: 0.1)),
                         Positioned(top: 150, right: -20, child: _buildStarIcon(size: 100, opacity: 0.1)),
 
-                        // Form Content
                         SingleChildScrollView(
                           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
                           child: Column(
@@ -95,8 +93,8 @@ class RegisterScreen extends GetView<AuthController> {
                                   Expanded(
                                     child: Center(
                                       child: _buildGradientText(
-                                        'CREATE ACCOUNT', 
-                                        26, 
+                                        'CREATE ACCOUNT',
+                                        26,
                                         true,
                                         colors: [
                                           Colors.white,
@@ -108,11 +106,11 @@ class RegisterScreen extends GetView<AuthController> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 48), // Balance the row
+                                  const SizedBox(width: 48),
                                 ],
                               ),
                               const SizedBox(height: 30),
-                              
+
                               _buildInputField(
                                 label: 'FIRST NAME',
                                 hint: 'First Name',
@@ -133,14 +131,14 @@ class RegisterScreen extends GetView<AuthController> {
                                 controller: _emailController,
                               ),
                               const SizedBox(height: 20),
-                              
+
                               _buildInputField(
                                 label: 'USERNAME',
                                 hint: 'Username',
                                 controller: _usernameController,
                               ),
                               const SizedBox(height: 20),
-                              
+
                               _buildInputField(
                                 label: 'PASSWORD',
                                 hint: 'Enter Password',
@@ -148,8 +146,7 @@ class RegisterScreen extends GetView<AuthController> {
                                 obscureText: true,
                               ),
                               const SizedBox(height: 40),
-                              
-                              // Register Button
+
                               Center(
                                 child: GlassButton(
                                   text: 'Sign Up',
@@ -163,8 +160,7 @@ class RegisterScreen extends GetView<AuthController> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              
-                              // Login text
+
                               Center(
                                 child: GestureDetector(
                                   onTap: () => Get.back(),
@@ -205,8 +201,8 @@ class RegisterScreen extends GetView<AuthController> {
   }
 
   Widget _buildGradientText(
-    String text, 
-    double fontSize, 
+    String text,
+    double fontSize,
     bool isBold, {
     List<Color>? colors,
     List<double>? stops,
@@ -327,7 +323,7 @@ class RegisterConcentricCirclesPainter extends CustomPainter {
     final center = Offset(size.width, size.height);
     canvas.drawCircle(center, 120, paint);
     canvas.drawCircle(center, 140, paint);
-    
+
     final paintThick = Paint()
       ..color = const Color(0xFF4C8DB3).withValues(alpha: 0.4)
       ..style = PaintingStyle.stroke

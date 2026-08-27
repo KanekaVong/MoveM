@@ -18,10 +18,9 @@ class EditTaskController extends BaseController {
 
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
-  
+
   final Rx<DateTime?> deadline = Rx<DateTime?>(null);
-  
-  // Maps to track checklist items: {'id': existingId (or null), 'controller': TextEditingController}
+
   final RxList<Map<String, dynamic>> checklists = <Map<String, dynamic>>[].obs;
   final List<int> deletedChecklistIds = [];
 
@@ -29,7 +28,7 @@ class EditTaskController extends BaseController {
   final RxBool isRecurring = false.obs;
   final Rx<String?> repeatFrequency = Rx<String?>(null);
   final RxBool remindersEnabled = false.obs;
-  
+
   final RxList<LabelResponse> availableLabels = <LabelResponse>[].obs;
   final Rx<LabelResponse?> selectedLabel = Rx<LabelResponse?>(null);
 
@@ -61,19 +60,19 @@ class EditTaskController extends BaseController {
     if (initialTask.description != null) {
       descriptionController.text = initialTask.description!;
     }
-    
+
     if (initialTask.deadline != null) {
       deadline.value = DateTime.tryParse(initialTask.deadline!);
     }
-    
+
     if (initialTask.priority != null) {
       priority.value = initialTask.priority!;
     }
-    
+
     isRecurring.value = initialTask.recurring;
     repeatFrequency.value = initialTask.recurringType;
     remindersEnabled.value = (initialTask.reminders != null && initialTask.reminders!.isNotEmpty);
-    
+
     if (initialTask.checklists != null) {
       for (var c in initialTask.checklists!) {
         checklists.add({
@@ -108,7 +107,7 @@ class EditTaskController extends BaseController {
       onSuccess: (data) {
         availableLabels.add(data);
         selectedLabel.value = data;
-        Get.back(); // close dialog
+        Get.back();
         Get.snackbar('Success', 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
       },
     );
@@ -122,7 +121,7 @@ class EditTaskController extends BaseController {
 
     final String activityName = titleController.text.trim();
     final String description = descriptionController.text.trim();
-    
+
     String? deadlineStr;
     if (deadline.value != null) {
       deadlineStr = deadline.value!.toUtc().toIso8601String();
@@ -149,21 +148,20 @@ class EditTaskController extends BaseController {
     await executeApi<TaskResponse>(
       apiCall: () => repository.updateTask(initialTask.activityId, request.toJson()),
       onSuccess: (data) {
-        Get.back(result: true); // Go back immediately
+        Get.back(result: true);
         Get.snackbar('Success', 'Task updated successfully!', backgroundColor: Colors.green, colorText: Colors.white);
-        
+
         _processBackgroundUpdates(data.activityId);
       },
     );
   }
 
   void _processBackgroundUpdates(String activityId) {
-    // Delete removed checklists
+
     for (var id in deletedChecklistIds) {
       repository.deleteChecklistItem(id);
     }
-    
-    // Add new checklists
+
     for (var item in checklists) {
       if (item['id'] == null) {
         final text = (item['controller'] as TextEditingController).text.trim();
@@ -171,20 +169,18 @@ class EditTaskController extends BaseController {
           repository.addChecklistItem(activityId, {'itemName': text});
         }
       } else {
-        // Technically we would update existing checklists if their text changed, 
-        // but we don't have the PUT checklist endpoint mapped, so we skip it for now.
+
       }
     }
-    
-    // Process Reminders
+
     if (remindersEnabled.value && !initialTask.reminders!.isNotEmpty && deadline.value != null) {
-      // Add a reminder if it was off but now on
+
       repository.addReminder(activityId, {
         "remindAt": deadline.value!.toUtc().toIso8601String(),
         "type": "DUE_DATE"
       });
     } else if (!remindersEnabled.value && initialTask.reminders != null) {
-      // Delete existing reminders if it was turned off
+
       for (var reminder in initialTask.reminders!) {
         repository.deleteReminder(reminder.id);
       }

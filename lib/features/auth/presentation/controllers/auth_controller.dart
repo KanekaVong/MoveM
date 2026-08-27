@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../shared/base/base_controller.dart';
@@ -12,7 +11,6 @@ import '../../data/dto/response/user_response.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../../../core/utils/app_dialogs.dart';
 import '/../core/storage/user_manager.dart';
-
 
 class AuthController extends BaseController {
   final AuthRepository repository;
@@ -35,9 +33,10 @@ class AuthController extends BaseController {
         ),
       ),
       onSuccess: (data) async {
-        // Full login: accessToken + trustToken + user
+
         if (data.isFullyLoggedIn) {
           if (data.user != null) {
+            currentUser.value = data.user;
             await UserManager().saveUser(data.user!);
           }
 
@@ -49,7 +48,6 @@ class AuthController extends BaseController {
           return;
         }
 
-        // Login OTP required
         if (data.message != null &&
             data.message!.toLowerCase().contains('otp')) {
           Get.offNamed(
@@ -62,7 +60,6 @@ class AuthController extends BaseController {
           return;
         }
 
-        // Unexpected successful response
         AppDialogs.showError(
           data.message ?? 'Unexpected login response from server.',
         );
@@ -129,8 +126,8 @@ class AuthController extends BaseController {
     await executeApi(
       apiCall: () => repository.register(
         RegisterRequest(
-          email: email, 
-          username: username, 
+          email: email,
+          username: username,
           passwordHash: password,
           firstname: firstname,
           lastname: lastname,
@@ -154,7 +151,6 @@ class AuthController extends BaseController {
         if (data.user != null) {
           await UserManager().saveUser(data.user!);
         }
-
 
         if (data.accessToken != null && data.accessToken!.isNotEmpty) {
           await UserManager().saveToken(data.accessToken!);
@@ -233,7 +229,7 @@ class AuthController extends BaseController {
           message: 'Your password has been reset successfully.',
           onConfirm: () {
             Get.back();
-            Get.offAllNamed(AppRoutes.main); // auto-logged in, go straight to home
+            Get.offAllNamed(AppRoutes.main);
           },
         );
       },

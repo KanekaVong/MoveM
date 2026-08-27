@@ -12,14 +12,14 @@ class TaskScreen extends GetView<TaskController> {
   @override
   Widget build(BuildContext context) {
     Get.put(TaskController());
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFF0E0A07),
       body: Obx(() {
         if (controller.isLoading) {
           return const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6)));
         }
-        
+
         return Stack(
           children: [
             Positioned(
@@ -50,7 +50,7 @@ class TaskScreen extends GetView<TaskController> {
                 ],
               ),
             ),
-            
+
             CustomScrollView(
               slivers: [
                 _buildSliverAppBar(),
@@ -105,21 +105,47 @@ class TaskScreen extends GetView<TaskController> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 24),
-                          const Text(
-                            'All Tasks',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          _buildTaskList(),
-                          const SizedBox(height: 100),
                         ],
                       ),
+                    ),
+                  ),
+                ),
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _StickyHeaderDelegate(
+                    minHeight: 40.0 + MediaQuery.of(context).padding.top,
+                    maxHeight: 40.0 + MediaQuery.of(context).padding.top,
+                    child: Container(
+                      color: const Color(0xFF0E0A07),
+                      padding: EdgeInsets.only(
+                        left: 20.0,
+                        right: 20.0,
+                        bottom: 12.0,
+                        top: MediaQuery.of(context).padding.top,
+                      ),
+                      alignment: Alignment.bottomLeft,
+                      child: const Text(
+                        'All Tasks',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    color: const Color(0xFF0E0A07),
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildTaskList(),
+                        const SizedBox(height: 120),
+                      ],
                     ),
                   ),
                 ),
@@ -136,7 +162,7 @@ class TaskScreen extends GetView<TaskController> {
       expandedHeight: 180,
       backgroundColor: Colors.transparent,
       elevation: 0,
-      pinned: true,
+      pinned: false,
       flexibleSpace: const FlexibleSpaceBar(
         background: Align(
           alignment: Alignment.center,
@@ -189,7 +215,7 @@ class TaskScreen extends GetView<TaskController> {
     final total = controller.tasks.length;
     final completed = controller.completedTasksCount;
     final progress = total > 0 ? completed / total : 0.0;
-    
+
     return Container(
       height: 160,
       padding: const EdgeInsets.all(16),
@@ -288,7 +314,7 @@ class TaskScreen extends GetView<TaskController> {
     if (task.deadline != null) {
       try {
         final date = DateTime.parse(task.deadline!);
-        
+
         String day = DateFormat('d').format(date.toLocal());
         String suffix = 'th';
         if (day.endsWith('1') && !day.endsWith('11')) {
@@ -298,7 +324,7 @@ class TaskScreen extends GetView<TaskController> {
         } else if (day.endsWith('3') && !day.endsWith('13')) {
           suffix = 'rd';
         }
-        
+
         formattedDate = '$day$suffix ${DateFormat('MMMM yyyy').format(date.toLocal())}';
       } catch (_) {}
     }
@@ -306,7 +332,7 @@ class TaskScreen extends GetView<TaskController> {
     Color priorityColor = Colors.grey;
     Color priorityBgColor = const Color(0xFF1E293B);
     String priorityText = task.priority ?? 'Low';
-    
+
     if (priorityText.toUpperCase() == 'LOW') {
       priorityColor = const Color(0xFF65A30D);
       priorityBgColor = const Color(0xFF1A2E20);
@@ -464,5 +490,35 @@ class TaskScreen extends GetView<TaskController> {
         ),
       ),
     );
+  }
+}
+
+class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  _StickyHeaderDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_StickyHeaderDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight ||
+        child != oldDelegate.child;
   }
 }

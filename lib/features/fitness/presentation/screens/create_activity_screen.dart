@@ -11,7 +11,7 @@ class CreateActivityScreen extends StatefulWidget {
 class _CreateActivityScreenState extends State<CreateActivityScreen> {
   final TextEditingController _activityNameController = TextEditingController();
   final TextEditingController _rulesController = TextEditingController();
-  
+
   String? selectedType;
   final List<String> activityTypes = ['Running', 'Cycling', 'Swimming', 'HIIT'];
 
@@ -149,7 +149,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: () {
-                    // Start Activity Logic
+
                   },
                   icon: const Icon(Icons.play_arrow_outlined),
                   label: const Text('Start Activity', style: TextStyle(fontWeight: FontWeight.bold)),

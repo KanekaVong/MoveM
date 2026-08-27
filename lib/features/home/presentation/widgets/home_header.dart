@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../data/dto/response/dashboard_response.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../controllers/home_controller.dart';
 
-class HomeHeader extends StatelessWidget {
-  final List<RecentActivityItem>? recentActivities;
-
-  const HomeHeader({super.key, this.recentActivities});
+class HomeHeader extends GetView<HomeController> {
+  const HomeHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,47 +24,93 @@ class HomeHeader extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const Text(
-              'ForRiel',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Obx(() => Text(
+                  controller.greetingName,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )),
             const SizedBox(height: 4),
-            Text(
-              recentActivities != null && recentActivities!.isNotEmpty
-                  ? (recentActivities!.first.message ?? 'Stay Active Today!')
-                  : 'Stay Active Today!',
-              style: const TextStyle(
-                color: Color(0xFFE2E8F0),
-                fontSize: 16,
-              ),
-            ),
+            Obx(() => Text(
+                  controller.recentActivityMessage,
+                  style: const TextStyle(
+                    color: Color(0xFFE2E8F0),
+                    fontSize: 16,
+                  ),
+                )),
           ],
         ),
         Row(
           children: [
             IconButton(
               icon: const Icon(Icons.notifications_none, color: Colors.white),
-              onPressed: () {},
+              onPressed: controller.onNotificationTap,
             ),
-
             const SizedBox(width: 8),
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: const DecorationImage(
-                  image: CachedNetworkImageProvider(
-                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzYHgqociFLKFTZGayjmtyok4nwEp04pf_Vk3Nf7uosg&s=10', // placeholder leopard
+            GestureDetector(
+              onTap: controller.onProfileTap,
+              child: Obx(() {
+                final pic = controller.profilePicUrl;
+                final initial = controller.userInitial;
+
+                return Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    border: Border.all(color: const Color(0xFF334155), width: 2),
                   ),
-                  fit: BoxFit.cover,
-                ),
-                border: Border.all(color: const Color(0xFF1E293B), width: 2),
-              ),
+                  child: ClipOval(
+                    child: pic != null && pic.isNotEmpty
+                        ? (pic.startsWith('http')
+                            ? CachedNetworkImage(
+                                imageUrl: pic,
+                                fit: BoxFit.cover,
+                                errorWidget: (_, __, ___) => Center(
+                                  child: Text(
+                                    initial,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Image.file(
+                                File(pic),
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Center(
+                                  child: Text(
+                                    initial,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ))
+                        : Center(
+                            child: Text(
+                              initial,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                  ),
+                );
+              }),
             ),
           ],
         ),

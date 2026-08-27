@@ -25,7 +25,7 @@ class FriendsController extends BaseController {
     getFriends();
     getIncomingRequests();
     getOutgoingRequests();
-    // Initially populate search results with all friends for the "Suggestions" tab
+
     searchFriends('');
   }
 
@@ -79,7 +79,7 @@ class FriendsController extends BaseController {
       apiCall: () => repository.acceptFriendRequest(requestId),
       onSuccess: (data) {
         incomingRequests.removeWhere((req) => req.requestId == requestId);
-        getFriends(); // Refresh friends list
+        getFriends();
       },
     );
   }
@@ -98,8 +98,7 @@ class FriendsController extends BaseController {
       apiCall: () => repository.sendFriendRequest(username),
       onSuccess: (data) {
         getOutgoingRequests();
-        
-        // Update the search results to show pending status
+
         final index = searchResults.indexWhere((user) => user.username == username);
         if (index != -1) {
           final user = searchResults[index];
@@ -123,7 +122,7 @@ class FriendsController extends BaseController {
         apiCall: () => repository.cancelFriendRequest(request.requestId),
         onSuccess: (data) {
           outgoingRequests.removeWhere((req) => req.requestId == request.requestId);
-          
+
           final index = searchResults.indexWhere((user) => user.username == username);
           if (index != -1) {
             final user = searchResults[index];
@@ -139,7 +138,7 @@ class FriendsController extends BaseController {
         },
       );
     } catch (e) {
-      // firstWhere throws StateError if no element is found.
+
       Get.snackbar('Error', 'Unable to cancel request. Please try again later.');
     }
   }

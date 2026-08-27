@@ -25,7 +25,7 @@ class DioClient {
     );
 
     _dio = Dio(options);
-    
+
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -39,8 +39,6 @@ class DioClient {
           return handler.next(response);
         },
         onError: (DioException e, handler) {
-          // if (e.response?.statusCode == 401) {
-          // }
           return handler.next(e);
         },
       ),
@@ -50,7 +48,7 @@ class DioClient {
       _dio.interceptors.add(LogInterceptor(
         request: true,
         requestBody: true,
-        responseBody: false, // Handled by custom formatter below
+        responseBody: false,
         responseHeader: false,
         error: true,
         logPrint: (object) => log(object.toString(), name: 'DIO-REQ'),

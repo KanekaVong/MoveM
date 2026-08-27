@@ -44,7 +44,6 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen> {
               points: route,
             );
 
-            // Follow location
             if (controller.autoFollow.value && route.isNotEmpty) {
               _mapController?.animateCamera(
                 CameraUpdate.newLatLng(route.last),
@@ -53,7 +52,7 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen> {
 
             return GoogleMap(
               initialCameraPosition: const CameraPosition(
-                target: LatLng(0, 0), // Will be updated
+                target: LatLng(0, 0),
                 zoom: 16.0,
               ),
               myLocationEnabled: true,
@@ -63,13 +62,12 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen> {
                 _mapController = mapController;
               },
               onCameraMoveStarted: () {
-                // User manually pans map
+
                 controller.setAutoFollow(false);
               },
             );
           }),
 
-          // Stats Overlay
           Positioned(
             top: 16,
             left: 16,
@@ -77,7 +75,7 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen> {
             child: Obx(() {
               final session = controller.session.value;
               final currentPace = controller.currentPace.value;
-              
+
               final distanceKm = session.totalDistanceMeters / 1000.0;
               final durationStr = session.elapsedDuration.toString().split('.').first;
 
@@ -98,7 +96,6 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen> {
             }),
           ),
 
-          // Recenter Button
           Positioned(
             right: 16,
             bottom: 100,
@@ -119,7 +116,6 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen> {
             }),
           ),
 
-          // Controls
           Positioned(
             bottom: 30,
             left: 0,
@@ -189,7 +185,7 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen> {
     return [
       FloatingActionButton.extended(
         onPressed: () {
-          // In finished state, user can start a new run
+
           controller.session.value = RunSession();
         },
         label: const Text('NEW RUN'),

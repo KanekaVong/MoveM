@@ -37,16 +37,16 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final response = await authService.login(request);
 
-      if (response.data is Map<String, dynamic>) {
-        return ApiSuccess(AuthResponse.fromJson(response.data));
+      if (response.data is Map) {
+        return ApiSuccess(AuthResponse.fromJson(Map<String, dynamic>.from(response.data)));
       } else if (response.data is String) {
         try {
           var decoded = jsonDecode(response.data);
           if (decoded is String) {
             decoded = jsonDecode(decoded);
           }
-          if (decoded is Map<String, dynamic>) {
-            return ApiSuccess(AuthResponse.fromJson(decoded));
+          if (decoded is Map) {
+            return ApiSuccess(AuthResponse.fromJson(Map<String, dynamic>.from(decoded)));
           }
         } catch (_) {}
       }
@@ -75,13 +75,16 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final response = await authService.verifyEmail(request);
 
-      if (response.data is Map<String, dynamic>) {
-        return ApiSuccess(AuthResponse.fromJson(response.data));
+      if (response.data is Map) {
+        return ApiSuccess(AuthResponse.fromJson(Map<String, dynamic>.from(response.data)));
       } else if (response.data is String) {
         try {
-          final decoded = jsonDecode(response.data);
-          if (decoded is Map<String, dynamic>) {
-            return ApiSuccess(AuthResponse.fromJson(decoded));
+          var decoded = jsonDecode(response.data);
+          if (decoded is String) {
+            decoded = jsonDecode(decoded);
+          }
+          if (decoded is Map) {
+            return ApiSuccess(AuthResponse.fromJson(Map<String, dynamic>.from(decoded)));
           }
         } catch (_) {}
       }
@@ -98,18 +101,21 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<ApiResult<AuthResponse>> verifyOtp(OtpRequest request) async {
     try {
       final response = await authService.verifyOtp(request);
-      
-      if (response.data is Map<String, dynamic>) {
-        return ApiSuccess(AuthResponse.fromJson(response.data));
+
+      if (response.data is Map) {
+        return ApiSuccess(AuthResponse.fromJson(Map<String, dynamic>.from(response.data)));
       } else if (response.data is String) {
         try {
-          final decoded = jsonDecode(response.data);
-          if (decoded is Map<String, dynamic>) {
-            return ApiSuccess(AuthResponse.fromJson(decoded));
+          var decoded = jsonDecode(response.data);
+          if (decoded is String) {
+            decoded = jsonDecode(decoded);
+          }
+          if (decoded is Map) {
+            return ApiSuccess(AuthResponse.fromJson(Map<String, dynamic>.from(decoded)));
           }
         } catch (_) {}
       }
-      
+
       return ApiError(ApiException(message: 'Invalid OTP verification response from server.'));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));

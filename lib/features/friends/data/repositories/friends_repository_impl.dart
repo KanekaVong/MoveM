@@ -35,7 +35,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
       _logger.i('Calling GET api/friends');
       final response = await friendsService.getFriends();
       _logger.i('getFriends Response [${response.statusCode}]');
-      
+
       final List<dynamic> data = response.data;
       final friends = data.map((e) => FriendResponse.fromJson(e)).toList();
       return ApiSuccess(friends);
@@ -54,7 +54,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
       _logger.i('Calling GET api/friends/search with keyword: $keyword');
       final response = await friendsService.searchFriends(keyword);
       _logger.i('searchFriends Response [${response.statusCode}]');
-      
+
       final List<dynamic> data = response.data;
       final friends = data.map((e) => FriendResponse.fromJson(e)).toList();
       return ApiSuccess(friends);
@@ -89,7 +89,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
       _logger.i('Calling GET api/friends/requests/incoming');
       final response = await friendsService.getIncomingRequests();
       _logger.i('getIncomingRequests Response [${response.statusCode}]');
-      
+
       final List<dynamic> data = response.data;
       final requests = data.map((e) => FriendRequestResponse.fromJson(e)).toList();
       return ApiSuccess(requests);
@@ -108,7 +108,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
       _logger.i('Calling GET api/friends/requests/outgoing');
       final response = await friendsService.getOutgoingRequests();
       _logger.i('getOutgoingRequests Response [${response.statusCode}]');
-      
+
       final List<dynamic> data = response.data;
       final requests = data.map((e) => FriendRequestResponse.fromJson(e)).toList();
       return ApiSuccess(requests);

@@ -33,7 +33,7 @@ class VerifyOtpScreen extends GetView<AuthController> {
           bottom: false,
           child: Column(
             children: [
-              // Top Section (Logo)
+
               Padding(
                 padding: const EdgeInsets.only(top: 40.0, bottom: 40.0),
                 child: Column(
@@ -44,8 +44,7 @@ class VerifyOtpScreen extends GetView<AuthController> {
                   ],
                 ),
               ),
-              
-              // Bottom Section (Form)
+
               Expanded(
                 child: Container(
                   width: double.infinity,
@@ -71,7 +70,7 @@ class VerifyOtpScreen extends GetView<AuthController> {
                             painter: VerifyConcentricCirclesPainter(),
                           ),
                         ),
-                        // Stars around the view
+
                         Positioned(top: 40, right: 30, child: _buildStarIcon()),
                         Positioned(top: 70, left: 40, child: _buildStarIcon(size: 20)),
                         Positioned(bottom: 120, left: 10, child: _buildStarIcon(size: 40)),
@@ -93,8 +92,8 @@ class VerifyOtpScreen extends GetView<AuthController> {
                                   Expanded(
                                     child: Center(
                                       child: _buildGradientText(
-                                        'VERIFY OTP', 
-                                        26, 
+                                        'VERIFY OTP',
+                                        26,
                                         true,
                                         colors: [
                                           Colors.white,
@@ -106,7 +105,7 @@ class VerifyOtpScreen extends GetView<AuthController> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 48), // Balance the row
+                                  const SizedBox(width: 48),
                                 ],
                               ),
                               const SizedBox(height: 10),
@@ -121,7 +120,7 @@ class VerifyOtpScreen extends GetView<AuthController> {
                                 ),
                               ),
                               const SizedBox(height: 40),
-                              
+
                               _buildInputField(
                                 label: 'OTP CODE',
                                 hint: 'Enter 6-digit OTP',
@@ -179,8 +178,8 @@ class VerifyOtpScreen extends GetView<AuthController> {
   }
 
   Widget _buildGradientText(
-    String text, 
-    double fontSize, 
+    String text,
+    double fontSize,
     bool isBold, {
     List<Color>? colors,
     List<double>? stops,
@@ -201,7 +200,7 @@ class VerifyOtpScreen extends GetView<AuthController> {
           child: Text(
             text,
             style: textStyle.copyWith(
-              color: Colors.transparent, 
+              color: Colors.transparent,
               shadows: [
                 Shadow(
                   color: const Color(0xFF4C8DB3).withValues(alpha: 0.3),
@@ -288,7 +287,7 @@ class VerifyOtpScreen extends GetView<AuthController> {
   }
 
   Widget _buildStarIcon({double size = 24, double opacity = 0.4}) {
-    return const SizedBox.shrink(); // Using placeholder for custom painter
+    return const SizedBox.shrink();
   }
 }
 
@@ -303,7 +302,7 @@ class VerifyConcentricCirclesPainter extends CustomPainter {
     final center = Offset(size.width, size.height);
     canvas.drawCircle(center, 120, paint);
     canvas.drawCircle(center, 140, paint);
-    
+
     final paintThick = Paint()
       ..color = const Color(0xFF4C8DB3).withValues(alpha: 0.4)
       ..style = PaintingStyle.stroke

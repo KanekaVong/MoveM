@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/fitness_profile_controller.dart';
 import 'running_tracking_screen.dart';
 import 'create_group_screen.dart';
+import 'setup_goal_screen.dart';
 
 class FitnessDashboardScreen extends StatelessWidget {
   final FitnessProfileController controller;
@@ -24,14 +25,16 @@ class FitnessDashboardScreen extends StatelessWidget {
               const SizedBox(height: 16),
               _buildStatsRow(),
               const SizedBox(height: 24),
-              const Text('Group Activity', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+              const Text('MoveM Club', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               _buildGroupActivity(),
+              const SizedBox(height: 24),
+              _buildYourGoal(),
               const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Trending Challenge', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  const Text('Solo Challenges', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                   Text('see all', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14)),
                 ],
               ),
@@ -63,7 +66,7 @@ class FitnessDashboardScreen extends StatelessWidget {
                   }).toList(),
                 );
               }),
-              const SizedBox(height: 32), // extra padding for bottom nav
+              const SizedBox(height: 120),
             ],
           ),
         ),
@@ -91,7 +94,7 @@ class FitnessDashboardScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text("Today's Workout", style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
-              // A small runner icon could go here or a real image
+
               const Icon(Icons.directions_run, color: Colors.blueAccent, size: 32),
             ],
           ),
@@ -106,7 +109,7 @@ class FitnessDashboardScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF0B2B6A), // Dark blue
+        color: const Color(0xFF0B2B6A),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
@@ -179,7 +182,7 @@ class FitnessDashboardScreen extends StatelessWidget {
           children: [
             _buildStatItem('Weight', '${w}kg'),
             Container(width: 1, height: 40, color: Colors.white.withOpacity(0.2)),
-            _buildStatItem('Target weight', '${(w * 0.9).round()}kg'), // Example mock
+            _buildStatItem('Target weight', '${(w * 0.9).round()}kg'),
             Container(width: 1, height: 40, color: Colors.white.withOpacity(0.2)),
             _buildStatItem('Challenge', '0', showDots: true),
           ],
@@ -218,9 +221,9 @@ class FitnessDashboardScreen extends StatelessWidget {
                   child: const Icon(Icons.login, color: Colors.white),
                 ),
                 const SizedBox(height: 16),
-                const Text('Join Group', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                const Text('Join Club', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                const Text('Find an active group', style: TextStyle(color: Colors.white70, fontSize: 10)),
+                const Text('Find an active club', style: TextStyle(color: Colors.white70, fontSize: 10)),
               ],
             ),
           ),
@@ -246,9 +249,9 @@ class FitnessDashboardScreen extends StatelessWidget {
                     child: const Icon(Icons.add, color: Colors.white),
                   ),
                   const SizedBox(height: 16),
-                  const Text('Create Group', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                  const Text('Create Club', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
-                  const Text('Start your own activity', style: TextStyle(color: Colors.white70, fontSize: 10)),
+                  const Text('Create Your Own\nCommunity', style: TextStyle(color: Colors.white70, fontSize: 10)),
                 ],
               ),
             ),
@@ -273,7 +276,7 @@ class FitnessDashboardScreen extends StatelessWidget {
                 height: 100,
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.horizontal(left: Radius.circular(24)),
-                  color: Colors.black26, // Placeholder for image
+                  color: Colors.black26,
                 ),
                 child: const Icon(Icons.image, color: Colors.white54, size: 40),
               ),
@@ -286,7 +289,7 @@ class FitnessDashboardScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 12)),
                     const SizedBox(height: 8),
-                    // Progress bar
+
                     Row(
                       children: [
                         Expanded(
@@ -333,6 +336,46 @@ class FitnessDashboardScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildYourGoal() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Your Goal', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16),
+        GestureDetector(
+          onTap: () {
+            Get.to(() => const SetupGoalScreen());
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0B2B6A),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.add, color: Colors.white, size: 24),
+                ),
+                const SizedBox(width: 16),
+                const Text(
+                  'Set Up Your Fitness Goal Now 🔥',
+                  style: TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

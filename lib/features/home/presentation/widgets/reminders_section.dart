@@ -42,7 +42,7 @@ class RemindersSection extends StatelessWidget {
           child: Stack(
             children: [
               Positioned(
-                left: 11, // centers the line with the icons (icon width is 24)
+                left: 11,
                 top: 20,
                 bottom: 20,
                 child: Container(
@@ -54,10 +54,10 @@ class RemindersSection extends StatelessWidget {
                 children: reminders.take(3).map((reminder) => Column(
                   children: [
                     _buildReminderItem(
-                      _getIconForType(reminder.type ?? ''), 
-                      _getColorForType(reminder.type ?? ''), 
-                      _formatDate(reminder.remindAt), 
-                      _getTitleForType(reminder.type ?? ''), 
+                      _getIconForType(reminder.type ?? ''),
+                      _getColorForType(reminder.type ?? ''),
+                      _formatDate(reminder.remindAt),
+                      _getTitleForType(reminder.type ?? ''),
                       reminder.type ?? 'Reminder',
                       reminder.sent
                     ),

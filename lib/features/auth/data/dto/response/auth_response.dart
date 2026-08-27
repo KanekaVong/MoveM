@@ -17,8 +17,8 @@ class AuthResponse {
     return AuthResponse(
       accessToken: json['accessToken']?.toString(),
       trustToken: json['trustToken']?.toString(),
-      user: json['user'] is Map<String, dynamic>
-          ? UserResponse.fromJson(json['user'])
+      user: json['user'] != null && json['user'] is Map
+          ? UserResponse.fromJson(Map<String, dynamic>.from(json['user']))
           : null,
       message: json['message']?.toString(),
     );

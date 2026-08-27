@@ -28,7 +28,7 @@ abstract class BaseController extends GetxController {
   }) async {
     onLoading?.call();
     state.value = ViewState.loading;
-    
+
     if (showLoading) {
       AppDialogs.showLoading();
     }
@@ -86,7 +86,7 @@ abstract class BaseController extends GetxController {
   void _handleUnauthorized(String message) {
     if (_isUnauthorizedHandling) return;
     _isUnauthorizedHandling = true;
-    
+
     AppDialogs.showError(message, onConfirm: () {
       _isUnauthorizedHandling = false;
       if (Get.currentRoute != AppRoutes.login) {

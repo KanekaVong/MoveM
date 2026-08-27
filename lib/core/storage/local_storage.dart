@@ -40,8 +40,12 @@ class LocalStorage {
   Future<String?> getSecureString(String key) async {
     return await _secureStorage.read(key: key);
   }
-  
+
   Future<void> clearSecureString(String key) async {
     await _secureStorage.delete(key: key);
+  }
+
+  Future<void> remove(String key) async {
+    await _sharedPrefs.remove(key);
   }
 }

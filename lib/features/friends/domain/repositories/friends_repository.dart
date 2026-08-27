@@ -8,7 +8,7 @@ abstract class FriendsRepository {
   Future<ApiResult<String>> deleteFriend(int friendId);
   Future<ApiResult<List<FriendRequestResponse>>> getIncomingRequests();
   Future<ApiResult<List<FriendRequestResponse>>> getOutgoingRequests();
-  
+
   Future<ApiResult<String>> sendFriendRequest(String username);
   Future<ApiResult<String>> acceptFriendRequest(int requestId);
   Future<ApiResult<String>> rejectFriendRequest(int requestId);

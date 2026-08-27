@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:movem/core/utils/Constants.dart';
-import 'l10n/app_localizations.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
+import 'firebase_options.dart';
+import 'core/services/fcm_service.dart';
+import 'core/utils/Constants.dart';
+import 'l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/routes/app_pages.dart';
 import 'core/routes/app_routes.dart';
@@ -11,12 +15,22 @@ import 'core/storage/user_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await LocalStorage().init();
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    await FcmService().initialize();
+  } catch (e) {
+    debugPrint('⚠️ Error initializing Firebase: $e');
+  }
 
   final savedLocale = Locale(UserManager().languageCode);
   final savedTheme = UserManager().themeMode;
-  
+
   ThemeMode initialThemeMode;
   if (savedTheme == Constants.lightMode) {
     initialThemeMode = ThemeMode.light;
@@ -25,7 +39,7 @@ void main() async {
   } else {
     initialThemeMode = ThemeMode.system;
   }
-  
+
   runApp(MyApp(savedLocale: savedLocale, savedThemeMode: initialThemeMode));
 }
 

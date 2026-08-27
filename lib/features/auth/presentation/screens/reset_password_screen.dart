@@ -33,13 +33,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   void _startTimer() {
     if (_isTimerActive) return;
-    
+
     setState(() {
       _isTimerActive = true;
       _timerFinished = false;
       _secondsLeft = 60;
     });
-    
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_secondsLeft > 0) {
         setState(() {
@@ -76,7 +76,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           bottom: false,
           child: Column(
             children: [
-              // Top Section (Logo)
+
               Padding(
                 padding: const EdgeInsets.only(top: 40.0, bottom: 40.0),
                 child: Column(
@@ -87,8 +87,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ],
                 ),
               ),
-              
-              // Bottom Section (Form)
+
               Expanded(
                 child: Container(
                   width: double.infinity,
@@ -114,7 +113,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             painter: VerifyConcentricCirclesPainter(),
                           ),
                         ),
-                        // Stars around the view
+
                         Positioned(top: 40, right: 30, child: _buildStarIcon()),
                         Positioned(top: 70, left: 40, child: _buildStarIcon(size: 20)),
                         Positioned(bottom: 120, left: 10, child: _buildStarIcon(size: 40)),
@@ -136,8 +135,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   Expanded(
                                     child: Center(
                                       child: _buildGradientText(
-                                        'RESET PASSWORD', 
-                                        24, 
+                                        'RESET PASSWORD',
+                                        24,
                                         true,
                                         colors: [
                                           Colors.white,
@@ -149,18 +148,18 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 48), // Balance the row
+                                  const SizedBox(width: 48),
                                 ],
                               ),
                               const SizedBox(height: 30),
-                              
+
                               _buildInputField(
                                 label: 'EMAIL ADDRESS',
                                 hint: 'Enter your email',
                                 controller: _emailController,
                               ),
                               const SizedBox(height: 20),
-                              
+
                               _buildInputField(
                                 label: 'OTP CODE',
                                 hint: 'Enter 6-digit OTP',
@@ -172,12 +171,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                       controller.forgotPassword(_emailController.text);
                                       _startTimer();
                                     } else {
-                                      Get.snackbar('Error', 'Please enter your email first', 
+                                      Get.snackbar('Error', 'Please enter your email first',
                                         backgroundColor: Colors.redAccent, colorText: Colors.white);
                                     }
                                   },
                                   child: Text(
-                                    _isTimerActive 
+                                    _isTimerActive
                                       ? '$_secondsLeft s'
                                       : (_timerFinished ? 'Resend' : 'Send OTP'),
                                     style: TextStyle(
@@ -189,7 +188,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              
+
                               _buildInputField(
                                 label: 'NEW PASSWORD',
                                 hint: 'Enter new password',
@@ -197,13 +196,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 obscureText: true,
                               ),
                               const SizedBox(height: 40),
-                              
+
                               Center(
                                 child: GlassButton(
                                   text: 'Reset Password',
                                   onPressed: () {
-                                    if (_emailController.text.isNotEmpty && 
-                                        _otpController.text.isNotEmpty && 
+                                    if (_emailController.text.isNotEmpty &&
+                                        _otpController.text.isNotEmpty &&
                                         _newPasswordController.text.isNotEmpty) {
                                       controller.resetPassword(
                                         _emailController.text,
@@ -211,7 +210,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                         _newPasswordController.text,
                                       );
                                     } else {
-                                      Get.snackbar('Error', 'Please fill all fields', 
+                                      Get.snackbar('Error', 'Please fill all fields',
                                         backgroundColor: Colors.redAccent, colorText: Colors.white);
                                     }
                                   },
@@ -234,8 +233,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   Widget _buildGradientText(
-    String text, 
-    double fontSize, 
+    String text,
+    double fontSize,
     bool isBold, {
     List<Color>? colors,
     List<double>? stops,
@@ -256,7 +255,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           child: Text(
             text,
             style: textStyle.copyWith(
-              color: Colors.transparent, 
+              color: Colors.transparent,
               shadows: [
                 Shadow(
                   color: const Color(0xFF4C8DB3).withValues(alpha: 0.3),
@@ -352,7 +351,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   Widget _buildStarIcon({double size = 24, double opacity = 0.4}) {
-    return const SizedBox.shrink(); // Using placeholder for custom painter
+    return const SizedBox.shrink();
   }
 }
 
@@ -367,7 +366,7 @@ class VerifyConcentricCirclesPainter extends CustomPainter {
     final center = Offset(size.width, size.height);
     canvas.drawCircle(center, 120, paint);
     canvas.drawCircle(center, 140, paint);
-    
+
     final paintThick = Paint()
       ..color = const Color(0xFF4C8DB3).withValues(alpha: 0.4)
       ..style = PaintingStyle.stroke

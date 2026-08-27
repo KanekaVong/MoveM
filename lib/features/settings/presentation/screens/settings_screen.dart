@@ -1,43 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
-import 'package:movem/shared/widgets/glass_container.dart';
-import 'package:movem/features/settings/presentation/screens/ProfileScreen.dart' hide GlassContainer;
-import 'package:movem/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:movem/core/storage/user_manager.dart';
-import 'package:movem/core/routes/app_routes.dart';
+import '../../../../shared/widgets/glass_container.dart';
+import '../controllers/settings_controller.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(SettingsController());
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1021), // Deep dark background from design
+      backgroundColor: const Color(0xFF0B1021),
       body: Stack(
         children: [
           SafeArea(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               children: [
-                // --- SECTION 1: Account ---
                 _buildSectionHeader('Account'),
                 const SizedBox(height: 10),
                 _buildGlassGroup([
                   _buildSettingItem(
                     title: 'Your Profile',
-                    onTap: () => Get.to(() => const ProfileScreen()),
+                    onTap: controller.onProfileTap,
                   ),
                   _buildDivider(),
                   _buildSettingItem(
                     title: 'Change Password',
-                    onTap: () {},
+                    onTap: controller.onChangePasswordTap,
                   ),
                 ]),
 
                 const SizedBox(height: 24),
 
-                // --- SECTION 2: Preferences ---
                 _buildSectionHeader('Preferences'),
                 const SizedBox(height: 10),
                 _buildGlassGroup([
@@ -46,53 +42,118 @@ class SettingsScreen extends StatelessWidget {
                     onTap: () {},
                   ),
                   _buildDivider(),
+                  _buildToggleSettingItem(
+                    title: 'Dark/Light',
+                    value: controller.isDarkMode,
+                    onChanged: controller.onToggleTheme,
+                  ),
+                  _buildDivider(),
                   _buildSettingItem(
                     title: 'Languages',
-                    onTap: () {},
+                    onTap: controller.onLanguagesTap,
                   ),
                   _buildDivider(),
                   _buildSettingItem(
                     title: 'Notifications',
-                    onTap: () {},
+                    onTap: controller.onNotificationsTap,
                   ),
                   _buildDivider(),
                   _buildSettingItem(
                     title: 'Privacy',
-                    onTap: () {},
+                    onTap: controller.onPrivacyTap,
                   ),
                 ]),
 
                 const SizedBox(height: 24),
 
-                // --- SECTION 3: Sessions ---
                 _buildSectionHeader('Sessions'),
                 const SizedBox(height: 10),
                 _buildGlassGroup([
                   _buildSettingItem(
                     title: 'Delete Your Account',
-                    onTap: () {},
+                    onTap: controller.onDeleteAccountTap,
                   ),
                   _buildDivider(),
                   _buildSettingItem(
                     title: 'Log Out',
-                    onTap: () {
-                      if (Get.isRegistered<AuthController>()) {
-                        Get.find<AuthController>().logout();
-                      } else {
-                        UserManager().clearSession();
-                        Get.offAllNamed(AppRoutes.login);
-                      }
-                    },
+                    onTap: () => _showLogoutDialog(context, controller),
                   ),
                 ]),
 
-                // Extra bottom space so items aren't hidden behind the floating nav bar
                 const SizedBox(height: 100),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context, SettingsController controller) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassContainer(
+          padding: const EdgeInsets.all(24),
+          borderRadius: BorderRadius.circular(20),
+          color: const Color(0xFF1E293B),
+          opacity: 0.5,
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.logout, color: Colors.white, size: 48),
+              const SizedBox(height: 16),
+              const Text(
+                'Log Out',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Are you sure you want to log out of your account?',
+                style: TextStyle(color: Colors.white70, fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      onPressed: () => Get.back(),
+                      child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFEF4444),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      onPressed: () {
+                        Get.back();
+                        controller.confirmLogout();
+                      },
+                      child: const Text('Log Out', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierColor: Colors.black.withValues(alpha: 0.6),
     );
   }
 
@@ -111,7 +172,7 @@ class SettingsScreen extends StatelessWidget {
     return GlassContainer(
       padding: EdgeInsets.zero,
       borderRadius: BorderRadius.circular(16),
-      opacity: 0.07, // Subtle transparent glass effect
+      opacity: 0.07,
       blur: 20.0,
       child: Column(
         children: children,
@@ -152,11 +213,45 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildToggleSettingItem({
+    required String title,
+    required RxBool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          Obx(() => Switch(
+                value: value.value,
+                onChanged: (val) {
+                  value.value = val;
+                  onChanged(val);
+                },
+                activeThumbColor: const Color(0xFF3B82F6),
+                activeTrackColor: const Color(0xFF3B82F6).withValues(alpha: 0.5),
+                inactiveThumbColor: Colors.white70,
+                inactiveTrackColor: Colors.white24,
+              )),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDivider() {
     return Divider(
       height: 1,
       thickness: 1,
-      color: Colors.white.withOpacity(0.06),
+      color: Colors.white.withValues(alpha: 0.06),
     );
   }
 }

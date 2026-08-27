@@ -12,7 +12,7 @@ class AuthService {
 
   Future<Response> login(LoginRequest request) async {
     return await dio.post(
-      'auth/login', 
+      'auth/login',
       data: request.toJson(),
       options: Options(responseType: ResponseType.plain),
     );
@@ -20,7 +20,7 @@ class AuthService {
 
   Future<Response> register(RegisterRequest request) async {
     return await dio.post(
-      'auth/register', 
+      'auth/register',
       data: request.toJson(),
       options: Options(responseType: ResponseType.plain),
     );

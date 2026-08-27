@@ -28,10 +28,9 @@ class _RunHistoryScreenState extends State<RunHistoryScreen> {
   Future<void> _loadSessions() async {
     await _repository.init();
     final sessions = await _repository.getAllSessions();
-    
-    // Sort by startedAt descending
+
     sessions.sort((a, b) => b.startedAt.compareTo(a.startedAt));
-    
+
     setState(() {
       _sessions = sessions;
       _isLoading = false;
@@ -78,7 +77,7 @@ class RunDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final route = session.points.map((p) => LatLng(p.latitude, p.longitude)).toList();
-    
+
     LatLng target = const LatLng(0, 0);
     if (route.isNotEmpty) {
       target = route.first;
@@ -130,7 +129,7 @@ class RunDetailScreen extends StatelessWidget {
           southwest: LatLng(minLat, minLong),
           northeast: LatLng(maxLat, maxLong),
         ),
-        50.0, // padding
+        50.0,
       ),
     );
   }

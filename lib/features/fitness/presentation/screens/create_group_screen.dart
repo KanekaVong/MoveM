@@ -12,7 +12,7 @@ class CreateGroupScreen extends StatefulWidget {
 
 class _CreateGroupScreenState extends State<CreateGroupScreen> {
   final TextEditingController _groupNameController = TextEditingController();
-  
+
   List<Map<String, dynamic>> members = [];
 
   @override
@@ -163,7 +163,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16), 
+              const SizedBox(height: 16),
             ],
           ),
         ),

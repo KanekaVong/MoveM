@@ -51,14 +51,14 @@ class TaskResponse {
       priority: json['priority'],
       recurring: json['recurring'] ?? json['isRecurring'] ?? false,
       recurringType: json['recurringType'],
-      labels: json['labels'] != null 
-          ? (json['labels'] as List).map((e) => LabelResponse.fromJson(e)).toList() 
+      labels: json['labels'] != null
+          ? (json['labels'] as List).map((e) => LabelResponse.fromJson(e)).toList()
           : null,
-      checklists: json['checklists'] != null 
-          ? (json['checklists'] as List).map((e) => ChecklistResponse.fromJson(e)).toList() 
+      checklists: json['checklists'] != null
+          ? (json['checklists'] as List).map((e) => ChecklistResponse.fromJson(e)).toList()
           : null,
-      reminders: json['reminders'] != null 
-          ? (json['reminders'] as List).map((e) => ReminderResponse.fromJson(e)).toList() 
+      reminders: json['reminders'] != null
+          ? (json['reminders'] as List).map((e) => ReminderResponse.fromJson(e)).toList()
           : null,
     );
   }

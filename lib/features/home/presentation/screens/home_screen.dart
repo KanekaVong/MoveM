@@ -15,7 +15,7 @@ class HomeScreen extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // Dark navy background
+      backgroundColor: const Color(0xFF0F172A),
       body: SafeArea(
         child: Obx(() {
           if (controller.isLoading && controller.dashboardData.value == null) {
@@ -32,11 +32,11 @@ class HomeScreen extends GetView<HomeController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                HomeHeader(recentActivities: data.recentActivities),
+                const HomeHeader(),
                 const SizedBox(height: 32),
                 TodaysProgressCard(fitnessStats: data.fitnessStatistics),
                 const SizedBox(height: 32),
-                OngoingSection(tasks: data.dueToday, fitnessStats: data.fitnessStatistics), // Use dueToday for ongoing for now
+                OngoingSection(tasks: data.dueToday, fitnessStats: data.fitnessStatistics),
                 const SizedBox(height: 32),
                 UpcomingSection(tasks: data.upcomingTasks),
                 const SizedBox(height: 32),
@@ -47,7 +47,7 @@ class HomeScreen extends GetView<HomeController> {
                 const QuickActionsGrid(),
                 const SizedBox(height: 32),
                 DashboardSummaryGrid(taskStats: data.statistics),
-                const SizedBox(height: 24),
+                const SizedBox(height: 120),
               ],
             ),
           );

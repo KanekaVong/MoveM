@@ -26,7 +26,7 @@ class TodaysProgressCard extends StatelessWidget {
     final calsProgress = calsGoal?.progressPercent ?? ((fitnessStats?.caloriesToday ?? 0) / calsTarget);
 
     final workoutsGoal = _getGoal('DAILY_WORKOUTS');
-    final workoutsProgress = workoutsGoal?.progressPercent ?? 
+    final workoutsProgress = workoutsGoal?.progressPercent ??
         ((fitnessStats?.workoutsThisWeek ?? 1) > 0 ? (fitnessStats?.workoutsToday ?? 0) / (fitnessStats?.workoutsThisWeek ?? 1) : 0.0);
 
     final List<double> progresses = [
@@ -41,7 +41,7 @@ class TodaysProgressCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF131B2F), // Dark card background
+        color: const Color(0xFF131B2F),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFF1E293B), width: 1),
       ),
@@ -59,7 +59,7 @@ class TodaysProgressCard extends StatelessWidget {
               Container(width: 1, height: 60, color: const Color(0xFF1E293B), margin: const EdgeInsets.symmetric(horizontal: 10)),
               Expanded(child: _buildProgressStat(Icons.directions_run, const Color(0xFFE28743), '${fitnessStats?.stepsToday ?? 0} / $stepsTarget', 'Steps Today', stepsProgress)),
               Container(width: 1, height: 60, color: const Color(0xFF1E293B), margin: const EdgeInsets.symmetric(horizontal: 10)),
-              Expanded(child: _buildProgressStat(Icons.local_fire_department, const Color(0xFF9B5DE5), '${fitnessStats?.caloriesToday?.toStringAsFixed(0) ?? 0}', 'Calories', calsProgress)),
+              Expanded(child: _buildProgressStat(Icons.local_fire_department, const Color(0xFF9B5DE5), fitnessStats?.caloriesToday != null ? fitnessStats!.caloriesToday.toStringAsFixed(0) : '0', 'Calories', calsProgress)),
             ],
           ),
           const SizedBox(height: 24),

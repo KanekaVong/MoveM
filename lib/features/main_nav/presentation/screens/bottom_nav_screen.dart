@@ -120,7 +120,7 @@ class BottomNavScreen extends GetView<MainNavController> {
                 clipBehavior: Clip.none,
                 alignment: Alignment.bottomCenter,
                 children: [
-                  // The actual Navigation Bar
+
                   ClipPath(
                     clipper: NavBarClipper(),
                     child: CurvedNavigationBar(
