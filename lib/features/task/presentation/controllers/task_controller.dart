@@ -7,7 +7,7 @@ import '../../data/dto/response/task_response.dart';
 
 class TaskController extends BaseController {
   final TaskRepository repository = TaskRepositoryImpl(TaskService());
-  
+
   final RxList<TaskResponse> tasks = <TaskResponse>[].obs;
 
   @override
@@ -22,7 +22,7 @@ class TaskController extends BaseController {
       onSuccess: (data) {
         tasks.value = data;
       },
-      showLoading: false, // Handle loading via BaseController's state without dialog for list
+      showLoading: false,
     );
   }
 

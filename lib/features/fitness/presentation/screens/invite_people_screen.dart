@@ -6,7 +6,6 @@ import '../../../friends/data/services/friends_service.dart';
 import '../../../friends/domain/repositories/friends_repository.dart';
 import '../../../friends/presentation/controllers/friends_controller.dart';
 
-
 class InvitePeopleScreen extends StatefulWidget {
   const InvitePeopleScreen({super.key});
 
@@ -34,7 +33,6 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
       _friendsController = Get.put(FriendsController(repository: Get.find()));
     }
 
-    // Fetch friends if empty
     if (_friendsController.friends.isEmpty) {
       _friendsController.getFriends();
     }
@@ -59,7 +57,7 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              // Pass selected user ids back or proceed
+
               Get.back();
             },
             child: const Text('Invite',
@@ -76,7 +74,6 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
           child: Obx(() {
             final allPeople = _friendsController.friends;
 
-            // Get selected friends objects
             final selectedFriends =
                 allPeople.where((p) => selectedIds.contains(p.userId)).toList();
 

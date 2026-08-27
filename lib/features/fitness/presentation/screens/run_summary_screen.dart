@@ -19,7 +19,7 @@ class RunSummaryScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Run Summary'),
-        automaticallyImplyLeading: false, // Force user to save/discard
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -66,7 +66,7 @@ class RunSummaryScreen extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: () {
                       Get.back();
-                      // Session is discarded by starting a new one later
+
                       final controller = Get.find<TrackingController>();
                       controller.session.value = RunSession();
                     },
@@ -104,13 +104,12 @@ class RunSummaryScreen extends StatelessWidget {
   }
 
   LineChartData _buildPaceChart() {
-    // A simple chart plotting speed (m/s) over time for demonstration
-    // Since pacing is inverse of speed, charting speed is easier
+
     final points = session.points;
     final spots = <FlSpot>[];
-    
+
     final startTime = points.first.timestamp;
-    
+
     for (var p in points) {
       if (p.speed != null) {
         final elapsedSeconds = p.timestamp.difference(startTime).inSeconds.toDouble();

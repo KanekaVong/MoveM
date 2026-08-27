@@ -10,11 +10,9 @@ class FitnessProfileController extends BaseController {
   final profile = Rxn<FitnessProfileModel>();
   final hasProfile = false.obs;
 
-  // Challenges Data
   final soloChallenges = <SoloChallengeModel>[].obs;
   final isLoadingChallenges = false.obs;
 
-  // Onboarding Data
   final inputHeight = 0.0.obs;
   final inputWeight = 0.0.obs;
 
@@ -85,7 +83,7 @@ class FitnessProfileController extends BaseController {
         profile.value = data;
         hasProfile.value = true;
         success = true;
-        Get.back(); // Pop the onboarding screen upon success
+        Get.back();
       },
     );
     return success;

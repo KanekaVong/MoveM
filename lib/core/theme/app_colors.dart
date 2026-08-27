@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class AppColors {
   AppColors._();
 
@@ -14,12 +13,7 @@ class AppColors {
     end: Alignment.bottomRight,
   );
 
-
-
-  // ─── Light Mode ───
   static const lightPrimary = Color(0xFF1A73E8);
-
-
 
   static const lightOnPrimary = Colors.white;
   static const lightSecondary = Color(0xFF4CAF50);
@@ -30,11 +24,7 @@ class AppColors {
   static const lightError = Color(0xFFE53935);
   static const lightOnError = Colors.white;
 
-  // ─── Dark Mode ───
   static const darkPrimary = Color(0xFF8AB4F8);
-
-
-
 
   static const darkOnPrimary = Color(0xFF003A75);
   static const darkSecondary = Color(0xFF81C784);

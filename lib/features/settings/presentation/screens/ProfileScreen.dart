@@ -1,19 +1,16 @@
+import 'dart:io';
 import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:movem/core/storage/user_manager.dart';
-import 'package:movem/features/auth/data/dto/response/user_response.dart';
-import 'package:movem/features/settings/presentation/screens/EditProfileScreen.dart';
+import '../controllers/profile_controller.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final UserResponse? user = UserManager().getUser();
-    print('ProfileScreen: Retrieved user from UserManager: ${user?.toJson() ?? "null"}');
+    final controller = Get.put(ProfileController());
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
@@ -26,13 +23,13 @@ class ProfileScreen extends StatelessWidget {
               Row(
                 children: [
                   InkWell(
-                    onTap: () => Get.back(),
+                    onTap: controller.onBackTap,
                     borderRadius: BorderRadius.circular(30),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(
                           vertical: 8.0, horizontal: 4.0),
                       child: Row(
-                        children: const [
+                        children: [
                           Icon(
                             Icons.arrow_back_ios,
                             color: Colors.white,
@@ -53,9 +50,9 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              _buildProfileSection(context, user),
+              _buildProfileSection(context, controller),
               const SizedBox(height: 32),
-              _buildPersonalInformation(user),
+              _buildPersonalInformation(controller),
               const SizedBox(height: 32),
               _buildMyActivities(),
               const SizedBox(height: 32),
@@ -70,180 +67,189 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileSection(BuildContext context, UserResponse? user) {
-    final fullName = [
-      user?.firstName,
-      user?.lastName,
-    ].where((value) => value != null && value.trim().isNotEmpty).join(' ');
-
-    final displayName =
-        fullName.isNotEmpty ? fullName : (user?.username ?? 'Unknown User');
-
-    return Row(
-      children: [
-        _buildProfileImage(user),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Flexible(
-                    child: Text(
-                      displayName,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  GlassContainer(
-                    borderRadius: 9.0, // <-- Pass a double here directly
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        if (user != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  EditProfileScreen(user: user),
-                            ),
-                          );
-                        }
-                      },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Text(
-                            'Edit',
-                            style: TextStyle(
-                              color: Color(0xFF5394FF),
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Icon(
-                            Icons.edit,
-                            color: Color(0xFF5394FF),
-                            size: 10,
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '@${user?.username ?? 'unknown'}',
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Color(0xFF3B82F6),
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPersonalInformation(UserResponse? user) {
-    return SettingsCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildProfileSection(BuildContext context, ProfileController controller) {
+    return Obx(() {
+      return Row(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              'Personal Information',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+          _buildProfileImage(controller),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        controller.displayName,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    GlassContainer(
+                      borderRadius: 9.0,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      child: GestureDetector(
+                        onTap: controller.onEditProfileTap,
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Edit',
+                              style: TextStyle(
+                                color: Color(0xFF5394FF),
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Icon(
+                              Icons.edit,
+                              color: Color(0xFF5394FF),
+                              size: 10,
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '@${controller.username}',
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Color(0xFF3B82F6),
+                    fontSize: 16,
+                  ),
+                ),
+              ],
             ),
           ),
-          _buildInfoTile(
-            icon: Icons.email_outlined,
-            title: 'Email',
-            subtitle: _displayValue(user?.email),
-          ),
-          _buildDivider(),
-          _buildInfoTile(
-            icon: Icons.phone_outlined,
-            title: 'Phone Number',
-            subtitle: _displayValue(user?.phone),
-          ),
-          _buildDivider(),
-          _buildInfoTile(
-            icon: Icons.calendar_today_outlined,
-            title: 'Date Of Birth',
-            subtitle: _displayValue(user?.dateOfBirth),
-          ),
-          _buildDivider(),
-          _buildInfoTile(
-            icon: Icons.location_on_outlined,
-            title: 'Location',
-            subtitle: _displayValue(user?.cityProvince),
-            showDivider: false,
-          ),
         ],
-      ),
-    );
+      );
+    });
   }
 
-  String _displayValue(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Not Set Up';
-    }
-
-    return value;
-  }
-
-  Widget _buildProfileImage(UserResponse? user) {
-    final profilePic = user?.profilePic;
-
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: const Color(0xFF1E293B),
-          width: 2,
-        ),
-      ),
-      child: ClipOval(
-        child: profilePic != null && profilePic.isNotEmpty
-            ? Image.network(
-                profilePic,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) {
-                  return const Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 40,
-                  );
-                },
-              )
-            : const Icon(
-                Icons.person,
-                color: Colors.white,
-                size: 40,
+  Widget _buildPersonalInformation(ProfileController controller) {
+    return Obx(() {
+      return SettingsCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'Personal Information',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-      ),
-    );
+            ),
+            _buildInfoTile(
+              icon: Icons.email_outlined,
+              title: 'Email',
+              subtitle: controller.email,
+            ),
+            _buildDivider(),
+            _buildInfoTile(
+              icon: Icons.phone_outlined,
+              title: 'Phone Number',
+              subtitle: controller.phone,
+            ),
+            _buildDivider(),
+            _buildInfoTile(
+              icon: Icons.calendar_today_outlined,
+              title: 'Date Of Birth',
+              subtitle: controller.dateOfBirth,
+            ),
+            _buildDivider(),
+            _buildInfoTile(
+              icon: Icons.location_on_outlined,
+              title: 'Location',
+              subtitle: controller.location,
+              showDivider: false,
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildProfileImage(ProfileController controller) {
+    return Obx(() {
+      final profilePic = controller.profilePic;
+      final initial = controller.initial;
+
+      return Container(
+        width: 80,
+        height: 80,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          border: Border.all(
+            color: const Color(0xFF334155),
+            width: 2,
+          ),
+        ),
+        child: ClipOval(
+          child: profilePic != null && profilePic.isNotEmpty
+              ? (profilePic.startsWith('http')
+                  ? CachedNetworkImage(
+                      imageUrl: profilePic,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => Center(
+                        child: Text(
+                          initial,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Image.file(
+                      File(profilePic),
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Center(
+                        child: Text(
+                          initial,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ))
+              : Center(
+                  child: Text(
+                    initial,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+        ),
+      );
+    });
   }
 
   Widget _buildInfoTile({
@@ -339,7 +345,7 @@ class ProfileScreen extends StatelessWidget {
                 total: '0',
                 imageUrl:
                     'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=600&auto=format&fit=crop',
-                // Desk laptop
+
                 progress: 0.0,
               ),
             ),
@@ -347,13 +353,13 @@ class ProfileScreen extends StatelessWidget {
             Expanded(
               child: _buildActivityCard(
                 icon: Icons.directions_run,
-                // Close to running shoe
+
                 title: 'Steps',
                 value: '0',
                 total: '5000',
                 imageUrl:
                     'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=600&auto=format&fit=crop',
-                // Running
+
                 progress: 0.0,
               ),
             ),
@@ -366,7 +372,7 @@ class ProfileScreen extends StatelessWidget {
                 total: null,
                 imageUrl:
                     'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop',
-                // Travel mountain
+
                 progress: 0.0,
               ),
             ),
@@ -393,13 +399,13 @@ class ProfileScreen extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
-              // Fit inside the glass card inner radius
+
               child: Image(
                 image: CachedNetworkImageProvider(imageUrl),
                 fit: BoxFit.cover,
                 colorBlendMode: BlendMode.darken,
                 color: const Color(0xFF0F172A)
-                    .withValues(alpha: 0.6), // Darken the image
+                    .withValues(alpha: 0.6),
               ),
             ),
             Padding(
@@ -411,7 +417,7 @@ class ProfileScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: const Color(0xFF3B82F6).withValues(alpha: 0.2),
-                      // Light blue tint
+
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                           color:
@@ -458,7 +464,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Progress Bar
+
                   Container(
                     height: 4,
                     width: double.infinity,
@@ -505,7 +511,7 @@ class ProfileScreen extends StatelessWidget {
             Text(
               'Achievements',
               style: TextStyle(
-                color: Color(0xFFEAB308), // Yellow
+                color: Color(0xFFEAB308),
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -607,7 +613,7 @@ class SettingsCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(7),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0), // Frost 4
+        filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
@@ -616,21 +622,21 @@ class SettingsCard extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.white.withValues(alpha: 0.2), // Light reflection
+                Colors.white.withValues(alpha: 0.2),
                 Colors.white.withValues(alpha: 0.0),
-                Colors.black.withValues(alpha: 0.2), // Depth shadow
+                Colors.black.withValues(alpha: 0.2),
               ],
               stops: const [0.0, 0.3, 1.0],
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(1.0), // 3D edge depth
+            padding: const EdgeInsets.all(1.0),
             child: Container(
               padding: padding,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6), // 7 - 1 (padding)
+                borderRadius: BorderRadius.circular(6),
                 color: const Color(0xFF162341)
-                    .withValues(alpha: 0.60), // Exact fill from Figma
+                    .withValues(alpha: 0.60),
               ),
               child: child,
             ),

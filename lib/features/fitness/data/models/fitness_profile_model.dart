@@ -1,7 +1,7 @@
 class FitnessProfileModel {
   final int userId;
-  final double height; // in cm
-  final double weight; // in kg
+  final double height;
+  final double weight;
   final double bmi;
   final DateTime? updatedAt;
 

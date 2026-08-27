@@ -10,7 +10,7 @@ import '../../data/repositories/task_repository_impl.dart';
 class TaskDetailController extends BaseController {
   final TaskRepository repository = TaskRepositoryImpl(TaskService());
   final String activityId;
-  
+
   final Rx<TaskResponse?> task = Rx<TaskResponse?>(null);
 
   TaskDetailController({required this.activityId});
@@ -34,13 +34,13 @@ class TaskDetailController extends BaseController {
   Future<void> markAsComplete() async {
     final currentTask = task.value;
     if (currentTask == null) return;
-    
+
     await executeApi<TaskResponse>(
       apiCall: () => repository.markTaskComplete(currentTask.activityId),
       showLoading: true,
       onSuccess: (data) {
         task.value = data;
-        Get.back(result: true); // Pop back to previous screen
+        Get.back(result: true);
         Get.snackbar('Success', 'Task marked as complete!', backgroundColor: Colors.green, colorText: Colors.white);
       },
     );
@@ -48,10 +48,9 @@ class TaskDetailController extends BaseController {
 
   Future<void> toggleChecklistItem(int checklistId, bool currentStatus) async {
     if (task.value == null) return;
-    
+
     final currentTask = task.value!;
-    
-    // Optimistic UI update
+
     final updatedChecklists = currentTask.checklists?.map((item) {
       if (item.id == checklistId) {
         return ChecklistResponse(
@@ -62,15 +61,15 @@ class TaskDetailController extends BaseController {
       }
       return item;
     }).toList();
-    
+
     int completedDelta = currentStatus ? -1 : 1;
     int newCompleted = currentTask.completedChecklistItems + completedDelta;
     if (newCompleted < 0) newCompleted = 0;
-    
-    double newProgress = currentTask.totalChecklistItems > 0 
-        ? newCompleted / currentTask.totalChecklistItems 
+
+    double newProgress = currentTask.totalChecklistItems > 0
+        ? newCompleted / currentTask.totalChecklistItems
         : 0.0;
-        
+
     task.value = TaskResponse(
       activityId: currentTask.activityId,
       activityName: currentTask.activityName,
@@ -93,10 +92,10 @@ class TaskDetailController extends BaseController {
       apiCall: () => repository.toggleChecklistItem(checklistId),
       showLoading: false,
       onSuccess: (_) {
-        fetchTaskDetail(showLoading: false); // re-fetch for full state sync silently
+        fetchTaskDetail(showLoading: false);
       },
       onError: (e) {
-        fetchTaskDetail(showLoading: false); // revert on error silently
+        fetchTaskDetail(showLoading: false);
       },
     );
   }

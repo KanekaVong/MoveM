@@ -217,7 +217,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Obx(() => Text(
-                controller.repeatFrequency.value ?? '', 
+                controller.repeatFrequency.value ?? '',
                 style: const TextStyle(color: Color(0xFF475569), fontSize: 14, fontStyle: FontStyle.italic)
               )),
               const Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 24),
@@ -323,7 +323,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
           );
         }).toList();
 
-        // Add create button at bottom
         items.add(
           PopupMenuItem<dynamic>(
             value: 'CREATE',
@@ -367,10 +366,10 @@ class EditTaskScreen extends GetView<EditTaskController> {
                 ),
               );
             }
-            
+
             final l = controller.selectedLabel.value!;
             final color = Color(int.parse(l.color.replaceFirst('#', '0xFF')));
-            
+
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
@@ -420,19 +419,19 @@ class EditTaskScreen extends GetView<EditTaskController> {
 
   void _showCreateLabelDialog() {
     final nameController = TextEditingController();
-    final RxString selectedColor = '#3B82F6'.obs; // Default blue
-    
+    final RxString selectedColor = '#3B82F6'.obs;
+
     final List<String> colors = [
-      '#EF4444', // Red
-      '#F97316', // Orange
-      '#F59E0B', // Amber
-      '#84CC16', // Lime
-      '#22C55E', // Green
-      '#06B6D4', // Cyan
-      '#3B82F6', // Blue
-      '#8B5CF6', // Violet
-      '#D946EF', // Fuchsia
-      '#F43F5E', // Rose
+      '#EF4444',
+      '#F97316',
+      '#F59E0B',
+      '#84CC16',
+      '#22C55E',
+      '#06B6D4',
+      '#3B82F6',
+      '#8B5CF6',
+      '#D946EF',
+      '#F43F5E',
     ];
 
     Get.dialog(

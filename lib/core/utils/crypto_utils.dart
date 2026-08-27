@@ -5,20 +5,24 @@ import 'dart:convert';
 class CryptoUtils {
   static String encryptAES(String plainText, String keyString) {
     final key = encrypt.Key.fromUtf8(keyString.padRight(32, '0').substring(0, 32));
-    final iv = encrypt.IV.fromLength(16);
-    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+    final iv = encrypt.IV.fromSecureRandom(16);
+    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
 
     final encrypted = encrypter.encrypt(plainText, iv: iv);
-    return encrypted.base64;
+    return '${iv.base64}:${encrypted.base64}';
   }
 
   static String decryptAES(String encryptedText, String keyString) {
-    final key = encrypt.Key.fromUtf8(keyString.padRight(32, '0').substring(0, 32));
-    final iv = encrypt.IV.fromLength(16);
-    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+    final parts = encryptedText.split(':');
+    if (parts.length != 2) {
+      throw const FormatException('Invalid encrypted payload format');
+    }
 
-    final decrypted = encrypter.decrypt64(encryptedText, iv: iv);
-    return decrypted;
+    final key = encrypt.Key.fromUtf8(keyString.padRight(32, '0').substring(0, 32));
+    final iv = encrypt.IV.fromBase64(parts[0]);
+    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
+
+    return encrypter.decrypt64(parts[1], iv: iv);
   }
 
   static String hashSHA256(String data) {

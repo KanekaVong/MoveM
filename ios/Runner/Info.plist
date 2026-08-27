@@ -6,9 +6,17 @@
 	<string>We use your location to track your run route and distance.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Background location lets us keep tracking your run when the screen is off.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>MoveM needs camera access to take profile photos and activity snapshots.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MoveM needs photo library access to upload profile pictures and workout media.</string>
+	<key>GMSApiKey</key>
+	<string>$(MAPS_API_KEY)</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
+		<string>fetch</string>
+		<string>remote-notification</string>
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
@@ -74,5 +82,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

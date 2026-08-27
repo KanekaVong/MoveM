@@ -76,7 +76,7 @@ class ApiException implements Exception {
       final match = regex.firstMatch(rawMessage);
       if (match != null) {
         final value = match.group(1);
-        final key = match.group(2)?.split('.').last; // user.username -> username
+        final key = match.group(2)?.split('.').last;
         return "The $key '$value' is already taken. Please try another one.";
       }
     }

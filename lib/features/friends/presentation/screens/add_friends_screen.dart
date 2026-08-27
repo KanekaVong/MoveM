@@ -97,16 +97,16 @@ class AddFriendsScreen extends GetView<FriendsController> {
       children: [
         Expanded(
           child: _buildActionCard(
-            Icons.qr_code_scanner, 
-            'Scan QR Code', 
+            Icons.qr_code_scanner,
+            'Scan QR Code',
             "Scan Your Friend's QR Code",
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: _buildActionCard(
-            Icons.person_add_alt_1, 
-            'Invite Friends', 
+            Icons.person_add_alt_1,
+            'Invite Friends',
             'Invite Friends Via Links',
           ),
         ),
@@ -183,8 +183,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
         child: const Center(child: Text('No friend requests.', style: TextStyle(color: Color(0xFFA0AAB2)))),
       );
     }
-    
-    // Show only first 3 requests
+
     final displayList = controller.incomingRequests.take(3).toList();
 
     return Container(
@@ -229,7 +228,6 @@ class AddFriendsScreen extends GetView<FriendsController> {
       );
     }
 
-    // Show only first 4 suggestions
     final displayList = controller.searchResults.take(4).toList();
 
     return Container(
@@ -277,7 +275,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
             children: [
               const CircleAvatar(
                 radius: 24,
-                backgroundImage: CachedNetworkImageProvider('https://images.unsplash.com/photo-1543852786-1cf6624b9987?q=80&w=200&auto=format&fit=crop'), // Your profile leopard
+                backgroundImage: CachedNetworkImageProvider('https://images.unsplash.com/photo-1543852786-1cf6624b9987?q=80&w=200&auto=format&fit=crop'),
               ),
               const SizedBox(width: 16),
               Expanded(

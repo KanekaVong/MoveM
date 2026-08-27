@@ -10,7 +10,7 @@ class OverdueSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (tasks.isEmpty) return const SizedBox.shrink();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -38,8 +38,8 @@ class OverdueSection extends StatelessWidget {
             children: tasks.take(5).map((task) => Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: _buildOverdueCard(
-                'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?q=80&w=600&auto=format&fit=crop', // urgent/time related placeholder
-                const Color(0xFFD32F2F), // Red tint for overdue
+                'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?q=80&w=600&auto=format&fit=crop',
+                const Color(0xFFD32F2F),
                 Icons.warning_amber_rounded,
                 'Overdue Task',
                 task.activityName,

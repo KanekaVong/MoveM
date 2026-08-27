@@ -9,7 +9,6 @@ class FitnessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Put the controller if not already initialized
     final controller = Get.put(FitnessProfileController());
 
     return Obx(() {

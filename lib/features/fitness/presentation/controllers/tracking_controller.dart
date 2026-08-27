@@ -13,10 +13,9 @@ import '../../domain/pace_calculator.dart';
 class TrackingController extends GetxController {
   final RunSessionRepository _repository = RunSessionRepository();
 
-  // Observables
   final session = RunSession().obs;
   final currentPace = 0.0.obs;
-  final route = <LatLng>[].obs; // For the map
+  final route = <LatLng>[].obs;
   final autoFollow = true.obs;
 
   StreamSubscription<Position>? _positionStream;
@@ -61,7 +60,7 @@ class TrackingController extends GetxController {
       ..sessionId = DateTime.now().millisecondsSinceEpoch.toString()
       ..startedAt = DateTime.now()
       ..status = RunStatus.running;
-      
+
     session.value = newSession;
     _lastAccepted = null;
     route.clear();
@@ -82,7 +81,7 @@ class TrackingController extends GetxController {
     session.update((val) {
       val?.status = RunStatus.running;
     });
-    _lastAccepted = null; // Don't connect distance between pause & resume directly
+    _lastAccepted = null;
     _startTracking();
     _startTimer();
   }
@@ -90,13 +89,12 @@ class TrackingController extends GetxController {
   Future<void> finishRun() async {
     _positionStream?.cancel();
     _durationTimer?.cancel();
-    
+
     session.update((val) {
       val?.status = RunStatus.finished;
       val?.endedAt = DateTime.now();
     });
 
-    // We don't save immediately here. The user will be redirected to the summary screen to choose save/discard.
   }
 
   Future<void> saveRun() async {
@@ -127,7 +125,7 @@ class TrackingController extends GetxController {
 
     _positionStream = Geolocator.getPositionStream(locationSettings: locationSettings)
         .listen((Position position) {
-          
+
       if (session.value.status != RunStatus.running) return;
 
       final isValid = GpsFilter.isValid(position, _lastAccepted);
@@ -160,10 +158,8 @@ class TrackingController extends GetxController {
 
       _lastAccepted = trackPoint;
 
-      // Update smoothed route for map display
       _updateSmoothedRoute(session.value.points);
-      
-      // Update rolling pace (last 30 seconds)
+
       _updateCurrentPace(session.value.points);
     });
   }
@@ -173,7 +169,7 @@ class TrackingController extends GetxController {
       route.value = points.map((p) => LatLng(p.latitude, p.longitude)).toList();
       return;
     }
-    
+
     final result = <LatLng>[];
     for (int i = 0; i < points.length; i++) {
       final start = (i - window + 1).clamp(0, points.length);
@@ -203,7 +199,7 @@ class TrackingController extends GetxController {
         recentPoints[i].latitude, recentPoints[i].longitude,
       );
     }
-    
+
     final recentDuration = recentPoints.last.timestamp.difference(recentPoints.first.timestamp);
     currentPace.value = PaceCalculator.paceMinPerKm(recentDistance, recentDuration);
   }

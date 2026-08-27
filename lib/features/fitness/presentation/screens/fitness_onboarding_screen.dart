@@ -14,11 +14,9 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  // Height State
   bool _isCm = true;
   final TextEditingController _heightController = TextEditingController();
 
-  // Weight State
   bool _isKg = true;
   final TextEditingController _weightController = TextEditingController();
 
@@ -30,10 +28,10 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
       }
       double h = double.tryParse(_heightController.text) ?? 0.0;
       if (!_isCm) {
-        h = h * 30.48; // ft to cm
+        h = h * 30.48;
       }
       widget.controller.setHeight(h);
-      
+
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -45,10 +43,10 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
       }
       double w = double.tryParse(_weightController.text) ?? 0.0;
       if (!_isKg) {
-        w = w * 0.453592; // lbs to kg
+        w = w * 0.453592;
       }
       widget.controller.setWeight(w);
-      
+
       await widget.controller.saveProfile();
     }
   }
@@ -60,7 +58,7 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header Image Placeholder
+
             Container(
               height: 200,
               width: double.infinity,
@@ -83,14 +81,14 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
                           curve: Curves.easeInOut,
                         );
                       } else {
-                        Get.back(); // Exit onboarding
+                        Get.back();
                       }
                     },
                   ),
                 ),
               ),
             ),
-            
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
@@ -110,7 +108,7 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
                     ],
                   ),
                   const SizedBox(height: 32),
-                  
+
                   SizedBox(
                     height: 300,
                     child: PageView(
@@ -128,7 +126,6 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
                     ),
                   ),
 
-                  // Next Button
                   Padding(
                     padding: const EdgeInsets.only(bottom: 32.0),
                     child: SizedBox(
@@ -136,14 +133,14 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
                       child: ElevatedButton(
                         onPressed: _nextPage,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3B82F6), // Made it blue so it's more visible
+                          backgroundColor: const Color(0xFF3B82F6),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         child: Text(
-                          _currentPage == 0 ? 'Next' : 'Submit', 
+                          _currentPage == 0 ? 'Next' : 'Submit',
                           style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)
                         ),
                       ),

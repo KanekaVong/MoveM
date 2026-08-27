@@ -54,8 +54,6 @@ class _CustomGlassButtonState extends State<CustomGlassButton> {
     final BorderRadius borderRadius = BorderRadius.circular(height / 2);
     final bool enabled = _isEnabled;
 
-    // Diagonal, not horizontal — matches the reference image's angle better
-    // than a pure centerLeft -> centerRight sweep.
     const gradientBegin = Alignment(-0.9, -0.6);
     const gradientEnd = Alignment(1.0, 0.8);
 
@@ -74,7 +72,7 @@ class _CustomGlassButtonState extends State<CustomGlassButton> {
             decoration: BoxDecoration(
               borderRadius: borderRadius,
               boxShadow: [
-                // Subtle outer shadow — no white glow
+
                 BoxShadow(
                   color: const Color(0x33091C42),
                   offset: const Offset(0, 4),
@@ -88,13 +86,12 @@ class _CustomGlassButtonState extends State<CustomGlassButton> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // 1. Real glass blur of whatever sits behind the button.
+
                   BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
                     child: const ColoredBox(color: Color(0x10FFFFFF)),
                   ),
 
-                  // 2. White-to-blue diagonal wash — visible but still glassy.
                   DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -109,7 +106,6 @@ class _CustomGlassButtonState extends State<CustomGlassButton> {
                     ),
                   ),
 
-                  // 3. Gradient glass border — bright top, dark bottom (Apple Glass lighting).
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: borderRadius,
@@ -120,7 +116,6 @@ class _CustomGlassButtonState extends State<CustomGlassButton> {
                     ),
                   ),
 
-                  // 4. TOP inner shadow — inset depth.
                   Align(
                     alignment: Alignment.topCenter,
                     child: FractionallySizedBox(
@@ -144,7 +139,6 @@ class _CustomGlassButtonState extends State<CustomGlassButton> {
                     ),
                   ),
 
-                  // 4b. BOTTOM light catch — subtle glass lip.
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: FractionallySizedBox(
@@ -168,7 +162,6 @@ class _CustomGlassButtonState extends State<CustomGlassButton> {
                     ),
                   ),
 
-                  // 5. Content: gradient-masked label over a soft shadow copy.
                   Material(
                     color: Colors.transparent,
                     child: InkWell(

@@ -33,7 +33,7 @@ class LoginScreen extends GetView<AuthController> {
           bottom: false,
           child: Column(
             children: [
-              // Top Section (Logo)
+
               Padding(
                 padding: const EdgeInsets.only(top: 40.0, bottom: 40.0),
                 child: Column(
@@ -44,13 +44,12 @@ class LoginScreen extends GetView<AuthController> {
                   ],
                 ),
               ),
-              
-              // Bottom Section (Form)
+
               Expanded(
                 child: Container(
                   width: double.infinity,
                   decoration: const BoxDecoration(
-                    color: Color(0xFFFAFAFA), // slightly off-white to match the image
+                    color: Color(0xFFFAFAFA),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
@@ -63,7 +62,7 @@ class LoginScreen extends GetView<AuthController> {
                     ),
                   child: Stack(
                       children: [
-                        // Background decorations
+
                         Positioned(
                           bottom: -100,
                           right: -100,
@@ -72,7 +71,7 @@ class LoginScreen extends GetView<AuthController> {
                             painter: ConcentricCirclesPainter(),
                           ),
                         ),
-                        // Stars around the view
+
                         Positioned(top: 40, right: 30, child: _buildStarIcon()),
                         Positioned(top: 70, left: 40, child: _buildStarIcon(size: 20)),
                         Positioned(bottom: 120, left: 10, child: _buildStarIcon(size: 40)),
@@ -80,7 +79,6 @@ class LoginScreen extends GetView<AuthController> {
                         Positioned(bottom: 10, left: -20, child: _buildStarIcon(size: 80, opacity: 0.1)),
                         Positioned(top: 150, right: -20, child: _buildStarIcon(size: 100, opacity: 0.1)),
 
-                        // Form Content
                         SingleChildScrollView(
                           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
                           child: Column(
@@ -91,8 +89,8 @@ class LoginScreen extends GetView<AuthController> {
                                   Expanded(
                                     child: Center(
                                       child: _buildGradientText(
-                                        'WELCOME BACK!', 
-                                        26, 
+                                        'WELCOME BACK!',
+                                        26,
                                         true,
                                         colors: [
                                           Colors.white,
@@ -107,21 +105,21 @@ class LoginScreen extends GetView<AuthController> {
                                 ],
                               ),
                               const SizedBox(height: 30),
-                              
+
                               _buildInputField(
                                 label: 'EMAIL/PHONE NUMBER',
                                 hint: 'Email/Phone Number',
                                 controller: _emailPhoneController,
                               ),
                               const SizedBox(height: 20),
-                              
+
                               _buildInputField(
                                 label: 'USERNAME',
                                 hint: 'Username',
                                 controller: _usernameController,
                               ),
                               const SizedBox(height: 20),
-                              
+
                               _buildInputField(
                                 label: 'PASSWORD',
                                 hint: 'Enter Password',
@@ -144,8 +142,7 @@ class LoginScreen extends GetView<AuthController> {
                                 ),
                               ),
                               const SizedBox(height: 40),
-                              
-                              // Login Button
+
                               Center(
                                 child: GlassButton(
                                   text: 'Login',
@@ -156,8 +153,7 @@ class LoginScreen extends GetView<AuthController> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              
-                              // Sign up text
+
                               Center(
                                 child: GestureDetector(
                                   onTap: () => Get.toNamed(AppRoutes.register),
@@ -197,8 +193,8 @@ class LoginScreen extends GetView<AuthController> {
   }
 
   Widget _buildGradientText(
-    String text, 
-    double fontSize, 
+    String text,
+    double fontSize,
     bool isBold, {
     List<Color>? colors,
     List<double>? stops,
@@ -214,13 +210,13 @@ class LoginScreen extends GetView<AuthController> {
 
     return Stack(
       children: [
-        // Subtle drop shadow under the metallic text
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: Text(
             text,
             style: textStyle.copyWith(
-              color: Colors.transparent, // Hide the actual text, only show the shadow
+              color: Colors.transparent,
               shadows: [
                 Shadow(
                   color: const Color(0xFF4C8DB3).withValues(alpha: 0.3),
@@ -231,7 +227,7 @@ class LoginScreen extends GetView<AuthController> {
             ),
           ),
         ),
-        // Glossy text
+
         ShaderMask(
           blendMode: BlendMode.srcIn,
           shaderCallback: (bounds) => LinearGradient(
@@ -274,13 +270,13 @@ class LoginScreen extends GetView<AuthController> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
-              // This acts as the crisp bottom border
+
               BoxShadow(
                 color: const Color(0xFF91C5E2).withValues(alpha: 0.6),
                 offset: const Offset(0, 2),
                 blurRadius: 0,
               ),
-              // Standard soft drop shadow
+
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
@@ -309,8 +305,7 @@ class LoginScreen extends GetView<AuthController> {
 
   Widget _buildStarIcon({double size = 24, double opacity = 0.4}) {
     return CustomPaint(
-      // size: Size(size, size),
-      // painter: StarPainter(color: const Color(0xFF4C8DB3).withValues(alpha: opacity)),
+
     );
   }
 }
@@ -330,7 +325,7 @@ class StarPainter extends CustomPainter {
     final path = Path();
     final halfWidth = size.width / 2;
     final halfHeight = size.height / 2;
-    
+
     path.moveTo(halfWidth, 0);
     path.lineTo(halfWidth + size.width * 0.15, halfHeight - size.height * 0.15);
     path.lineTo(size.width, halfHeight - size.height * 0.1);
@@ -361,7 +356,7 @@ class ConcentricCirclesPainter extends CustomPainter {
     final center = Offset(size.width, size.height);
     canvas.drawCircle(center, 120, paint);
     canvas.drawCircle(center, 140, paint);
-    
+
     final paintThick = Paint()
       ..color = const Color(0xFF4C8DB3).withValues(alpha: 0.4)
       ..style = PaintingStyle.stroke

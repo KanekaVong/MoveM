@@ -5,6 +5,8 @@ import 'dart:convert';
 
 import '../../features/auth/data/dto/response/user_response.dart';
 
+import '../config/app_config.dart';
+import '../utils/crypto_utils.dart';
 
 class UserManager {
   static final UserManager _instance = UserManager._internal();
@@ -16,34 +18,48 @@ class UserManager {
 
   UserManager._internal();
 
-  // ─── Language ───
   String get languageCode => _storage.getString(Constants.keyLanguageCode) ?? Constants.defaultLanguage;
   Future<void> setLanguage(String code) => _storage.setString(Constants.keyLanguageCode, code);
 
-  // ─── Theme ───
   String get themeMode => _storage.getString(Constants.keyThemeMode) ?? Constants.defaultTheme;
   Future<void> setThemeMode(String mode) => _storage.setString(Constants.keyThemeMode, mode);
 
-  // ─── User Session ───
   String? get userId => _storage.getString(Constants.keyUserId);
   bool get isLoggedIn => _storage.getBool(Constants.keyIsLogged) ?? false;
   Future<void> setLogged(bool value) => _storage.setBool(Constants.keyIsLogged, value);
   Future<void> saveUserId(String id) => _storage.setString(Constants.keyUserId, id);
   String? get userName => _storage.getString(Constants.keyUserName);
   Future<void> saveUserName(String name) => _storage.setString(Constants.keyUserName, name);
-  Future<void> saveUser(UserResponse user) async {await _storage.setString(Constants.keyUserData, jsonEncode(user.toJson()),);}
-  UserResponse? getUser() {
-    final userJson = _storage.getString(Constants.keyUserData);
+  Future<void> saveUser(UserResponse user) async {
+    final rawJson = jsonEncode(user.toJson());
+    final encryptedData = CryptoUtils.encryptAES(rawJson, AppConfig.storageEncryptionKey);
+    await _storage.setString(Constants.keyUserData, encryptedData);
+    if (user.id.isNotEmpty) await saveUserId(user.id);
+    final fullName = [user.firstName, user.lastName]
+        .where((v) => v != null && v.trim().isNotEmpty)
+        .join(' ');
+    await saveUserName(fullName.isNotEmpty ? fullName : user.username);
+  }
 
-    if (userJson == null || userJson.isEmpty) {
+  UserResponse? getUser() {
+    final storedData = _storage.getString(Constants.keyUserData);
+
+    if (storedData == null || storedData.isEmpty) {
       return null;
     }
 
     try {
-      final decoded = jsonDecode(userJson);
+      String jsonStr;
+      try {
+        jsonStr = CryptoUtils.decryptAES(storedData, AppConfig.storageEncryptionKey);
+      } catch (_) {
+        jsonStr = storedData;
+      }
 
-      if (decoded is Map<String, dynamic>) {
-        return UserResponse.fromJson(decoded);
+      final decoded = jsonDecode(jsonStr);
+
+      if (decoded is Map) {
+        return UserResponse.fromJson(Map<String, dynamic>.from(decoded));
       }
     } catch (_) {
       return null;
@@ -53,18 +69,18 @@ class UserManager {
   }
 
   Future<void> clearUser() async {
-    await _storage.setString(Constants.keyUserData, '');
+    await _storage.remove(Constants.keyUserData);
   }
 
-  // ─── Token (Secure) ───
   Future<String?> getToken() => _storage.getSecureString(Constants.keyAccessToken);
   Future<void> saveToken(String token) => _storage.setSecureString(Constants.keyAccessToken, token);
 
-  // ─── Trust Token (Secure) ───
   Future<String?> getTrustToken() => _storage.getSecureString(Constants.keyTrustToken);
   Future<void> saveTrustToken(String token) => _storage.setSecureString(Constants.keyTrustToken, token);
 
-  // ─── Device ID (Secure, generated once, persists forever) ───
+  Future<String?> getFcmToken() => _storage.getSecureString(Constants.keyFcmToken);
+  Future<void> saveFcmToken(String token) => _storage.setSecureString(Constants.keyFcmToken, token);
+
   Future<String> getOrCreateDeviceId() async {
     String? deviceId = await _storage.getSecureString(Constants.keyDeviceId);
     if (deviceId == null || deviceId.isEmpty) {
@@ -74,13 +90,11 @@ class UserManager {
     return deviceId;
   }
 
-  // ─── Clear Session (Logout) — keeps trustToken so this device stays trusted ───
   Future<void> clearSession() async {
     await _storage.clearSecureString(Constants.keyAccessToken);
-    await _storage.setString(Constants.keyUserId, '');
-    await _storage.setString(Constants.keyUserName, '');
-    await _storage.setBool(Constants.keyIsLogged, false);
+    await _storage.remove(Constants.keyUserId);
+    await _storage.remove(Constants.keyUserName);
+    await _storage.remove(Constants.keyIsLogged);
     await clearUser();
-    // trustToken intentionally NOT cleared — device stays trusted for next login
   }
 }

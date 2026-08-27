@@ -4,6 +4,7 @@ import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../models/fitness_profile_model.dart';
 import '../models/solo_challenge_model.dart';
+import '../models/setup_goal_request.dart';
 
 class FitnessProfileRepository {
   final DioClient _dioClient = DioClient();
@@ -55,7 +56,23 @@ class FitnessProfileRepository {
             .toList();
         return ApiSuccess(list);
       }
-      return ApiSuccess([]); // return empty list if null
+      return ApiSuccess([]);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } on ApiException catch (e) {
+      return ApiError(e);
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  Future<ApiResult<dynamic>> setupGoal(SetupGoalRequest request) async {
+    try {
+      final response = await _dioClient.dio.post(
+        'fitness/goals',
+        data: request.toJson(),
+      );
+      return ApiSuccess(response.data);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {

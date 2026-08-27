@@ -63,7 +63,7 @@ class DashboardSummaryGrid extends StatelessWidget {
               children: [
                 const Expanded(
                   child: Text(
-                    'Friends Activity', 
+                    'Friends Activity',
                     style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -106,7 +106,7 @@ class DashboardSummaryGrid extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 image: const DecorationImage(
-                  image: CachedNetworkImageProvider('https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=600&auto=format&fit=crop'), // Travel landscape
+                  image: CachedNetworkImageProvider('https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=600&auto=format&fit=crop'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -278,8 +278,8 @@ class DashboardSummaryGrid extends StatelessWidget {
                     alignment: Alignment.center,
                     children: [
                       CircularProgressIndicator(
-                        value: (taskStats?.completionRate ?? 0) > 1.0 
-                             ? (taskStats?.completionRate ?? 0) / 100 
+                        value: (taskStats?.completionRate ?? 0) > 1.0
+                             ? (taskStats?.completionRate ?? 0) / 100
                              : (taskStats?.completionRate ?? 0),
                         strokeWidth: 3,
                         color: const Color(0xFF9B5DE5),

@@ -40,7 +40,7 @@ class UpcomingSection extends StatelessWidget {
           child: Stack(
             children: [
               Positioned(
-                left: 11, // centers the line with the icons (icon width is 24)
+                left: 11,
                 top: 20,
                 bottom: 20,
                 child: Container(
@@ -60,7 +60,7 @@ class UpcomingSection extends StatelessWidget {
                           const Divider(color: Color(0xFF1E293B), indent: 40),
                         ],
                       );
-                    }).toList()
+                    })
                   else ...[
                     _buildUpcomingItem(Icons.assignment, const Color(0xFF4C8DB3), 'No Due Date', 'No Task Yet', 'Task', showIcon: true),
                     const Divider(color: Color(0xFF1E293B), indent: 40),
@@ -91,7 +91,7 @@ class UpcomingSection extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        showIcon 
+        showIcon
           ? Container(
               margin: const EdgeInsets.only(top: 4),
               decoration: BoxDecoration(
@@ -112,7 +112,7 @@ class UpcomingSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: color,
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFF131B2F), width: 2), // to create a gap from the line
+                  border: Border.all(color: const Color(0xFF131B2F), width: 2),
                 ),
               ),
             ),
