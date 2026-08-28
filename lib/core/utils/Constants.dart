@@ -18,6 +18,7 @@ abstract class Constants {
   static const keyAccessToken = 'access_token';
   static const String keyDeviceId = 'device_id';
   static const String keyTrustToken = 'trust_token';
+  static const String keySavedAccounts = 'saved_accounts';
 
   // ─── Defaults ───
   static const defaultLanguage = 'en';

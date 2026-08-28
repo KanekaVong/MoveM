@@ -8,11 +8,17 @@ import 'core/routes/app_pages.dart';
 import 'core/routes/app_routes.dart';
 import 'core/storage/local_storage.dart';
 import 'core/storage/user_manager.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   await LocalStorage().init();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   final savedLocale = Locale(UserManager().languageCode);
   final savedTheme = UserManager().themeMode;
@@ -25,6 +31,8 @@ void main() async {
   } else {
     initialThemeMode = ThemeMode.system;
   }
+
+
   
   runApp(MyApp(savedLocale: savedLocale, savedThemeMode: initialThemeMode));
 }

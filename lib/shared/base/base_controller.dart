@@ -4,6 +4,7 @@ import '../../core/network/api_exceptions.dart';
 import '../../core/network/api_result.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/utils/app_dialogs.dart';
+import 'dart:async';
 
 enum ViewState { idle, loading, success, error }
 
@@ -20,7 +21,7 @@ abstract class BaseController extends GetxController {
 
   Future<void> executeApi<T>({
     required Future<ApiResult<T>> Function() apiCall,
-    required void Function(T data) onSuccess,
+    required FutureOr<void> Function(T data) onSuccess,
     void Function(ApiException exception)? onError,
     void Function()? onLoading,
     bool showLoading = true,
@@ -43,7 +44,7 @@ abstract class BaseController extends GetxController {
       switch (result) {
         case ApiSuccess(data: final data):
           state.value = ViewState.success;
-          onSuccess(data);
+          await onSuccess(data);
         case ApiError(exception: final e):
           _handleApiException(e, showErrorDialog: showErrorDialog);
           onError?.call(e);

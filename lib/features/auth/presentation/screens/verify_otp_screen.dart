@@ -13,6 +13,7 @@ class VerifyOtpScreen extends GetView<AuthController> {
     final Map<String, dynamic> args = Get.arguments as Map<String, dynamic>? ?? {};
     final String mode = args['mode'] ?? 'otp';
     final String identifier = args['identifier'] ?? '';
+    final bool isAddingAccount = args['isAddingAccount'] == true;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -136,9 +137,10 @@ class VerifyOtpScreen extends GetView<AuthController> {
                                   onPressed: () {
                                     if (_otpController.text.isNotEmpty) {
                                       if (mode == 'email') {
-                                        controller.verifyEmail(identifier, _otpController.text);
+                                        controller.verifyEmail(identifier, _otpController.text, isAddingAccount: isAddingAccount,);
                                       } else {
-                                        controller.verifyOtp(identifier, _otpController.text);
+                                        controller.verifyOtp(identifier, _otpController.text, isAddingAccount: isAddingAccount,
+                                        );
                                       }
                                     }
                                   },

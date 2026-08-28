@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "43030429768",
+    "project_id": "movem-51b54",
+    "storage_bucket": "movem-51b54.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:43030429768:android:3885a6322c1f5ce6e9187d",
+        "android_client_info": {
+          "package_name": "com.example.movem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARNY7pzFac2yYZEhQgxw2T9yl_D4G1EVo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,14 +1,195 @@
 import 'dart:ui';
+import 'package:intl/intl.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:movem/core/routes/app_routes.dart';
 import 'package:movem/core/storage/user_manager.dart';
 import 'package:movem/features/auth/data/dto/response/user_response.dart';
-import 'package:movem/features/settings/presentation/screens/EditProfileScreen.dart';
+import 'package:movem/features/settings/presentation/models/contact_type.dart';
+import 'package:movem/features/settings/presentation/screens/contact_info_overlay.dart';
+import 'package:movem/features/settings/presentation/screens/change_contact_screen.dart';
+import 'package:movem/features/settings/presentation/bindings/setting_binding.dart';
+import 'package:movem/features/settings/presentation/controllers/setting_controller.dart';
+import 'package:movem/features/settings/data/dto/request/update_profile_request.dart';
+import 'package:movem/features/settings/data/services/setting_service.dart';
+import 'package:movem/features/settings/data/repositories/setting_repository_impl.dart';
+
+import 'package:movem/features/settings/presentation/screens/region_selection_screen.dart';
+
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
+
+  Future<void> _pickDateOfBirth(
+      BuildContext context,
+      UserResponse? user,
+      ) async {
+
+    final SettingController settingController;
+
+    if (Get.isRegistered<SettingController>()) {
+      settingController = Get.find<SettingController>();
+    } else {
+      final settingService = SettingService();
+      final settingRepository = SettingRepositoryImpl(
+        settingService: settingService,
+      );
+
+      settingController = SettingController(
+        repository: settingRepository,
+      );
+    }
+
+    final now = DateTime.now();
+
+    final today = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    );
+
+    final lastAllowedDate = today.subtract(
+      const Duration(days: 1),
+    );
+
+    DateTime initialDate = lastAllowedDate;
+
+    final existingDob = user?.dateOfBirth;
+
+    if (existingDob != null && existingDob.isNotEmpty) {
+      final parsedDob = DateTime.tryParse(existingDob);
+
+      if (parsedDob != null) {
+        final existingDate = DateTime(
+          parsedDob.year,
+          parsedDob.month,
+          parsedDob.day,
+        );
+
+        if (existingDate.isBefore(today)) {
+          initialDate = existingDate;
+        }
+      }
+    }
+
+    final pickedDate = await showDatePicker(
+      context: context,
+      firstDate: DateTime(1900),
+      lastDate: lastAllowedDate,
+      initialDate: initialDate,
+      helpText: 'Select Date Of Birth',
+    );
+
+    if (pickedDate == null) {
+      return;
+    }
+
+    final formattedDate =
+        '${pickedDate.year.toString().padLeft(4, '0')}-'
+        '${pickedDate.month.toString().padLeft(2, '0')}-'
+        '${pickedDate.day.toString().padLeft(2, '0')}';
+
+    final updatedUser = await settingController.updateProfile(
+      UpdateProfileRequest(
+        dateOfBirth: formattedDate,
+      ),
+      goBack: false,
+    );
+
+    if (updatedUser == null) {
+      return;
+    }
+
+    // Rebuild ProfileScreen with the updated UserManager data.
+    Get.forceAppUpdate();
+  }
+
+  Future<void> _pickRegion(
+      BuildContext context,
+      UserResponse? user,
+      ) async {
+    String? selectedRegion;
+
+    await showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF131D38),
+          title: const Text(
+            'Select Region',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.white70,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (selectedRegion == null ||
+                    selectedRegion!.trim().isEmpty) {
+                  return;
+                }
+
+                Navigator.of(dialogContext).pop(
+                  selectedRegion,
+                );
+              },
+              child: const Text(
+                'Save',
+                style: TextStyle(
+                  color: Color(0xFF5394FF),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    ).then((result) async {
+      if (result == null) {
+        return;
+      }
+
+      final region = result as String;
+
+      final settingController = Get.isRegistered<SettingController>()
+          ? Get.find<SettingController>()
+          : SettingController(
+        repository: SettingRepositoryImpl(
+          settingService: SettingService(),
+        ),
+      );
+
+      final updatedUser = await settingController.updateProfile(
+        UpdateProfileRequest(
+          cityProvince: region,
+        ),
+        goBack: false,
+      );
+
+      if (updatedUser == null) {
+        return;
+      }
+
+      Get.forceAppUpdate();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +236,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               _buildProfileSection(context, user),
               const SizedBox(height: 32),
-              _buildPersonalInformation(user),
+              _buildPersonalInformation(context, user),
               const SizedBox(height: 32),
               _buildMyActivities(),
               const SizedBox(height: 32),
@@ -110,13 +291,7 @@ class ProfileScreen extends StatelessWidget {
                     child: GestureDetector(
                       onTap: () {
                         if (user != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  EditProfileScreen(user: user),
-                            ),
-                          );
+                          Get.toNamed(AppRoutes.editProfile);
                         }
                       },
                       child: Row(
@@ -158,7 +333,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPersonalInformation(UserResponse? user) {
+  Widget _buildPersonalInformation(BuildContext context, UserResponse? user) {
     return SettingsCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,18 +353,124 @@ class ProfileScreen extends StatelessWidget {
             icon: Icons.email_outlined,
             title: 'Email',
             subtitle: _displayValue(user?.email),
+            onTap: () {
+              if (user?.email == null || user!.email!.isEmpty) {
+                return;
+              }
+
+              Get.dialog(
+                ContactInfoOverlay(
+                  type: ContactType.email,
+                  value: user.email!,
+                  onChange: () {
+                    Get.back();
+
+                    Get.toNamed(
+                      AppRoutes.changeContact,
+                      arguments: ContactType.email,
+                    );
+                  },
+                ),
+              );
+            },
           ),
           _buildDivider(),
           _buildInfoTile(
             icon: Icons.phone_outlined,
             title: 'Phone Number',
             subtitle: _displayValue(user?.phone),
+            onTap: () {
+              final phone = user?.phone;
+
+              // User has no phone linked yet
+              if (phone == null || phone.isEmpty) {
+                Get.toNamed(
+                  AppRoutes.changeContact,
+                  arguments: ContactType.phone,
+                );
+                return;
+              }
+
+              // User already has a phone linked
+              Get.dialog(
+                ContactInfoOverlay(
+                  type: ContactType.phone,
+                  value: phone,
+                  onChange: () {
+                    Get.back();
+
+                    Get.toNamed(
+                      AppRoutes.changeContact,
+                      arguments: ContactType.phone,
+                    );
+                  },
+                  onUnlink: () {
+                    Get.back();
+
+                    Get.dialog(
+                      AlertDialog(
+                        backgroundColor: const Color(0xFF131D38),
+                        title: const Text(
+                          'Unlink phone number?',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        content: const Text(
+                          'Are you sure you want to unlink your phone number from your account?',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Get.back();
+                            },
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              Get.back();
+
+                              final settingController =
+                              Get.isRegistered<SettingController>()
+                                  ? Get.find<SettingController>()
+                                  : SettingController(
+                                repository: SettingRepositoryImpl(
+                                  settingService: SettingService(),
+                                ),
+                              );
+
+                              final updatedUser =
+                              await settingController.unlinkPhone();
+
+                              if (updatedUser == null) {
+                                return;
+                              }
+
+                              Get.forceAppUpdate();
+                            },
+                            child: const Text(
+                              'Unlink',
+                              style: TextStyle(
+                                color: Colors.redAccent,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
           ),
           _buildDivider(),
           _buildInfoTile(
             icon: Icons.calendar_today_outlined,
             title: 'Date Of Birth',
-            subtitle: _displayValue(user?.dateOfBirth),
+            subtitle: _displayDateOfBirth(user?.dateOfBirth),
+            onTap: () => _pickDateOfBirth(context, user),
           ),
           _buildDivider(),
           _buildInfoTile(
@@ -197,6 +478,47 @@ class ProfileScreen extends StatelessWidget {
             title: 'Location',
             subtitle: _displayValue(user?.cityProvince),
             showDivider: false,
+            onTap: () async {
+              final selectedRegion = await Get.to<String>(
+                    () => RegionSelectionScreen(
+                  currentRegion: user?.cityProvince,
+                ),
+              );
+
+              if (selectedRegion == null ||
+                  selectedRegion.trim().isEmpty) {
+                return;
+              }
+
+              final SettingController settingController;
+
+              if (Get.isRegistered<SettingController>()) {
+                settingController = Get.find<SettingController>();
+              } else {
+                final settingService = SettingService();
+
+                final settingRepository = SettingRepositoryImpl(
+                  settingService: settingService,
+                );
+
+                settingController = SettingController(
+                  repository: settingRepository,
+                );
+              }
+
+              final updatedUser = await settingController.updateProfile(
+                UpdateProfileRequest(
+                  cityProvince: selectedRegion,
+                ),
+                goBack: false,
+              );
+
+              if (updatedUser == null) {
+                return;
+              }
+
+              Get.forceAppUpdate();
+            },
           ),
         ],
       ),
@@ -209,6 +531,19 @@ class ProfileScreen extends StatelessWidget {
     }
 
     return value;
+  }
+
+  String _displayDateOfBirth(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Not Set Up';
+    }
+
+    try {
+      final date = DateTime.parse(value);
+      return DateFormat('dd MMM yyyy').format(date);
+    } catch (_) {
+      return value;
+    }
   }
 
   Widget _buildProfileImage(UserResponse? user) {
@@ -251,44 +586,60 @@ class ProfileScreen extends StatelessWidget {
     required String title,
     required String subtitle,
     bool showDivider = true,
+    VoidCallback? onTap,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-      child: Row(
-        children: [
-          GlassContainer(
-            width: 32,
-            height: 32,
-            borderRadius: 16.0,
-            alignment: Alignment.center,
-            child: Icon(icon, color: const Color(0xFF3B82F6), size: 16),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: Color(0xFFA0AAB2),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 12.0,
+        ),
+        child: Row(
+          children: [
+            GlassContainer(
+              width: 32,
+              height: 32,
+              borderRadius: 16.0,
+              alignment: Alignment.center,
+              child: Icon(
+                icon,
+                color: const Color(0xFF3B82F6),
+                size: 16,
+              ),
             ),
-          ),
-          const Icon(Icons.chevron_right, color: Colors.white, size: 24),
-        ],
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      color: Color(0xFFA0AAB2),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right,
+              color: Colors.white,
+              size: 24,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -375,6 +726,8 @@ class ProfileScreen extends StatelessWidget {
       ],
     );
   }
+
+
 
   Widget _buildActivityCard({
     required IconData icon,
