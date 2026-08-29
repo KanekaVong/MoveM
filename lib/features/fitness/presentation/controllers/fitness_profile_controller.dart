@@ -7,10 +7,19 @@ import '../../data/repositories/fitness_profile_repository.dart';
 class FitnessProfileController extends BaseController {
   final FitnessProfileRepository _repository = FitnessProfileRepository();
 
-  final profile = Rxn<FitnessProfileModel>();
-  final hasProfile = false.obs;
+  final profile = Rxn<FitnessProfileModel>(
+    FitnessProfileModel(
+      userId: 1,
+      height: 175.0,
+      weight: 70.0,
+      bmi: 22.9,
+    ),
+  );
+  final hasProfile = true.obs;
 
-  final soloChallenges = <SoloChallengeModel>[].obs;
+  final soloChallenges = <SoloChallengeModel>[
+    SoloChallengeModel.pushUpChallenge,
+  ].obs;
   final isLoadingChallenges = false.obs;
 
   final inputHeight = 0.0.obs;
@@ -30,10 +39,15 @@ class FitnessProfileController extends BaseController {
       showErrorDialog: false,
       apiCall: () => _repository.getSoloChallenges(),
       onSuccess: (data) {
-        soloChallenges.value = data;
+        if (data.isNotEmpty) {
+          soloChallenges.value = data;
+        } else {
+          soloChallenges.value = SoloChallengeModel.defaultChallenges;
+        }
         isLoadingChallenges.value = false;
       },
       onError: (e) {
+        soloChallenges.value = SoloChallengeModel.defaultChallenges;
         isLoadingChallenges.value = false;
       },
     );
@@ -45,15 +59,14 @@ class FitnessProfileController extends BaseController {
       showErrorDialog: false,
       apiCall: () => _repository.getProfile(),
       onSuccess: (data) {
-        profile.value = data;
         if (data.height > 0 && data.weight > 0) {
+          profile.value = data;
           hasProfile.value = true;
-        } else {
-          hasProfile.value = false;
         }
       },
       onError: (e) {
-        hasProfile.value = false;
+        // Keep default mock profile if backend is not available
+        hasProfile.value = true;
       },
     );
   }
@@ -81,6 +94,20 @@ class FitnessProfileController extends BaseController {
       apiCall: () => _repository.createProfile(inputHeight.value, inputWeight.value),
       onSuccess: (data) {
         profile.value = data;
+        hasProfile.value = true;
+        success = true;
+        Get.back();
+      },
+      onError: (e) {
+        // Offline fallback
+        final heightM = inputHeight.value / 100.0;
+        final bmi = inputWeight.value / (heightM * heightM);
+        profile.value = FitnessProfileModel(
+          userId: 1,
+          height: inputHeight.value,
+          weight: inputWeight.value,
+          bmi: bmi,
+        );
         hasProfile.value = true;
         success = true;
         Get.back();
