@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/services/notification_scheduler_service.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../data/dto/response/task_response.dart';
@@ -38,8 +39,9 @@ class TaskDetailController extends BaseController {
     await executeApi<TaskResponse>(
       apiCall: () => repository.markTaskComplete(currentTask.activityId),
       showLoading: true,
-      onSuccess: (data) {
+      onSuccess: (data) async {
         task.value = data;
+        await NotificationSchedulerService().cancelRemindersForTask(currentTask.activityId);
         Get.back(result: true);
         Get.snackbar('Success', 'Task marked as complete!', backgroundColor: Colors.green, colorText: Colors.white);
       },

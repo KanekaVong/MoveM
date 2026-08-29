@@ -5,6 +5,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'firebase_options.dart';
 import 'core/services/fcm_service.dart';
+import 'core/services/notification_scheduler_service.dart';
+import 'core/storage/app_database.dart';
 import 'core/utils/Constants.dart';
 import 'l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
@@ -17,6 +19,19 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await LocalStorage().init();
+
+  try {
+    await AppDatabase().init();
+  } catch (e) {
+    debugPrint('⚠️ Error initializing AppDatabase: $e');
+  }
+
+  try {
+    await NotificationSchedulerService().initialize();
+    await NotificationSchedulerService().rescheduleAllPendingReminders();
+  } catch (e) {
+    debugPrint('⚠️ Error initializing NotificationSchedulerService: $e');
+  }
 
   try {
     await Firebase.initializeApp(

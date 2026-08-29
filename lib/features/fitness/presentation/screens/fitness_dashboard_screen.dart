@@ -317,7 +317,6 @@ class FitnessDashboardScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12.0),
         child: Row(
           children: [
-            // Left Image of athlete doing push-ups
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.asset(

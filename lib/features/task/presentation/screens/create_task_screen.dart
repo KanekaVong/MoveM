@@ -104,9 +104,23 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: () => controller.pickDeadline(Get.context!),
-            child: Obx(() => _buildPropertyRow('DEADLINES', controller.formattedDeadline, Icons.calendar_today)),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => controller.pickDeadlineDate(Get.context!),
+                  child: Obx(() => _buildPropertyRow('DEADLINE DATE', controller.formattedDeadlineDate, Icons.calendar_today)),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => controller.pickDeadlineTime(Get.context!),
+                  child: Obx(() => _buildPropertyRow('TIME', controller.formattedDeadlineTime, Icons.access_time)),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 24),
           GestureDetector(
