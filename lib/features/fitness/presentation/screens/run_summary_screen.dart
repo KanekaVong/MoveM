@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
-
+import '../../../../l10n/app_localizations.dart';
 import '../../data/models/run_session.dart';
 import '../../domain/pace_calculator.dart';
 import '../controllers/tracking_controller.dart';
@@ -12,13 +12,17 @@ class RunSummaryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final distanceKm = session.totalDistanceMeters / 1000.0;
     final durationStr = session.elapsedDuration.toString().split('.').first;
     final avgPace = PaceCalculator.paceMinPerKm(session.totalDistanceMeters, session.elapsedDuration);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Run Summary'),
+        title: Text(l10n?.runSummary ?? 'Run Summary', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF0F172A),
+        elevation: 0,
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(

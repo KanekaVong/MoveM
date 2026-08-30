@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../widgets/friend_request_tile.dart';
 import '../widgets/friend_suggestion_tile.dart';
 import '../controllers/friends_controller.dart';
@@ -9,8 +10,18 @@ class FriendsTabScreen extends GetView<FriendsController> {
 
   const FriendsTabScreen({super.key, this.initialIndex = 0});
 
+  String _getAvatarUrl(String? profilePic, String fallbackName) {
+    if (profilePic != null && profilePic.trim().isNotEmpty) {
+      return profilePic;
+    }
+    final name = fallbackName.trim().isNotEmpty ? fallbackName.trim() : 'User';
+    return 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(name)}&background=334155&color=fff';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return DefaultTabController(
       length: 2,
       initialIndex: initialIndex,
@@ -23,14 +34,23 @@ class FriendsTabScreen extends GetView<FriendsController> {
             icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
             onPressed: () => Navigator.pop(context),
           ),
-          bottom: const TabBar(
-            indicatorColor: Color(0xFF3B82F6),
+          centerTitle: true,
+          title: Text(
+            l10n?.friends ?? 'Friends',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          bottom: TabBar(
+            indicatorColor: const Color(0xFF3B82F6),
             labelColor: Colors.white,
-            unselectedLabelColor: Color(0xFFA0AAB2),
-            labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            unselectedLabelColor: const Color(0xFFA0AAB2),
+            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             tabs: [
-              Tab(text: 'Friend Request'),
-              Tab(text: 'Suggestions'),
+              Tab(text: l10n?.friendRequests ?? 'Friend Request'),
+              Tab(text: l10n?.friendSuggestions ?? 'Suggestions'),
             ],
           ),
         ),
@@ -62,11 +82,12 @@ class FriendsTabScreen extends GetView<FriendsController> {
           children: controller.incomingRequests.asMap().entries.map((entry) {
             final req = entry.value;
             final isLast = entry.key == controller.incomingRequests.length - 1;
+            final displayName = req.senderUsername.isNotEmpty ? req.senderUsername : 'User';
             return Column(
               children: [
                 FriendRequestTile(
-                  imageUrl: req.senderProfilePic.isNotEmpty ? req.senderProfilePic : 'https://ui-avatars.com/api/?name=${req.senderUsername}',
-                  name: req.senderUsername,
+                  imageUrl: _getAvatarUrl(req.senderProfilePic, displayName),
+                  name: displayName,
                   username: '@${req.senderUsername}',
                   onAccept: () => controller.acceptRequest(req.requestId),
                   onReject: () => controller.rejectRequest(req.requestId),
@@ -98,11 +119,13 @@ class FriendsTabScreen extends GetView<FriendsController> {
           children: controller.searchResults.asMap().entries.map((entry) {
             final user = entry.value;
             final isLast = entry.key == controller.searchResults.length - 1;
+            final fullName = '${user.firstname} ${user.lastname}'.trim();
+            final displayName = fullName.isNotEmpty ? fullName : (user.username.isNotEmpty ? user.username : 'User');
             return Column(
               children: [
                 FriendSuggestionTile(
-                  imageUrl: user.profilePic.isNotEmpty ? user.profilePic : 'https://ui-avatars.com/api/?name=${user.firstname}+${user.lastname}',
-                  name: '${user.firstname} ${user.lastname}'.trim().isEmpty ? user.username : '${user.firstname} ${user.lastname}',
+                  imageUrl: _getAvatarUrl(user.profilePic, displayName),
+                  name: displayName,
                   username: '@${user.username}',
                   friendStatus: user.friendStatus,
                   onAdd: () => controller.sendRequest(user.username),
@@ -117,4 +140,3 @@ class FriendsTabScreen extends GetView<FriendsController> {
     );
   }
 }
-

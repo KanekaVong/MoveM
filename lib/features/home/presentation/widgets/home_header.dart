@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../controllers/home_controller.dart';
 
 class HomeHeader extends GetView<HomeController> {
@@ -9,6 +10,8 @@ class HomeHeader extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -16,19 +19,20 @@ class HomeHeader extends GetView<HomeController> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Greetings',
-              style: TextStyle(
+            Text(
+              l10n?.greetings ?? 'Greetings',
+              style: const TextStyle(
                 color: Color(0xFFA0AAB2),
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
             ),
+            const SizedBox(height: 2),
             Obx(() => Text(
                   controller.greetingName,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 28,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 )),
@@ -37,7 +41,7 @@ class HomeHeader extends GetView<HomeController> {
                   controller.recentActivityMessage,
                   style: const TextStyle(
                     color: Color(0xFFE2E8F0),
-                    fontSize: 16,
+                    fontSize: 12,
                   ),
                 )),
           ],

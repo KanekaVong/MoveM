@@ -38,7 +38,7 @@ class HomeScreen extends GetView<HomeController> {
                 const SizedBox(height: 32),
                 OngoingSection(tasks: data.dueToday, fitnessStats: data.fitnessStatistics),
                 const SizedBox(height: 32),
-                UpcomingSection(tasks: data.upcomingTasks),
+                UpcomingSection(tasks: data.upcomingTasks, fitnessStats: data.fitnessStatistics),
                 const SizedBox(height: 32),
                 if (data.upcomingReminders != null && data.upcomingReminders!.isNotEmpty) ...[
                   RemindersSection(reminders: data.upcomingReminders!),

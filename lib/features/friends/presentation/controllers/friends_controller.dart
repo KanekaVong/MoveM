@@ -1,5 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../../core/storage/user_manager.dart';
 import '../../../../shared/base/base_controller.dart';
+import '../../../auth/data/dto/response/user_response.dart';
 import '../../domain/repositories/friends_repository.dart';
 import '../../data/dto/response/friend_response.dart';
 import '../../data/dto/response/friend_request_response.dart';
@@ -14,11 +18,36 @@ class FriendsController extends BaseController {
   final RxList<FriendRequestResponse> incomingRequests = <FriendRequestResponse>[].obs;
   final RxList<FriendRequestResponse> outgoingRequests = <FriendRequestResponse>[].obs;
   final RxString searchQuery = ''.obs;
+  final Rx<UserResponse?> currentUser = Rx<UserResponse?>(null);
 
   @override
   void onInit() {
     super.onInit();
+    loadUserProfile();
     loadInitialData();
+  }
+
+  void loadUserProfile() {
+    currentUser.value = UserManager().getUser();
+  }
+
+  String get profileName {
+    final u = currentUser.value;
+    final fullName = [u?.firstName, u?.lastName]
+        .where((v) => v != null && v.trim().isNotEmpty)
+        .join(' ');
+    if (fullName.isNotEmpty) return fullName;
+    return u?.username.isNotEmpty == true ? u!.username : 'Your Profile';
+  }
+
+  String get profileUsername => currentUser.value?.username.isNotEmpty == true ? currentUser.value!.username : 'user';
+  String? get profilePic => currentUser.value?.profilePic;
+  int get friendCount => friends.length;
+
+  void copyProfileLink() {
+    final link = 'https://movem.app/user/@$profileUsername';
+    Clipboard.setData(ClipboardData(text: link));
+    Get.snackbar('Copied', 'Profile link copied to clipboard', backgroundColor: const Color(0xFF48A45B), colorText: Colors.white);
   }
 
   void loadInitialData() {

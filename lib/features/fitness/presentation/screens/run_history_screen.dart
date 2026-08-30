@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import '../../../../l10n/app_localizations.dart';
 import '../../data/models/run_session.dart';
 import '../../data/local/run_session_repository.dart';
 import '../../domain/pace_calculator.dart';
@@ -39,14 +39,19 @@ class _RunHistoryScreenState extends State<RunHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Run History'),
+        title: Text(l10n?.runHistory ?? 'Run History', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF0F172A),
+        elevation: 0,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _sessions.isEmpty
-              ? const Center(child: Text('No saved runs yet.'))
+              ? const Center(child: Text('No saved runs yet.', style: TextStyle(fontSize: 12, color: Colors.white70)))
               : ListView.builder(
                   itemCount: _sessions.length,
                   itemBuilder: (context, index) {
@@ -56,10 +61,10 @@ class _RunHistoryScreenState extends State<RunHistoryScreen> {
                     final dateStr = DateFormat.yMMMd().add_jm().format(session.startedAt);
 
                     return ListTile(
-                      leading: const Icon(Icons.directions_run),
-                      title: Text(dateStr),
-                      subtitle: Text('${distanceKm.toStringAsFixed(2)} km • ${PaceCalculator.formatPace(avgPace)}'),
-                      trailing: const Icon(Icons.chevron_right),
+                      leading: const Icon(Icons.directions_run, color: Colors.blueAccent),
+                      title: Text(dateStr, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+                      subtitle: Text('${distanceKm.toStringAsFixed(2)} km • ${PaceCalculator.formatPace(avgPace)}', style: const TextStyle(fontSize: 12, color: Colors.white70)),
+                      trailing: const Icon(Icons.chevron_right, color: Colors.white54),
                       onTap: () {
                         Get.to(() => RunDetailScreen(session: session));
                       },
@@ -92,7 +97,10 @@ class RunDetailScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Run Details'),
+        title: const Text('Run Details', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF0F172A),
+        elevation: 0,
       ),
       body: GoogleMap(
         initialCameraPosition: CameraPosition(

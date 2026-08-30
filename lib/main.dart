@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'firebase_options.dart';
+import 'core/config/app_config.dart';
+import 'core/config/app_environment.dart';
 import 'core/services/fcm_service.dart';
 import 'core/services/notification_scheduler_service.dart';
 import 'core/storage/app_database.dart';
@@ -16,21 +18,30 @@ import 'core/storage/local_storage.dart';
 import 'core/storage/user_manager.dart';
 
 void main() async {
+  await mainCommon(environment: Environment.dev);
+}
+
+Future<void> mainCommon({required Environment environment}) async {
   WidgetsFlutterBinding.ensureInitialized();
+  AppEnvironment.setEnvironment(environment);
 
   await LocalStorage().init();
 
   try {
     await AppDatabase().init();
   } catch (e) {
-    debugPrint('⚠️ Error initializing AppDatabase: $e');
+    if (AppConfig.enableDetailedLogging) {
+      debugPrint('⚠️ Error initializing AppDatabase: $e');
+    }
   }
 
   try {
     await NotificationSchedulerService().initialize();
     await NotificationSchedulerService().rescheduleAllPendingReminders();
   } catch (e) {
-    debugPrint('⚠️ Error initializing NotificationSchedulerService: $e');
+    if (AppConfig.enableDetailedLogging) {
+      debugPrint('⚠️ Error initializing NotificationSchedulerService: $e');
+    }
   }
 
   try {
@@ -40,7 +51,9 @@ void main() async {
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     await FcmService().initialize();
   } catch (e) {
-    debugPrint('⚠️ Error initializing Firebase: $e');
+    if (AppConfig.enableDetailedLogging) {
+      debugPrint('⚠️ Error initializing Firebase: $e');
+    }
   }
 
   final savedLocale = Locale(UserManager().languageCode);
@@ -67,7 +80,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: Constants.appName,
+      title: AppConfig.appTitle,
+      defaultTransition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 200),
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: savedThemeMode,

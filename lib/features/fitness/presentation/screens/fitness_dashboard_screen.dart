@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/models/solo_challenge_model.dart';
 import '../controllers/fitness_profile_controller.dart';
 import '../widgets/notched_card.dart';
@@ -14,6 +15,8 @@ class FitnessDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
       body: SafeArea(
@@ -28,9 +31,9 @@ class FitnessDashboardScreen extends StatelessWidget {
               const SizedBox(height: 16),
               _buildStatsRow(),
               const SizedBox(height: 24),
-              const Text(
-                'MoveM Club',
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              Text(
+                l10n?.movemClub ?? 'MoveM Club',
+                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               _buildGroupActivity(),
@@ -40,13 +43,13 @@ class FitnessDashboardScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Solo Challenges',
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  Text(
+                    l10n?.soloChallenges ?? 'Solo Challenges',
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'see all',
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 14),
+                    l10n?.viewAll ?? 'see all',
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12),
                   ),
                 ],
               ),

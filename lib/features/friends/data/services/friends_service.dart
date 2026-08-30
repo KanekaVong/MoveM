@@ -29,11 +29,11 @@ class FriendsService {
   }
 
   Future<Response> acceptFriendRequest(int requestId) async {
-    return await dio.put('friends/requests/$requestId/accept', options: Options(responseType: ResponseType.plain));
+    return await dio.patch('friends/requests/$requestId/accept');
   }
 
   Future<Response> rejectFriendRequest(int requestId) async {
-    return await dio.put('friends/requests/$requestId/reject', options: Options(responseType: ResponseType.plain));
+    return await dio.patch('friends/requests/$requestId/reject');
   }
 
   Future<Response> cancelFriendRequest(int requestId) async {

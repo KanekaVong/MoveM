@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
+import '../../../../core/utils/app_images.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../controllers/task_controller.dart';
 import 'create_task_screen.dart';
 import 'task_detail_screen.dart';
@@ -12,6 +13,7 @@ class TaskScreen extends GetView<TaskController> {
   @override
   Widget build(BuildContext context) {
     Get.put(TaskController());
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0E0A07),
@@ -30,8 +32,8 @@ class TaskScreen extends GetView<TaskController> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',
+                  Image.asset(
+                    AppImages.taskScreenBackground,
                     fit: BoxFit.cover,
                   ),
                   Container(
@@ -73,33 +75,33 @@ class TaskScreen extends GetView<TaskController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 16),
-                          const Text(
-                            'Progress',
-                            style: TextStyle(
+                          Text(
+                            l10n?.todayProgress ?? 'Progress',
+                            style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 20,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                               fontStyle: FontStyle.italic,
                             ),
                           ),
                           const SizedBox(height: 16),
-                          _buildCreateTaskBanner(),
+                          _buildCreateTaskBanner(context),
                           const SizedBox(height: 16),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Expanded(
                                 flex: 5,
-                                child: _buildCompletedTasksCard(),
+                                child: _buildCompletedTasksCard(context),
                               ),
                               const SizedBox(width: 16),
                               Expanded(
                                 flex: 4,
                                 child: Column(
                                   children: [
-                                    _buildMiniCard('Upcoming Tasks', '${controller.upcomingTasksCount}'),
+                                    _buildMiniCard(l10n?.upcoming ?? 'Upcoming Tasks', '${controller.upcomingTasksCount}'),
                                     const SizedBox(height: 16),
-                                    _buildMiniCard('On-Going Tasks', '${controller.ongoingTasksCount}'),
+                                    _buildMiniCard(l10n?.ongoingTasks ?? 'On-Going Tasks', '${controller.ongoingTasksCount}'),
                                   ],
                                 ),
                               ),
@@ -124,11 +126,11 @@ class TaskScreen extends GetView<TaskController> {
                         top: MediaQuery.of(context).padding.top,
                       ),
                       alignment: Alignment.bottomLeft,
-                      child: const Text(
-                        'All Tasks',
-                        style: TextStyle(
+                      child: Text(
+                        l10n?.allTasks ?? 'All Tasks',
+                        style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 20,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           fontStyle: FontStyle.italic,
                         ),
@@ -181,7 +183,8 @@ class TaskScreen extends GetView<TaskController> {
     );
   }
 
-  Widget _buildCreateTaskBanner() {
+  Widget _buildCreateTaskBanner(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       onTap: () {
         Get.to(() => const CreateTaskScreen())?.then((_) => controller.fetchTasks());
@@ -198,10 +201,10 @@ class TaskScreen extends GetView<TaskController> {
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text('Create Task', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
-                SizedBox(height: 4),
-                Text('Let your brain relax, put it here.', style: TextStyle(color: Color(0xFFA0AAB2), fontSize: 10, fontStyle: FontStyle.italic)),
+              children: [
+                Text(l10n?.createTask ?? 'Create Task', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                const SizedBox(height: 4),
+                const Text('Let your brain relax, put it here.', style: TextStyle(color: Color(0xFFA0AAB2), fontSize: 10, fontStyle: FontStyle.italic)),
               ],
             ),
             const Icon(Icons.add, color: Colors.white, size: 28),
@@ -211,7 +214,8 @@ class TaskScreen extends GetView<TaskController> {
     );
   }
 
-  Widget _buildCompletedTasksCard() {
+  Widget _buildCompletedTasksCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final total = controller.tasks.length;
     final completed = controller.completedTasksCount;
     final progress = total > 0 ? completed / total : 0.0;
@@ -227,7 +231,7 @@ class TaskScreen extends GetView<TaskController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Completed Tasks', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+          Text(l10n?.completedTasks ?? 'Completed Tasks', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
           const Spacer(),
           Center(
             child: SizedBox(

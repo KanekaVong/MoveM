@@ -15,14 +15,30 @@ class FriendsRepositoryImpl implements FriendsRepository {
   FriendsRepositoryImpl({required this.friendsService});
 
   String _parseSuccessMessage(dynamic data) {
-    if (data is Map<String, dynamic> && data.containsKey('message')) {
-      return data['message'].toString();
+    if (data is Map<String, dynamic>) {
+      if (data.containsKey('message')) {
+        return data['message'].toString();
+      }
+      if (data['status'] == 'ACCEPTED') {
+        return 'Friend request accepted';
+      }
+      if (data['status'] == 'REJECTED') {
+        return 'Friend request rejected';
+      }
     }
     if (data is String) {
       try {
         final decoded = jsonDecode(data);
-        if (decoded is Map<String, dynamic> && decoded.containsKey('message')) {
-          return decoded['message'].toString();
+        if (decoded is Map<String, dynamic>) {
+          if (decoded.containsKey('message')) {
+            return decoded['message'].toString();
+          }
+          if (decoded['status'] == 'ACCEPTED') {
+            return 'Friend request accepted';
+          }
+          if (decoded['status'] == 'REJECTED') {
+            return 'Friend request rejected';
+          }
         }
       } catch (_) {}
     }

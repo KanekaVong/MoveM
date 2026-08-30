@@ -13,6 +13,9 @@ class TaskDetailController extends BaseController {
   final String activityId;
 
   final Rx<TaskResponse?> task = Rx<TaskResponse?>(null);
+  final RxBool isCardExpanded = true.obs;
+  final RxBool isLabelsExpanded = true.obs;
+  final RxBool isAttachmentsExpanded = true.obs;
 
   TaskDetailController({required this.activityId});
 
@@ -20,6 +23,18 @@ class TaskDetailController extends BaseController {
   void onReady() {
     super.onReady();
     fetchTaskDetail();
+  }
+
+  void toggleCardExpanded() {
+    isCardExpanded.value = !isCardExpanded.value;
+  }
+
+  void toggleLabelsExpanded() {
+    isLabelsExpanded.value = !isLabelsExpanded.value;
+  }
+
+  void toggleAttachmentsExpanded() {
+    isAttachmentsExpanded.value = !isAttachmentsExpanded.value;
   }
 
   Future<void> fetchTaskDetail({bool showLoading = true}) async {
@@ -88,6 +103,8 @@ class TaskDetailController extends BaseController {
       labels: currentTask.labels,
       reminders: currentTask.reminders,
       checklists: updatedChecklists,
+      attachments: currentTask.attachments,
+      collaborators: currentTask.collaborators,
     );
 
     await executeApi<void>(

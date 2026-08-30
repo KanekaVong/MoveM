@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/glass_button.dart';
+import '../../../../shared/widgets/glass_container.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -17,14 +19,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController _otpController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
 
-  int _secondsLeft = 0;
   bool _isTimerActive = false;
+  int _secondsLeft = 60;
   bool _timerFinished = false;
-  Timer? _timer;
 
   @override
   void dispose() {
-    _timer?.cancel();
     _emailController.dispose();
     _otpController.dispose();
     _newPasswordController.dispose();
@@ -32,31 +32,35 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   void _startTimer() {
-    if (_isTimerActive) return;
-
     setState(() {
       _isTimerActive = true;
-      _timerFinished = false;
       _secondsLeft = 60;
+      _timerFinished = false;
     });
 
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_secondsLeft > 0) {
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 1));
+      if (!mounted) return false;
+
+      if (_secondsLeft > 1) {
         setState(() {
           _secondsLeft--;
         });
+        return true;
       } else {
         setState(() {
           _isTimerActive = false;
           _timerFinished = true;
         });
-        _timer?.cancel();
+        return false;
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Container(
@@ -74,155 +78,173 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         ),
         child: SafeArea(
           bottom: false,
-          child: Column(
+          child: Stack(
             children: [
-
-              Padding(
-                padding: const EdgeInsets.only(top: 40.0, bottom: 40.0),
-                child: Column(
-                  children: [
-                    _buildGradientText('MOVEM:', 36, true, letterSpacing: 3.0),
-                    const SizedBox(height: 10),
-                    _buildGradientText('YOUR LIFE, IN MOTION.', 20, false, letterSpacing: 1.5),
-                  ],
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 30.0, bottom: 25.0),
+                  child: Column(
+                    children: [
+                      _buildGradientText('MOVEM:', 36, true, letterSpacing: 3.0),
+                      const SizedBox(height: 10),
+                      _buildGradientText('YOUR LIFE, IN MOTION.', 20, false, letterSpacing: 1.5),
+                    ],
+                  ),
                 ),
               ),
 
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFAFAFA),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+              Positioned.fill(
+                child: CustomScrollView(
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  slivers: [
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: 130),
                     ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                  child: Stack(
-                      children: [
-                        Positioned(
-                          bottom: -100,
-                          right: -100,
-                          child: CustomPaint(
-                            size: const Size(300, 300),
-                            painter: VerifyConcentricCirclesPainter(),
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFAFAFA),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30),
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 8,
+                              offset: Offset(0, -3),
+                            ),
+                          ],
                         ),
-
-                        Positioned(top: 40, right: 30, child: _buildStarIcon()),
-                        Positioned(top: 70, left: 40, child: _buildStarIcon(size: 20)),
-                        Positioned(bottom: 120, left: 10, child: _buildStarIcon(size: 40)),
-                        Positioned(bottom: 20, right: 80, child: _buildStarIcon(size: 30)),
-                        Positioned(bottom: 10, left: -20, child: _buildStarIcon(size: 80, opacity: 0.1)),
-                        Positioned(top: 150, right: -20, child: _buildStarIcon(size: 100, opacity: 0.1)),
-
-                        SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30),
+                          ),
+                          child: Stack(
                             children: [
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.arrow_back, color: Color(0xFF4C8DB3)),
-                                    onPressed: () => Get.back(),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: _buildGradientText(
-                                        'RESET PASSWORD',
-                                        24,
-                                        true,
-                                        colors: [
-                                          Colors.white,
-                                          const Color(0xFF86C8E6),
-                                          const Color(0xFF4081AB)
-                                        ],
-                                        stops: const [0.0, 0.4, 1.0],
-                                        letterSpacing: 1.5,
+                              Positioned(top: 40, right: 30, child: _buildStarIcon()),
+                              Positioned(top: 70, left: 40, child: _buildStarIcon(size: 20)),
+                              Positioned(bottom: 120, left: 10, child: _buildStarIcon(size: 40)),
+                              Positioned(bottom: 20, right: 80, child: _buildStarIcon(size: 30)),
+                              Positioned(bottom: 10, left: -20, child: _buildStarIcon(size: 80, opacity: 0.1)),
+                              Positioned(top: 150, right: -20, child: _buildStarIcon(size: 100, opacity: 0.1)),
+
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.arrow_back, color: Color(0xFF4C8DB3)),
+                                          onPressed: () => Get.back(),
+                                        ),
+                                        Expanded(
+                                          child: Center(
+                                            child: _buildGradientText(
+                                              l10n?.resetPasswordTitle ?? 'RESET PASSWORD',
+                                              26,
+                                              true,
+                                              colors: [
+                                                Colors.white,
+                                                const Color(0xFF86C8E6),
+                                                const Color(0xFF4081AB)
+                                              ],
+                                              stops: const [0.0, 0.4, 1.0],
+                                              letterSpacing: 1.5,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 48),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 30),
+
+                                    _buildInputField(
+                                      label: l10n?.email ?? 'EMAIL',
+                                      hint: l10n?.email ?? 'Enter your email',
+                                      controller: _emailController,
+                                      keyboardType: TextInputType.emailAddress,
+                                    ),
+                                    const SizedBox(height: 20),
+
+                                    _buildInputField(
+                                      label: l10n?.otpCodeLabel ?? 'OTP CODE',
+                                      hint: l10n?.otpCodeLabel ?? 'Enter 6-digit OTP',
+                                      controller: _otpController,
+                                      keyboardType: TextInputType.number,
+                                      suffixIcon: Padding(
+                                        padding: const EdgeInsets.only(right: 8.0),
+                                        child: TextButton(
+                                          onPressed: (_isTimerActive || _emailController.text.isEmpty)
+                                              ? null
+                                              : () {
+                                                  controller.forgotPassword(_emailController.text.trim());
+                                                  _startTimer();
+                                                },
+                                          child: Text(
+                                            _isTimerActive
+                                                ? '$_secondsLeft s'
+                                                : (_timerFinished
+                                                    ? (l10n?.resendCode ?? 'Resend')
+                                                    : (l10n?.resendCode ?? 'Send OTP')),
+                                            style: TextStyle(
+                                              color: (_isTimerActive || _emailController.text.isEmpty)
+                                                  ? Colors.grey
+                                                  : const Color(0xFF4C8DB3),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 48),
-                                ],
-                              ),
-                              const SizedBox(height: 30),
+                                    const SizedBox(height: 20),
 
-                              _buildInputField(
-                                label: 'EMAIL ADDRESS',
-                                hint: 'Enter your email',
-                                controller: _emailController,
-                              ),
-                              const SizedBox(height: 20),
-
-                              _buildInputField(
-                                label: 'OTP CODE',
-                                hint: 'Enter 6-digit OTP',
-                                controller: _otpController,
-                                keyboardType: TextInputType.number,
-                                suffixIcon: TextButton(
-                                  onPressed: _isTimerActive ? null : () {
-                                    if (_emailController.text.isNotEmpty) {
-                                      controller.forgotPassword(_emailController.text);
-                                      _startTimer();
-                                    } else {
-                                      Get.snackbar('Error', 'Please enter your email first',
-                                        backgroundColor: Colors.redAccent, colorText: Colors.white);
-                                    }
-                                  },
-                                  child: Text(
-                                    _isTimerActive
-                                      ? '$_secondsLeft s'
-                                      : (_timerFinished ? 'Resend' : 'Send OTP'),
-                                    style: TextStyle(
-                                      color: _isTimerActive ? const Color(0xFFA0AAB2) : const Color(0xFF4C8DB3),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
+                                    _buildInputField(
+                                      label: l10n?.newPassword ?? 'NEW PASSWORD',
+                                      hint: l10n?.newPassword ?? 'Enter new password',
+                                      controller: _newPasswordController,
+                                      obscureText: true,
                                     ),
-                                  ),
+                                    const SizedBox(height: 40),
+
+                                    Center(
+                                      child: GlassButton(
+                                        text: l10n?.savePasswordBtn ?? 'Save Password',
+                                        onPressed: () {
+                                          if (_emailController.text.isNotEmpty &&
+                                              _otpController.text.isNotEmpty &&
+                                              _newPasswordController.text.isNotEmpty) {
+                                            controller.resetPassword(
+                                              _emailController.text.trim(),
+                                              _otpController.text.trim(),
+                                              _newPasswordController.text.trim(),
+                                            );
+                                          } else {
+                                            Get.snackbar('Error', 'Please fill all fields',
+                                                backgroundColor: Colors.redAccent, colorText: Colors.white);
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 20),
-
-                              _buildInputField(
-                                label: 'NEW PASSWORD',
-                                hint: 'Enter new password',
-                                controller: _newPasswordController,
-                                obscureText: true,
-                              ),
-                              const SizedBox(height: 40),
-
-                              Center(
-                                child: GlassButton(
-                                  text: 'Reset Password',
-                                  onPressed: () {
-                                    if (_emailController.text.isNotEmpty &&
-                                        _otpController.text.isNotEmpty &&
-                                        _newPasswordController.text.isNotEmpty) {
-                                      controller.resetPassword(
-                                        _emailController.text,
-                                        _otpController.text,
-                                        _newPasswordController.text,
-                                      );
-                                    } else {
-                                      Get.snackbar('Error', 'Please fill all fields',
-                                        backgroundColor: Colors.redAccent, colorText: Colors.white);
-                                    }
-                                  },
-                                ),
-                              ),
-                              const SizedBox(height: 20),
                             ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ],
@@ -303,7 +325,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           children: [
             _buildGradientText(
               label,
-              13,
+              14,
               true,
               colors: [const Color(0xFF91C5E2), const Color(0xFF4C8DB3)],
               letterSpacing: 1.0,
@@ -333,12 +355,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             controller: controller,
             obscureText: obscureText,
             keyboardType: keyboardType,
-            style: const TextStyle(color: Color(0xFF031645), fontSize: 15),
+            style: const TextStyle(color: Color(0xFF031645), fontSize: 12),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: const TextStyle(
                 color: Color(0xFFA0AAB2),
-                fontSize: 15,
+                fontSize: 12,
               ),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -355,25 +377,3 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 }
 
-class VerifyConcentricCirclesPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF4C8DB3).withValues(alpha: 0.15)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-
-    final center = Offset(size.width, size.height);
-    canvas.drawCircle(center, 120, paint);
-    canvas.drawCircle(center, 140, paint);
-
-    final paintThick = Paint()
-      ..color = const Color(0xFF4C8DB3).withValues(alpha: 0.4)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
-    canvas.drawCircle(center, 180, paintThick);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}

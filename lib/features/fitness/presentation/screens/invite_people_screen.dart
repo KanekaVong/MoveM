@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../../../l10n/app_localizations.dart';
 import '../../../friends/data/repositories/friends_repository_impl.dart';
 import '../../../friends/data/services/friends_service.dart';
 import '../../../friends/domain/repositories/friends_repository.dart';
@@ -40,6 +40,8 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
@@ -48,22 +50,21 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
         leadingWidth: 80,
         leading: TextButton(
           onPressed: () => Get.back(),
-          child: const Text('Cancel',
-              style: TextStyle(color: Colors.white70, fontSize: 16)),
+          child: Text(l10n?.cancel ?? 'Cancel',
+              style: const TextStyle(color: Colors.white70, fontSize: 14)),
         ),
         centerTitle: true,
-        title: const Text('Invite people',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(l10n?.invitePeople ?? 'Invite people',
+            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
         actions: [
           TextButton(
             onPressed: () {
-
               Get.back();
             },
-            child: const Text('Invite',
-                style: TextStyle(
+            child: Text(l10n?.invite ?? 'Invite',
+                style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold)),
           ),
         ],

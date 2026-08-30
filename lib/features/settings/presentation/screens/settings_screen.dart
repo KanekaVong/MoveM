@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../shared/widgets/glass_container.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../controllers/settings_controller.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -9,6 +10,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(SettingsController());
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0B1021),
@@ -18,64 +20,64 @@ class SettingsScreen extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               children: [
-                _buildSectionHeader('Account'),
+                _buildSectionHeader(l10n?.accountSection ?? 'Account'),
                 const SizedBox(height: 10),
                 _buildGlassGroup([
                   _buildSettingItem(
-                    title: 'Your Profile',
+                    title: l10n?.yourProfile ?? 'Your Profile',
                     onTap: controller.onProfileTap,
                   ),
                   _buildDivider(),
                   _buildSettingItem(
-                    title: 'Change Password',
+                    title: l10n?.changePassword ?? 'Change Password',
                     onTap: controller.onChangePasswordTap,
                   ),
                 ]),
 
                 const SizedBox(height: 24),
 
-                _buildSectionHeader('Preferences'),
+                _buildSectionHeader(l10n?.preferencesSection ?? 'Preferences'),
                 const SizedBox(height: 10),
                 _buildGlassGroup([
                   _buildSettingItem(
-                    title: 'Appearances',
+                    title: l10n?.appearances ?? 'Appearances',
                     onTap: () {},
                   ),
                   _buildDivider(),
                   _buildToggleSettingItem(
-                    title: 'Dark/Light',
+                    title: l10n?.darkLightTheme ?? 'Dark/Light',
                     value: controller.isDarkMode,
                     onChanged: controller.onToggleTheme,
                   ),
                   _buildDivider(),
                   _buildSettingItem(
-                    title: 'Languages',
+                    title: l10n?.languages ?? 'Languages',
                     onTap: controller.onLanguagesTap,
                   ),
                   _buildDivider(),
                   _buildSettingItem(
-                    title: 'Notifications',
+                    title: l10n?.notifications ?? 'Notifications',
                     onTap: controller.onNotificationsTap,
                   ),
                   _buildDivider(),
                   _buildSettingItem(
-                    title: 'Privacy',
+                    title: l10n?.privacy ?? 'Privacy',
                     onTap: controller.onPrivacyTap,
                   ),
                 ]),
 
                 const SizedBox(height: 24),
 
-                _buildSectionHeader('Sessions'),
+                _buildSectionHeader(l10n?.sessionsSection ?? 'Sessions'),
                 const SizedBox(height: 10),
                 _buildGlassGroup([
                   _buildSettingItem(
-                    title: 'Delete Your Account',
+                    title: l10n?.deleteAccount ?? 'Delete Your Account',
                     onTap: controller.onDeleteAccountTap,
                   ),
                   _buildDivider(),
                   _buildSettingItem(
-                    title: 'Log Out',
+                    title: l10n?.logOut ?? 'Log Out',
                     onTap: () => _showLogoutDialog(context, controller),
                   ),
                 ]),
@@ -162,7 +164,7 @@ class SettingsScreen extends StatelessWidget {
       title,
       style: const TextStyle(
         color: Colors.white,
-        fontSize: 18,
+        fontSize: 14,
         fontWeight: FontWeight.bold,
       ),
     );
@@ -197,14 +199,14 @@ class SettingsScreen extends StatelessWidget {
                 title,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 15,
+                  fontSize: 12,
                   fontWeight: FontWeight.w400,
                 ),
               ),
               const Icon(
                 Icons.arrow_forward_ios,
                 color: Colors.white70,
-                size: 16,
+                size: 14,
               ),
             ],
           ),
@@ -227,7 +229,7 @@ class SettingsScreen extends StatelessWidget {
             title,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 15,
+              fontSize: 12,
               fontWeight: FontWeight.w400,
             ),
           ),

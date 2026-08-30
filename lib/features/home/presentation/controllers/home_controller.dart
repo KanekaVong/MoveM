@@ -39,12 +39,15 @@ class HomeController extends BaseController {
 
   String get greetingName {
     final user = currentUser.value;
-    final firstName = user?.firstName?.trim();
-    if (firstName != null && firstName.isNotEmpty) {
-      return firstName;
+    final fullName = [user?.firstName, user?.lastName]
+        .where((v) => v != null && v.trim().isNotEmpty)
+        .join(' ')
+        .trim();
+    if (fullName.isNotEmpty) {
+      return fullName;
     }
-    if (user?.username != null && user!.username.isNotEmpty) {
-      return user.username;
+    if (user?.username != null && user!.username.trim().isNotEmpty) {
+      return user!.username.trim();
     }
     return 'MoveM User';
   }

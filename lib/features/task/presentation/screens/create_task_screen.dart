@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../controllers/create_task_controller.dart';
 
 class CreateTaskScreen extends GetView<CreateTaskController> {
@@ -8,22 +9,23 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
   @override
   Widget build(BuildContext context) {
     Get.put(CreateTaskController());
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
       body: SafeArea(
         child: Column(
           children: [
-            _buildAppBar(),
+            _buildAppBar(context),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInputField('TASK TITLE', 'Give your Work a name', controller.titleController),
+                    _buildInputField(l10n?.taskTitleLabel ?? 'TASK TITLE', l10n?.taskTitleHint ?? 'Give your Work a name', controller.titleController),
                     const SizedBox(height: 32),
-                    _buildInputField('DESCRIPTION', 'Write down a note', controller.descriptionController),
+                    _buildInputField(l10n?.descriptionLabel ?? 'DESCRIPTION', l10n?.descriptionHint ?? 'Write down a note', controller.descriptionController),
                     const SizedBox(height: 32),
                     _buildPropertiesCard(),
                   ],
@@ -46,23 +48,24 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
             ),
             elevation: 0,
           ),
-          child: const Text('Create Task', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          child: Text(l10n?.createTask ?? 'Create Task', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         ),
       ),
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       child: Row(
         children: [
           GestureDetector(
             onTap: () => Get.back(),
-            child: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+            child: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
           ),
-          const SizedBox(width: 16),
-          const Text('Create Task', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+          const SizedBox(width: 12),
+          Text(l10n?.createTask ?? 'Create Task', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -76,7 +79,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
         const SizedBox(height: 8),
         TextField(
           controller: textController,
-          style: const TextStyle(color: Colors.white, fontSize: 14),
+          style: const TextStyle(color: Colors.white, fontSize: 12),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: const TextStyle(color: Color(0xFF475569), fontSize: 12, fontStyle: FontStyle.italic),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../controllers/notification_controller.dart';
 import '../../../../shared/widgets/glass_container.dart';
 import '../../data/dto/response/notification_response.dart';
@@ -10,6 +11,8 @@ class NotificationScreen extends GetView<NotificationController> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
@@ -19,11 +22,11 @@ class NotificationScreen extends GetView<NotificationController> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 18),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Notifications',
-          style: TextStyle(
+        title: Text(
+          l10n?.notifications ?? 'Notifications',
+          style: const TextStyle(
             color: Colors.white,
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -51,10 +54,10 @@ class NotificationScreen extends GetView<NotificationController> {
         }
 
         if (controller.notifications.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
-              'No notifications yet',
-              style: TextStyle(color: Colors.white70, fontSize: 16),
+              l10n?.noNotifications ?? 'No notifications yet',
+              style: const TextStyle(color: Colors.white70, fontSize: 16),
             ),
           );
         }
@@ -74,9 +77,12 @@ class NotificationScreen extends GetView<NotificationController> {
 
   Widget _buildNotificationTile(NotificationResponse notification) {
 
+    final senderName = (notification.senderName != null && notification.senderName!.trim().isNotEmpty)
+        ? notification.senderName!.trim()
+        : 'User';
     final avatarUrl = (notification.senderProfilePicture != null && notification.senderProfilePicture!.isNotEmpty)
         ? notification.senderProfilePicture!
-        : 'https://ui-avatars.com/api/?name=${notification.senderName ?? 'User'}';
+        : 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(senderName)}&background=334155&color=fff';
 
     return GestureDetector(
       onTap: () {
@@ -92,15 +98,27 @@ class NotificationScreen extends GetView<NotificationController> {
             children: [
               Stack(
                 children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFF1E293B), width: 1),
-                      image: DecorationImage(
-                        image: CachedNetworkImageProvider(avatarUrl),
+                  ClipOval(
+                    child: SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: CachedNetworkImage(
+                        imageUrl: avatarUrl,
                         fit: BoxFit.cover,
+                        placeholder: (context, url) => CircleAvatar(
+                          backgroundColor: const Color(0xFF334155),
+                          child: Text(
+                            senderName[0].toUpperCase(),
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => CircleAvatar(
+                          backgroundColor: const Color(0xFF334155),
+                          child: Text(
+                            senderName[0].toUpperCase(),
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        ),
                       ),
                     ),
                   ),

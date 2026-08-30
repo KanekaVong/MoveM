@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class CreateActivityScreen extends StatefulWidget {
   const CreateActivityScreen({super.key});
@@ -31,13 +32,15 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        title: const Text('Create Activity', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(l10n?.createActivity ?? 'Create Activity', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SafeArea(
@@ -49,7 +52,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
               _buildLabel('ACTIVITY NAME'),
               TextField(
                 controller: _activityNameController,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: const Color(0xFF0B2B6A),

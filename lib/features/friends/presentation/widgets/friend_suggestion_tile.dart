@@ -21,13 +21,23 @@ class FriendSuggestionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'U';
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundImage: CachedNetworkImageProvider(imageUrl),
+          ClipOval(
+            child: SizedBox(
+              width: 40,
+              height: 40,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => _buildPlaceholder(initial),
+                errorWidget: (context, url, error) => _buildPlaceholder(initial),
+              ),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -59,10 +69,10 @@ class FriendSuggestionTile extends StatelessWidget {
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.close, color: Color(0xFFEF4444), size: 14),
-                    const SizedBox(width: 4),
-                    const Text('Cancel', style: TextStyle(color: Color(0xFFEF4444), fontSize: 12, fontWeight: FontWeight.bold)),
+                  children: const [
+                    Icon(Icons.close, color: Color(0xFFEF4444), size: 14),
+                    SizedBox(width: 4),
+                    Text('Cancel', style: TextStyle(color: Color(0xFFEF4444), fontSize: 12, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -89,15 +99,30 @@ class FriendSuggestionTile extends StatelessWidget {
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.person_add_alt_1, color: Color(0xFF3B82F6), size: 14),
-                    const SizedBox(width: 4),
-                    const Text('Add Friends', style: TextStyle(color: Color(0xFF3B82F6), fontSize: 12, fontWeight: FontWeight.bold)),
+                  children: const [
+                    Icon(Icons.person_add_alt_1, color: Color(0xFF3B82F6), size: 14),
+                    SizedBox(width: 4),
+                    Text('Add Friends', style: TextStyle(color: Color(0xFF3B82F6), fontSize: 12, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder(String initial) {
+    return CircleAvatar(
+      radius: 20,
+      backgroundColor: const Color(0xFF334155),
+      child: Text(
+        initial,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
       ),
     );
   }

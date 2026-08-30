@@ -10,6 +10,8 @@
 	<string>MoveM needs camera access to take profile photos and activity snapshots.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>MoveM needs photo library access to upload profile pictures and workout media.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>MoveM needs permission to save your QR code image to your Photos library.</string>
 	<key>GMSApiKey</key>
 	<string>$(MAPS_API_KEY)</string>
 	<key>UIBackgroundModes</key>
@@ -23,7 +25,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Movem</string>
+	<string>MoveM</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

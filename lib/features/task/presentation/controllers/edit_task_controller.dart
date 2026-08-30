@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/network/api_result.dart';
 import '../../../../core/services/notification_scheduler_service.dart';
@@ -18,6 +19,7 @@ class EditTaskController extends BaseController {
   final TaskRepository repository = TaskRepositoryImpl(TaskService());
   final TaskLocalRepository localRepository = TaskLocalRepository();
   final NotificationSchedulerService schedulerService = NotificationSchedulerService();
+  final ImagePicker _picker = ImagePicker();
 
   late TaskResponse initialTask;
 
@@ -38,13 +40,16 @@ class EditTaskController extends BaseController {
   final RxList<LabelResponse> availableLabels = <LabelResponse>[].obs;
   final Rx<LabelResponse?> selectedLabel = Rx<LabelResponse?>(null);
 
+  final RxList<XFile> pickedAttachments = <XFile>[].obs;
+  final RxList<dynamic> existingAttachments = <dynamic>[].obs;
+  final RxList<dynamic> collaborators = <dynamic>[].obs;
+
   @override
   void onInit() {
     super.onInit();
     if (Get.arguments is TaskResponse) {
       initialTask = Get.arguments as TaskResponse;
       _populateInitialData();
-      _loadLabels();
     } else {
       Get.back();
       Get.snackbar('Error', 'No task data provided', backgroundColor: Colors.red, colorText: Colors.white);
@@ -91,18 +96,18 @@ class EditTaskController extends BaseController {
         });
       }
     }
-  }
 
-  Future<void> _loadLabels() async {
-    final result = await repository.getLabels();
-    if (result is ApiSuccess<List<LabelResponse>>) {
-      availableLabels.value = result.data;
-      if (initialTask.labels != null && initialTask.labels!.isNotEmpty) {
-        final existingLabelId = initialTask.labels!.first.id;
-        try {
-          selectedLabel.value = availableLabels.firstWhere((l) => l.id == existingLabelId);
-        } catch (_) {}
-      }
+    if (initialTask.attachments != null) {
+      existingAttachments.addAll(initialTask.attachments!);
+    }
+
+    if (initialTask.collaborators != null) {
+      collaborators.addAll(initialTask.collaborators!);
+    }
+
+    if (initialTask.labels != null && initialTask.labels!.isNotEmpty) {
+      availableLabels.assignAll(initialTask.labels!);
+      selectedLabel.value = initialTask.labels!.first;
     }
   }
 
@@ -128,6 +133,39 @@ class EditTaskController extends BaseController {
     final date = selectedDate.value!;
     final time = selectedTime.value ?? const TimeOfDay(hour: 23, minute: 59);
     return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+  }
+
+  Future<void> pickAttachment(ImageSource source) async {
+    try {
+      final image = await _picker.pickImage(source: source);
+      if (image != null) {
+        pickedAttachments.add(image);
+      }
+    } catch (_) {}
+  }
+
+  void removePickedAttachment(int index) {
+    if (index >= 0 && index < pickedAttachments.length) {
+      pickedAttachments.removeAt(index);
+    }
+  }
+
+  void removeExistingAttachment(int index) {
+    if (index >= 0 && index < existingAttachments.length) {
+      existingAttachments.removeAt(index);
+    }
+  }
+
+  void addCollaborator(String name) {
+    if (name.trim().isNotEmpty) {
+      collaborators.add({'username': name.trim(), 'name': name.trim()});
+    }
+  }
+
+  void removeCollaborator(int index) {
+    if (index >= 0 && index < collaborators.length) {
+      collaborators.removeAt(index);
+    }
   }
 
   Future<void> saveChanges() async {

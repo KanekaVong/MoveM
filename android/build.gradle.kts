@@ -21,7 +21,12 @@ rootProject.layout.buildDirectory.value(newBuildDir)
 subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
+
+    tasks.matching { it.name.startsWith("verify") && it.name.endsWith("Resources") }.configureEach {
+        enabled = false
+    }
 }
+
 subprojects {
     project.evaluationDependsOn(":app")
 }

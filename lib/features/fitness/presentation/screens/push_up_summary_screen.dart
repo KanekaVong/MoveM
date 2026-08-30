@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/models/push_up_session_model.dart';
 import '../../data/models/solo_challenge_model.dart';
 import '../controllers/fitness_profile_controller.dart';
@@ -18,6 +19,7 @@ class PushUpSummaryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final duration = session.duration;
     final totalMinutes = duration.inMinutes;
     final durationDisplay = totalMinutes >= 1
@@ -40,7 +42,6 @@ class PushUpSummaryScreen extends StatelessWidget {
           SingleChildScrollView(
             child: Column(
               children: [
-                // Top Hero Section with Gym Athlete Image
                 Stack(
                   children: [
                     Container(
@@ -59,7 +60,6 @@ class PushUpSummaryScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // Dark gradient scrim
                     Container(
                       width: double.infinity,
                       height: 320,
@@ -78,7 +78,6 @@ class PushUpSummaryScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // Top Bar (Back Button + Workout Details Title)
                     SafeArea(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -110,11 +109,11 @@ class PushUpSummaryScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const Text(
-                              'Workout Details',
-                              style: TextStyle(
+                            Text(
+                              l10n?.workoutDetails ?? 'Workout Details',
+                              style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.3,
                               ),

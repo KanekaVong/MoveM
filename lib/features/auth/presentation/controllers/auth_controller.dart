@@ -22,11 +22,12 @@ class AuthController extends BaseController {
   Future<void> login(String username, String password) async {
     final deviceId = await UserManager().getOrCreateDeviceId();
     final savedTrustToken = await UserManager().getTrustToken();
+    final trimmedUsername = username.trim();
 
     await executeApi(
       apiCall: () => repository.login(
         LoginRequest(
-          username: username,
+          username: trimmedUsername,
           password: password,
           deviceId: deviceId,
           trustToken: savedTrustToken,
@@ -54,7 +55,7 @@ class AuthController extends BaseController {
             AppRoutes.verifyOtp,
             arguments: {
               'mode': 'otp',
-              'identifier': username,
+              'identifier': trimmedUsername,
             },
           );
           return;
@@ -72,7 +73,7 @@ class AuthController extends BaseController {
             AppRoutes.verifyOtp,
             arguments: {
               'mode': 'email',
-              'identifier': e.email,
+              'identifier': e.email ?? trimmedUsername,
             },
           );
         } else {
@@ -87,7 +88,7 @@ class AuthController extends BaseController {
 
     await executeApi(
       apiCall: () => repository.verifyOtp(
-        OtpRequest(username: username, otp: otp, deviceId: deviceId),
+        OtpRequest(username: username.trim(), otp: otp.trim(), deviceId: deviceId),
       ),
       onSuccess: (data) async {
         currentUser.value = data.user;
@@ -112,7 +113,7 @@ class AuthController extends BaseController {
 
   Future<void> resendLoginOtp(String username) async {
     await executeApi(
-      apiCall: () => repository.resendLoginOtp(username),
+      apiCall: () => repository.resendLoginOtp(username.trim()),
       onSuccess: (data) {
         AppDialogs.showSingleActionDialog(
           title: 'Code Sent',
@@ -126,15 +127,15 @@ class AuthController extends BaseController {
     await executeApi(
       apiCall: () => repository.register(
         RegisterRequest(
-          email: email,
-          username: username,
+          email: email.trim(),
+          username: username.trim(),
           passwordHash: password,
-          firstname: firstname,
-          lastname: lastname,
+          firstname: firstname.trim(),
+          lastname: lastname.trim(),
         ),
       ),
       onSuccess: (data) {
-        Get.offNamed(AppRoutes.verifyOtp, arguments: {'mode': 'email', 'identifier': email});
+        Get.offNamed(AppRoutes.verifyOtp, arguments: {'mode': 'email', 'identifier': email.trim()});
       },
     );
   }
@@ -144,7 +145,7 @@ class AuthController extends BaseController {
 
     await executeApi(
       apiCall: () => repository.verifyEmail(
-        EmailVerifyRequest(email: email, code: code, deviceId: deviceId),
+        EmailVerifyRequest(email: email.trim(), code: code.trim(), deviceId: deviceId),
       ),
       onSuccess: (data) async {
         currentUser.value = data.user;
