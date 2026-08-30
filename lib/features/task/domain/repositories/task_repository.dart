@@ -11,6 +11,7 @@ abstract class TaskRepository {
   Future<ApiResult<List<TaskResponse>>> getTasks({Map<String, dynamic>? queryParameters});
   Future<ApiResult<TaskResponse>> getTaskDetail(String activityId);
   Future<ApiResult<TaskResponse>> updateTask(String activityId, Map<String, dynamic> data);
+  Future<ApiResult<void>> deleteTask(String activityId);
   Future<ApiResult<void>> toggleChecklistItem(int checklistId);
   Future<ApiResult<TaskResponse>> markTaskComplete(String activityId);
   Future<ApiResult<void>> addChecklistItem(String activityId, Map<String, dynamic> data);

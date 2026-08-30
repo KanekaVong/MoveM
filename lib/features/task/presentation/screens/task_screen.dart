@@ -665,11 +665,185 @@ class TaskScreen extends GetView<TaskController> {
           separatorBuilder: (context, index) => const SizedBox(height: 16),
           itemBuilder: (context, index) {
             final task = controller.tasks[index];
-            return _buildTaskTile(task);
+            return _buildDismissibleTaskTile(context, task);
           },
         ),
       );
     });
+  }
+
+  Widget _buildDismissibleTaskTile(BuildContext context, dynamic task) {
+    final l10n = AppLocalizations.of(context);
+    return Dismissible(
+      key: Key('task_${task.activityId}'),
+      direction: DismissDirection.endToStart,
+      dismissThresholds: const {
+        DismissDirection.endToStart: 0.25,
+      },
+      confirmDismiss: (direction) async {
+        return await _showDeleteConfirmationDialog(context, task);
+      },
+      onDismissed: (direction) async {
+        final success = await controller.deleteTask(task.activityId);
+        if (success) {
+          Get.snackbar(
+            l10n?.deleteTask ?? 'Delete Task',
+            l10n?.taskDeletedSuccess ?? 'Task deleted successfully',
+            backgroundColor: const Color(0xFF131B2F),
+            colorText: Colors.white,
+            icon: const Icon(Icons.check_circle_outline, color: Color(0xFF22C55E)),
+            snackPosition: SnackPosition.TOP,
+            margin: const EdgeInsets.all(16),
+            borderRadius: 16,
+            duration: const Duration(seconds: 2),
+          );
+        }
+      },
+      background: _buildSwipeDeleteBackground(),
+      child: _buildTaskTile(task),
+    );
+  }
+
+  Widget _buildSwipeDeleteBackground() {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFDC2626),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFDC2626).withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<bool> _showDeleteConfirmationDialog(
+      BuildContext context, dynamic task) async {
+    final l10n = AppLocalizations.of(context);
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 44),
+          child: Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: const Color(0xFF131B2F),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: const Color(0xFF1E293B),
+                width: 1.0,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.6),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF450A0A),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.delete_outline_rounded,
+                        color: Color(0xFFEF4444),
+                        size: 18,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      l10n?.deleteTask ?? 'Delete Task',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  l10n?.deleteTaskConfirm ??
+                      'Are you sure you want to delete this task? This action cannot be undone.',
+                  style: const TextStyle(
+                    color: Color(0xFFA0AAB2),
+                    fontSize: 12,
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      height: 32,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () =>
+                            Navigator.of(dialogContext).pop(false),
+                        child: Text(
+                          l10n?.cancel ?? 'Cancel',
+                          style: const TextStyle(
+                            color: Color(0xFFA0AAB2),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      height: 32,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFDC2626),
+                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () =>
+                            Navigator.of(dialogContext).pop(true),
+                        child: Text(
+                          l10n?.delete ?? 'Delete',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    return result ?? false;
   }
 
   Widget _buildTaskTile(dynamic task) {
@@ -968,3 +1142,7 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
         child != oldDelegate.child;
   }
 }
+
+
+
+

@@ -488,4 +488,14 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get edited => 'បានកែប្រែ';
+
+  @override
+  String get deleteTask => 'លុបភារកិច្ច';
+
+  @override
+  String get deleteTaskConfirm =>
+      'តើអ្នកពិតជាចង់លុបភារកិច្ចនេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។';
+
+  @override
+  String get taskDeletedSuccess => 'បានលុបភារកិច្ចដោយជោគជ័យ';
 }

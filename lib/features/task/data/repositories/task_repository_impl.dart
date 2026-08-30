@@ -97,6 +97,18 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
+  Future<ApiResult<void>> deleteTask(String activityId) async {
+    try {
+      await _service.deleteTask(activityId);
+      return ApiSuccess(null);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  @override
   Future<ApiResult<void>> toggleChecklistItem(int checklistId) async {
     try {
       await _service.toggleChecklistItem(checklistId);

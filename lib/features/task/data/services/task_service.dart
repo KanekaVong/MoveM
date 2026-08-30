@@ -29,6 +29,10 @@ class TaskService {
     return await dio.put('tasks/$activityId', data: data, options: Options(responseType: ResponseType.json));
   }
 
+  Future<Response> deleteTask(String activityId) async {
+    return await dio.delete('tasks/$activityId', options: Options(responseType: ResponseType.json));
+  }
+
   Future<Response> toggleChecklistItem(int checklistId) async {
     return await dio.patch('tasks/checklists/$checklistId/complete', options: Options(responseType: ResponseType.json));
   }
