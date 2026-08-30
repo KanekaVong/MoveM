@@ -4,6 +4,20 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/glass_container.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/settings_controller.dart';
+import 'package:movem/shared/widgets/glass_container.dart';
+
+import 'package:movem/features/settings/presentation/screens/change_password_screen.dart';
+import 'package:movem/features/settings/presentation/screens/ProfileScreen.dart' hide GlassContainer;
+import 'package:movem/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:movem/features/settings/presentation/screens/add_account_screen.dart';
+
+import 'package:movem/core/storage/user_manager.dart';
+import 'package:movem/features/auth/data/dto/response/user_response.dart';
+
+import 'package:movem/features/auth/presentation/bindings/auth_binding.dart';
+import 'package:movem/core/routes/app_routes.dart';
+import 'package:movem/core/storage/saved_account.dart';
+
 
 class SettingsScreen extends GetView<SettingsController> {
   const SettingsScreen({super.key});
@@ -34,6 +48,12 @@ class SettingsScreen extends GetView<SettingsController> {
                   _buildSettingItem(
                     title: l10n?.changePassword ?? 'Change Password',
                     onTap: controller.onChangePasswordTap,
+                    title: 'Change Password',
+                    onTap: () {
+                      Get.to(
+                            () => const ChangePasswordScreen(),
+                      );
+                    },
                   ),
                 ]),
 
@@ -77,6 +97,13 @@ class SettingsScreen extends GetView<SettingsController> {
                   _buildSettingItem(
                     title: l10n?.deleteAccount ?? 'Delete Your Account',
                     onTap: controller.onDeleteAccountTap,
+                  ),
+                  _buildDivider(),
+                  _buildSettingItem(
+                    title: 'Switch accounts',
+                    trailingText: UserManager().userName,
+                    trailingProfilePic: UserManager().getUser()?.profilePic,
+                    onTap: _showAccountSwitcher,
                   ),
                   _buildDivider(),
                   _buildSettingItem(
@@ -185,8 +212,54 @@ class SettingsScreen extends GetView<SettingsController> {
     );
   }
 
+  Widget _buildSavedAccountTile(
+      SavedAccount account,
+      UserResponse? activeUser,
+      ) {
+    final isCurrentAccount =
+        activeUser != null &&
+            account.user.id == activeUser.id;
+
+    return GestureDetector(
+      onLongPress: isCurrentAccount
+          ? null
+          : () {
+        _showRemoveAccountConfirmation(account);
+      },
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: _buildAccountAvatar(account.user),
+        title: Text(
+          account.user.username,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        trailing: isCurrentAccount
+            ? const Icon(
+          Icons.check,
+          color: Color(0xFF5394FF),
+        )
+            : null,
+        onTap: isCurrentAccount
+            ? null
+            : () async {
+          Get.back();
+
+          await UserManager().activateAccount(account);
+
+          Get.offAllNamed(AppRoutes.main);
+        },
+      ),
+    );
+  }
+
   Widget _buildSettingItem({
     required String title,
+    String? trailingText,
+    String? trailingProfilePic,
     required VoidCallback onTap,
   }) {
     return Material(
@@ -194,7 +267,10 @@ class SettingsScreen extends GetView<SettingsController> {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -206,14 +282,258 @@ class SettingsScreen extends GetView<SettingsController> {
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.white70,
-                size: 14,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (trailingText != null)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFF162341),
+                            image: trailingProfilePic != null &&
+                                trailingProfilePic.isNotEmpty
+                                ? DecorationImage(
+                              image: NetworkImage(trailingProfilePic),
+                              fit: BoxFit.cover,
+                            )
+                                : null,
+                          ),
+                          child: trailingProfilePic == null ||
+                              trailingProfilePic.isEmpty
+                              ? const Icon(
+                            Icons.person_outline,
+                            color: Colors.white54,
+                            size: 17,
+                          )
+                              : null,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          trailingText,
+                          style: const TextStyle(
+                            color: Colors.white60,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                      ],
+                    ),
+                  const Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.white70,
+                    size: 16,
+                  ),
+                ],
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showLogoutConfirmation() {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(
+          horizontal: 28,
+        ),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(
+            22,
+            24,
+            22,
+            18,
+          ),
+          decoration: BoxDecoration(
+            color: const Color(0xFF131D38),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.08),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.35),
+                blurRadius: 25,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.redAccent.withValues(alpha: 0.12),
+                ),
+                child: const Icon(
+                  Icons.logout_rounded,
+                  color: Colors.redAccent,
+                  size: 28,
+                ),
+              ),
+
+              const SizedBox(height: 18),
+
+              const Text(
+                'Log out?',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              const Text(
+                'Are you sure you want to log out of this account?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white60,
+                  fontSize: 13,
+                  height: 1.5,
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.15),
+                        ),
+                        minimumSize: const Size(
+                          double.infinity,
+                          46,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Get.back();
+
+                        if (Get.isRegistered<AuthController>()) {
+                          Get.find<AuthController>().logout();
+                        } else {
+                          UserManager().clearSession();
+                          Get.offAllNamed(AppRoutes.login,);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        minimumSize: const Size(
+                          double.infinity,
+                          46,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Log Out',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
+    );
+  }
+
+  void _showRemoveAccountConfirmation(SavedAccount account) {
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: const Color(0xFF131D38),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        title: const Text(
+          'Remove account?',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          'Remove ${account.user.username} from this device?',
+          style: const TextStyle(
+            color: Colors.white70,
+            height: 1.4,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                color: Colors.white70,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Get.back();
+
+              await UserManager().removeSavedAccount(
+                account.user.id,
+              );
+
+              if (Get.isBottomSheetOpen ?? false) {
+                Get.back();
+              }
+
+              _showAccountSwitcher();
+            },
+            child: const Text(
+              'Remove',
+              style: TextStyle(
+                color: Colors.redAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -17,6 +17,7 @@ abstract class Constants {
   static const String keyDeviceId = 'device_id';
   static const String keyTrustToken = 'trust_token';
   static const String keyFcmToken = 'fcm_token';
+  static const String keySavedAccounts = 'saved_accounts';
 
   static const defaultLanguage = 'en';
   static const defaultTheme = systemMode;
