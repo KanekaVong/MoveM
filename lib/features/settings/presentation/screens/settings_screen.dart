@@ -4,7 +4,6 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/glass_container.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/settings_controller.dart';
-import 'package:movem/shared/widgets/glass_container.dart';
 
 import 'package:movem/features/settings/presentation/screens/change_password_screen.dart';
 import 'package:movem/features/settings/presentation/screens/ProfileScreen.dart' hide GlassContainer;
@@ -47,11 +46,9 @@ class SettingsScreen extends GetView<SettingsController> {
                   _buildDivider(),
                   _buildSettingItem(
                     title: l10n?.changePassword ?? 'Change Password',
-                    onTap: controller.onChangePasswordTap,
-                    title: 'Change Password',
                     onTap: () {
                       Get.to(
-                            () => const ChangePasswordScreen(),
+                        () => const ChangePasswordScreen(),
                       );
                     },
                   ),
@@ -118,6 +115,163 @@ class SettingsScreen extends GetView<SettingsController> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _showAccountSwitcher() async {
+    final userManager = UserManager();
+
+    final activeUser = userManager.getUser();
+    final savedAccounts = await userManager.getSavedAccounts();
+
+    // Make sure the currently active account is also in the list.
+    if (activeUser != null) {
+      final activeAccessToken = await userManager.getToken();
+      final activeTrustToken = await userManager.getTrustToken();
+
+      if (activeAccessToken != null &&
+          activeTrustToken != null &&
+          !savedAccounts.any(
+            (account) => account.user.id == activeUser.id,
+          )) {
+        await userManager.saveAccount(
+          SavedAccount(
+            accessToken: activeAccessToken,
+            trustToken: activeTrustToken,
+            user: activeUser,
+          ),
+        );
+
+        savedAccounts.add(
+          SavedAccount(
+            accessToken: activeAccessToken,
+            trustToken: activeTrustToken,
+            user: activeUser,
+          ),
+        );
+      }
+    }
+
+    Get.bottomSheet(
+      Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFF131D38),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(24),
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Switch account',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () => Get.back(),
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                ...savedAccounts.map(
+                  (account) => _buildSavedAccountTile(
+                    account,
+                    activeUser,
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white38,
+                        width: 1.2,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                  title: const Text(
+                    'Add account',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  onTap: () async {
+                    Get.back();
+
+                    await userManager.saveCurrentAccountToSavedAccounts();
+
+                    Get.to(
+                      () => const AddAccountScreen(),
+                      binding: AuthBinding(),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+      enterBottomSheetDuration: const Duration(milliseconds: 180),
+      exitBottomSheetDuration: const Duration(milliseconds: 150),
+    );
+  }
+
+  Widget _buildAccountAvatar(UserResponse user) {
+    final profilePic = user.profilePic;
+
+    return Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: const Color(0xFF162341),
+        image: profilePic != null && profilePic.isNotEmpty
+            ? DecorationImage(
+                image: NetworkImage(profilePic),
+                fit: BoxFit.cover,
+              )
+            : null,
+      ),
+      child: profilePic == null || profilePic.isEmpty
+          ? const Icon(
+              Icons.person_outline,
+              color: Colors.white54,
+              size: 24,
+            )
+          : null,
     );
   }
 

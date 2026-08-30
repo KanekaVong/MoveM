@@ -16,8 +16,6 @@ import 'core/routes/app_pages.dart';
 import 'core/routes/app_routes.dart';
 import 'core/storage/local_storage.dart';
 import 'core/storage/user_manager.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 void main() async {
   await mainCommon(environment: Environment.dev);
