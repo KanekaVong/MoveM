@@ -131,4 +131,30 @@ class TaskController extends BaseController {
   int get ongoingTasksCount {
     return tasks.where((t) => t.status == 'IN_PROGRESS' || t.status == 'PENDING').length;
   }
+
+  Future<bool> deleteTask(String activityId) async {
+    await schedulerService.cancelRemindersForTask(activityId);
+
+    final index = tasks.indexWhere((t) => t.activityId == activityId);
+    final removedTask = index != -1 ? tasks[index] : null;
+
+    if (index != -1) {
+      tasks.removeAt(index);
+    }
+
+    bool isSuccess = false;
+    await executeApi<void>(
+      apiCall: () => repository.deleteTask(activityId),
+      onSuccess: (_) {
+        isSuccess = true;
+      },
+      onError: (_) {
+        if (removedTask != null && index != -1) {
+          tasks.insert(index, removedTask);
+        }
+      },
+      showLoading: false,
+    );
+    return isSuccess;
+  }
 }

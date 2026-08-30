@@ -1,55 +1,64 @@
-import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../../../shared/base/base_controller.dart';
+import '../../../../core/utils/app_dialogs.dart';
+import '../../data/dto/response/trip_summary_response.dart';
+import '../../domain/repositories/trip_repository.dart';
+import '../../data/dto/request/create_trip_request.dart';
 
 class TripController extends BaseController {
-  GoogleMapController? mapController;
-  final RxBool hasPermission = false.obs;
-  final Rx<LatLng> initialPosition = const LatLng(37.422, -122.084).obs;
+  static const String _tripWelcomeSeenKey = 'trip_welcome_seen';
 
-  @override
-  void onInit() {
-    super.onInit();
-    checkLocationPermission();
+  final TripRepository repository;
+
+  TripController({
+    required this.repository,
+  });
+
+  final List<TripSummaryResponse> recentTrips = [];
+
+  Future<bool> shouldShowWelcome() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return !(prefs.getBool(_tripWelcomeSeenKey) ?? false);
   }
 
-  Future<void> checkLocationPermission() async {
-    final status = await Permission.location.request();
-    if (status.isGranted) {
-      hasPermission.value = true;
-      await getCurrentLocation();
-    }
+  Future<void> markWelcomeSeen() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setBool(_tripWelcomeSeenKey, true);
   }
 
-  Future<void> getCurrentLocation() async {
-    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) return;
-
-    try {
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.low),
-      );
-
-      final currentLatLng = LatLng(position.latitude, position.longitude);
-      initialPosition.value = currentLatLng;
-      mapController?.animateCamera(CameraUpdate.newLatLngZoom(currentLatLng, 15.0));
-    } catch (_) {}
+  Future<void> getMyTrips() async {
+    await executeApi(
+      apiCall: () => repository.getMyTrips(),
+      onSuccess: (data) {
+        recentTrips
+          ..clear()
+          ..addAll(data);
+      },
+      showErrorDialog: false,
+      onError: (e) {
+        recentTrips.clear();
+        AppDialogs.showError(e.message);
+      },
+    );
   }
 
-  void onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-    if (hasPermission.value) {
-      mapController?.animateCamera(
-        CameraUpdate.newLatLngZoom(initialPosition.value, 15.0),
-      );
-    }
+  Future<void> createTrip(CreateTripRequest request) async {
+    await executeApi(
+      apiCall: () => repository.createTrip(request),
+      onSuccess: (data) {
+        AppDialogs.showSingleActionDialog(
+          title: 'Trip Created',
+          message: 'Your trip has been created successfully.',
+        );
+      },
+      showErrorDialog: false,
+      onError: (e) {
+        AppDialogs.showError(e.message);
+      },
+    );
   }
 
-  @override
-  void onClose() {
-    mapController?.dispose();
-    super.onClose();
-  }
 }

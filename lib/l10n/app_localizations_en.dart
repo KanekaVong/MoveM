@@ -488,4 +488,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get edited => 'edited';
+
+  @override
+  String get deleteTask => 'Delete Task';
+
+  @override
+  String get deleteTaskConfirm =>
+      'Are you sure you want to delete this task? This action cannot be undone.';
+
+  @override
+  String get taskDeletedSuccess => 'Task deleted successfully';
 }

@@ -274,12 +274,12 @@ class TaskCommentScreen extends StatelessWidget {
                 ),
               ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
+            child: IntrinsicWidth(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
                     comment.content,
                     style: const TextStyle(
                       color: Colors.white,
@@ -287,37 +287,40 @@ class TaskCommentScreen extends StatelessWidget {
                       height: 1.35,
                     ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (comment.edited) ...[
-                      Text(
-                        '${l10n?.edited ?? 'edited'} ',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 10,
-                          fontStyle: FontStyle.italic,
+                  const SizedBox(height: 4),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (comment.edited) ...[
+                          Text(
+                            '${l10n?.edited ?? 'edited'} ',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 10,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                        Text(
+                          controller.formatTime(comment.createdAt),
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 11,
+                          ),
                         ),
-                      ),
-                    ],
-                    Text(
-                      controller.formatTime(comment.createdAt),
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 11,
-                      ),
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.done_all,
+                          size: 14,
+                          color: Colors.white70,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 4),
-                    const Icon(
-                      Icons.done_all,
-                      size: 14,
-                      color: Colors.white70,
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -359,50 +362,56 @@ class TaskCommentScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      comment.displayName,
-                      style: const TextStyle(
-                        color: AppColors.skyBlue,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      comment.content,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        height: 1.35,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (comment.edited) ...[
-                          Text(
-                            '${l10n?.edited ?? 'edited'} ',
-                            style: const TextStyle(
-                              color: AppColors.taskTextMuted,
-                              fontSize: 10,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ],
-                        Text(
-                          controller.formatTime(comment.createdAt),
-                          style: const TextStyle(
-                            color: AppColors.taskTextMuted,
-                            fontSize: 11,
-                          ),
+                child: IntrinsicWidth(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        comment.displayName,
+                        style: const TextStyle(
+                          color: AppColors.skyBlue,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        comment.content,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          height: 1.35,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (comment.edited) ...[
+                              Text(
+                                '${l10n?.edited ?? 'edited'} ',
+                                style: const TextStyle(
+                                  color: AppColors.taskTextMuted,
+                                  fontSize: 10,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ],
+                            Text(
+                              controller.formatTime(comment.createdAt),
+                              style: const TextStyle(
+                                color: AppColors.taskTextMuted,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

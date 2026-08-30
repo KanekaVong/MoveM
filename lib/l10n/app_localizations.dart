@@ -1051,6 +1051,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'edited'**
   String get edited;
+
+  /// No description provided for @deleteTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Task'**
+  String get deleteTask;
+
+  /// No description provided for @deleteTaskConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this task? This action cannot be undone.'**
+  String get deleteTaskConfirm;
+
+  /// No description provided for @taskDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Task deleted successfully'**
+  String get taskDeletedSuccess;
 }
 
 class _AppLocalizationsDelegate

@@ -4,6 +4,7 @@ class UserResponse {
   final String email;
   final String? firstName;
   final String? lastName;
+  final String? bio;
   final String? phone;
   final String? cityProvince;
   final String? dateOfBirth;
@@ -20,6 +21,7 @@ class UserResponse {
     required this.email,
     this.firstName,
     this.lastName,
+    this.bio,
     this.phone,
     this.cityProvince,
     this.dateOfBirth,
@@ -36,8 +38,9 @@ class UserResponse {
       id: json['id']?.toString() ?? '',
       username: json['username']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
-      firstName: json['firstName']?.toString(),
-      lastName: json['lastName']?.toString(),
+      firstName: json['firstname']?.toString(),
+      lastName: json['lastname']?.toString(),
+      bio: json['bio']?.toString(),
       phone: json['phone']?.toString(),
       cityProvince: json['cityProvince']?.toString(),
       dateOfBirth: json['dateOfBirth']?.toString(),
@@ -55,8 +58,9 @@ class UserResponse {
       'id': id,
       'username': username,
       'email': email,
-      'firstName': firstName,
-      'lastName': lastName,
+      'firstname': firstName,
+      'lastname': lastName,
+      'bio': bio,
       'phone': phone,
       'cityProvince': cityProvince,
       'dateOfBirth': dateOfBirth,

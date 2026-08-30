@@ -17,9 +17,7 @@ class FitnessProfileController extends BaseController {
   );
   final hasProfile = true.obs;
 
-  final soloChallenges = <SoloChallengeModel>[
-    SoloChallengeModel.pushUpChallenge,
-  ].obs;
+  final soloChallenges = <SoloChallengeModel>[].obs;
   final isLoadingChallenges = false.obs;
 
   final inputHeight = 0.0.obs;
@@ -46,15 +44,11 @@ class FitnessProfileController extends BaseController {
       showErrorDialog: false,
       apiCall: () => _repository.getSoloChallenges(),
       onSuccess: (data) {
-        if (data.isNotEmpty) {
-          soloChallenges.value = data;
-        } else {
-          soloChallenges.value = SoloChallengeModel.defaultChallenges;
-        }
+        soloChallenges.value = data;
         isLoadingChallenges.value = false;
       },
       onError: (e) {
-        soloChallenges.value = SoloChallengeModel.defaultChallenges;
+        soloChallenges.clear();
         isLoadingChallenges.value = false;
       },
     );
