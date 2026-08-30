@@ -123,11 +123,11 @@ class CameraPosePainter extends CustomPainter {
 
   Color _getAngleColor(double angle) {
     if (angle <= 90.0) {
-      return const Color(0xFF10B981); // Emerald Green (Good depth)
+      return const Color(0xFF10B981);
     } else if (angle <= 120.0) {
-      return const Color(0xFFF59E0B); // Amber / Yellow (Descending)
+      return const Color(0xFFF59E0B);
     } else {
-      return const Color(0xFF38BDF8); // Cyan Blue (Top extension)
+      return const Color(0xFF38BDF8);
     }
   }
 
