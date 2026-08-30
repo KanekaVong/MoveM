@@ -84,6 +84,25 @@ class FriendsRepositoryImpl implements FriendsRepository {
   }
 
   @override
+  Future<ApiResult<List<FriendResponse>>> getSuggestions() async {
+    try {
+      _logger.i('Calling GET api/friends/suggestions');
+      final response = await friendsService.getSuggestions();
+      _logger.i('getSuggestions Response [${response.statusCode}]');
+
+      final List<dynamic> data = response.data;
+      final suggestions = data.map((e) => FriendResponse.fromJson(e)).toList();
+      return ApiSuccess(suggestions);
+    } on DioException catch (e) {
+      _logger.e('getSuggestions Error: ${e.response?.data ?? e.message}');
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      _logger.e('getSuggestions Error: $e');
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  @override
   Future<ApiResult<String>> deleteFriend(int friendId) async {
     try {
       _logger.i('Calling DELETE api/friends/$friendId');

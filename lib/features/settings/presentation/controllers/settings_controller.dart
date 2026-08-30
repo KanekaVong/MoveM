@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/storage/user_manager.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/Constants.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../../auth/data/dto/response/user_response.dart';
@@ -60,9 +61,9 @@ class SettingsController extends BaseController {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B),
+            color: AppColors.slate800,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -110,19 +111,23 @@ class SettingsController extends BaseController {
       final isSelected = currentLanguage.value == code;
       return InkWell(
         onTap: () async {
-          currentLanguage.value = code;
-          await UserManager().setLanguage(code);
-          await Get.updateLocale(Locale(code));
-          Get.back();
+          if (currentLanguage.value != code) {
+            currentLanguage.value = code;
+            Get.back();
+            await UserManager().setLanguage(code);
+            await Get.updateLocale(Locale(code));
+          } else {
+            Get.back();
+          }
         },
         borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF3B82F6).withOpacity(0.2) : Colors.white.withOpacity(0.05),
+            color: isSelected ? AppColors.blueAccent.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? const Color(0xFF3B82F6) : Colors.white.withOpacity(0.1),
+              color: isSelected ? AppColors.blueAccent : Colors.white.withValues(alpha: 0.1),
             ),
           ),
           child: Row(
@@ -137,7 +142,7 @@ class SettingsController extends BaseController {
                 ),
               ),
               if (isSelected)
-                const Icon(Icons.check_circle, color: Color(0xFF3B82F6), size: 20),
+                const Icon(Icons.check_circle, color: AppColors.blueAccent, size: 20),
             ],
           ),
         ),

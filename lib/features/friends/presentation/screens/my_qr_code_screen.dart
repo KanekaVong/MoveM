@@ -12,10 +12,9 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
   @override
   Widget build(BuildContext context) {
     Get.put(MyQrCodeController());
-    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF070A13),
+      backgroundColor: AppColors.slate950,
       body: SafeArea(
         child: Column(
           children: [
@@ -89,11 +88,11 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
                     margin: const EdgeInsets.only(top: 42),
                     padding: const EdgeInsets.fromLTRB(24, 56, 24, 28),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFD9D9D9),
+                      color: AppColors.taskFigmaCard,
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
+                          color: Colors.black.withValues(alpha: 0.4),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -108,18 +107,18 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
                           size: 210.0,
                           eyeStyle: const QrEyeStyle(
                             eyeShape: QrEyeShape.square,
-                            color: Color(0xFF0B1B3D),
+                            color: AppColors.qrDarkNavy,
                           ),
                           dataModuleStyle: const QrDataModuleStyle(
                             dataModuleShape: QrDataModuleShape.square,
-                            color: Color(0xFF0B1B3D),
+                            color: AppColors.qrDarkNavy,
                           ),
                         ),
                         const SizedBox(height: 18),
                         Text(
                           '@${username.toUpperCase()}',
                           style: const TextStyle(
-                            color: Color(0xFF0B1B3D),
+                            color: AppColors.qrDarkNavy,
                             fontSize: 20,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 1.5,
@@ -135,8 +134,8 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
                       height: 84,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color(0xFF070A13),
-                        border: Border.all(color: const Color(0xFF070A13), width: 4),
+                        color: AppColors.slate950,
+                        border: Border.all(color: AppColors.slate950, width: 4),
                       ),
                       child: ClipOval(
                         child: (profilePic != null && profilePic.isNotEmpty)
@@ -198,11 +197,11 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E293B),
+                  backgroundColor: AppColors.slate800,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(color: Colors.white.withOpacity(0.15)),
+                    side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
                   ),
                   elevation: 0,
                 ),

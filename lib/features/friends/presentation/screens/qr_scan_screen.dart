@@ -12,7 +12,7 @@ class QrScanScreen extends GetView<QrScanController> {
     Get.put(QrScanController());
 
     return Scaffold(
-      backgroundColor: const Color(0xFF070A13),
+      backgroundColor: AppColors.slate950,
       body: Stack(
         children: [
           Obx(() {
@@ -23,7 +23,7 @@ class QrScanScreen extends GetView<QrScanController> {
             }
             return Positioned.fill(
               child: Container(
-                color: const Color(0xFF070A13),
+                color: AppColors.slate950,
                 child: Center(
                   child: Text(
                     controller.scanStatus.value.isNotEmpty
@@ -85,7 +85,7 @@ class QrScanScreen extends GetView<QrScanController> {
     const double cornerLength = 46.0;
     const double cornerThickness = 7.0;
     const double cornerRadius = 14.0;
-    const Color cornerColor = Color(0xFF3B82F6);
+    const Color cornerColor = AppColors.blueAccent;
 
     return Center(
       child: SizedBox(
@@ -208,12 +208,12 @@ class QrScanScreen extends GetView<QrScanController> {
               height: 56,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isTorchOn ? const Color(0xFF3B82F6).withOpacity(0.35) : Colors.black.withOpacity(0.35),
+                color: isTorchOn ? AppColors.blueAccent.withValues(alpha: 0.35) : Colors.black.withValues(alpha: 0.35),
               ),
               child: Center(
                 child: Icon(
                   isTorchOn ? Icons.flash_on : Icons.flash_off,
-                  color: isTorchOn ? const Color(0xFFFACC15) : Colors.white,
+                  color: isTorchOn ? AppColors.taskYellowPriority : Colors.white,
                   size: 30,
                 ),
               ),
@@ -272,11 +272,11 @@ class _AnimatedScanBarState extends State<_AnimatedScanBar> with SingleTickerPro
             width: widget.boxSize - 16,
             height: 4,
             decoration: BoxDecoration(
-              color: const Color(0xFF3B82F6),
+              color: AppColors.blueAccent,
               borderRadius: BorderRadius.circular(2),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF3B82F6).withOpacity(0.8),
+                  color: AppColors.blueAccent.withValues(alpha: 0.8),
                   blurRadius: 10,
                   spreadRadius: 2,
                 ),

@@ -20,64 +20,80 @@ class FitnessDashboardScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildTopCard(),
-              const SizedBox(height: 24),
-              _buildCaloriesCard(),
-              const SizedBox(height: 16),
-              _buildStatsRow(),
-              const SizedBox(height: 24),
-              Text(
-                l10n?.movemClub ?? 'MoveM Club',
-                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              _buildGroupActivity(),
-              const SizedBox(height: 24),
-              _buildYourGoal(),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n?.soloChallenges ?? 'Solo Challenges',
-                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0),
+              child: _buildTopCard(),
+            ),
+            const SizedBox(height: 24),
+            Expanded(
+              child: RefreshIndicator(
+                color: Colors.blueAccent,
+                backgroundColor: const Color(0xFF1E293B),
+                onRefresh: () => controller.refreshData(),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(24.0, 0, 24.0, 24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildCaloriesCard(),
+                      const SizedBox(height: 16),
+                      _buildStatsRow(),
+                      const SizedBox(height: 24),
+                      Text(
+                        l10n?.movemClub ?? 'MoveM Club',
+                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildGroupActivity(),
+                      const SizedBox(height: 24),
+                      _buildYourGoal(),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            l10n?.soloChallenges ?? 'Solo Challenges',
+                            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            l10n?.viewAll ?? 'see all',
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Obx(() {
+                        if (controller.isLoadingChallenges.value && controller.soloChallenges.isEmpty) {
+                          return const Center(child: CircularProgressIndicator(color: Colors.blueAccent));
+                        }
+                        if (controller.soloChallenges.isEmpty) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text('No trending challenges available', style: TextStyle(color: Colors.white70)),
+                            ),
+                          );
+                        }
+                        return Column(
+                          children: controller.soloChallenges.map((challenge) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: _buildChallengeCard(challenge),
+                            );
+                          }).toList(),
+                        );
+                      }),
+                      const SizedBox(height: 120),
+                    ],
                   ),
-                  Text(
-                    l10n?.viewAll ?? 'see all',
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12),
-                  ),
-                ],
+                ),
               ),
-              const SizedBox(height: 16),
-              Obx(() {
-                if (controller.isLoadingChallenges.value && controller.soloChallenges.isEmpty) {
-                  return const Center(child: CircularProgressIndicator(color: Colors.blueAccent));
-                }
-                if (controller.soloChallenges.isEmpty) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text('No trending challenges available', style: TextStyle(color: Colors.white70)),
-                    ),
-                  );
-                }
-                return Column(
-                  children: controller.soloChallenges.map((challenge) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: _buildChallengeCard(challenge),
-                    );
-                  }).toList(),
-                );
-              }),
-              const SizedBox(height: 120),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -200,12 +216,16 @@ class FitnessDashboardScreen extends StatelessWidget {
       ),
       child: Obx(() {
         final w = controller.profile.value?.weight ?? 0;
+        final targetW = controller.profile.value?.fitnessGoal?.targetWeight;
+        final targetWeightDisplay = (targetW != null && targetW > 0)
+            ? '${targetW % 1 == 0 ? targetW.toInt() : targetW}kg'
+            : '${(w * 0.9).round()}kg';
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _buildStatItem('Weight', '${w.toInt()}kg'),
             Container(width: 1, height: 40, color: Colors.white.withValues(alpha: 0.2)),
-            _buildStatItem('Target weight', '${(w * 0.9).round()}kg'),
+            _buildStatItem('Target weight', targetWeightDisplay),
             Container(width: 1, height: 40, color: Colors.white.withValues(alpha: 0.2)),
             _buildStatItem('Challenge', '0', showDots: true),
           ],
@@ -407,42 +427,194 @@ class FitnessDashboardScreen extends StatelessWidget {
   }
 
   Widget _buildYourGoal() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Your Goal', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 16),
-        GestureDetector(
-          onTap: () {
-            Get.to(() => const SetupGoalScreen());
-          },
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0B2B6A),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.add, color: Colors.white, size: 24),
-                ),
-                const SizedBox(width: 16),
-                const Text(
-                  'Set Up Your Fitness Goal Now 🔥',
-                  style: TextStyle(color: Colors.white, fontSize: 14),
-                ),
-              ],
+    return Obx(() {
+      final profile = controller.profile.value;
+      final goal = profile?.fitnessGoal;
+      final bool hasGoal = profile?.hasGoal ?? false;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Your Goal',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
           ),
+          const SizedBox(height: 16),
+          if (hasGoal && goal != null)
+            _buildGoalCard(goal)
+          else
+            _buildSetupGoalButton(),
+        ],
+      );
+    });
+  }
+
+  Widget _buildGoalCard(dynamic goal) {
+    final targetWeightVal = goal.targetWeight;
+    final targetWeightText = targetWeightVal % 1 == 0
+        ? targetWeightVal.toInt().toString()
+        : targetWeightVal.toString();
+    final workoutLevelText = goal.formattedWorkoutLevel;
+    final targetDateText = goal.formattedTargetDate.isNotEmpty
+        ? goal.formattedTargetDate
+        : 'Not set';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0C1938),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF1E293B)),
+      ),
+      child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Target weight',
+                    style: TextStyle(
+                      color: Color(0xFFA0AAB2),
+                      fontSize: 13,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Text(
+                        targetWeightText,
+                        style: const TextStyle(
+                          color: Color(0xFFE2E8F0),
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Text(
+                        'kg',
+                        style: TextStyle(
+                          color: Color(0xFFA0AAB2),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 1.5,
+              height: 44,
+              color: Colors.white.withValues(alpha: 0.2),
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Fitness Level',
+                    style: TextStyle(
+                      color: Color(0xFFA0AAB2),
+                      fontSize: 13,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    workoutLevelText,
+                    style: const TextStyle(
+                      color: Color(0xFFE2E8F0),
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 1.5,
+              height: 44,
+              color: Colors.white.withValues(alpha: 0.2),
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Target Date',
+                    style: TextStyle(
+                      color: Color(0xFFA0AAB2),
+                      fontSize: 13,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    targetDateText,
+                    style: const TextStyle(
+                      color: Color(0xFFE2E8F0),
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
+      );
+  }
+
+  Widget _buildSetupGoalButton() {
+    return GestureDetector(
+      onTap: () async {
+        final result = await Get.to(() => const SetupGoalScreen());
+        if (result == true) {
+          controller.fetchProfile();
+        }
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0B2B6A),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.add, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 16),
+            const Text(
+              'Set Up Your Fitness Goal Now 🔥',
+              style: TextStyle(color: Colors.white, fontSize: 14),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

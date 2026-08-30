@@ -7,6 +7,7 @@ import '../../../../core/services/notification_scheduler_service.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../data/dto/request/update_task_request.dart';
+import '../../data/dto/response/attachment_response.dart';
 import '../../data/dto/response/label_response.dart';
 import '../../data/dto/response/reminder_response.dart';
 import '../../data/dto/response/task_response.dart';
@@ -43,6 +44,7 @@ class EditTaskController extends BaseController {
   final RxList<XFile> pickedAttachments = <XFile>[].obs;
   final RxList<dynamic> existingAttachments = <dynamic>[].obs;
   final RxList<dynamic> collaborators = <dynamic>[].obs;
+  final RxBool isUploadingAttachment = false.obs;
 
   @override
   void onInit() {
@@ -50,6 +52,7 @@ class EditTaskController extends BaseController {
     if (Get.arguments is TaskResponse) {
       initialTask = Get.arguments as TaskResponse;
       _populateInitialData();
+      _loadLabels();
     } else {
       Get.back();
       Get.snackbar('Error', 'No task data provided', backgroundColor: Colors.red, colorText: Colors.white);
@@ -106,8 +109,21 @@ class EditTaskController extends BaseController {
     }
 
     if (initialTask.labels != null && initialTask.labels!.isNotEmpty) {
-      availableLabels.assignAll(initialTask.labels!);
       selectedLabel.value = initialTask.labels!.first;
+    }
+  }
+
+  Future<void> _loadLabels() async {
+    final result = await repository.getLabels();
+    if (result is ApiSuccess<List<LabelResponse>>) {
+      availableLabels.assignAll(result.data);
+      if (initialTask.labels != null && initialTask.labels!.isNotEmpty) {
+        final currentId = initialTask.labels!.first.id;
+        final match = result.data.firstWhereOrNull((l) => l.id == currentId);
+        if (match != null) {
+          selectedLabel.value = match;
+        }
+      }
     }
   }
 
@@ -139,9 +155,36 @@ class EditTaskController extends BaseController {
     try {
       final image = await _picker.pickImage(source: source);
       if (image != null) {
-        pickedAttachments.add(image);
+        isUploadingAttachment.value = true;
+        final result = await repository.uploadTaskAttachment(initialTask.activityId, image.path);
+        isUploadingAttachment.value = false;
+        if (result is ApiSuccess<AttachmentResponse>) {
+          final uploaded = result.data;
+          existingAttachments.add({
+            'id': uploaded.id,
+            'filePath': uploaded.filePath,
+            'originalFileName': uploaded.originalFileName,
+            'fileUrl': uploaded.filePath,
+            'url': uploaded.filePath,
+          });
+          Get.snackbar(
+            'Success',
+            'Attachment uploaded successfully!',
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+          );
+        } else if (result is ApiError<AttachmentResponse>) {
+          Get.snackbar(
+            'Upload Failed',
+            result.exception.message,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
       }
-    } catch (_) {}
+    } catch (e) {
+      isUploadingAttachment.value = false;
+    }
   }
 
   void removePickedAttachment(int index) {
@@ -169,6 +212,11 @@ class EditTaskController extends BaseController {
   }
 
   Future<void> saveChanges() async {
+    if (initialTask.status == 'COMPLETE') {
+      Get.snackbar('Cannot Edit', 'Completed tasks cannot be modified.', backgroundColor: Colors.orange, colorText: Colors.white);
+      return;
+    }
+
     if (titleController.text.trim().isEmpty) {
       Get.snackbar('Error', 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
       return;
@@ -185,6 +233,21 @@ class EditTaskController extends BaseController {
 
     final bool recurring = repeatFrequency.value != null;
 
+    final List<int> attachmentIds = [];
+    for (var att in existingAttachments) {
+      if (att is Map && att['id'] != null) {
+        final id = att['id'];
+        if (id is int) {
+          attachmentIds.add(id);
+        } else if (id is String) {
+          final parsed = int.tryParse(id);
+          if (parsed != null) attachmentIds.add(parsed);
+        }
+      } else if (att is AttachmentResponse) {
+        attachmentIds.add(att.id);
+      }
+    }
+
     final request = UpdateTaskRequest(
       activityName: activityName,
       description: description.isEmpty ? null : description,
@@ -197,6 +260,7 @@ class EditTaskController extends BaseController {
       recurringInterval: recurring ? 0 : null,
       recurringEndDate: recurring && deadlineDt != null ? DateFormat('yyyy-MM-dd').format(deadlineDt) : null,
       labelIds: selectedLabel.value != null ? [selectedLabel.value!.id] : [],
+      attachmentIds: attachmentIds.isNotEmpty ? attachmentIds : null,
     );
 
     await executeApi<TaskResponse>(

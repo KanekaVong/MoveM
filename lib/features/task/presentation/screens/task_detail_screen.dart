@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/task_detail_controller.dart';
 import '../../data/dto/response/task_response.dart';
 import 'edit_task_screen.dart';
+import 'task_comment_screen.dart';
 
 class TaskDetailScreen extends StatelessWidget {
   final String activityId;
@@ -61,7 +63,7 @@ class TaskDetailScreen extends StatelessWidget {
 
               return Column(
                 children: [
-                  _buildTopBar(controller),
+                  _buildTopBar(controller, task),
                   Expanded(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
@@ -169,7 +171,8 @@ class TaskDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTopBar(TaskDetailController controller) {
+  Widget _buildTopBar(TaskDetailController controller, TaskResponse task) {
+    final isCompleted = task.status == 'COMPLETE';
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       child: Row(
@@ -185,7 +188,12 @@ class TaskDetailScreen extends StatelessWidget {
               _buildCircleButton(
                 icon: Icons.chat_bubble_outline,
                 iconSize: 18,
-                onTap: () {},
+                onTap: () {
+                  Get.to(() => TaskCommentScreen(
+                    activityId: task.activityId,
+                    taskTitle: task.activityName,
+                  ));
+                },
               ),
               const SizedBox(width: 10),
               _buildCircleButton(
@@ -193,20 +201,20 @@ class TaskDetailScreen extends StatelessWidget {
                 iconSize: 18,
                 onTap: () {},
               ),
-              const SizedBox(width: 10),
-              _buildCircleButton(
-                icon: Icons.edit_outlined,
-                iconSize: 18,
-                onTap: () {
-                  if (controller.task.value != null) {
-                    Get.to(() => const EditTaskScreen(), arguments: controller.task.value)?.then((value) {
+              if (!isCompleted) ...[
+                const SizedBox(width: 10),
+                _buildCircleButton(
+                  icon: Icons.edit_outlined,
+                  iconSize: 18,
+                  onTap: () {
+                    Get.to(() => const EditTaskScreen(), arguments: task)?.then((value) {
                       if (value == true) {
                         controller.fetchTaskDetail(showLoading: false);
                       }
                     });
-                  }
-                },
-              ),
+                  },
+                ),
+              ],
             ],
           ),
         ],
@@ -280,8 +288,8 @@ class TaskDetailScreen extends StatelessWidget {
                 const SizedBox(height: 22),
                 if (task.checklists != null && task.checklists!.isNotEmpty) ...[
                   Row(
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         'CHECKLIST',
                         style: TextStyle(
                           color: Colors.white,
@@ -289,8 +297,10 @@ class TaskDetailScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(width: 4),
-                      Icon(Icons.add, color: Colors.white, size: 14),
+                      if (task.status != 'COMPLETE') ...[
+                        const SizedBox(width: 4),
+                        const Icon(Icons.add, color: Colors.white, size: 14),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -442,10 +452,11 @@ class TaskDetailScreen extends StatelessWidget {
   }
 
   Widget _buildChecklists(TaskResponse task, TaskDetailController controller) {
+    final isCompleted = task.status == 'COMPLETE';
     return Column(
       children: task.checklists!.map((item) {
         return GestureDetector(
-          onTap: () => controller.toggleChecklistItem(item.id, item.completed),
+          onTap: isCompleted ? null : () => controller.toggleChecklistItem(item.id, item.completed),
           child: Padding(
             padding: const EdgeInsets.only(bottom: 12.0),
             child: Row(
@@ -453,8 +464,8 @@ class TaskDetailScreen extends StatelessWidget {
                 Expanded(
                   child: Text(
                     item.itemName,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: isCompleted ? AppColors.taskTextMuted : Colors.white,
                       fontSize: 13,
                       fontStyle: FontStyle.italic,
                     ),
@@ -525,10 +536,20 @@ class TaskDetailScreen extends StatelessWidget {
   Widget _buildAttachments(TaskResponse task) {
     return Column(
       children: task.attachments!.map((attachment) {
-        final url = attachment is Map
-            ? (attachment['url'] ?? attachment['fileUrl'] ?? '')
-            : attachment.toString();
+        String url = '';
+        if (attachment is Map) {
+          url = attachment['filePath'] ?? attachment['url'] ?? attachment['fileUrl'] ?? '';
+        } else {
+          url = attachment.toString();
+        }
         if (url.isEmpty) return const SizedBox();
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          final base = AppConfig.baseUrl.endsWith('/')
+              ? AppConfig.baseUrl.substring(0, AppConfig.baseUrl.length - 1)
+              : AppConfig.baseUrl;
+          final clean = url.startsWith('/') ? url.substring(1) : url;
+          url = '$base/$clean';
+        }
         return Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
           child: ClipRRect(

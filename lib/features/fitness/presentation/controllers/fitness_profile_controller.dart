@@ -32,6 +32,13 @@ class FitnessProfileController extends BaseController {
     fetchSoloChallenges();
   }
 
+  Future<void> refreshData() async {
+    await Future.wait([
+      fetchProfile(),
+      fetchSoloChallenges(),
+    ]);
+  }
+
   Future<void> fetchSoloChallenges() async {
     isLoadingChallenges.value = true;
     await executeApi<List<SoloChallengeModel>>(

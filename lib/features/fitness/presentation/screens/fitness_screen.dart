@@ -12,7 +12,7 @@ class FitnessScreen extends StatelessWidget {
     final controller = Get.put(FitnessProfileController());
 
     return Obx(() {
-      if (controller.isLoading) {
+      if (controller.isLoading && controller.profile.value == null) {
         return const Scaffold(
           backgroundColor: Color(0xFF0F172A),
           body: Center(

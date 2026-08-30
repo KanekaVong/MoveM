@@ -10,6 +10,7 @@ class UpdateTaskRequest {
   final int? recurringInterval;
   final String? recurringEndDate;
   final List<int>? labelIds;
+  final List<int>? attachmentIds;
 
   UpdateTaskRequest({
     required this.activityName,
@@ -23,6 +24,7 @@ class UpdateTaskRequest {
     this.recurringInterval,
     this.recurringEndDate,
     this.labelIds,
+    this.attachmentIds,
   });
 
   Map<String, dynamic> toJson() {
@@ -38,6 +40,7 @@ class UpdateTaskRequest {
       if (recurringInterval != null) 'recurringInterval': recurringInterval,
       if (recurringEndDate != null) 'recurringEndDate': recurringEndDate,
       if (labelIds != null && labelIds!.isNotEmpty) 'labelIds': labelIds,
+      if (attachmentIds != null && attachmentIds!.isNotEmpty) 'attachmentIds': attachmentIds,
     };
   }
 }

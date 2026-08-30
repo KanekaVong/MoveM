@@ -176,7 +176,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weeklyStats => 'Weekly Stats';
 
   @override
-  String get allTasks => 'Tasks';
+  String get allTasks => 'All Tasks';
 
   @override
   String get createTask => 'Create Task';
@@ -417,4 +417,75 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageKhmer => 'ភាសាខ្មែរ (Khmer)';
+
+  @override
+  String get inviteFriends => 'Invite Friends';
+
+  @override
+  String get yourInviteLink => 'YOUR INVITE LINK';
+
+  @override
+  String get yourToken => 'YOUR TOKEN';
+
+  @override
+  String get shareVia => 'SHARE VIA';
+
+  @override
+  String get inviteLinkCopied => 'Invite link copied to clipboard';
+
+  @override
+  String get inviteTokenCopied => 'Invite token copied to clipboard';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String get comments => 'Comments';
+
+  @override
+  String get writeComment => 'Write a comment...';
+
+  @override
+  String get editComment => 'Edit Comment';
+
+  @override
+  String get editingComment => 'Editing Comment';
+
+  @override
+  String get editYourComment => 'Edit your comment...';
+
+  @override
+  String get deleteComment => 'Delete Comment';
+
+  @override
+  String get deleteCommentConfirm =>
+      'Are you sure you want to delete this comment? This action cannot be undone.';
+
+  @override
+  String get copyText => 'Copy Text';
+
+  @override
+  String get noCommentsYet => 'No comments yet';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get searchResults => 'Search Results';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get beTheFirstToComment =>
+      'Be the first to leave a comment or ask a question about this task.';
+
+  @override
+  String get commentCopiedToast => 'Comment copied to clipboard';
+
+  @override
+  String get edited => 'edited';
 }

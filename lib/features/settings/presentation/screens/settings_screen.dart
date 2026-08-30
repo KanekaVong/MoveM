@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/glass_container.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/settings_controller.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends GetView<SettingsController> {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SettingsController());
+    if (!Get.isRegistered<SettingsController>()) {
+      Get.put(SettingsController());
+    }
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1021),
+      backgroundColor: AppColors.slate900,
       body: Stack(
         children: [
           SafeArea(
@@ -98,7 +101,7 @@ class SettingsScreen extends StatelessWidget {
         child: GlassContainer(
           padding: const EdgeInsets.all(24),
           borderRadius: BorderRadius.circular(20),
-          color: const Color(0xFF1E293B),
+          color: AppColors.slate800,
           opacity: 0.5,
           border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
           child: Column(
@@ -138,7 +141,7 @@ class SettingsScreen extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEF4444),
+                        backgroundColor: AppColors.redError,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
@@ -239,8 +242,8 @@ class SettingsScreen extends StatelessWidget {
                   value.value = val;
                   onChanged(val);
                 },
-                activeThumbColor: const Color(0xFF3B82F6),
-                activeTrackColor: const Color(0xFF3B82F6).withValues(alpha: 0.5),
+                activeThumbColor: AppColors.blueAccent,
+                activeTrackColor: AppColors.blueAccent.withValues(alpha: 0.5),
                 inactiveThumbColor: Colors.white70,
                 inactiveTrackColor: Colors.white24,
               )),

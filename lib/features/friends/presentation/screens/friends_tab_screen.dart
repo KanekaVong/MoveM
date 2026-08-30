@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../bindings/friends_binding.dart';
 import '../widgets/friend_request_tile.dart';
 import '../widgets/friend_suggestion_tile.dart';
 import '../controllers/friends_controller.dart';
@@ -20,15 +22,18 @@ class FriendsTabScreen extends GetView<FriendsController> {
 
   @override
   Widget build(BuildContext context) {
+    if (!Get.isRegistered<FriendsController>()) {
+      FriendsBinding().dependencies();
+    }
     final l10n = AppLocalizations.of(context);
 
     return DefaultTabController(
       length: 2,
       initialIndex: initialIndex,
       child: Scaffold(
-        backgroundColor: const Color(0xFF0F172A),
+        backgroundColor: AppColors.slate900,
         appBar: AppBar(
-          backgroundColor: const Color(0xFF0F172A),
+          backgroundColor: AppColors.slate900,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
@@ -44,9 +49,9 @@ class FriendsTabScreen extends GetView<FriendsController> {
             ),
           ),
           bottom: TabBar(
-            indicatorColor: const Color(0xFF3B82F6),
+            indicatorColor: AppColors.blueAccent,
             labelColor: Colors.white,
-            unselectedLabelColor: const Color(0xFFA0AAB2),
+            unselectedLabelColor: AppColors.textMuted,
             labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             tabs: [
               Tab(text: l10n?.friendRequests ?? 'Friend Request'),
@@ -66,7 +71,7 @@ class FriendsTabScreen extends GetView<FriendsController> {
 
   Widget _buildRequestsTab() {
     if (controller.incomingRequests.isEmpty) {
-      return const Center(child: Text('No friend requests.', style: TextStyle(color: Color(0xFFA0AAB2))));
+      return const Center(child: Text('No friend requests.', style: TextStyle(color: AppColors.textMuted)));
     }
 
     return SingleChildScrollView(
@@ -74,9 +79,9 @@ class FriendsTabScreen extends GetView<FriendsController> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF131B2F),
+          color: AppColors.slate850,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF1E293B), width: 1),
+          border: Border.all(color: AppColors.slate800, width: 1),
         ),
         child: Column(
           children: controller.incomingRequests.asMap().entries.map((entry) {
@@ -92,7 +97,7 @@ class FriendsTabScreen extends GetView<FriendsController> {
                   onAccept: () => controller.acceptRequest(req.requestId),
                   onReject: () => controller.rejectRequest(req.requestId),
                 ),
-                if (!isLast) const Divider(color: Color(0xFF1E293B)),
+                if (!isLast) const Divider(color: AppColors.slate800),
               ],
             );
           }).toList(),
@@ -102,8 +107,16 @@ class FriendsTabScreen extends GetView<FriendsController> {
   }
 
   Widget _buildSuggestionsTab() {
-    if (controller.searchResults.isEmpty) {
-      return const Center(child: Text('No suggestions found.', style: TextStyle(color: Color(0xFFA0AAB2))));
+    final isSearching = controller.searchQuery.value.trim().isNotEmpty;
+    final list = isSearching ? controller.searchResults : controller.suggestedFriends;
+
+    if (list.isEmpty) {
+      return Center(
+        child: Text(
+          isSearching ? 'No users found matching your search.' : 'No suggestions found.',
+          style: const TextStyle(color: AppColors.textMuted),
+        ),
+      );
     }
 
     return SingleChildScrollView(
@@ -111,14 +124,14 @@ class FriendsTabScreen extends GetView<FriendsController> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF131B2F),
+          color: AppColors.slate850,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF1E293B), width: 1),
+          border: Border.all(color: AppColors.slate800, width: 1),
         ),
         child: Column(
-          children: controller.searchResults.asMap().entries.map((entry) {
+          children: list.asMap().entries.map((entry) {
             final user = entry.value;
-            final isLast = entry.key == controller.searchResults.length - 1;
+            final isLast = entry.key == list.length - 1;
             final fullName = '${user.firstname} ${user.lastname}'.trim();
             final displayName = fullName.isNotEmpty ? fullName : (user.username.isNotEmpty ? user.username : 'User');
             return Column(
@@ -131,7 +144,7 @@ class FriendsTabScreen extends GetView<FriendsController> {
                   onAdd: () => controller.sendRequest(user.username),
                   onCancel: () => controller.cancelRequest(user.username),
                 ),
-                if (!isLast) const Divider(color: Color(0xFF1E293B)),
+                if (!isLast) const Divider(color: AppColors.slate800),
               ],
             );
           }).toList(),

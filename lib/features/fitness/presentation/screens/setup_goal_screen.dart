@@ -78,8 +78,9 @@ class SetupGoalScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.all(24.0),
                             child: GlassButton(
-                              text: 'Next',
-                              onPressed: controller.nextStep,
+                              text: step == 3 ? 'Set Goal' : 'Next',
+                              isLoading: controller.isLoading,
+                              onPressed: controller.isLoading ? () {} : controller.nextStep,
                             ),
                           ),
                         ],

@@ -12,6 +12,10 @@ class FriendsService {
     return await dio.get('friends/search', queryParameters: {'keyword': keyword});
   }
 
+  Future<Response> getSuggestions() async {
+    return await dio.get('friends/suggestions');
+  }
+
   Future<Response> deleteFriend(int friendId) async {
     return await dio.delete('friends/$friendId', options: Options(responseType: ResponseType.plain));
   }

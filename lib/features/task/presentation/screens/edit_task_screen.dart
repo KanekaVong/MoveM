@@ -2,11 +2,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/edit_task_controller.dart';
 import '../../data/dto/response/label_response.dart';
+import '../../data/dto/response/attachment_response.dart';
 import 'add_collaborator_screen.dart';
 
 class EditTaskScreen extends GetView<EditTaskController> {
@@ -408,9 +410,21 @@ class EditTaskScreen extends GetView<EditTaskController> {
                     ...controller.existingAttachments.asMap().entries.map((entry) {
                       final index = entry.key;
                       final attachment = entry.value;
-                      final url = attachment is Map
-                          ? (attachment['url'] ?? attachment['fileUrl'] ?? '')
-                          : attachment.toString();
+                      String url = '';
+                      if (attachment is AttachmentResponse) {
+                        url = attachment.filePath;
+                      } else if (attachment is Map) {
+                        url = attachment['filePath'] ?? attachment['fileUrl'] ?? attachment['url'] ?? '';
+                      } else {
+                        url = attachment.toString();
+                      }
+                      if (url.isNotEmpty && !url.startsWith('http://') && !url.startsWith('https://')) {
+                        final base = AppConfig.baseUrl.endsWith('/')
+                            ? AppConfig.baseUrl.substring(0, AppConfig.baseUrl.length - 1)
+                            : AppConfig.baseUrl;
+                        final clean = url.startsWith('/') ? url.substring(1) : url;
+                        url = '$base/$clean';
+                      }
                       return Padding(
                         padding: const EdgeInsets.only(right: 12.0),
                         child: Stack(
@@ -660,38 +674,55 @@ class EditTaskScreen extends GetView<EditTaskController> {
         side: const BorderSide(color: AppColors.taskAvatarBg),
       ),
       itemBuilder: (context) {
-        List<PopupMenuEntry<dynamic>> items = controller.availableLabels.map((l) {
+        final List<PopupMenuEntry<dynamic>> items = [];
+
+        items.add(
+          const PopupMenuItem<dynamic>(
+            value: null,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Text(
+                'None (No Label)',
+                style: TextStyle(color: Colors.white70, fontSize: 12, fontStyle: FontStyle.italic),
+              ),
+            ),
+          ),
+        );
+
+        for (var l in controller.availableLabels) {
           Color color;
           try {
             color = Color(int.parse(l.color.replaceFirst('#', '0xFF')));
           } catch (_) {
             color = AppColors.taskBluePrimary;
           }
-          return PopupMenuItem<dynamic>(
-            value: l,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(l.name, style: const TextStyle(color: Colors.white, fontSize: 12)),
-                  Container(
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: color,
-                      borderRadius: BorderRadius.circular(4),
+          items.add(
+            PopupMenuItem<dynamic>(
+              value: l,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(l.name, style: const TextStyle(color: Colors.white, fontSize: 12)),
+                    Container(
+                      width: 16,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
-        }).toList();
+        }
 
         items.add(
           PopupMenuItem<dynamic>(

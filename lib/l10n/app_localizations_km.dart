@@ -417,4 +417,75 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get languageKhmer => 'ភាសាខ្មែរ (Khmer)';
+
+  @override
+  String get inviteFriends => 'អញ្ជើញមិត្តភក្តិ';
+
+  @override
+  String get yourInviteLink => 'តំណភ្ជាប់អញ្ជើញរបស់អ្នក';
+
+  @override
+  String get yourToken => 'កូដអញ្ជើញរបស់អ្នក';
+
+  @override
+  String get shareVia => 'ចែករំលែកតាមរយៈ';
+
+  @override
+  String get inviteLinkCopied => 'បានចម្លងតំណភ្ជាប់អញ្ជើញរួចរាល់';
+
+  @override
+  String get inviteTokenCopied => 'បានចម្លងកូដអញ្ជើញរួចរាល់';
+
+  @override
+  String get copied => 'បានចម្លង';
+
+  @override
+  String get comments => 'មតិយោបល់';
+
+  @override
+  String get writeComment => 'សរសេរមតិយោបល់...';
+
+  @override
+  String get editComment => 'កែប្រែមតិ';
+
+  @override
+  String get editingComment => 'កំពុងកែសម្រួលមតិ';
+
+  @override
+  String get editYourComment => 'កែសម្រួលមតិរបស់អ្នក...';
+
+  @override
+  String get deleteComment => 'លុបមតិ';
+
+  @override
+  String get deleteCommentConfirm =>
+      'តើអ្នកច្បាស់ទេថាចង់លុបមតិយោបល់នេះ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។';
+
+  @override
+  String get copyText => 'ចម្លងអត្ថបទ';
+
+  @override
+  String get noCommentsYet => 'មិនទាន់មានមតិយោបល់នៅឡើយទេ';
+
+  @override
+  String get today => 'ថ្ងៃនេះ';
+
+  @override
+  String get yesterday => 'ម្សិលមិញ';
+
+  @override
+  String get searchResults => 'លទ្ធផលស្វែងរក';
+
+  @override
+  String get loading => 'កំពុងដំណើរការ...';
+
+  @override
+  String get beTheFirstToComment =>
+      'ចូលរួមបញ្ចេញមតិយោបល់ដំបូងគេ ឬ សួរសំណួរអំពីកិច្ចការនេះ';
+
+  @override
+  String get commentCopiedToast => 'បានចម្លងមតិយោបល់រួចរាល់';
+
+  @override
+  String get edited => 'បានកែប្រែ';
 }

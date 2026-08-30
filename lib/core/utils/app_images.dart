@@ -11,4 +11,5 @@ class AppImages {
   static const String workoutDetailsHero = '$_basePath/workout_details_hero.jpg';
   static const String taskScreenBackground = '$_basePath/task_screen_bg.png';
   static const String taskDetailBackground = '$_basePath/task_detail_background.png';
+  static const String inviteFriendsBg = '$_basePath/invite_friends_bg.png';
 }

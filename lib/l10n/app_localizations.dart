@@ -431,7 +431,7 @@ abstract class AppLocalizations {
   /// No description provided for @allTasks.
   ///
   /// In en, this message translates to:
-  /// **'Tasks'**
+  /// **'All Tasks'**
   String get allTasks;
 
   /// No description provided for @createTask.
@@ -913,6 +913,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ភាសាខ្មែរ (Khmer)'**
   String get languageKhmer;
+
+  /// No description provided for @inviteFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Friends'**
+  String get inviteFriends;
+
+  /// No description provided for @yourInviteLink.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR INVITE LINK'**
+  String get yourInviteLink;
+
+  /// No description provided for @yourToken.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR TOKEN'**
+  String get yourToken;
+
+  /// No description provided for @shareVia.
+  ///
+  /// In en, this message translates to:
+  /// **'SHARE VIA'**
+  String get shareVia;
+
+  /// No description provided for @inviteLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite link copied to clipboard'**
+  String get inviteLinkCopied;
+
+  /// No description provided for @inviteTokenCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite token copied to clipboard'**
+  String get inviteTokenCopied;
+
+  /// No description provided for @copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copied;
+
+  /// No description provided for @comments.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments'**
+  String get comments;
+
+  /// No description provided for @writeComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a comment...'**
+  String get writeComment;
+
+  /// No description provided for @editComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Comment'**
+  String get editComment;
+
+  /// No description provided for @editingComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing Comment'**
+  String get editingComment;
+
+  /// No description provided for @editYourComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit your comment...'**
+  String get editYourComment;
+
+  /// No description provided for @deleteComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Comment'**
+  String get deleteComment;
+
+  /// No description provided for @deleteCommentConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this comment? This action cannot be undone.'**
+  String get deleteCommentConfirm;
+
+  /// No description provided for @copyText.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Text'**
+  String get copyText;
+
+  /// No description provided for @noCommentsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No comments yet'**
+  String get noCommentsYet;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @searchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Results'**
+  String get searchResults;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @beTheFirstToComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Be the first to leave a comment or ask a question about this task.'**
+  String get beTheFirstToComment;
+
+  /// No description provided for @commentCopiedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment copied to clipboard'**
+  String get commentCopiedToast;
+
+  /// No description provided for @edited.
+  ///
+  /// In en, this message translates to:
+  /// **'edited'**
+  String get edited;
 }
 
 class _AppLocalizationsDelegate
