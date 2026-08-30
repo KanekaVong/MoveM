@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../bindings/friends_binding.dart';
 import '../widgets/friend_request_tile.dart';
 import '../widgets/friend_suggestion_tile.dart';
 import '../controllers/friends_controller.dart';
@@ -9,28 +12,50 @@ class FriendsTabScreen extends GetView<FriendsController> {
 
   const FriendsTabScreen({super.key, this.initialIndex = 0});
 
+  String _getAvatarUrl(String? profilePic, String fallbackName) {
+    if (profilePic != null && profilePic.trim().isNotEmpty) {
+      return profilePic;
+    }
+    final name = fallbackName.trim().isNotEmpty ? fallbackName.trim() : 'User';
+    return 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(name)}&background=334155&color=fff';
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!Get.isRegistered<FriendsController>()) {
+      FriendsBinding().dependencies();
+    }
+    final l10n = AppLocalizations.of(context);
+
     return DefaultTabController(
       length: 2,
       initialIndex: initialIndex,
       child: Scaffold(
-        backgroundColor: const Color(0xFF0F172A),
+        backgroundColor: AppColors.slate900,
         appBar: AppBar(
-          backgroundColor: const Color(0xFF0F172A),
+          backgroundColor: AppColors.slate900,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
             onPressed: () => Navigator.pop(context),
           ),
-          bottom: const TabBar(
-            indicatorColor: Color(0xFF3B82F6),
+          centerTitle: true,
+          title: Text(
+            l10n?.friends ?? 'Friends',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          bottom: TabBar(
+            indicatorColor: AppColors.blueAccent,
             labelColor: Colors.white,
-            unselectedLabelColor: Color(0xFFA0AAB2),
-            labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            unselectedLabelColor: AppColors.textMuted,
+            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             tabs: [
-              Tab(text: 'Friend Request'),
-              Tab(text: 'Suggestions'),
+              Tab(text: l10n?.friendRequests ?? 'Friend Request'),
+              Tab(text: l10n?.friendSuggestions ?? 'Suggestions'),
             ],
           ),
         ),
@@ -46,7 +71,7 @@ class FriendsTabScreen extends GetView<FriendsController> {
 
   Widget _buildRequestsTab() {
     if (controller.incomingRequests.isEmpty) {
-      return const Center(child: Text('No friend requests.', style: TextStyle(color: Color(0xFFA0AAB2))));
+      return const Center(child: Text('No friend requests.', style: TextStyle(color: AppColors.textMuted)));
     }
 
     return SingleChildScrollView(
@@ -54,24 +79,25 @@ class FriendsTabScreen extends GetView<FriendsController> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF131B2F),
+          color: AppColors.slate850,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF1E293B), width: 1),
+          border: Border.all(color: AppColors.slate800, width: 1),
         ),
         child: Column(
           children: controller.incomingRequests.asMap().entries.map((entry) {
             final req = entry.value;
             final isLast = entry.key == controller.incomingRequests.length - 1;
+            final displayName = req.senderUsername.isNotEmpty ? req.senderUsername : 'User';
             return Column(
               children: [
                 FriendRequestTile(
-                  imageUrl: req.senderProfilePic.isNotEmpty ? req.senderProfilePic : 'https://ui-avatars.com/api/?name=${req.senderUsername}',
-                  name: req.senderUsername,
+                  imageUrl: _getAvatarUrl(req.senderProfilePic, displayName),
+                  name: displayName,
                   username: '@${req.senderUsername}',
                   onAccept: () => controller.acceptRequest(req.requestId),
                   onReject: () => controller.rejectRequest(req.requestId),
                 ),
-                if (!isLast) const Divider(color: Color(0xFF1E293B)),
+                if (!isLast) const Divider(color: AppColors.slate800),
               ],
             );
           }).toList(),
@@ -81,8 +107,16 @@ class FriendsTabScreen extends GetView<FriendsController> {
   }
 
   Widget _buildSuggestionsTab() {
-    if (controller.searchResults.isEmpty) {
-      return const Center(child: Text('No suggestions found.', style: TextStyle(color: Color(0xFFA0AAB2))));
+    final isSearching = controller.searchQuery.value.trim().isNotEmpty;
+    final list = isSearching ? controller.searchResults : controller.suggestedFriends;
+
+    if (list.isEmpty) {
+      return Center(
+        child: Text(
+          isSearching ? 'No users found matching your search.' : 'No suggestions found.',
+          style: const TextStyle(color: AppColors.textMuted),
+        ),
+      );
     }
 
     return SingleChildScrollView(
@@ -90,25 +124,27 @@ class FriendsTabScreen extends GetView<FriendsController> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF131B2F),
+          color: AppColors.slate850,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF1E293B), width: 1),
+          border: Border.all(color: AppColors.slate800, width: 1),
         ),
         child: Column(
-          children: controller.searchResults.asMap().entries.map((entry) {
+          children: list.asMap().entries.map((entry) {
             final user = entry.value;
-            final isLast = entry.key == controller.searchResults.length - 1;
+            final isLast = entry.key == list.length - 1;
+            final fullName = '${user.firstname} ${user.lastname}'.trim();
+            final displayName = fullName.isNotEmpty ? fullName : (user.username.isNotEmpty ? user.username : 'User');
             return Column(
               children: [
                 FriendSuggestionTile(
-                  imageUrl: user.profilePic.isNotEmpty ? user.profilePic : 'https://ui-avatars.com/api/?name=${user.firstname}+${user.lastname}',
-                  name: '${user.firstname} ${user.lastname}'.trim().isEmpty ? user.username : '${user.firstname} ${user.lastname}',
+                  imageUrl: _getAvatarUrl(user.profilePic, displayName),
+                  name: displayName,
                   username: '@${user.username}',
                   friendStatus: user.friendStatus,
                   onAdd: () => controller.sendRequest(user.username),
                   onCancel: () => controller.cancelRequest(user.username),
                 ),
-                if (!isLast) const Divider(color: Color(0xFF1E293B)),
+                if (!isLast) const Divider(color: AppColors.slate800),
               ],
             );
           }).toList(),
@@ -117,4 +153,3 @@ class FriendsTabScreen extends GetView<FriendsController> {
     );
   }
 }
-

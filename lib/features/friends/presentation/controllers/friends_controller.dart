@@ -1,5 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../../core/storage/user_manager.dart';
 import '../../../../shared/base/base_controller.dart';
+import '../../../auth/data/dto/response/user_response.dart';
 import '../../domain/repositories/friends_repository.dart';
 import '../../data/dto/response/friend_response.dart';
 import '../../data/dto/response/friend_request_response.dart';
@@ -11,22 +15,47 @@ class FriendsController extends BaseController {
 
   final RxList<FriendResponse> friends = <FriendResponse>[].obs;
   final RxList<FriendResponse> searchResults = <FriendResponse>[].obs;
+  final RxList<FriendResponse> suggestedFriends = <FriendResponse>[].obs;
   final RxList<FriendRequestResponse> incomingRequests = <FriendRequestResponse>[].obs;
   final RxList<FriendRequestResponse> outgoingRequests = <FriendRequestResponse>[].obs;
   final RxString searchQuery = ''.obs;
+  final Rx<UserResponse?> currentUser = Rx<UserResponse?>(null);
 
   @override
   void onInit() {
     super.onInit();
+    loadUserProfile();
     loadInitialData();
+  }
+
+  void loadUserProfile() {
+    currentUser.value = UserManager().getUser();
+  }
+
+  String get profileName {
+    final u = currentUser.value;
+    final fullName = [u?.firstName, u?.lastName]
+        .where((v) => v != null && v.trim().isNotEmpty)
+        .join(' ');
+    if (fullName.isNotEmpty) return fullName;
+    return u?.username.isNotEmpty == true ? u!.username : 'Your Profile';
+  }
+
+  String get profileUsername => currentUser.value?.username.isNotEmpty == true ? currentUser.value!.username : 'user';
+  String? get profilePic => currentUser.value?.profilePic;
+  int get friendCount => friends.length;
+
+  void copyProfileLink() {
+    final link = 'https://movem.app/user/@$profileUsername';
+    Clipboard.setData(ClipboardData(text: link));
+    Get.snackbar('Copied', 'Profile link copied to clipboard', backgroundColor: const Color(0xFF48A45B), colorText: Colors.white);
   }
 
   void loadInitialData() {
     getFriends();
     getIncomingRequests();
     getOutgoingRequests();
-
-    searchFriends('');
+    getSuggestedFriends();
   }
 
   Future<void> getFriends() async {
@@ -40,10 +69,25 @@ class FriendsController extends BaseController {
     );
   }
 
+  Future<void> getSuggestedFriends() async {
+    await executeApi(
+      apiCall: () => repository.getSuggestions(),
+      onSuccess: (data) {
+        suggestedFriends.assignAll(data);
+      },
+      showLoading: false,
+      showErrorDialog: false,
+    );
+  }
+
   Future<void> searchFriends(String keyword) async {
     searchQuery.value = keyword;
+    if (keyword.trim().isEmpty) {
+      searchResults.clear();
+      return;
+    }
     await executeApi(
-      apiCall: () => repository.searchFriends(keyword),
+      apiCall: () => repository.searchFriends(keyword.trim()),
       onSuccess: (data) {
         searchResults.assignAll(data);
       },
@@ -80,6 +124,7 @@ class FriendsController extends BaseController {
       onSuccess: (data) {
         incomingRequests.removeWhere((req) => req.requestId == requestId);
         getFriends();
+        getSuggestedFriends();
       },
     );
   }
@@ -99,10 +144,23 @@ class FriendsController extends BaseController {
       onSuccess: (data) {
         getOutgoingRequests();
 
-        final index = searchResults.indexWhere((user) => user.username == username);
-        if (index != -1) {
-          final user = searchResults[index];
-          searchResults[index] = FriendResponse(
+        final sIndex = searchResults.indexWhere((user) => user.username == username);
+        if (sIndex != -1) {
+          final user = searchResults[sIndex];
+          searchResults[sIndex] = FriendResponse(
+            userId: user.userId,
+            username: user.username,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            profilePic: user.profilePic,
+            friendStatus: 'PENDING_REQUEST',
+          );
+        }
+
+        final sugIndex = suggestedFriends.indexWhere((user) => user.username == username);
+        if (sugIndex != -1) {
+          final user = suggestedFriends[sugIndex];
+          suggestedFriends[sugIndex] = FriendResponse(
             userId: user.userId,
             username: user.username,
             firstname: user.firstname,
@@ -123,22 +181,34 @@ class FriendsController extends BaseController {
         onSuccess: (data) {
           outgoingRequests.removeWhere((req) => req.requestId == request.requestId);
 
-          final index = searchResults.indexWhere((user) => user.username == username);
-          if (index != -1) {
-            final user = searchResults[index];
-            searchResults[index] = FriendResponse(
+          final sIndex = searchResults.indexWhere((user) => user.username == username);
+          if (sIndex != -1) {
+            final user = searchResults[sIndex];
+            searchResults[sIndex] = FriendResponse(
               userId: user.userId,
               username: user.username,
               firstname: user.firstname,
               lastname: user.lastname,
               profilePic: user.profilePic,
-              friendStatus: null,
+              friendStatus: 'NONE',
+            );
+          }
+
+          final sugIndex = suggestedFriends.indexWhere((user) => user.username == username);
+          if (sugIndex != -1) {
+            final user = suggestedFriends[sugIndex];
+            suggestedFriends[sugIndex] = FriendResponse(
+              userId: user.userId,
+              username: user.username,
+              firstname: user.firstname,
+              lastname: user.lastname,
+              profilePic: user.profilePic,
+              friendStatus: 'NONE',
             );
           }
         },
       );
     } catch (e) {
-
       Get.snackbar('Error', 'Unable to cancel request. Please try again later.');
     }
   }

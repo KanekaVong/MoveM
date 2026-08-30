@@ -1,6 +1,15 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../../core/config/app_config.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/app_images.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../controllers/edit_task_controller.dart';
+import '../../data/dto/response/label_response.dart';
+import '../../data/dto/response/attachment_response.dart';
+import 'add_collaborator_screen.dart';
 
 class EditTaskScreen extends GetView<EditTaskController> {
   const EditTaskScreen({super.key});
@@ -8,61 +17,98 @@ class EditTaskScreen extends GetView<EditTaskController> {
   @override
   Widget build(BuildContext context) {
     Get.put(EditTaskController());
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildAppBar(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildInputField('TASK TITLE', 'Give your Work a name', controller.titleController),
-                    const SizedBox(height: 32),
-                    _buildInputField('DESCRIPTION', 'Write down a note', controller.descriptionController),
-                    const SizedBox(height: 32),
-                    _buildPropertiesCard(),
+      backgroundColor: AppColors.taskDarkBackground,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              AppImages.taskDetailBackground,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.35),
+                    AppColors.taskDarkBackground.withOpacity(0.65),
+                    AppColors.taskDarkBackground.withOpacity(0.9),
                   ],
+                  stops: const [0.0, 0.5, 1.0],
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: ElevatedButton(
-          onPressed: () => controller.saveChanges(),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF1E293B),
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 0,
           ),
-          child: const Text('Continue', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        ),
+          SafeArea(
+            child: Column(
+              children: [
+                _buildAppBar(context),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildInputField(l10n?.taskTitleLabel ?? 'TASK TITLE', l10n?.taskTitleHint ?? 'Give your Work a name', controller.titleController),
+                        const SizedBox(height: 24),
+                        _buildInputField(l10n?.descriptionLabel ?? 'DESCRIPTION', l10n?.descriptionHint ?? 'Write down a note', controller.descriptionController),
+                        const SizedBox(height: 24),
+                        _buildPropertiesCard(),
+                        const SizedBox(height: 20),
+                        _buildCollaboratorsSection(context),
+                        const SizedBox(height: 16),
+                        _buildAttachmentsSection(context),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
+                ),
+                _buildBottomButton(context),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       child: Row(
         children: [
           GestureDetector(
             onTap: () => Get.back(),
-            child: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0x33000000),
+                border: Border.all(color: Colors.white.withOpacity(0.24), width: 1),
+              ),
+              child: const Center(
+                child: Icon(Icons.chevron_left, color: Colors.white, size: 22),
+              ),
+            ),
           ),
           const SizedBox(width: 16),
-          const Text('New Task', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(
+            l10n?.editTask ?? 'Edit Task',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
         ],
       ),
     );
@@ -76,7 +122,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
         const SizedBox(height: 8),
         TextField(
           controller: textController,
-          style: const TextStyle(color: Colors.white, fontSize: 14),
+          style: const TextStyle(color: Colors.white, fontSize: 12),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: const TextStyle(color: Color(0xFF475569), fontSize: 12, fontStyle: FontStyle.italic),
@@ -96,24 +142,51 @@ class EditTaskScreen extends GetView<EditTaskController> {
 
   Widget _buildPropertiesCard() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF131B2F),
-        borderRadius: BorderRadius.circular(24),
+        color: AppColors.taskFigmaCard.withOpacity(0.20),
+        borderRadius: BorderRadius.circular(25),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: () => controller.pickDeadline(Get.context!),
-            child: Obx(() => _buildPropertyRow('DEADLINES', controller.formattedDeadline, Icons.calendar_today)),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => controller.pickDeadlineDate(Get.context!),
+                  child: Obx(() => _buildPropertyRow('DEADLINE DATE', controller.formattedDeadlineDate, Icons.calendar_today)),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => controller.pickDeadlineTime(Get.context!),
+                  child: Obx(() => _buildPropertyRow('TIME', controller.formattedDeadlineTime, Icons.access_time)),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 22),
           GestureDetector(
             onTap: () => controller.addChecklistItem(),
-            child: _buildActionRow('CheckList', Icons.add),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text(
+                  'CHECKLIST',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Icon(Icons.add, color: Colors.white, size: 18),
+              ],
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Obx(() => Column(
             children: controller.checklists.asMap().entries.map((entry) {
               final index = entry.key;
@@ -122,15 +195,15 @@ class EditTaskScreen extends GetView<EditTaskController> {
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: Row(
                   children: [
-                    Icon(Icons.check_box_outline_blank, color: const Color(0xFF475569), size: 20),
-                    const SizedBox(width: 12),
+                    const Icon(Icons.check_box_outline_blank, color: AppColors.taskTextMuted, size: 18),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: TextField(
                         controller: textController,
-                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                        style: const TextStyle(color: Colors.white, fontSize: 13),
                         decoration: const InputDecoration(
                           hintText: 'Add an item',
-                          hintStyle: TextStyle(color: Color(0xFF475569), fontSize: 14),
+                          hintStyle: TextStyle(color: AppColors.taskTextMuted, fontSize: 12, fontStyle: FontStyle.italic),
                           border: InputBorder.none,
                           isDense: true,
                           contentPadding: EdgeInsets.zero,
@@ -139,44 +212,49 @@ class EditTaskScreen extends GetView<EditTaskController> {
                     ),
                     GestureDetector(
                       onTap: () => controller.removeChecklistItem(index),
-                      child: const Icon(Icons.close, color: Color(0xFF475569), size: 18),
+                      child: const Icon(Icons.close, color: AppColors.taskTextMuted, size: 18),
                     ),
                   ],
                 ),
               );
             }).toList(),
           )),
-          const SizedBox(height: 24),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           _buildRepeatDropdown(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: _buildPriorityDropdown(),
-              ),
-              Expanded(
-                child: _buildLabelDropdown(),
-              ),
+              Expanded(child: _buildPriorityDropdown()),
+              const SizedBox(width: 16),
+              Expanded(child: _buildLabelDropdown()),
             ],
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           GestureDetector(
             onTap: () => controller.toggleReminders(),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Get upcoming reminders about your due dates', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+                const Expanded(
+                  child: Text(
+                    'Get upcoming reminders about your due dates',
+                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+                ),
                 Obx(() => Container(
                   width: 20,
                   height: 20,
                   decoration: BoxDecoration(
-                    color: controller.remindersEnabled.value ? const Color(0xFF3B82F6) : Colors.transparent,
-                    border: Border.all(color: controller.remindersEnabled.value ? const Color(0xFF3B82F6) : Colors.white),
+                    color: controller.remindersEnabled.value ? AppColors.taskGreenAccent : Colors.transparent,
+                    border: Border.all(
+                      color: controller.remindersEnabled.value ? AppColors.taskGreenAccent : Colors.white70,
+                    ),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: controller.remindersEnabled.value ? const Icon(Icons.check, size: 16, color: Colors.white) : null,
+                  child: controller.remindersEnabled.value
+                      ? const Icon(Icons.check, size: 14, color: Colors.black)
+                      : null,
                 )),
               ],
             ),
@@ -186,96 +264,397 @@ class EditTaskScreen extends GetView<EditTaskController> {
     );
   }
 
-  Widget _buildRepeatDropdown() {
-    return PopupMenuButton<String>(
-      onSelected: (value) => controller.repeatFrequency.value = value,
-      offset: const Offset(0, 40),
-      color: const Color(0xFF131B2F),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Color(0xFF334155)),
-      ),
-      itemBuilder: (context) => ['Daily', 'Weekly', 'Monthly', 'Yearly']
-          .map((choice) => PopupMenuItem<String>(
-                value: choice,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildCollaboratorsSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Obx(() {
+          if (controller.collaborators.isEmpty) return const SizedBox();
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Collaborators (${controller.collaborators.length})',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                children: controller.collaborators.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final collaborator = entry.value;
+                  final name = collaborator is Map
+                      ? (collaborator['name'] ?? collaborator['username'] ?? 'User')
+                      : collaborator.toString();
+                  final initial = name.isNotEmpty ? name[0].toUpperCase() : 'U';
+
+                  return Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: AppColors.taskAvatarBg,
+                            child: Text(
+                              initial,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            name,
+                            style: const TextStyle(
+                              color: AppColors.taskTextMuted,
+                              fontSize: 11,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Positioned(
+                        top: -4,
+                        right: -4,
+                        child: GestureDetector(
+                          onTap: () => controller.removeCollaborator(index),
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: const BoxDecoration(
+                              color: Colors.redAccent,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.close, size: 10, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 12),
+            ],
+          );
+        }),
+        GestureDetector(
+          onTap: () async {
+            final result = await Get.to(() => const AddCollaboratorScreen());
+            if (result != null && result is List) {
+              for (var c in result) {
+                final name = c is Map ? (c['name'] ?? c['username'] ?? 'User') : c.toString();
+                controller.addCollaborator(name);
+              }
+            } else if (result != null && result is String) {
+              controller.addCollaborator(result);
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: BoxDecoration(
+              color: AppColors.taskFigmaCard.withOpacity(0.20),
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text(
+                  'Add Collaborators',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Icon(Icons.add_circle_outline, color: Colors.white, size: 24),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAttachmentsSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Obx(() {
+          final totalCount = controller.existingAttachments.length + controller.pickedAttachments.length;
+          if (totalCount == 0) return const SizedBox();
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Attachments ($totalCount)',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 90,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
                   children: [
-                    Text(choice, style: const TextStyle(color: Colors.white, fontSize: 14)),
-                    const SizedBox(height: 8),
-                    Container(height: 1, color: const Color(0xFF334155)),
+                    ...controller.existingAttachments.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final attachment = entry.value;
+                      String url = '';
+                      if (attachment is AttachmentResponse) {
+                        url = attachment.filePath;
+                      } else if (attachment is Map) {
+                        url = attachment['filePath'] ?? attachment['fileUrl'] ?? attachment['url'] ?? '';
+                      } else {
+                        url = attachment.toString();
+                      }
+                      if (url.isNotEmpty && !url.startsWith('http://') && !url.startsWith('https://')) {
+                        final base = AppConfig.baseUrl.endsWith('/')
+                            ? AppConfig.baseUrl.substring(0, AppConfig.baseUrl.length - 1)
+                            : AppConfig.baseUrl;
+                        final clean = url.startsWith('/') ? url.substring(1) : url;
+                        url = '$base/$clean';
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12.0),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                url,
+                                width: 90,
+                                height: 90,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(
+                                  width: 90,
+                                  height: 90,
+                                  color: AppColors.taskSlateDark,
+                                  child: const Icon(Icons.insert_drive_file, color: Colors.white54),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 4,
+                              right: 4,
+                              child: GestureDetector(
+                                onTap: () => controller.removeExistingAttachment(index),
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.redAccent,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.close, size: 12, color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                    ...controller.pickedAttachments.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final xfile = entry.value;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12.0),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.file(
+                                File(xfile.path),
+                                width: 90,
+                                height: 90,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              top: 4,
+                              right: 4,
+                              child: GestureDetector(
+                                onTap: () => controller.removePickedAttachment(index),
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.redAccent,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.close, size: 12, color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
                   ],
                 ),
-              ))
-          .toList(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('REPEAT', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Obx(() => Text(
-                controller.repeatFrequency.value ?? '',
-                style: const TextStyle(color: Color(0xFF475569), fontSize: 14, fontStyle: FontStyle.italic)
-              )),
-              const Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 24),
+              ),
+              const SizedBox(height: 12),
             ],
+          );
+        }),
+        GestureDetector(
+          onTap: () => _showImageSourcePicker(context),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: BoxDecoration(
+              color: AppColors.taskFigmaCard.withOpacity(0.20),
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text(
+                  'Add Attachments',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Icon(Icons.add_circle_outline, color: Colors.white, size: 24),
+              ],
+            ),
           ),
-          const SizedBox(height: 4),
-          Container(height: 1, color: Colors.white),
-        ],
+        ),
+      ],
+    );
+  }
+
+  void _showImageSourcePicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.taskSlateCard,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Upload Photo',
+                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                ListTile(
+                  leading: const Icon(Icons.photo_library, color: AppColors.taskBluePrimary),
+                  title: const Text('Choose from Gallery', style: TextStyle(color: Colors.white)),
+                  onTap: () {
+                    Get.back();
+                    controller.pickAttachment(ImageSource.gallery);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.camera_alt, color: AppColors.taskGreenAccent),
+                  title: const Text('Take a Photo', style: TextStyle(color: Colors.white)),
+                  onTap: () {
+                    Get.back();
+                    controller.pickAttachment(ImageSource.camera);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPropertyRow(String title, String value, IconData icon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 6),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(value, style: const TextStyle(color: AppColors.taskTextMuted, fontSize: 12, fontStyle: FontStyle.italic)),
+            Icon(icon, color: Colors.white70, size: 16),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Container(height: 0.5, color: Colors.white.withOpacity(0.2)),
+      ],
+    );
+  }
+
+  Widget _buildRepeatDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('REPEAT', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 6),
+        Obx(() => DropdownButtonFormField<String?>(
+          value: controller.repeatFrequency.value,
+          dropdownColor: AppColors.taskSlateDark,
+          style: const TextStyle(color: Colors.white, fontSize: 13),
+          decoration: InputDecoration(
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.2))),
+            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.taskBluePrimary)),
+            contentPadding: const EdgeInsets.symmetric(vertical: 4),
+            isDense: true,
+          ),
+          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white70, size: 20),
+          items: const [
+            DropdownMenuItem(value: null, child: Text('NONE', style: TextStyle(color: AppColors.taskTextMuted, fontStyle: FontStyle.italic))),
+            DropdownMenuItem(value: 'DAILY', child: Text('DAILY', style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic))),
+            DropdownMenuItem(value: 'WEEKLY', child: Text('WEEKLY', style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic))),
+            DropdownMenuItem(value: 'MONTHLY', child: Text('MONTHLY', style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic))),
+          ],
+          onChanged: (val) {
+            controller.repeatFrequency.value = val;
+            controller.isRecurring.value = val != null;
+          },
+        )),
+      ],
     );
   }
 
   Widget _buildPriorityDropdown() {
-    return PopupMenuButton<String>(
-      onSelected: (value) => controller.priority.value = value,
-      offset: const Offset(0, 30),
-      color: const Color(0xFF131B2F),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Color(0xFF334155)),
-      ),
-      itemBuilder: (context) => ['URGENT', 'HIGH', 'NORMAL', 'LOW']
-          .map((choice) => PopupMenuItem<String>(
-                value: choice,
-                child: Text(choice, style: const TextStyle(color: Colors.white)),
-              ))
-          .toList(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: const [
-              Text('PRIORITY', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
-              Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 16),
-            ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('PRIORITY', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 6),
+        Obx(() => DropdownButtonFormField<String>(
+          value: controller.priority.value,
+          dropdownColor: AppColors.taskSlateDark,
+          style: const TextStyle(color: Colors.white, fontSize: 13),
+          decoration: InputDecoration(
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white.withOpacity(0.2))),
+            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.taskBluePrimary)),
+            contentPadding: const EdgeInsets.symmetric(vertical: 4),
+            isDense: true,
           ),
-          const SizedBox(height: 8),
-          Obx(() {
-            Color pillColor = Colors.grey;
-            if (controller.priority.value == 'LOW') pillColor = const Color(0xFF86EFAC);
-            if (controller.priority.value == 'NORMAL') pillColor = const Color(0xFFFDE047);
-            if (controller.priority.value == 'HIGH') pillColor = const Color(0xFFFCA5A5);
-            if (controller.priority.value == 'URGENT') pillColor = const Color(0xFFEF4444);
-
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: pillColor,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                controller.priority.value,
-                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-              ),
-            );
-          }),
-        ],
-      ),
+          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white70, size: 20),
+          items: const [
+            DropdownMenuItem(value: 'LOW', child: Text('LOW', style: TextStyle(color: AppColors.taskGreenAccent, fontWeight: FontWeight.bold))),
+            DropdownMenuItem(value: 'NORMAL', child: Text('NORMAL', style: TextStyle(color: AppColors.taskYellowPriority, fontWeight: FontWeight.bold))),
+            DropdownMenuItem(value: 'HIGH', child: Text('HIGH', style: TextStyle(color: AppColors.taskRedPriority, fontWeight: FontWeight.bold))),
+            DropdownMenuItem(value: 'URGENT', child: Text('URGENT', style: TextStyle(color: AppColors.taskRedError, fontWeight: FontWeight.bold))),
+          ],
+          onChanged: (val) {
+            if (val != null) controller.priority.value = val;
+          },
+        )),
+      ],
     );
   }
 
@@ -283,45 +662,67 @@ class EditTaskScreen extends GetView<EditTaskController> {
     return PopupMenuButton<dynamic>(
       onSelected: (value) {
         if (value != 'CREATE') {
-          controller.selectedLabel.value = value;
+          controller.selectedLabel.value = value as LabelResponse?;
         } else {
           _showCreateLabelDialog();
         }
       },
       offset: const Offset(0, 30),
-      color: const Color(0xFF131B2F),
+      color: AppColors.taskSlateCard,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Color(0xFF334155)),
+        side: const BorderSide(color: AppColors.taskAvatarBg),
       ),
       itemBuilder: (context) {
-        List<PopupMenuEntry<dynamic>> items = controller.availableLabels.map((l) {
-          final color = Color(int.parse(l.color.replaceFirst('#', '0xFF')));
-          return PopupMenuItem<dynamic>(
-            value: l,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(8),
+        final List<PopupMenuEntry<dynamic>> items = [];
+
+        items.add(
+          const PopupMenuItem<dynamic>(
+            value: null,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Text(
+                'None (No Label)',
+                style: TextStyle(color: Colors.white70, fontSize: 12, fontStyle: FontStyle.italic),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(l.name, style: const TextStyle(color: Colors.white, fontSize: 12)),
-                  Container(
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: color,
-                      borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        );
+
+        for (var l in controller.availableLabels) {
+          Color color;
+          try {
+            color = Color(int.parse(l.color.replaceFirst('#', '0xFF')));
+          } catch (_) {
+            color = AppColors.taskBluePrimary;
+          }
+          items.add(
+            PopupMenuItem<dynamic>(
+              value: l,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(l.name, style: const TextStyle(color: Colors.white, fontSize: 12)),
+                    Container(
+                      width: 16,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
-        }).toList();
+        }
 
         items.add(
           PopupMenuItem<dynamic>(
@@ -330,7 +731,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFF334155),
+                color: AppColors.taskAvatarBg,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Center(
@@ -347,7 +748,8 @@ class EditTaskScreen extends GetView<EditTaskController> {
         children: [
           Row(
             children: const [
-              Text('LABEL', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+              Text('LABEL', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+              SizedBox(width: 4),
               Icon(Icons.add, color: Colors.white, size: 16),
             ],
           ),
@@ -357,7 +759,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF334155),
+                  color: AppColors.taskAvatarBg,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Text(
@@ -368,7 +770,12 @@ class EditTaskScreen extends GetView<EditTaskController> {
             }
 
             final l = controller.selectedLabel.value!;
-            final color = Color(int.parse(l.color.replaceFirst('#', '0xFF')));
+            Color color;
+            try {
+              color = Color(int.parse(l.color.replaceFirst('#', '0xFF')));
+            } catch (_) {
+              color = AppColors.taskBluePrimary;
+            }
 
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -384,36 +791,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
           }),
         ],
       ),
-    );
-  }
-
-  Widget _buildPropertyRow(String title, String value, IconData icon, {bool hideText = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            if (!hideText) Text(value, style: const TextStyle(color: Color(0xFF475569), fontSize: 12, fontStyle: FontStyle.italic)),
-            if (hideText) const SizedBox(),
-            Icon(icon, color: Colors.white, size: 20),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Container(height: 1, color: Colors.white),
-      ],
-    );
-  }
-
-  Widget _buildActionRow(String title, IconData icon) {
-    return Row(
-      children: [
-        Text(title, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
-        const SizedBox(width: 4),
-        Icon(icon, color: Colors.white, size: 16),
-      ],
     );
   }
 
@@ -436,80 +813,118 @@ class EditTaskScreen extends GetView<EditTaskController> {
 
     Get.dialog(
       Dialog(
-        backgroundColor: const Color(0xFF131B2F),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: AppColors.taskSlateCard,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: AppColors.taskAvatarBg),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Create Label', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 24),
-              const Text('NAME', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
+              const Text(
+                'Create Label',
+                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
               TextField(
                 controller: nameController,
                 style: const TextStyle(color: Colors.white, fontSize: 14),
-                decoration: const InputDecoration(
-                  hintText: 'Enter label name',
-                  hintStyle: TextStyle(color: Color(0xFF475569), fontSize: 14),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF334155))),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF3B82F6))),
-                  isDense: true,
+                decoration: InputDecoration(
+                  hintText: 'Label Name',
+                  hintStyle: const TextStyle(color: AppColors.taskTextMuted, fontSize: 14),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                  ),
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.taskBluePrimary),
+                  ),
                 ),
               ),
-              const SizedBox(height: 24),
-              const Text('COLOR', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
+              const Text(
+                'Select Color',
+                style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 12),
               Wrap(
-                spacing: 12,
-                runSpacing: 12,
+                spacing: 10,
+                runSpacing: 10,
                 children: colors.map((colorHex) {
                   final color = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
                   return GestureDetector(
                     onTap: () => selectedColor.value = colorHex,
-                    child: Obx(() {
-                      final isSelected = selectedColor.value == colorHex;
-                      return Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: color,
-                          shape: BoxShape.circle,
-                          border: isSelected ? Border.all(color: Colors.white, width: 2) : null,
+                    child: Obx(() => Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: selectedColor.value == colorHex ? Colors.white : Colors.transparent,
+                          width: 2,
                         ),
-                      );
-                    }),
+                      ),
+                    )),
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
                     onPressed: () => Get.back(),
-                    child: const Text('Cancel', style: TextStyle(color: Color(0xFF94A3B8))),
+                    child: const Text('Cancel', style: TextStyle(color: AppColors.taskTextMuted)),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: () {
-                      if (nameController.text.trim().isEmpty) {
-                        Get.snackbar('Error', 'Label name cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
-                        return;
+                      if (nameController.text.trim().isNotEmpty) {
+                        controller.createLabel(nameController.text.trim(), selectedColor.value);
                       }
-                      controller.createLabel(nameController.text.trim(), selectedColor.value);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3B82F6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      backgroundColor: AppColors.taskGreenButton,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: const Text('Create', style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+      child: SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: ElevatedButton(
+          onPressed: () => controller.saveChanges(),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.taskGreenButton,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(28),
+            ),
+            elevation: 0,
+          ),
+          child: Text(
+            l10n?.save ?? 'Save Changes',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.italic,
+            ),
           ),
         ),
       ),

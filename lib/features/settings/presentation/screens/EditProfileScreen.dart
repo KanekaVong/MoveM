@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/custom_glass_button.dart';
 import '../../../../shared/widgets/glass_container.dart';
 import '../../../auth/data/dto/response/user_response.dart';
@@ -14,6 +15,7 @@ class EditProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(EditProfileController())..init(user);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0B132B),
@@ -26,14 +28,14 @@ class EditProfileScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomGlassButton(
-                    label: 'Cancel',
+                    label: l10n?.cancel ?? 'Cancel',
                     width: 90,
                     height: 38,
                     textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                     onPressed: controller.onCancel,
                   ),
                   CustomGlassButton(
-                    label: 'Done',
+                    label: l10n?.done ?? 'Done',
                     width: 90,
                     height: 38,
                     textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),

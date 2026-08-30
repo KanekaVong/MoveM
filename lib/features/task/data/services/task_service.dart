@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 import '../../../../core/network/dio_client.dart';
 
 class TaskService {
@@ -50,5 +51,59 @@ class TaskService {
 
   Future<Response> deleteReminder(int reminderId) async {
     return await dio.delete('tasks/reminders/$reminderId', options: Options(responseType: ResponseType.json));
+  }
+
+  MediaType? _getMediaType(String fileName) {
+    final ext = fileName.split('.').last.toLowerCase();
+    if (ext == 'jpg' || ext == 'jpeg') {
+      return MediaType('image', 'jpeg');
+    } else if (ext == 'png') {
+      return MediaType('image', 'png');
+    } else if (ext == 'webp') {
+      return MediaType('image', 'webp');
+    } else if (ext == 'gif') {
+      return MediaType('image', 'gif');
+    } else if (ext == 'pdf') {
+      return MediaType('application', 'pdf');
+    }
+    return null;
+  }
+
+  Future<Response> uploadAttachment(String filePath) async {
+    final fileName = filePath.split('/').last;
+    final mediaType = _getMediaType(fileName);
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(
+        filePath,
+        filename: fileName,
+        contentType: mediaType,
+      ),
+    });
+    return await dio.post(
+      'attachments/upload',
+      data: formData,
+      options: Options(
+        responseType: ResponseType.json,
+      ),
+    );
+  }
+
+  Future<Response> uploadTaskAttachment(String activityId, String filePath) async {
+    final fileName = filePath.split('/').last;
+    final mediaType = _getMediaType(fileName);
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(
+        filePath,
+        filename: fileName,
+        contentType: mediaType,
+      ),
+    });
+    return await dio.post(
+      'tasks/$activityId/attachments',
+      data: formData,
+      options: Options(
+        responseType: ResponseType.json,
+      ),
+    );
   }
 }

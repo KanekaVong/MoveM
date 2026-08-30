@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class FriendRequestTile extends StatelessWidget {
   final String imageUrl;
@@ -19,13 +20,23 @@ class FriendRequestTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'U';
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundImage: CachedNetworkImageProvider(imageUrl),
+          ClipOval(
+            child: SizedBox(
+              width: 40,
+              height: 40,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => _buildPlaceholder(initial),
+                errorWidget: (context, url, error) => _buildPlaceholder(initial),
+              ),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -39,7 +50,7 @@ class FriendRequestTile extends StatelessWidget {
                 ),
                 Text(
                   username,
-                  style: const TextStyle(color: Color(0xFFA0AAB2), fontSize: 10),
+                  style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -52,11 +63,11 @@ class FriendRequestTile extends StatelessWidget {
                 child: Container(
                   width: 32,
                   height: 32,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B),
+                  decoration: const BoxDecoration(
+                    color: AppColors.slate800,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.close, color: Color(0xFF3B82F6), size: 16),
+                  child: const Icon(Icons.close, color: AppColors.blueAccent, size: 16),
                 ),
               ),
               const SizedBox(width: 12),
@@ -65,8 +76,8 @@ class FriendRequestTile extends StatelessWidget {
                 child: Container(
                   width: 32,
                   height: 32,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF3B82F6),
+                  decoration: const BoxDecoration(
+                    color: AppColors.blueAccent,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.check, color: Colors.white, size: 16),
@@ -75,6 +86,21 @@ class FriendRequestTile extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder(String initial) {
+    return CircleAvatar(
+      radius: 20,
+      backgroundColor: AppColors.slate700,
+      child: Text(
+        initial,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
       ),
     );
   }

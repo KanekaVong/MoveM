@@ -12,6 +12,10 @@ class FriendsService {
     return await dio.get('friends/search', queryParameters: {'keyword': keyword});
   }
 
+  Future<Response> getSuggestions() async {
+    return await dio.get('friends/suggestions');
+  }
+
   Future<Response> deleteFriend(int friendId) async {
     return await dio.delete('friends/$friendId', options: Options(responseType: ResponseType.plain));
   }
@@ -29,11 +33,11 @@ class FriendsService {
   }
 
   Future<Response> acceptFriendRequest(int requestId) async {
-    return await dio.put('friends/requests/$requestId/accept', options: Options(responseType: ResponseType.plain));
+    return await dio.patch('friends/requests/$requestId/accept');
   }
 
   Future<Response> rejectFriendRequest(int requestId) async {
-    return await dio.put('friends/requests/$requestId/reject', options: Options(responseType: ResponseType.plain));
+    return await dio.patch('friends/requests/$requestId/reject');
   }
 
   Future<Response> cancelFriendRequest(int requestId) async {

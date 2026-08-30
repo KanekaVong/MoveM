@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/dto/response/dashboard_response.dart';
 
 class OngoingSection extends StatelessWidget {
@@ -11,19 +12,21 @@ class OngoingSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Ongoing',
-              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            Text(
+              l10n?.ongoingTasks ?? 'Ongoing',
+              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Row(
               children: [
-                const Text('View All', style: TextStyle(color: Colors.white, fontSize: 12)),
+                Text(l10n?.viewAll ?? 'View All', style: const TextStyle(color: Colors.white, fontSize: 12)),
                 const SizedBox(width: 4),
                 const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 10),
               ],

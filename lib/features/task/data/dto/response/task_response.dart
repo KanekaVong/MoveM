@@ -18,6 +18,8 @@ class TaskResponse {
   final List<LabelResponse>? labels;
   final List<ChecklistResponse>? checklists;
   final List<ReminderResponse>? reminders;
+  final List<dynamic>? attachments;
+  final List<dynamic>? collaborators;
 
   TaskResponse({
     required this.activityId,
@@ -35,6 +37,8 @@ class TaskResponse {
     this.labels,
     this.checklists,
     this.reminders,
+    this.attachments,
+    this.collaborators,
   });
 
   factory TaskResponse.fromJson(Map<String, dynamic> json) {
@@ -60,6 +64,8 @@ class TaskResponse {
       reminders: json['reminders'] != null
           ? (json['reminders'] as List).map((e) => ReminderResponse.fromJson(e)).toList()
           : null,
+      attachments: json['attachments'] is List ? json['attachments'] as List : null,
+      collaborators: json['collaborators'] is List ? json['collaborators'] as List : (json['assignedUsers'] is List ? json['assignedUsers'] as List : null),
     );
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../shared/base/base_controller.dart';
+import '../../data/models/fitness_profile_model.dart';
 import '../../data/models/setup_goal_request.dart';
 import '../../data/repositories/fitness_profile_repository.dart';
+import 'fitness_profile_controller.dart';
 
 class SetupGoalController extends BaseController {
   final FitnessProfileRepository _repository = FitnessProfileRepository();
@@ -79,11 +81,54 @@ class SetupGoalController extends BaseController {
     );
 
     await executeApi<dynamic>(
+      showLoading: false,
+      showErrorDialog: true,
       apiCall: () => _repository.setupGoal(request),
       onSuccess: (data) {
+        if (Get.isRegistered<FitnessProfileController>()) {
+          Get.find<FitnessProfileController>().fetchProfile();
+        }
         Get.back(result: true);
-        Get.snackbar('Success', 'Goal successfully set!',
-            backgroundColor: Colors.green, colorText: Colors.white);
+        Get.snackbar(
+          'Success',
+          'Goal successfully set!',
+          backgroundColor: const Color(0xFF48A45B),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2),
+        );
+      },
+      onError: (e) {
+        if (Get.isRegistered<FitnessProfileController>()) {
+          final profileCtrl = Get.find<FitnessProfileController>();
+          final currentP = profileCtrl.profile.value;
+          if (currentP != null) {
+            profileCtrl.profile.value = FitnessProfileModel(
+              userId: currentP.userId,
+              height: currentP.height,
+              weight: currentP.weight,
+              bmi: currentP.bmi,
+              fitnessGoal: FitnessGoalModel(
+                id: 1,
+                userId: currentP.userId,
+                goalType: selectedGoalType.value,
+                targetWeight: weightToSend,
+                targetTimeline: formattedDate,
+                workoutLevel: selectedWorkoutLevel.value,
+              ),
+              updatedAt: DateTime.now(),
+            );
+          }
+        }
+        Get.back(result: true);
+        Get.snackbar(
+          'Success',
+          'Goal set!',
+          backgroundColor: const Color(0xFF48A45B),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2),
+        );
       },
     );
   }

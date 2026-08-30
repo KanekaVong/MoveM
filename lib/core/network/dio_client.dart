@@ -33,12 +33,16 @@ class DioClient {
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
+          if (options.data is FormData) {
+            options.headers.remove('Content-Type');
+          }
           return handler.next(options);
         },
         onResponse: (response, handler) {
           return handler.next(response);
         },
         onError: (DioException e, handler) {
+          log('*** DioException [${e.response?.statusCode}] ***\nURI: ${e.requestOptions.uri}\nResponse Body: ${e.response?.data}\nError: ${e.error}\nMessage: ${e.message}', name: 'DIO-ERR');
           return handler.next(e);
         },
       ),
@@ -48,7 +52,7 @@ class DioClient {
       _dio.interceptors.add(LogInterceptor(
         request: true,
         requestBody: true,
-        responseBody: false,
+        responseBody: true,
         responseHeader: false,
         error: true,
         logPrint: (object) => log(object.toString(), name: 'DIO-REQ'),
@@ -63,6 +67,15 @@ class DioClient {
             log('URI: ${response.requestOptions.uri}\n${response.data}', name: 'DIO-RES');
           }
           return handler.next(response);
+        },
+        onError: (DioException e, handler) {
+          try {
+            final prettyString = const JsonEncoder.withIndent('  ').convert(e.response?.data);
+            log('URI: ${e.requestOptions.uri}\nStatus: ${e.response?.statusCode}\n$prettyString', name: 'DIO-ERR');
+          } catch (_) {
+            log('URI: ${e.requestOptions.uri}\nStatus: ${e.response?.statusCode}\nData: ${e.response?.data}', name: 'DIO-ERR');
+          }
+          return handler.next(e);
         },
       ));
     }

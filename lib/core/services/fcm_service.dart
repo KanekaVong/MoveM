@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import '../../features/task/presentation/screens/task_detail_screen.dart';
 import '../../firebase_options.dart';
 import '../routes/app_routes.dart';
 import '../storage/user_manager.dart';
@@ -232,7 +233,12 @@ class FcmService {
           break;
         case 'task':
         case 'task_reminder':
-          Get.toNamed(AppRoutes.main, arguments: {'tab': 1});
+          final activityId = data['activityId'] as String?;
+          if (activityId != null && activityId.isNotEmpty) {
+            Get.to(() => TaskDetailScreen(activityId: activityId));
+          } else {
+            Get.toNamed(AppRoutes.main, arguments: {'tab': 1});
+          }
           break;
         case 'fitness':
         case 'workout':

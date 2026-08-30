@@ -5,6 +5,7 @@ import '../../domain/repositories/task_repository.dart';
 import '../dto/request/create_task_request.dart';
 import '../dto/response/task_response.dart';
 import '../dto/response/label_response.dart';
+import '../dto/response/attachment_response.dart';
 import '../services/task_service.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
@@ -160,6 +161,32 @@ class TaskRepositoryImpl implements TaskRepository {
     try {
       await _service.deleteReminder(reminderId);
       return ApiSuccess(null);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<ApiResult<AttachmentResponse>> uploadAttachment(String filePath) async {
+    try {
+      final response = await _service.uploadAttachment(filePath);
+      final attachment = AttachmentResponse.fromJson(response.data);
+      return ApiSuccess(attachment);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<ApiResult<AttachmentResponse>> uploadTaskAttachment(String activityId, String filePath) async {
+    try {
+      final response = await _service.uploadTaskAttachment(activityId, filePath);
+      final attachment = AttachmentResponse.fromJson(response.data);
+      return ApiSuccess(attachment);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {

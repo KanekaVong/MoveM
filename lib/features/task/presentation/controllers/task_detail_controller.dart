@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/services/notification_scheduler_service.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../data/dto/response/task_response.dart';
@@ -12,6 +13,9 @@ class TaskDetailController extends BaseController {
   final String activityId;
 
   final Rx<TaskResponse?> task = Rx<TaskResponse?>(null);
+  final RxBool isCardExpanded = true.obs;
+  final RxBool isLabelsExpanded = true.obs;
+  final RxBool isAttachmentsExpanded = true.obs;
 
   TaskDetailController({required this.activityId});
 
@@ -19,6 +23,18 @@ class TaskDetailController extends BaseController {
   void onReady() {
     super.onReady();
     fetchTaskDetail();
+  }
+
+  void toggleCardExpanded() {
+    isCardExpanded.value = !isCardExpanded.value;
+  }
+
+  void toggleLabelsExpanded() {
+    isLabelsExpanded.value = !isLabelsExpanded.value;
+  }
+
+  void toggleAttachmentsExpanded() {
+    isAttachmentsExpanded.value = !isAttachmentsExpanded.value;
   }
 
   Future<void> fetchTaskDetail({bool showLoading = true}) async {
@@ -38,8 +54,9 @@ class TaskDetailController extends BaseController {
     await executeApi<TaskResponse>(
       apiCall: () => repository.markTaskComplete(currentTask.activityId),
       showLoading: true,
-      onSuccess: (data) {
+      onSuccess: (data) async {
         task.value = data;
+        await NotificationSchedulerService().cancelRemindersForTask(currentTask.activityId);
         Get.back(result: true);
         Get.snackbar('Success', 'Task marked as complete!', backgroundColor: Colors.green, colorText: Colors.white);
       },
@@ -86,6 +103,8 @@ class TaskDetailController extends BaseController {
       labels: currentTask.labels,
       reminders: currentTask.reminders,
       checklists: updatedChecklists,
+      attachments: currentTask.attachments,
+      collaborators: currentTask.collaborators,
     );
 
     await executeApi<void>(

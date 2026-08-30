@@ -1,27 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/dto/response/dashboard_response.dart';
 
 class UpcomingSection extends StatelessWidget {
   final List<DashboardTaskItem>? tasks;
+  final FitnessStatistics? fitnessStats;
 
-  const UpcomingSection({super.key, this.tasks});
+  const UpcomingSection({
+    super.key,
+    this.tasks,
+    this.fitnessStats,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final taskCount = tasks?.length ?? 0;
+    final fitnessCount = fitnessStats?.totalWorkouts ?? 0;
+    const tripCount = 0;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Upcoming',
-              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            Text(
+              l10n?.upcoming ?? 'Upcoming',
+              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Row(
               children: [
-                const Text('View All', style: TextStyle(color: Colors.white, fontSize: 12)),
+                Text(l10n?.viewAll ?? 'View All', style: const TextStyle(color: Colors.white, fontSize: 12)),
                 const SizedBox(width: 4),
                 const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 10),
               ],
@@ -37,38 +47,30 @@ class UpcomingSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: const Color(0xFF1E293B), width: 1),
           ),
-          child: Stack(
+          child: Column(
             children: [
-              Positioned(
-                left: 11,
-                top: 20,
-                bottom: 20,
-                child: Container(
-                  width: 1,
-                  color: const Color(0xFF2C3E50),
-                ),
+              _buildUpcomingCountItem(
+                icon: Icons.assignment,
+                color: const Color(0xFF4C8DB3),
+                title: '$taskCount ${taskCount == 1 ? (l10n?.task ?? 'task') : (l10n?.allTasks ?? 'tasks')}',
+                subtitle: taskCount > 0 ? (l10n?.ongoingTasks ?? 'Upcoming due soon') : (l10n?.noNotifications ?? 'No upcoming tasks'),
+                tag: l10n?.task ?? 'Task',
               ),
-              Column(
-                children: [
-                  if (tasks != null && tasks!.isNotEmpty)
-                    ...tasks!.take(5).toList().asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final task = entry.value;
-                      return Column(
-                        children: [
-                          _buildUpcomingItem(Icons.assignment, const Color(0xFF4C8DB3), _formatDate(task.deadline), task.activityName, 'Task', showIcon: index == 0),
-                          const Divider(color: Color(0xFF1E293B), indent: 40),
-                        ],
-                      );
-                    })
-                  else ...[
-                    _buildUpcomingItem(Icons.assignment, const Color(0xFF4C8DB3), 'No Due Date', 'No Task Yet', 'Task', showIcon: true),
-                    const Divider(color: Color(0xFF1E293B), indent: 40),
-                  ],
-                  _buildUpcomingItem(Icons.fitness_center, const Color(0xFFE28743), 'No Date', 'No Challenges', 'Fitness', showIcon: true),
-                  const Divider(color: Color(0xFF1E293B), indent: 40),
-                  _buildUpcomingItem(Icons.luggage, const Color(0xFF9B5DE5), 'No Date', 'No Trip Plan', 'Trips', showIcon: true),
-                ],
+              const Divider(color: Color(0xFF1E293B), height: 28),
+              _buildUpcomingCountItem(
+                icon: Icons.fitness_center,
+                color: const Color(0xFFE28743),
+                title: '$fitnessCount ${l10n?.soloChallenges ?? 'challenges'}',
+                subtitle: fitnessCount > 0 ? (l10n?.soloChallenges ?? 'Active challenges') : (l10n?.noNotifications ?? 'No challenges'),
+                tag: l10n?.fitness ?? 'Fitness',
+              ),
+              const Divider(color: Color(0xFF1E293B), height: 28),
+              _buildUpcomingCountItem(
+                icon: Icons.luggage,
+                color: const Color(0xFF9B5DE5),
+                title: '$tripCount ${l10n?.trip ?? 'trips'}',
+                subtitle: tripCount > 0 ? (l10n?.trip ?? 'Upcoming itinerary') : (l10n?.noNotifications ?? 'No trip plan'),
+                tag: l10n?.trip ?? 'Trips',
               ),
             ],
           ),
@@ -77,63 +79,61 @@ class UpcomingSection extends StatelessWidget {
     );
   }
 
-  String _formatDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return 'No Due Date';
-    try {
-      final date = DateTime.parse(dateStr).toLocal();
-      return DateFormat('MMM d, h:mm a').format(date);
-    } catch (e) {
-      return dateStr;
-    }
-  }
-
-  Widget _buildUpcomingItem(IconData icon, Color color, String dateStr, String title, String tag, {bool showIcon = true}) {
+  Widget _buildUpcomingCountItem({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+    required String tag,
+  }) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        showIcon
-          ? Container(
-              margin: const EdgeInsets.only(top: 4),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              padding: const EdgeInsets.all(4),
-              child: Icon(icon, color: color, size: 16),
-            )
-          : Container(
-              margin: const EdgeInsets.only(top: 4),
-              width: 24,
-              height: 24,
-              alignment: Alignment.center,
-              child: Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFF131B2F), width: 2),
-                ),
-              ),
-            ),
+        Container(
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.18),
+            shape: BoxShape.circle,
+          ),
+          padding: const EdgeInsets.all(8),
+          child: Icon(icon, color: color, size: 18),
+        ),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(dateStr, style: const TextStyle(color: Color(0xFFA0AAB2), fontSize: 10)),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
               const SizedBox(height: 2),
-              Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  color: Color(0xFFA0AAB2),
+                  fontSize: 11,
+                ),
+              ),
             ],
           ),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.2),
+            color: color.withValues(alpha: 0.18),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Text(tag, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
+          child: Text(
+            tag,
+            style: TextStyle(
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ],
     );

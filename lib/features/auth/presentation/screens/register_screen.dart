@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/glass_button.dart';
 
 class RegisterScreen extends GetView<AuthController> {
@@ -14,6 +15,8 @@ class RegisterScreen extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Container(
@@ -31,166 +34,148 @@ class RegisterScreen extends GetView<AuthController> {
         ),
         child: SafeArea(
           bottom: false,
-          child: Column(
+          child: Stack(
             children: [
-
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
-                child: Column(
-                  children: [
-                    _buildGradientText('MOVEM:', 36, true, letterSpacing: 3.0),
-                    const SizedBox(height: 10),
-                    _buildGradientText('YOUR LIFE, IN MOTION.', 20, false, letterSpacing: 1.5),
-                  ],
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 30.0, bottom: 25.0),
+                  child: Column(
+                    children: [
+                      _buildGradientText('MOVEM:', 36, true, letterSpacing: 3.0),
+                      const SizedBox(height: 10),
+                      _buildGradientText('YOUR LIFE, IN MOTION.', 20, false, letterSpacing: 1.5),
+                    ],
+                  ),
                 ),
               ),
 
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFAFAFA),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+              Positioned.fill(
+                child: CustomScrollView(
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  slivers: [
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: 130),
                     ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                  child: Stack(
-                      children: [
-
-                        Positioned(
-                          bottom: -100,
-                          right: -100,
-                          child: CustomPaint(
-                            size: const Size(300, 300),
-                            painter: RegisterConcentricCirclesPainter(),
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFAFAFA),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30),
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 8,
+                              offset: Offset(0, -3),
+                            ),
+                          ],
                         ),
-
-                        Positioned(top: 40, right: 30, child: _buildStarIcon()),
-                        Positioned(top: 70, left: 40, child: _buildStarIcon(size: 20)),
-                        Positioned(bottom: 120, left: 10, child: _buildStarIcon(size: 40)),
-                        Positioned(bottom: 20, right: 80, child: _buildStarIcon(size: 30)),
-                        Positioned(bottom: 10, left: -20, child: _buildStarIcon(size: 80, opacity: 0.1)),
-                        Positioned(top: 150, right: -20, child: _buildStarIcon(size: 100, opacity: 0.1)),
-
-                        SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30),
+                          ),
+                          child: Stack(
                             children: [
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.arrow_back, color: Color(0xFF4C8DB3)),
-                                    onPressed: () => Get.back(),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: _buildGradientText(
-                                        'CREATE ACCOUNT',
-                                        26,
-                                        true,
-                                        colors: [
-                                          Colors.white,
-                                          const Color(0xFF86C8E6),
-                                          const Color(0xFF4081AB)
-                                        ],
-                                        stops: const [0.0, 0.4, 1.0],
-                                        letterSpacing: 1.5,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 48),
-                                ],
-                              ),
-                              const SizedBox(height: 30),
-
-                              _buildInputField(
-                                label: 'FIRST NAME',
-                                hint: 'First Name',
-                                controller: _firstnameController,
-                              ),
-                              const SizedBox(height: 20),
-
-                              _buildInputField(
-                                label: 'LAST NAME',
-                                hint: 'Last Name',
-                                controller: _lastnameController,
-                              ),
-                              const SizedBox(height: 20),
-
-                              _buildInputField(
-                                label: 'EMAIL',
-                                hint: 'Email',
-                                controller: _emailController,
-                              ),
-                              const SizedBox(height: 20),
-
-                              _buildInputField(
-                                label: 'USERNAME',
-                                hint: 'Username',
-                                controller: _usernameController,
-                              ),
-                              const SizedBox(height: 20),
-
-                              _buildInputField(
-                                label: 'PASSWORD',
-                                hint: 'Enter Password',
-                                controller: _passwordController,
-                                obscureText: true,
-                              ),
-                              const SizedBox(height: 40),
-
-                              Center(
-                                child: GlassButton(
-                                  text: 'Sign Up',
-                                  onPressed: () => controller.register(
-                                    _emailController.text,
-                                    _usernameController.text,
-                                    _passwordController.text,
-                                    _firstnameController.text,
-                                    _lastnameController.text,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-
-                              Center(
-                                child: GestureDetector(
-                                  onTap: () => Get.back(),
-                                  child: RichText(
-                                    text: const TextSpan(
-                                      text: "Already have an account? ",
-                                      style: TextStyle(
-                                        color: Color(0xFF031645),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
                                       children: [
-                                        TextSpan(
-                                          text: 'Login',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
+                                        IconButton(
+                                          icon: const Icon(Icons.arrow_back, color: Color(0xFF4C8DB3)),
+                                          onPressed: () => Get.back(),
+                                        ),
+                                        Expanded(
+                                          child: Center(
+                                            child: _buildGradientText(
+                                              l10n?.createAccountTitle ?? 'CREATE ACCOUNT',
+                                              26,
+                                              true,
+                                              colors: [
+                                                Colors.white,
+                                                const Color(0xFF86C8E6),
+                                                const Color(0xFF4081AB)
+                                              ],
+                                              stops: const [0.0, 0.4, 1.0],
+                                              letterSpacing: 1.5,
+                                            ),
                                           ),
                                         ),
+                                        const SizedBox(width: 48),
                                       ],
                                     ),
-                                  ),
+                                    const SizedBox(height: 30),
+
+                                    _buildInputField(
+                                      label: l10n?.firstName ?? 'FIRST NAME',
+                                      hint: l10n?.firstName ?? 'First Name',
+                                      controller: _firstnameController,
+                                    ),
+                                    const SizedBox(height: 20),
+
+                                    _buildInputField(
+                                      label: l10n?.lastName ?? 'LAST NAME',
+                                      hint: l10n?.lastName ?? 'Last Name',
+                                      controller: _lastnameController,
+                                    ),
+                                    const SizedBox(height: 20),
+
+                                    _buildInputField(
+                                      label: l10n?.email ?? 'EMAIL',
+                                      hint: l10n?.email ?? 'Email',
+                                      controller: _emailController,
+                                    ),
+                                    const SizedBox(height: 20),
+
+                                    _buildInputField(
+                                      label: l10n?.username ?? 'USERNAME',
+                                      hint: l10n?.username ?? 'Username',
+                                      controller: _usernameController,
+                                    ),
+                                    const SizedBox(height: 20),
+
+                                    _buildInputField(
+                                      label: l10n?.password ?? 'PASSWORD',
+                                      hint: l10n?.password ?? 'Password',
+                                      controller: _passwordController,
+                                      obscureText: true,
+                                    ),
+                                    const SizedBox(height: 30),
+
+                                    Center(
+                                      child: GlassButton(
+                                        text: l10n?.registerBtn ?? 'Sign Up',
+                                        onPressed: () {
+                                          controller.register(
+                                            _emailController.text.trim(),
+                                            _usernameController.text.trim(),
+                                            _passwordController.text.trim(),
+                                            _firstnameController.text.trim(),
+                                            _lastnameController.text.trim(),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 20),
                             ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ],
@@ -265,7 +250,7 @@ class RegisterScreen extends GetView<AuthController> {
       children: [
         _buildGradientText(
           label,
-          13,
+          14,
           true,
           colors: [const Color(0xFF91C5E2), const Color(0xFF4C8DB3)],
           letterSpacing: 1.0,
@@ -291,12 +276,12 @@ class RegisterScreen extends GetView<AuthController> {
           child: TextField(
             controller: controller,
             obscureText: obscureText,
-            style: const TextStyle(color: Color(0xFF031645), fontSize: 15),
+            style: const TextStyle(color: Color(0xFF031645), fontSize: 12),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: const TextStyle(
                 color: Color(0xFFA0AAB2),
-                fontSize: 15,
+                fontSize: 12,
               ),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -306,31 +291,5 @@ class RegisterScreen extends GetView<AuthController> {
       ],
     );
   }
-
-  Widget _buildStarIcon({double size = 24, double opacity = 0.4}) {
-    return CustomPaint();
-  }
 }
 
-class RegisterConcentricCirclesPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF4C8DB3).withValues(alpha: 0.15)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-
-    final center = Offset(size.width, size.height);
-    canvas.drawCircle(center, 120, paint);
-    canvas.drawCircle(center, 140, paint);
-
-    final paintThick = Paint()
-      ..color = const Color(0xFF4C8DB3).withValues(alpha: 0.4)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
-    canvas.drawCircle(center, 180, paintThick);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}

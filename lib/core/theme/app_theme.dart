@@ -38,6 +38,7 @@ class AppTheme {
         onError: AppColors.darkOnError,
       ),
       scaffoldBackgroundColor: AppColors.darkBackground,
+      canvasColor: AppColors.darkBackground,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       textTheme: GoogleFonts.robotoCondensedTextTheme(ThemeData.dark().textTheme),
     );

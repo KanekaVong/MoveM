@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -11,6 +12,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ProfileController());
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
@@ -25,22 +27,22 @@ class ProfileScreen extends StatelessWidget {
                   InkWell(
                     onTap: controller.onBackTap,
                     borderRadius: BorderRadius.circular(30),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
                           vertical: 8.0, horizontal: 4.0),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.arrow_back_ios,
                             color: Colors.white,
                             size: 18,
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
-                            'Your Profile',
-                            style: TextStyle(
+                            l10n?.yourProfile ?? 'Your Profile',
+                            style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -52,11 +54,11 @@ class ProfileScreen extends StatelessWidget {
               ),
               _buildProfileSection(context, controller),
               const SizedBox(height: 32),
-              _buildPersonalInformation(controller),
+              _buildPersonalInformation(context, controller),
               const SizedBox(height: 32),
-              _buildMyActivities(),
+              _buildMyActivities(context),
               const SizedBox(height: 32),
-              _buildAchievements(),
+              _buildAchievements(context),
               const SizedBox(height: 32),
               _buildBottomStats(),
               const SizedBox(height: 100)
@@ -139,17 +141,18 @@ class ProfileScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildPersonalInformation(ProfileController controller) {
+  Widget _buildPersonalInformation(BuildContext context, ProfileController controller) {
+    final l10n = AppLocalizations.of(context);
     return Obx(() {
       return SettingsCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(16.0),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Text(
-                'Personal Information',
-                style: TextStyle(
+                l10n?.personalInfo ?? 'Personal Information',
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -158,13 +161,13 @@ class ProfileScreen extends StatelessWidget {
             ),
             _buildInfoTile(
               icon: Icons.email_outlined,
-              title: 'Email',
+              title: l10n?.email ?? 'Email',
               subtitle: controller.email,
             ),
             _buildDivider(),
             _buildInfoTile(
               icon: Icons.phone_outlined,
-              title: 'Phone Number',
+              title: l10n?.emailOrPhone ?? 'Phone Number',
               subtitle: controller.phone,
             ),
             _buildDivider(),
@@ -309,24 +312,25 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMyActivities() {
+  Widget _buildMyActivities(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             Text(
-              'My Activities',
-              style: TextStyle(
+              l10n?.myActivities ?? 'My Activities',
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
-              'View All >',
-              style: TextStyle(
+              '${l10n?.viewAll ?? 'View All'} >',
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
@@ -501,24 +505,25 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAchievements() {
+  Widget _buildAchievements(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             Text(
-              'Achievements',
-              style: TextStyle(
+              l10n?.achievements ?? 'Achievements',
+              style: const TextStyle(
                 color: Color(0xFFEAB308),
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
-              'View All',
-              style: TextStyle(
+              l10n?.viewAll ?? 'View All',
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,

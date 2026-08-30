@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import '../../../../l10n/app_localizations.dart';
 import '../controllers/tracking_controller.dart';
 import '../../data/models/run_session.dart';
 import '../../domain/pace_calculator.dart';
@@ -21,9 +21,14 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Live Tracking'),
+        title: Text(l10n?.liveTracking ?? 'Live Tracking', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF0F172A),
+        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.history),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/glass_button.dart';
+import '../../../../shared/widgets/glass_container.dart';
 
 class VerifyOtpScreen extends GetView<AuthController> {
   VerifyOtpScreen({super.key});
@@ -10,9 +12,9 @@ class VerifyOtpScreen extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> args = Get.arguments as Map<String, dynamic>? ?? {};
-    final String mode = args['mode'] ?? 'otp';
-    final String identifier = args['identifier'] ?? '';
+    final String identifier = Get.arguments?['identifier'] ?? '';
+    final String mode = Get.arguments?['mode'] ?? 'login';
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -31,143 +33,157 @@ class VerifyOtpScreen extends GetView<AuthController> {
         ),
         child: SafeArea(
           bottom: false,
-          child: Column(
+          child: Stack(
             children: [
-
-              Padding(
-                padding: const EdgeInsets.only(top: 40.0, bottom: 40.0),
-                child: Column(
-                  children: [
-                    _buildGradientText('MOVEM:', 36, true, letterSpacing: 3.0),
-                    const SizedBox(height: 10),
-                    _buildGradientText('YOUR LIFE, IN MOTION.', 20, false, letterSpacing: 1.5),
-                  ],
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 30.0, bottom: 25.0),
+                  child: Column(
+                    children: [
+                      _buildGradientText('MOVEM:', 36, true, letterSpacing: 3.0),
+                      const SizedBox(height: 10),
+                      _buildGradientText('YOUR LIFE, IN MOTION.', 20, false, letterSpacing: 1.5),
+                    ],
+                  ),
                 ),
               ),
 
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFAFAFA),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+              Positioned.fill(
+                child: CustomScrollView(
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  slivers: [
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: 130),
                     ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                  child: Stack(
-                      children: [
-                        Positioned(
-                          bottom: -100,
-                          right: -100,
-                          child: CustomPaint(
-                            size: const Size(300, 300),
-                            painter: VerifyConcentricCirclesPainter(),
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFAFAFA),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30),
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 8,
+                              offset: Offset(0, -3),
+                            ),
+                          ],
                         ),
-
-                        Positioned(top: 40, right: 30, child: _buildStarIcon()),
-                        Positioned(top: 70, left: 40, child: _buildStarIcon(size: 20)),
-                        Positioned(bottom: 120, left: 10, child: _buildStarIcon(size: 40)),
-                        Positioned(bottom: 20, right: 80, child: _buildStarIcon(size: 30)),
-                        Positioned(bottom: 10, left: -20, child: _buildStarIcon(size: 80, opacity: 0.1)),
-                        Positioned(top: 150, right: -20, child: _buildStarIcon(size: 100, opacity: 0.1)),
-
-                        SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30),
+                          ),
+                          child: Stack(
                             children: [
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.arrow_back, color: Color(0xFF4C8DB3)),
-                                    onPressed: () => Get.back(),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: _buildGradientText(
-                                        'VERIFY OTP',
-                                        26,
-                                        true,
-                                        colors: [
-                                          Colors.white,
-                                          const Color(0xFF86C8E6),
-                                          const Color(0xFF4081AB)
-                                        ],
-                                        stops: const [0.0, 0.4, 1.0],
-                                        letterSpacing: 1.5,
+                              Positioned(top: 40, right: 30, child: _buildStarIcon()),
+                              Positioned(top: 70, left: 40, child: _buildStarIcon(size: 20)),
+                              Positioned(bottom: 120, left: 10, child: _buildStarIcon(size: 40)),
+                              Positioned(bottom: 20, right: 80, child: _buildStarIcon(size: 30)),
+                              Positioned(bottom: 10, left: -20, child: _buildStarIcon(size: 80, opacity: 0.1)),
+                              Positioned(top: 150, right: -20, child: _buildStarIcon(size: 100, opacity: 0.1)),
+
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.arrow_back, color: Color(0xFF4C8DB3)),
+                                          onPressed: () => Get.back(),
+                                        ),
+                                        Expanded(
+                                          child: Center(
+                                            child: _buildGradientText(
+                                              l10n?.verifyOtpTitle ?? 'VERIFY OTP',
+                                              26,
+                                              true,
+                                              colors: [
+                                                Colors.white,
+                                                const Color(0xFF86C8E6),
+                                                const Color(0xFF4081AB)
+                                              ],
+                                              stops: const [0.0, 0.4, 1.0],
+                                              letterSpacing: 1.5,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 48),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Center(
+                                      child: Text(
+                                        'Enter the code sent to your email\nassociated with "$identifier"',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          color: Color(0xFFA0AAB2),
+                                          fontSize: 14,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 48),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Center(
-                                child: Text(
-                                  'Enter the code sent to your email\nassociated with "$identifier""',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    color: Color(0xFFA0AAB2),
-                                    fontSize: 14,
-                                  ),
+                                    const SizedBox(height: 40),
+
+                                    _buildInputField(
+                                      label: l10n?.otpCodeLabel ?? 'OTP CODE',
+                                      hint: l10n?.otpCodeLabel ?? 'Enter 6-digit OTP',
+                                      controller: _otpController,
+                                      keyboardType: TextInputType.number,
+                                    ),
+                                    const SizedBox(height: 40),
+
+                                    Center(
+                                      child: GlassButton(
+                                        text: l10n?.verifyBtn ?? 'Verify',
+                                        onPressed: () {
+                                          final otp = _otpController.text.trim();
+                                          if (otp.isNotEmpty) {
+                                            if (mode == 'email') {
+                                              controller.verifyEmail(identifier.trim(), otp);
+                                            } else {
+                                              controller.verifyOtp(identifier.trim(), otp);
+                                            }
+                                          }
+                                        },
+                                      ),
+                                    ),
+
+                                    const SizedBox(height: 20),
+
+                                    Center(
+                                      child: TextButton(
+                                        onPressed: () {
+                                          if (mode == 'email') {
+                                            controller.resendVerificationCode(identifier);
+                                          } else {
+                                            controller.resendLoginOtp(identifier);
+                                          }
+                                        },
+                                        child: Text(
+                                          l10n?.resendCode ?? 'Resend Code',
+                                          style: const TextStyle(color: Color(0xFF4C8DB3), fontWeight: FontWeight.w600),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 40),
-
-                              _buildInputField(
-                                label: 'OTP CODE',
-                                hint: 'Enter 6-digit OTP',
-                                controller: _otpController,
-                                keyboardType: TextInputType.number,
-                              ),
-                              const SizedBox(height: 40),
-
-                              Center(
-                                child: GlassButton(
-                                  text: 'Verify',
-                                  onPressed: () {
-                                    if (_otpController.text.isNotEmpty) {
-                                      if (mode == 'email') {
-                                        controller.verifyEmail(identifier, _otpController.text);
-                                      } else {
-                                        controller.verifyOtp(identifier, _otpController.text);
-                                      }
-                                    }
-                                  },
-                                ),
-                              ),
-
-                              const SizedBox(height: 20),
-
-                              Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    if (mode == 'email') {
-                                      controller.resendVerificationCode(identifier);
-                                    } else {
-                                      controller.resendLoginOtp(identifier);
-                                    }
-                                  },
-                                  child: const Text(
-                                    'Resend Code',
-                                    style: TextStyle(color: Color(0xFF4C8DB3), fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 20),
                             ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ],
@@ -243,7 +259,7 @@ class VerifyOtpScreen extends GetView<AuthController> {
       children: [
         _buildGradientText(
           label,
-          13,
+          14,
           true,
           colors: [const Color(0xFF91C5E2), const Color(0xFF4C8DB3)],
           letterSpacing: 1.0,
@@ -270,12 +286,12 @@ class VerifyOtpScreen extends GetView<AuthController> {
             controller: controller,
             obscureText: obscureText,
             keyboardType: keyboardType,
-            style: const TextStyle(color: Color(0xFF031645), fontSize: 15),
+            style: const TextStyle(color: Color(0xFF031645), fontSize: 12),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: const TextStyle(
                 color: Color(0xFFA0AAB2),
-                fontSize: 15,
+                fontSize: 12,
               ),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -291,25 +307,3 @@ class VerifyOtpScreen extends GetView<AuthController> {
   }
 }
 
-class VerifyConcentricCirclesPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF4C8DB3).withValues(alpha: 0.15)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-
-    final center = Offset(size.width, size.height);
-    canvas.drawCircle(center, 120, paint);
-    canvas.drawCircle(center, 140, paint);
-
-    final paintThick = Paint()
-      ..color = const Color(0xFF4C8DB3).withValues(alpha: 0.4)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
-    canvas.drawCircle(center, 180, paintThick);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}

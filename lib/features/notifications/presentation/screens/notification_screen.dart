@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../controllers/notification_controller.dart';
 import '../../../../shared/widgets/glass_container.dart';
 import '../../data/dto/response/notification_response.dart';
@@ -10,20 +12,22 @@ class NotificationScreen extends GetView<NotificationController> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppColors.slate900,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F172A),
+        backgroundColor: AppColors.slate900,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 18),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Notifications',
-          style: TextStyle(
+        title: Text(
+          l10n?.notifications ?? 'Notifications',
+          style: const TextStyle(
             color: Colors.white,
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -31,14 +35,14 @@ class NotificationScreen extends GetView<NotificationController> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
           child: Container(
-            color: const Color(0xFF1E293B),
+            color: AppColors.slate800,
             height: 1.0,
           ),
         ),
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6)));
+          return const Center(child: CircularProgressIndicator(color: AppColors.blueAccent));
         }
 
         if (controller.error.value.isNotEmpty) {
@@ -51,10 +55,10 @@ class NotificationScreen extends GetView<NotificationController> {
         }
 
         if (controller.notifications.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
-              'No notifications yet',
-              style: TextStyle(color: Colors.white70, fontSize: 16),
+              l10n?.noNotifications ?? 'No notifications yet',
+              style: const TextStyle(color: Colors.white70, fontSize: 16),
             ),
           );
         }
@@ -65,56 +69,99 @@ class NotificationScreen extends GetView<NotificationController> {
           separatorBuilder: (context, index) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
             final notification = controller.notifications[index];
-            return _buildNotificationTile(notification);
+            return _buildNotificationTile(notification, l10n);
           },
         );
       }),
     );
   }
 
-  Widget _buildNotificationTile(NotificationResponse notification) {
-
+  Widget _buildNotificationTile(NotificationResponse notification, AppLocalizations? l10n) {
+    final senderName = (notification.senderName != null && notification.senderName!.trim().isNotEmpty)
+        ? notification.senderName!.trim()
+        : (l10n?.appTitle ?? 'MoveM');
     final avatarUrl = (notification.senderProfilePicture != null && notification.senderProfilePicture!.isNotEmpty)
         ? notification.senderProfilePicture!
-        : 'https://ui-avatars.com/api/?name=${notification.senderName ?? 'User'}';
+        : 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(senderName)}&background=334155&color=fff';
+
+    final notifType = notification.notificationType?.toUpperCase() ?? '';
+    final refType = notification.referenceType?.toUpperCase() ?? '';
+
+    IconData typeIcon = Icons.notifications_rounded;
+    Color badgeColor = AppColors.blueAccent;
+
+    if (notifType == 'COMMENT_CREATED' || refType == 'COMMENT') {
+      typeIcon = Icons.chat_bubble_rounded;
+      badgeColor = AppColors.skyBlue;
+    } else if (notifType.startsWith('TASK_') || refType == 'TASK') {
+      typeIcon = Icons.task_alt_rounded;
+      badgeColor = AppColors.blueAccent;
+    } else if (notifType == 'FRIEND_REQUEST' || notifType == 'FRIEND_ACCEPTED' || refType == 'USER') {
+      typeIcon = Icons.person_add_alt_1_rounded;
+      badgeColor = AppColors.emerald;
+    } else if (notifType.startsWith('FITNESS_') || notifType.startsWith('WORKOUT_') || refType == 'FITNESS') {
+      typeIcon = Icons.directions_run_rounded;
+      badgeColor = AppColors.amber;
+    } else if (notifType.startsWith('TRIP_') || refType == 'TRIP') {
+      typeIcon = Icons.flight_takeoff_rounded;
+      badgeColor = AppColors.violet;
+    } else if (notifType.startsWith('GROUP_') || notifType == 'MEMBER_INVITED' || refType == 'GROUP') {
+      typeIcon = Icons.groups_rounded;
+      badgeColor = AppColors.pink;
+    } else if (notifType == 'ACHIEVEMENT_UNLOCKED' || refType == 'ACHIEVEMENT') {
+      typeIcon = Icons.emoji_events_rounded;
+      badgeColor = AppColors.gold;
+    }
 
     return GestureDetector(
-      onTap: () {
-        controller.markAsRead(notification.id);
-      },
+      onTap: () => controller.onNotificationTap(notification),
       child: Opacity(
-        opacity: notification.isRead ? 0.5 : 1.0,
+        opacity: notification.isRead ? 0.6 : 1.0,
         child: GlassContainer(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(12.0),
           padding: const EdgeInsets.all(12.0),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Stack(
+                clipBehavior: Clip.none,
                 children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFF1E293B), width: 1),
-                      image: DecorationImage(
-                        image: CachedNetworkImageProvider(avatarUrl),
+                  ClipOval(
+                    child: SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: CachedNetworkImage(
+                        imageUrl: avatarUrl,
                         fit: BoxFit.cover,
+                        placeholder: (context, url) => CircleAvatar(
+                          backgroundColor: AppColors.slate700,
+                          child: Text(
+                            senderName.isNotEmpty ? senderName[0].toUpperCase() : 'U',
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => CircleAvatar(
+                          backgroundColor: AppColors.slate700,
+                          child: Text(
+                            senderName.isNotEmpty ? senderName[0].toUpperCase() : 'U',
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                   Positioned(
-                    bottom: 0,
-                    right: 0,
+                    bottom: -2,
+                    right: -2,
                     child: Container(
-                      padding: const EdgeInsets.all(2),
+                      padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: notification.isRead ? Colors.grey : const Color(0xFF3B82F6),
+                        color: notification.isRead ? AppColors.slate500 : badgeColor,
                         shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.slate900, width: 1.5),
                       ),
-                      child: const Icon(
-                        Icons.person,
+                      child: Icon(
+                        typeIcon,
                         color: Colors.white,
                         size: 10,
                       ),
@@ -127,29 +174,47 @@ class NotificationScreen extends GetView<NotificationController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      notification.title ?? 'Notification',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold,
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            notification.title ?? (l10n?.notifications ?? 'Notification'),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: notification.isRead ? FontWeight.w500 : FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        if (!notification.isRead) ...[
+                          const SizedBox(width: 6),
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: AppColors.blueAccent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 4),
                     RichText(
                       text: TextSpan(
                         style: const TextStyle(
-                          color: Color(0xFFA0AAB2),
+                          color: AppColors.textMuted,
                           fontSize: 12,
                           height: 1.4,
                         ),
                         children: [
+                          if (notification.senderName != null && notification.senderName!.isNotEmpty)
+                            TextSpan(
+                              text: '${notification.senderName} ',
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                            ),
                           TextSpan(
-                            text: notification.senderName ?? '',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          TextSpan(
-                            text: ' ${notification.message ?? ''}',
+                            text: notification.message ?? '',
                           ),
                         ],
                       ),
@@ -158,12 +223,18 @@ class NotificationScreen extends GetView<NotificationController> {
                     Text(
                       notification.timeAgo(),
                       style: const TextStyle(
-                        color: Color(0xFFA0AAB2),
+                        color: AppColors.textMuted,
                         fontSize: 10,
                       ),
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.slate500,
+                size: 20,
               ),
             ],
           ),

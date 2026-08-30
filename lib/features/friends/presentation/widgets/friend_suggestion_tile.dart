@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class FriendSuggestionTile extends StatelessWidget {
   final String imageUrl;
@@ -21,13 +22,23 @@ class FriendSuggestionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'U';
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundImage: CachedNetworkImageProvider(imageUrl),
+          ClipOval(
+            child: SizedBox(
+              width: 40,
+              height: 40,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => _buildPlaceholder(initial),
+                errorWidget: (context, url, error) => _buildPlaceholder(initial),
+              ),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -41,7 +52,7 @@ class FriendSuggestionTile extends StatelessWidget {
                 ),
                 Text(
                   username,
-                  style: const TextStyle(color: Color(0xFFA0AAB2), fontSize: 10),
+                  style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -53,16 +64,16 @@ class FriendSuggestionTile extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B).withValues(alpha: 0.5),
+                  color: AppColors.slate800.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFF1E293B)),
+                  border: Border.all(color: AppColors.slate800),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.close, color: Color(0xFFEF4444), size: 14),
-                    const SizedBox(width: 4),
-                    const Text('Cancel', style: TextStyle(color: Color(0xFFEF4444), fontSize: 12, fontWeight: FontWeight.bold)),
+                  children: const [
+                    Icon(Icons.close, color: AppColors.redError, size: 14),
+                    SizedBox(width: 4),
+                    Text('Cancel', style: TextStyle(color: AppColors.redError, fontSize: 12, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -71,11 +82,11 @@ class FriendSuggestionTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E293B).withValues(alpha: 0.5),
+                color: AppColors.slate800.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFF1E293B)),
+                border: Border.all(color: AppColors.slate800),
               ),
-              child: const Text('Friends', style: TextStyle(color: Color(0xFF34D399), fontSize: 12, fontWeight: FontWeight.bold)),
+              child: const Text('Friends', style: TextStyle(color: AppColors.emeraldLight, fontSize: 12, fontWeight: FontWeight.bold)),
             )
           else
             GestureDetector(
@@ -83,21 +94,36 @@ class FriendSuggestionTile extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B).withValues(alpha: 0.5),
+                  color: AppColors.slate800.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFF1E293B)),
+                  border: Border.all(color: AppColors.slate800),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.person_add_alt_1, color: Color(0xFF3B82F6), size: 14),
-                    const SizedBox(width: 4),
-                    const Text('Add Friends', style: TextStyle(color: Color(0xFF3B82F6), fontSize: 12, fontWeight: FontWeight.bold)),
+                  children: const [
+                    Icon(Icons.person_add_alt_1, color: AppColors.blueAccent, size: 14),
+                    SizedBox(width: 4),
+                    Text('Add Friends', style: TextStyle(color: AppColors.blueAccent, fontSize: 12, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder(String initial) {
+    return CircleAvatar(
+      radius: 20,
+      backgroundColor: AppColors.slate700,
+      child: Text(
+        initial,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
       ),
     );
   }
