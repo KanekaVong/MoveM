@@ -445,7 +445,15 @@ class FitnessDashboardScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           if (hasGoal && goal != null)
-            _buildGoalCard(goal)
+            GestureDetector(
+              onTap: () async {
+                final result = await Get.to(() => const SetupGoalScreen());
+                if (result == true) {
+                  controller.fetchProfile();
+                }
+              },
+              child: _buildGoalCard(goal),
+            )
           else
             _buildSetupGoalButton(),
         ],

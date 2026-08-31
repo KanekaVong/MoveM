@@ -10,6 +10,8 @@ class SetupGoalController extends BaseController {
   final FitnessProfileRepository _repository = FitnessProfileRepository();
   final PageController pageController = PageController();
 
+  late final TextEditingController weightTextController;
+
   final currentStep = 0.obs;
 
   final selectedGoalType = ''.obs;
@@ -20,6 +22,54 @@ class SetupGoalController extends BaseController {
   final targetDate = DateTime.now().add(const Duration(days: 30)).obs;
 
   final selectedWorkoutLevel = ''.obs;
+
+  late final FixedExtentScrollController monthScrollController;
+  late final FixedExtentScrollController dayScrollController;
+  late final FixedExtentScrollController yearScrollController;
+
+  final int currentYear = DateTime.now().year;
+  late final List<int> years;
+
+  @override
+  void onInit() {
+    super.onInit();
+    years = List.generate(10, (i) => currentYear + i);
+
+    if (Get.isRegistered<FitnessProfileController>()) {
+      final existingGoal = Get.find<FitnessProfileController>().profile.value?.fitnessGoal;
+      if (existingGoal != null) {
+        if (existingGoal.goalType.isNotEmpty) {
+          selectedGoalType.value = existingGoal.goalType;
+        }
+        if (existingGoal.targetWeight > 0) {
+          targetWeight.value = existingGoal.targetWeight;
+        }
+        if (existingGoal.targetTimeline.isNotEmpty) {
+          final parsedDate = DateTime.tryParse(existingGoal.targetTimeline);
+          if (parsedDate != null) {
+            targetDate.value = parsedDate;
+          }
+        }
+        if (existingGoal.workoutLevel.isNotEmpty) {
+          selectedWorkoutLevel.value = existingGoal.workoutLevel;
+        }
+      }
+    }
+
+    weightTextController = TextEditingController(
+      text: targetWeight.value > 0
+          ? (targetWeight.value % 1 == 0
+              ? targetWeight.value.toInt().toString()
+              : targetWeight.value.toString())
+          : '',
+    );
+
+    final d = targetDate.value;
+    final yearIdx = years.indexOf(d.year);
+    monthScrollController = FixedExtentScrollController(initialItem: d.month - 1);
+    dayScrollController = FixedExtentScrollController(initialItem: (d.day - 1).clamp(0, 30));
+    yearScrollController = FixedExtentScrollController(initialItem: yearIdx >= 0 ? yearIdx : 0);
+  }
 
   void nextStep() {
     if (currentStep.value == 0 && selectedGoalType.value.isEmpty) {
@@ -82,7 +132,7 @@ class SetupGoalController extends BaseController {
 
     await executeApi<dynamic>(
       showLoading: false,
-      showErrorDialog: true,
+      showErrorDialog: false,
       apiCall: () => _repository.setupGoal(request),
       onSuccess: (data) {
         if (Get.isRegistered<FitnessProfileController>()) {
@@ -136,6 +186,10 @@ class SetupGoalController extends BaseController {
   @override
   void onClose() {
     pageController.dispose();
+    weightTextController.dispose();
+    monthScrollController.dispose();
+    dayScrollController.dispose();
+    yearScrollController.dispose();
     super.onClose();
   }
 }
