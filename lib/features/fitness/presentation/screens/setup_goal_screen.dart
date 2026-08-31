@@ -12,86 +12,95 @@ class SetupGoalScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(SetupGoalController());
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: controller.previousStep,
-                ),
-              ),
-            ),
-
-                const SizedBox(height: 20),
-
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF0F172A),
-                    ),
-                    child: Obx(() {
-                      final step = controller.currentStep.value;
-                      final title = step == 3 ? 'Fitness Assessment' : 'Goal & Focus';
-
-                      return Column(
-                        children: [
-                          const SizedBox(height: 24),
-                          Text(title, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 24),
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(4, (index) {
-                              return Container(
-                                width: 60,
-                                height: 4,
-                                margin: const EdgeInsets.symmetric(horizontal: 4),
-                                decoration: BoxDecoration(
-                                  color: index <= step ? Colors.blueAccent : const Color(0xFF1E293B),
-                                  borderRadius: BorderRadius.circular(2),
-                                ),
-                              );
-                            }),
-                          ),
-                          const SizedBox(height: 40),
-
-                          Expanded(
-                            child: PageView(
-                              controller: controller.pageController,
-                              physics: const NeverScrollableScrollPhysics(),
-                              children: [
-                                _buildGoalTypeStep(controller),
-                                _buildTargetWeightStep(controller),
-                                _buildTargetDateStep(controller),
-                                _buildWorkoutLevelStep(controller),
-                              ],
-                            ),
-                          ),
-
-                          Padding(
-                            padding: const EdgeInsets.all(24.0),
-                            child: GlassButton(
-                              text: step == 3 ? 'Set Goal' : 'Next',
-                              isLoading: controller.isLoading,
-                              onPressed: controller.isLoading ? () {} : controller.nextStep,
-                            ),
-                          ),
-                        ],
-                      );
-                    }),
+    return Obx(() => PopScope(
+      canPop: controller.currentStep.value == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (controller.currentStep.value > 0) {
+          controller.previousStep();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFF0F172A),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: controller.previousStep,
                   ),
                 ),
-              ],
-            ),
+              ),
+
+              const SizedBox(height: 20),
+
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF0F172A),
+                  ),
+                  child: Obx(() {
+                    final step = controller.currentStep.value;
+                    final title = step == 3 ? 'Fitness Assessment' : 'Goal & Focus';
+
+                    return Column(
+                      children: [
+                        const SizedBox(height: 24),
+                        Text(title, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 24),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(4, (index) {
+                            return Container(
+                              width: 60,
+                              height: 4,
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              decoration: BoxDecoration(
+                                color: index <= step ? Colors.blueAccent : const Color(0xFF1E293B),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            );
+                          }),
+                        ),
+                        const SizedBox(height: 40),
+
+                        Expanded(
+                          child: PageView(
+                            controller: controller.pageController,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: [
+                              _buildGoalTypeStep(controller),
+                              _buildTargetWeightStep(controller),
+                              _buildTargetDateStep(controller),
+                              _buildWorkoutLevelStep(controller),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: GlassButton(
+                            text: step == 3 ? 'Set Goal' : 'Next',
+                            isLoading: controller.isLoading,
+                            onPressed: controller.isLoading ? () {} : controller.nextStep,
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+                ),
+              ),
+            ],
           ),
-    );
+        ),
+      ),
+    ));
   }
 
   Widget _buildGoalTypeStep(SetupGoalController controller) {
@@ -121,7 +130,7 @@ class SetupGoalScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           opacity: isSelected ? 0.20 : 0.0,
           border: Border.all(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.2),
             width: isSelected ? 1.5 : 0.3,
           ),
           child: Stack(
@@ -174,7 +183,7 @@ class SetupGoalScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFF1E293B),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
             ),
             child: Row(
               children: [
@@ -183,7 +192,7 @@ class SetupGoalScreen extends StatelessWidget {
                     onTap: () => controller.isKg.value = true,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: controller.isKg.value ? Colors.white.withOpacity(0.2) : Colors.transparent,
+                        color: controller.isKg.value ? Colors.white.withValues(alpha: 0.2) : Colors.transparent,
                         borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
                       ),
                       alignment: Alignment.center,
@@ -196,7 +205,7 @@ class SetupGoalScreen extends StatelessWidget {
                     onTap: () => controller.isKg.value = false,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: !controller.isKg.value ? Colors.white.withOpacity(0.2) : Colors.transparent,
+                        color: !controller.isKg.value ? Colors.white.withValues(alpha: 0.2) : Colors.transparent,
                         borderRadius: const BorderRadius.horizontal(right: Radius.circular(16)),
                       ),
                       alignment: Alignment.center,
@@ -214,7 +223,7 @@ class SetupGoalScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFF0B1220),
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -222,6 +231,7 @@ class SetupGoalScreen extends StatelessWidget {
                 SizedBox(
                   width: 60,
                   child: TextField(
+                    controller: controller.weightTextController,
                     keyboardType: TextInputType.number,
                     style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
@@ -263,12 +273,17 @@ class SetupGoalScreen extends StatelessWidget {
   }
 
   Widget _buildCustomDatePicker(SetupGoalController controller) {
-    final months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    final currentYear = DateTime.now().year;
-    final years = List.generate(10, (i) => currentYear + i);
+    final months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
     final days = List.generate(31, (i) => i + 1);
 
-    Widget buildWheelColumn(List<String> items, int initialIndex, ValueChanged<int> onChanged) {
+    Widget buildWheelColumn({
+      required List<String> items,
+      required FixedExtentScrollController scrollController,
+      required ValueChanged<int> onChanged,
+    }) {
       return Expanded(
         child: Stack(
           alignment: Alignment.center,
@@ -280,60 +295,58 @@ class SetupGoalScreen extends StatelessWidget {
                 width: double.infinity,
                 color: const Color(0xFF002468),
                 opacity: 0.20,
-                border: Border.all(color: Colors.white.withOpacity(0.40), width: 0.8),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.40), width: 0.8),
                 borderRadius: BorderRadius.circular(6),
                 child: const SizedBox.shrink(),
               ),
             ),
-            _buildWheel(
-              items: items,
-              initialIndex: initialIndex,
+            CupertinoPicker(
+              itemExtent: 39,
+              scrollController: scrollController,
               onSelectedItemChanged: onChanged,
+              selectionOverlay: null,
+              children: items.map((item) {
+                return Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    item,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                );
+              }).toList(),
             ),
           ],
         ),
       );
     }
 
-    return Obx(() {
-      final selectedDate = controller.targetDate.value;
-      return Row(
-        children: [
-          buildWheelColumn(
-            months,
-            selectedDate.month - 1,
-            (index) => controller.targetDate.value = DateTime(selectedDate.year, index + 1, selectedDate.day),
-          ),
-          buildWheelColumn(
-            days.map((e) => e.toString()).toList(),
-            selectedDate.day - 1,
-            (index) => controller.targetDate.value = DateTime(selectedDate.year, selectedDate.month, index + 1),
-          ),
-          buildWheelColumn(
-            years.map((e) => e.toString()).toList(),
-            years.indexOf(selectedDate.year) == -1 ? 0 : years.indexOf(selectedDate.year),
-            (index) => controller.targetDate.value = DateTime(years[index], selectedDate.month, selectedDate.day),
-          ),
-        ],
-      );
-    });
-  }
-
-  Widget _buildWheel({required List<String> items, required int initialIndex, required ValueChanged<int> onSelectedItemChanged}) {
-    return CupertinoPicker(
-      itemExtent: 39,
-      scrollController: FixedExtentScrollController(initialItem: initialIndex),
-      onSelectedItemChanged: onSelectedItemChanged,
-      selectionOverlay: null,
-      children: items.map((item) {
-        return Container(
-          alignment: Alignment.center,
-          child: Text(
-            item,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
-          ),
-        );
-      }).toList(),
+    return Row(
+      children: [
+        buildWheelColumn(
+          items: months,
+          scrollController: controller.monthScrollController,
+          onChanged: (index) {
+            final cur = controller.targetDate.value;
+            controller.targetDate.value = DateTime(cur.year, index + 1, cur.day);
+          },
+        ),
+        buildWheelColumn(
+          items: days.map((e) => e.toString()).toList(),
+          scrollController: controller.dayScrollController,
+          onChanged: (index) {
+            final cur = controller.targetDate.value;
+            controller.targetDate.value = DateTime(cur.year, cur.month, index + 1);
+          },
+        ),
+        buildWheelColumn(
+          items: controller.years.map((e) => e.toString()).toList(),
+          scrollController: controller.yearScrollController,
+          onChanged: (index) {
+            final cur = controller.targetDate.value;
+            controller.targetDate.value = DateTime(controller.years[index], cur.month, cur.day);
+          },
+        ),
+      ],
     );
   }
 
@@ -365,7 +378,7 @@ class SetupGoalScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           opacity: isSelected ? 0.20 : 0.0,
           border: Border.all(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.2),
             width: isSelected ? 1.5 : 0.3,
           ),
           child: Column(
