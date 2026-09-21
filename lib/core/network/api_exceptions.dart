@@ -25,6 +25,14 @@ class ApiException implements Exception {
           dioError.response?.statusCode,
           dioError.response?.data,
         );
+      case DioExceptionType.unknown:
+        if (dioError.response != null && dioError.response?.data != null) {
+          return ApiException._handleError(
+            dioError.response?.statusCode,
+            dioError.response?.data,
+          );
+        }
+        return ApiException(message: "Something went wrong");
       default:
         return ApiException(message: "Something went wrong");
     }

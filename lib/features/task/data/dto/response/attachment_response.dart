@@ -6,6 +6,7 @@ class AttachmentResponse {
   final String filePath;
   final int? uploadedBy;
   final String? createdAt;
+  final String? url;
 
   AttachmentResponse({
     required this.id,
@@ -15,6 +16,7 @@ class AttachmentResponse {
     required this.filePath,
     this.uploadedBy,
     this.createdAt,
+    this.url,
   });
 
   factory AttachmentResponse.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class AttachmentResponse {
       filePath: json['filePath'] ?? '',
       uploadedBy: json['uploadedBy'],
       createdAt: json['createdAt'],
+      url: json['url'],
     );
   }
 
@@ -38,6 +41,7 @@ class AttachmentResponse {
       'filePath': filePath,
       'uploadedBy': uploadedBy,
       'createdAt': createdAt,
+      'url': url,
     };
   }
 }

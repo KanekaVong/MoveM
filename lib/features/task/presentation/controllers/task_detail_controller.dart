@@ -65,6 +65,7 @@ class TaskDetailController extends BaseController {
 
   Future<void> toggleChecklistItem(int checklistId, bool currentStatus) async {
     if (task.value == null) return;
+    if (task.value!.isComplete || task.value!.isPastDeadline) return;
 
     final currentTask = task.value!;
 

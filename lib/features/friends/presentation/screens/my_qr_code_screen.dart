@@ -14,7 +14,7 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
     Get.put(MyQrCodeController());
 
     return Scaffold(
-      backgroundColor: AppColors.slate950,
+      backgroundColor: AppColors.pageBackground,
       body: SafeArea(
         child: Column(
           children: [
@@ -44,18 +44,18 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
               height: 40,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.black.withOpacity(0.35),
-                border: Border.all(color: Colors.white.withOpacity(0.15)),
+                color: AppColors.chipSurface,
+                border: Border.all(color: AppColors.borderLight),
               ),
               child: const Center(
-                child: Icon(Icons.chevron_left, color: Colors.white, size: 26),
+                child: Icon(Icons.chevron_left, color: AppColors.textPrimary, size: 26),
               ),
             ),
           ),
           Text(
             l10n?.myQrCode ?? 'My QR Code',
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.textPrimary,
               fontSize: 16,
               fontWeight: FontWeight.bold,
               fontStyle: FontStyle.italic,
@@ -134,8 +134,8 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
                       height: 84,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppColors.slate950,
-                        border: Border.all(color: AppColors.slate950, width: 4),
+                        color: AppColors.pageBackground,
+                        border: Border.all(color: AppColors.pageBackground, width: 4),
                       ),
                       child: ClipOval(
                         child: (profilePic != null && profilePic.isNotEmpty)
@@ -186,22 +186,22 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
               return ElevatedButton.icon(
                 onPressed: isSaving ? null : () => controller.downloadQr(),
                 icon: isSaving
-                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                    : const Icon(Icons.download, color: Colors.white, size: 20),
+                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.textPrimary))
+                    : const Icon(Icons.download, color: AppColors.textPrimary, size: 20),
                 label: Text(
                   isSaving ? 'Saving...' : (l10n?.saveQr ?? 'Save'),
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.slate800,
+                  backgroundColor: AppColors.chipSurface,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+                    side: const BorderSide(color: AppColors.borderLight),
                   ),
                   elevation: 0,
                 ),

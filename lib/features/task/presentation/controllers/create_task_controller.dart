@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/network/api_result.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/notification_scheduler_service.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../domain/repositories/task_repository.dart';
@@ -103,7 +104,7 @@ class CreateTaskController extends BaseController {
     List<Map<String, dynamic>>? remindersArray;
     if (remindersEnabled.value && deadlineStr != null) {
       remindersArray = [
-        {"remindAt": deadlineStr, "type": "DUE_DATE"}
+        {"remindAt": deadlineStr, "type": "CUSTOM"}
       ];
     }
 
@@ -184,11 +185,11 @@ class CreateTaskController extends BaseController {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF3B82F6),
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.accentBlue,
               onPrimary: Colors.white,
-              surface: Color(0xFF131B2F),
-              onSurface: Colors.white,
+              surface: Colors.white,
+              onSurface: AppColors.textPrimary,
             ),
           ),
           child: child!,
@@ -209,11 +210,11 @@ class CreateTaskController extends BaseController {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF3B82F6),
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.accentBlue,
               onPrimary: Colors.white,
-              surface: Color(0xFF131B2F),
-              onSurface: Colors.white,
+              surface: Colors.white,
+              onSurface: AppColors.textPrimary,
             ),
           ),
           child: child!,

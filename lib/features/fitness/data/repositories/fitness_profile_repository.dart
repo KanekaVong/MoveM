@@ -3,6 +3,7 @@ import '../../../../core/network/api_result.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../models/fitness_profile_model.dart';
+import '../models/fitness_statistics_model.dart';
 import '../models/solo_challenge_model.dart';
 import '../models/setup_goal_request.dart';
 
@@ -47,6 +48,41 @@ class FitnessProfileRepository {
     }
   }
 
+  Future<ApiResult<FitnessProfileModel>> updateProfile(double height, double weight) async {
+    try {
+      final response = await _dioClient.dio.put(
+        'fitness/profile',
+        data: {
+          'height': height,
+          'weight': weight,
+        },
+      );
+      if (response.data != null) {
+        return ApiSuccess(FitnessProfileModel.fromJson(response.data));
+      }
+      return ApiError(ApiException(message: 'Update failed'));
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } on ApiException catch (e) {
+      return ApiError(e);
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  Future<ApiResult<bool>> deleteProfile() async {
+    try {
+      await _dioClient.dio.delete('fitness/profile');
+      return ApiSuccess(true);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } on ApiException catch (e) {
+      return ApiError(e);
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
   Future<ApiResult<List<SoloChallengeModel>>> getSoloChallenges() async {
     try {
       final response = await _dioClient.dio.get('fitness/solo-challenges');
@@ -73,6 +109,89 @@ class FitnessProfileRepository {
         data: request.toJson(),
       );
       return ApiSuccess(response.data);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } on ApiException catch (e) {
+      return ApiError(e);
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  Future<ApiResult<List<FitnessGoalModel>>> getGoals() async {
+    try {
+      final response = await _dioClient.dio.get('fitness/goals');
+      if (response.data != null && response.data is List) {
+        final list = (response.data as List)
+            .map((item) => FitnessGoalModel.fromJson(item))
+            .toList();
+        return ApiSuccess(list);
+      }
+      return ApiSuccess([]);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } on ApiException catch (e) {
+      return ApiError(e);
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  Future<ApiResult<FitnessGoalModel>> getGoal(int goalId) async {
+    try {
+      final response = await _dioClient.dio.get('fitness/goals/$goalId');
+      if (response.data != null) {
+        return ApiSuccess(FitnessGoalModel.fromJson(response.data));
+      }
+      return ApiError(ApiException(message: 'Goal not found'));
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } on ApiException catch (e) {
+      return ApiError(e);
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  Future<ApiResult<FitnessGoalModel>> updateGoal(int goalId, SetupGoalRequest request) async {
+    try {
+      final response = await _dioClient.dio.put(
+        'fitness/goals/$goalId',
+        data: request.toJson(),
+      );
+      if (response.data != null) {
+        return ApiSuccess(FitnessGoalModel.fromJson(response.data));
+      }
+      return ApiError(ApiException(message: 'Update goal failed'));
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } on ApiException catch (e) {
+      return ApiError(e);
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  Future<ApiResult<bool>> deleteGoal(int goalId) async {
+    try {
+      await _dioClient.dio.delete('fitness/goals/$goalId');
+      return ApiSuccess(true);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } on ApiException catch (e) {
+      return ApiError(e);
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  Future<ApiResult<FitnessStatisticsModel>> getFitnessStatistics() async {
+    try {
+      final response = await _dioClient.dio.get('statistics/fitness');
+      if (response.data != null) {
+        return ApiSuccess(FitnessStatisticsModel.fromJson(response.data));
+      }
+      return ApiSuccess(FitnessStatisticsModel());
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {

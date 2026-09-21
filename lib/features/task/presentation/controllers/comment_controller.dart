@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/network/api_result.dart';
 import '../../../../core/storage/user_manager.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../../auth/data/dto/response/user_response.dart';
 import '../../data/dto/response/comment_response.dart';
@@ -28,9 +29,6 @@ class CommentController extends BaseController {
   final Rx<CommentResponse?> editingComment = Rx<CommentResponse?>(null);
 
   bool get isEditing => editingComment.value != null;
-
-  int _currentPage = 0;
-  bool _hasMore = true;
 
   @override
   void onInit() {
@@ -84,7 +82,6 @@ class CommentController extends BaseController {
   }
 
   Future<void> fetchComments({bool showLoading = true}) async {
-    _currentPage = 0;
     if (showLoading) {
       state.value = ViewState.loading;
     }
@@ -93,11 +90,9 @@ class CommentController extends BaseController {
 
     if (result is ApiSuccess<PageCommentResponse>) {
       final pageData = result.data;
-      // Sort oldest to newest (top to bottom like Telegram chat)
       final items = List<CommentResponse>.from(pageData.content);
       items.sort((a, b) => a.createdAt.compareTo(b.createdAt));
       comments.assignAll(items);
-      _hasMore = !pageData.last;
       state.value = ViewState.success;
       _scrollToBottom();
     } else if (result is ApiError<PageCommentResponse>) {
@@ -127,7 +122,7 @@ class CommentController extends BaseController {
       comments.add(result.data);
       _scrollToBottom();
     } else if (result is ApiError<CommentResponse>) {
-      textController.text = text; // Restore input on failure
+      textController.text = text;
       Get.snackbar(
         'Failed to Send',
         result.exception.message,
@@ -187,7 +182,7 @@ class CommentController extends BaseController {
       Get.snackbar(
         'Deleted',
         'Comment deleted successfully',
-        backgroundColor: Colors.black87,
+        backgroundColor: AppColors.textPrimary,
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );

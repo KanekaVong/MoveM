@@ -37,6 +37,7 @@ class TripController extends BaseController {
           ..clear()
           ..addAll(data);
       },
+      showLoading: false,
       showErrorDialog: false,
       onError: (e) {
         recentTrips.clear();

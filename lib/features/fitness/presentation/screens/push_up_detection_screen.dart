@@ -19,12 +19,16 @@ class PushUpDetectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(PushUpDetectorController(challenge: challenge));
-    final size = MediaQuery.of(context).size;
+    final controller = Get.isRegistered<PushUpDetectorController>()
+        ? Get.find<PushUpDetectorController>()
+        : Get.put(PushUpDetectorController(challenge: challenge));
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Obx(() {
+    return Obx(
+      () => PopScope(
+      canPop: !controller.isFinishing.value,
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: Obx(() {
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {
@@ -35,7 +39,6 @@ class PushUpDetectionScreen extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Camera Preview or Fallback Scenic Simulation
               if (controller.isCameraInitialized.value &&
                   !controller.isSimulationMode.value &&
                   controller.cameraController != null)
@@ -56,7 +59,6 @@ class PushUpDetectionScreen extends StatelessWidget {
                   ),
                 ),
 
-              // Live Skeleton Overlay
               if (controller.isCameraInitialized.value &&
                   !controller.isSimulationMode.value &&
                   controller.cameraController != null)
@@ -73,7 +75,6 @@ class PushUpDetectionScreen extends StatelessWidget {
                   ),
                 ),
 
-              // Top Bar
               SafeArea(
                 child: Align(
                   alignment: Alignment.topCenter,
@@ -82,7 +83,6 @@ class PushUpDetectionScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Back / Exit Button
                         GestureDetector(
                           onTap: () => _confirmExit(context, controller),
                           child: Container(
@@ -169,7 +169,6 @@ class PushUpDetectionScreen extends StatelessWidget {
                           ),
                         ),
 
-                        // Camera Flip / Mode Toggle Button
                         GestureDetector(
                           onTap: controller.switchCamera,
                           child: Container(
@@ -198,7 +197,6 @@ class PushUpDetectionScreen extends StatelessWidget {
                 ),
               ),
 
-              // Live Form Coaching & Angle Badge
               Positioned(
                 top: 96,
                 left: 20,
@@ -254,7 +252,6 @@ class PushUpDetectionScreen extends StatelessWidget {
                 ),
               ),
 
-              // Bottom Frosted Stats Card [ SET 1/4 | DURATION mm:ss (||) | GOAL 15 ]
               Positioned(
                 left: 20,
                 right: 20,
@@ -281,158 +278,180 @@ class PushUpDetectionScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: Row(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            // SET Column
-                            Expanded(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Text(
-                                    'SET',
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${controller.currentSet.value}/${challenge.sets}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            // Divider 1
-                            Container(
-                              width: 1,
-                              height: 50,
-                              color: Colors.white.withValues(alpha: 0.2),
-                            ),
-
-                            // DURATION Column with Pause & Stop Controls
-                            Expanded(
-                              flex: 2,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Text(
-                                    'DURATION',
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    _formatSeconds(controller.durationSeconds.value),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'monospace',
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      // Pause / Play Button
+                                      const Text(
+                                        'SET',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${controller.currentSet.value}/${challenge.sets}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Container(
+                                  width: 1,
+                                  height: 50,
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                ),
+
+                                Expanded(
+                                  flex: 2,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Text(
+                                        'DURATION',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        _formatSeconds(controller.durationSeconds.value),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'monospace',
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
                                       GestureDetector(
                                         onTap: controller.togglePause,
                                         child: Container(
-                                          width: 32,
-                                          height: 32,
+                                          width: 34,
+                                          height: 34,
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            color: Colors.white.withValues(alpha: 0.9),
+                                            color: controller.isPaused.value
+                                                ? const Color(0xFF10B981)
+                                                : Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: (controller.isPaused.value
+                                                        ? const Color(0xFF10B981)
+                                                        : Colors.white)
+                                                    .withValues(alpha: 0.35),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
                                           ),
                                           child: Center(
                                             child: Icon(
                                               controller.isPaused.value
                                                   ? Icons.play_arrow_rounded
                                                   : Icons.pause_rounded,
-                                              color: const Color(0xFF0A1E3F),
-                                              size: 20,
+                                              color: controller.isPaused.value
+                                                  ? Colors.white
+                                                  : const Color(0xFF0A1E3F),
+                                              size: 22,
                                             ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 16),
-                                      // Finish / Stop Workout Button
-                                      GestureDetector(
-                                        onTap: () => controller.finishWorkout(),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                          decoration: BoxDecoration(
-                                            color: Colors.redAccent.withValues(alpha: 0.85),
-                                            borderRadius: BorderRadius.circular(16),
-                                          ),
-                                          child: const Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(Icons.stop, color: Colors.white, size: 16),
-                                              SizedBox(width: 4),
-                                              Text(
-                                                'Stop',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                            ],
                                           ),
                                         ),
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
+                                ),
+
+                                Container(
+                                  width: 1,
+                                  height: 50,
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                ),
+
+                                Expanded(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Text(
+                                        'GOAL',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${challenge.repsPerSet}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
 
-                            // Divider 2
-                            Container(
-                              width: 1,
-                              height: 50,
-                              color: Colors.white.withValues(alpha: 0.2),
-                            ),
-
-                            // GOAL Column
-                            Expanded(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Text(
-                                    'GOAL',
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 0.5,
+                            const SizedBox(height: 14),
+                            if (controller.isPaused.value)
+                              GestureDetector(
+                                onTap: () => controller.finishWorkout(),
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF333C4D),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: Colors.white.withValues(alpha: 0.2),
+                                      width: 1,
                                     ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.25),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${challenge.repsPerSet}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.stop_rounded, color: Colors.white, size: 22),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'End',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 0.4,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),
@@ -440,10 +459,35 @@ class PushUpDetectionScreen extends StatelessWidget {
                   ),
                 ),
               ),
+
+              // Full-screen finishing overlay – blocks all interaction
+              if (controller.isFinishing.value)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    ignoring: false,
+                    child: Container(
+                      color: Colors.black.withValues(alpha: 0.72),
+                      child: Center(
+                        child: SizedBox(
+                          width: 64,
+                          height: 64,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 4,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              const Color(0xFF38BDF8),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         );
       }),
+      ),
+    ),
     );
   }
 

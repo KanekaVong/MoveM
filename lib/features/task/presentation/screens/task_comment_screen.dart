@@ -27,7 +27,7 @@ class TaskCommentScreen extends StatelessWidget {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       behavior: HitTestBehavior.translucent,
       child: Scaffold(
-        backgroundColor: AppColors.taskDarkBackground,
+        backgroundColor: AppColors.pageBackground,
         resizeToAvoidBottomInset: true,
         body: Stack(
           children: [
@@ -45,8 +45,8 @@ class TaskCommentScreen extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.black.withOpacity(0.4),
-                      AppColors.taskDarkBackground.withOpacity(0.75),
-                      AppColors.taskDarkBackground.withOpacity(0.95),
+                      AppColors.pageBackground.withOpacity(0.75),
+                      AppColors.pageBackground.withOpacity(0.95),
                     ],
                     stops: const [0.0, 0.4, 1.0],
                   ),
@@ -111,9 +111,9 @@ class TaskCommentScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       decoration: BoxDecoration(
-        color: AppColors.taskDarkBackground.withOpacity(0.5),
+        color: AppColors.pageBackground.withOpacity(0.5),
         border: Border(
-          bottom: BorderSide(color: Colors.white.withOpacity(0.08), width: 0.8),
+          bottom: BorderSide(color: AppColors.textPrimary.withOpacity(0.08), width: 0.8),
         ),
       ),
       child: Row(
@@ -130,7 +130,7 @@ class TaskCommentScreen extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 fontStyle: FontStyle.italic,
@@ -155,10 +155,10 @@ class TaskCommentScreen extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: const Color(0x33000000),
-          border: Border.all(color: Colors.white.withOpacity(0.24), width: 1),
+          border: Border.all(color: AppColors.textPrimary.withOpacity(0.24), width: 1),
         ),
         child: Center(
-          child: Icon(icon, color: Colors.white, size: iconSize),
+          child: Icon(icon, color: AppColors.textPrimary, size: iconSize),
         ),
       ),
     );
@@ -189,7 +189,7 @@ class TaskCommentScreen extends StatelessWidget {
             Text(
               l10n?.noCommentsYet ?? 'No Comments Yet',
               style: const TextStyle(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -200,7 +200,7 @@ class TaskCommentScreen extends StatelessWidget {
                   'Be the first to leave a comment or ask a question about this task.',
               textAlign: TextAlign.center,
               style: const TextStyle(
-                color: AppColors.taskTextMuted,
+                color: AppColors.textSecondary,
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -217,14 +217,14 @@ class TaskCommentScreen extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 8.0),
         padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 4.0),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.35),
+          color: AppColors.chipSurface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.1), width: 0.5),
+          border: Border.all(color: AppColors.textPrimary.withOpacity(0.1), width: 0.5),
         ),
         child: Text(
           controller.formatDateHeader(createdAt),
           style: const TextStyle(
-            color: Colors.white70,
+            color: AppColors.textSecondary,
             fontSize: 11,
             fontWeight: FontWeight.w500,
           ),
@@ -241,7 +241,6 @@ class TaskCommentScreen extends StatelessWidget {
     AppLocalizations? l10n,
   ) {
     if (isOwn) {
-      // Telegram-style Own Comment (Right Side)
       return Align(
         alignment: Alignment.centerRight,
         child: GestureDetector(
@@ -326,7 +325,6 @@ class TaskCommentScreen extends StatelessWidget {
         ),
       );
     } else {
-      // Telegram-style Other's Comment (Left Side with Avatar)
       return Align(
         alignment: Alignment.centerLeft,
         child: GestureDetector(
@@ -343,9 +341,9 @@ class TaskCommentScreen extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
                 decoration: BoxDecoration(
-                  color: AppColors.slate800.withValues(alpha: 0.85),
+                  color: AppColors.chipSurface.withValues(alpha: 0.85),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.12),
+                    color: AppColors.textPrimary.withValues(alpha: 0.12),
                     width: 0.8,
                   ),
                   borderRadius: const BorderRadius.only(
@@ -379,7 +377,7 @@ class TaskCommentScreen extends StatelessWidget {
                       Text(
                         comment.content,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: AppColors.textPrimary,
                           fontSize: 14,
                           height: 1.35,
                         ),
@@ -394,7 +392,7 @@ class TaskCommentScreen extends StatelessWidget {
                               Text(
                                 '${l10n?.edited ?? 'edited'} ',
                                 style: const TextStyle(
-                                  color: AppColors.taskTextMuted,
+                                  color: AppColors.textSecondary,
                                   fontSize: 10,
                                   fontStyle: FontStyle.italic,
                                 ),
@@ -403,7 +401,7 @@ class TaskCommentScreen extends StatelessWidget {
                             Text(
                               controller.formatTime(comment.createdAt),
                               style: const TextStyle(
-                                color: AppColors.taskTextMuted,
+                                color: AppColors.textSecondary,
                                 fontSize: 11,
                               ),
                             ),
@@ -434,7 +432,7 @@ class TaskCommentScreen extends StatelessWidget {
       return CircleAvatar(
         radius: 16,
         backgroundImage: NetworkImage(fullUrl),
-        backgroundColor: AppColors.slate700,
+        backgroundColor: AppColors.chipSurface,
       );
     }
 
@@ -446,7 +444,7 @@ class TaskCommentScreen extends StatelessWidget {
         gradient: const LinearGradient(
           colors: [AppColors.skyBlue, AppColors.skyBlueDark],
         ),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+        border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.2), width: 1),
       ),
       alignment: Alignment.center,
       child: Text(
@@ -464,9 +462,9 @@ class TaskCommentScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       decoration: BoxDecoration(
-        color: AppColors.slate900.withValues(alpha: 0.95),
+        color: AppColors.pageBackground.withValues(alpha: 0.95),
         border: Border(
-          top: BorderSide(color: Colors.white.withValues(alpha: 0.1), width: 0.8),
+          top: BorderSide(color: AppColors.textPrimary.withValues(alpha: 0.1), width: 0.8),
         ),
       ),
       child: Column(
@@ -479,7 +477,7 @@ class TaskCommentScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               margin: const EdgeInsets.only(bottom: 8.0),
               decoration: BoxDecoration(
-                color: AppColors.slate800,
+                color: AppColors.chipSurface,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: AppColors.taskBluePrimary.withValues(alpha: 0.4),
@@ -518,7 +516,7 @@ class TaskCommentScreen extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            color: Colors.white70,
+                            color: AppColors.textSecondary,
                             fontSize: 12,
                           ),
                         ),
@@ -531,9 +529,9 @@ class TaskCommentScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.08),
+                        color: AppColors.textPrimary.withOpacity(0.08),
                       ),
-                      child: const Icon(Icons.close, size: 16, color: Colors.white70),
+                      child: const Icon(Icons.close, size: 16, color: AppColors.textSecondary),
                     ),
                   ),
                 ],
@@ -547,10 +545,10 @@ class TaskCommentScreen extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14.0),
                   decoration: BoxDecoration(
-                    color: AppColors.slate800,
+                    color: AppColors.chipSurface,
                     borderRadius: BorderRadius.circular(22),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.12),
+                      color: AppColors.textPrimary.withValues(alpha: 0.12),
                       width: 1,
                     ),
                   ),
@@ -559,13 +557,13 @@ class TaskCommentScreen extends StatelessWidget {
                     focusNode: controller.inputFocusNode,
                     minLines: 1,
                     maxLines: 4,
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                    style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
                     decoration: InputDecoration(
                       hintText: controller.isEditing
                           ? (l10n?.editYourComment ?? 'Edit your comment...')
                           : (l10n?.writeComment ?? 'Write a comment...'),
                       hintStyle: const TextStyle(
-                        color: AppColors.taskTextMuted,
+                        color: AppColors.textSecondary,
                         fontSize: 14,
                         fontStyle: FontStyle.italic,
                       ),
@@ -633,11 +631,11 @@ class TaskCommentScreen extends StatelessWidget {
   ) {
     Get.dialog(
       Dialog(
-        backgroundColor: AppColors.slate800,
+        backgroundColor: AppColors.chipSurface,
         elevation: 16,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: BorderSide(color: Colors.white.withValues(alpha: 0.12), width: 1),
+          side: BorderSide(color: AppColors.textPrimary.withValues(alpha: 0.12), width: 1),
         ),
         insetPadding: const EdgeInsets.symmetric(horizontal: 54, vertical: 24),
         child: Padding(
@@ -655,11 +653,11 @@ class TaskCommentScreen extends StatelessWidget {
                     controller.startEditing(comment);
                   },
                 ),
-                Divider(color: Colors.white.withOpacity(0.08), height: 1),
+                Divider(color: AppColors.textPrimary.withOpacity(0.08), height: 1),
               ],
               _buildDialogOption(
                 icon: Icons.copy_rounded,
-                iconColor: Colors.white70,
+                iconColor: AppColors.textSecondary,
                 title: l10n?.copyText ?? 'Copy Text',
                 onTap: () {
                   Clipboard.setData(ClipboardData(text: comment.content));
@@ -667,14 +665,14 @@ class TaskCommentScreen extends StatelessWidget {
                   Get.snackbar(
                     l10n?.copied ?? 'Copied',
                     l10n?.commentCopiedToast ?? 'Comment copied to clipboard',
-                    backgroundColor: Colors.black87,
+                    backgroundColor: AppColors.textPrimary,
                     colorText: Colors.white,
                     duration: const Duration(seconds: 2),
                   );
                 },
               ),
               if (isOwn) ...[
-                Divider(color: Colors.white.withOpacity(0.08), height: 1),
+                Divider(color: AppColors.textPrimary.withOpacity(0.08), height: 1),
                 _buildDialogOption(
                   icon: Icons.delete_outline,
                   iconColor: Colors.redAccent,
@@ -697,7 +695,7 @@ class TaskCommentScreen extends StatelessWidget {
     required IconData icon,
     required Color iconColor,
     required String title,
-    Color textColor = Colors.white,
+    Color textColor = AppColors.textPrimary,
     required VoidCallback onTap,
   }) {
     return InkWell(
@@ -731,17 +729,17 @@ class TaskCommentScreen extends StatelessWidget {
   ) {
     Get.dialog(
       AlertDialog(
-        backgroundColor: AppColors.slate800,
+        backgroundColor: AppColors.chipSurface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(l10n?.deleteComment ?? 'Delete Comment', style: const TextStyle(color: Colors.white)),
+        title: Text(l10n?.deleteComment ?? 'Delete Comment', style: const TextStyle(color: AppColors.textPrimary)),
         content: Text(
           l10n?.deleteCommentConfirm ?? 'Are you sure you want to delete this comment? This action cannot be undone.',
-          style: const TextStyle(color: AppColors.taskTextMuted),
+          style: const TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text(l10n?.cancel ?? 'Cancel', style: const TextStyle(color: Colors.white70)),
+            child: Text(l10n?.cancel ?? 'Cancel', style: const TextStyle(color: AppColors.textSecondary)),
           ),
           ElevatedButton(
             onPressed: () {

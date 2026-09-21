@@ -31,27 +31,27 @@ class FriendsTabScreen extends GetView<FriendsController> {
       length: 2,
       initialIndex: initialIndex,
       child: Scaffold(
-        backgroundColor: AppColors.slate900,
+        backgroundColor: AppColors.pageBackground,
         appBar: AppBar(
-          backgroundColor: AppColors.slate900,
+          backgroundColor: AppColors.pageBackground,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+            icon: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary, size: 20),
             onPressed: () => Navigator.pop(context),
           ),
           centerTitle: true,
           title: Text(
             l10n?.friends ?? 'Friends',
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.textPrimary,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
           bottom: TabBar(
-            indicatorColor: AppColors.blueAccent,
-            labelColor: Colors.white,
-            unselectedLabelColor: AppColors.textMuted,
+            indicatorColor: AppColors.accentBlue,
+            labelColor: AppColors.textPrimary,
+            unselectedLabelColor: AppColors.textCaption,
             labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             tabs: [
               Tab(text: l10n?.friendRequests ?? 'Friend Request'),
@@ -79,9 +79,9 @@ class FriendsTabScreen extends GetView<FriendsController> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.slate850,
+          color: AppColors.cardSurface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.slate800, width: 1),
+          border: Border.all(color: AppColors.borderLight, width: 1),
         ),
         child: Column(
           children: controller.incomingRequests.asMap().entries.map((entry) {
@@ -97,7 +97,7 @@ class FriendsTabScreen extends GetView<FriendsController> {
                   onAccept: () => controller.acceptRequest(req.requestId),
                   onReject: () => controller.rejectRequest(req.requestId),
                 ),
-                if (!isLast) const Divider(color: AppColors.slate800),
+                if (!isLast) const Divider(color: AppColors.borderLight),
               ],
             );
           }).toList(),
@@ -124,9 +124,9 @@ class FriendsTabScreen extends GetView<FriendsController> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.slate850,
+          color: AppColors.cardSurface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.slate800, width: 1),
+          border: Border.all(color: AppColors.borderLight, width: 1),
         ),
         child: Column(
           children: list.asMap().entries.map((entry) {
@@ -144,7 +144,7 @@ class FriendsTabScreen extends GetView<FriendsController> {
                   onAdd: () => controller.sendRequest(user.username),
                   onCancel: () => controller.cancelRequest(user.username),
                 ),
-                if (!isLast) const Divider(color: AppColors.slate800),
+                if (!isLast) const Divider(color: AppColors.borderLight),
               ],
             );
           }).toList(),

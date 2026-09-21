@@ -25,6 +25,16 @@ class DioClient {
     );
 
     _dio = Dio(options);
+    final transformer = _dio.transformer;
+    if (transformer is SyncTransformer) {
+      transformer.jsonDecodeCallback = (text) {
+        try {
+          return jsonDecode(text);
+        } catch (_) {
+          return text;
+        }
+      };
+    }
 
     _dio.interceptors.add(
       InterceptorsWrapper(

@@ -5,9 +5,11 @@ import '../../../friends/data/repositories/friends_repository_impl.dart';
 import '../../../friends/data/services/friends_service.dart';
 import '../../../friends/domain/repositories/friends_repository.dart';
 import '../../../friends/presentation/controllers/friends_controller.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class InvitePeopleScreen extends StatefulWidget {
-  const InvitePeopleScreen({super.key});
+  final Set<int>? initialSelectedIds;
+  const InvitePeopleScreen({super.key, this.initialSelectedIds});
 
   @override
   State<InvitePeopleScreen> createState() => _InvitePeopleScreenState();
@@ -20,6 +22,9 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialSelectedIds != null) {
+      selectedIds.addAll(widget.initialSelectedIds!);
+    }
     if (Get.isRegistered<FriendsController>()) {
       _friendsController = Get.find<FriendsController>();
     } else {
@@ -43,7 +48,7 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -51,19 +56,19 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
         leading: TextButton(
           onPressed: () => Get.back(),
           child: Text(l10n?.cancel ?? 'Cancel',
-              style: const TextStyle(color: Colors.white70, fontSize: 14)),
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
         ),
         centerTitle: true,
         title: Text(l10n?.invitePeople ?? 'Invite people',
-            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+            style: const TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
         actions: [
           TextButton(
             onPressed: () {
-              Get.back();
+              Get.back(result: selectedIds.toList());
             },
             child: Text(l10n?.invite ?? 'Invite',
                 style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.bold)),
           ),
@@ -82,13 +87,13 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextField(
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: AppColors.textPrimary),
                   decoration: InputDecoration(
-                    hintText: 'Search for people on strava',
-                    hintStyle: const TextStyle(color: Colors.white54),
-                    prefixIcon: const Icon(Icons.search, color: Colors.white54),
+                    hintText: 'Search for people on MoveM',
+                    hintStyle: const TextStyle(color: AppColors.textCaption),
+                    prefixIcon: const Icon(Icons.search, color: AppColors.textCaption),
                     filled: true,
-                    fillColor: Colors.white.withOpacity(0.1),
+                    fillColor: AppColors.textPrimary.withValues(alpha: 0.1),
                     contentPadding: const EdgeInsets.symmetric(vertical: 0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
@@ -100,7 +105,7 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                 if (selectedFriends.isNotEmpty) ...[
                   Text('MEMBERS (${selectedFriends.length})',
                       style: const TextStyle(
-                          color: Colors.white70,
+                          color: AppColors.textSecondary,
                           fontSize: 12,
                           fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
@@ -120,13 +125,13 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                                 CircleAvatar(
                                   radius: 24,
                                   backgroundColor:
-                                      Colors.white.withOpacity(0.2),
+                                      AppColors.textPrimary.withValues(alpha: 0.2),
                                   child: Text(
                                       person.firstname.isNotEmpty
                                           ? person.firstname[0].toUpperCase()
                                           : '?',
                                       style: const TextStyle(
-                                          color: Colors.white,
+                                          color: AppColors.textPrimary,
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold)),
                                 ),
@@ -155,7 +160,7 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                             const SizedBox(height: 8),
                             Text(person.firstname,
                                 style: const TextStyle(
-                                    color: Colors.white70, fontSize: 12)),
+                                    color: AppColors.textSecondary, fontSize: 12)),
                           ],
                         );
                       },
@@ -165,7 +170,7 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                 ],
                 const Text('Suggested',
                     style: TextStyle(
-                        color: Colors.white70,
+                        color: AppColors.textSecondary,
                         fontSize: 14,
                         fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
@@ -177,7 +182,7 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                       : allPeople.isEmpty
                           ? const Center(
                               child: Text('No friends found.',
-                                  style: TextStyle(color: Colors.white54)))
+                                  style: TextStyle(color: AppColors.textCaption)))
                           : ListView.separated(
                               itemCount: allPeople.length,
                               separatorBuilder: (context, index) =>
@@ -200,24 +205,24 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 16, vertical: 12),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF0B2B6A),
+                                      color: AppColors.chipSurface,
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
-                                          color: Colors.white.withOpacity(0.2)),
+                                          color: AppColors.textPrimary.withValues(alpha: 0.2)),
                                     ),
                                     child: Row(
                                       children: [
                                         CircleAvatar(
                                           radius: 16,
                                           backgroundColor:
-                                              Colors.white.withOpacity(0.2),
+                                              AppColors.textPrimary.withValues(alpha: 0.2),
                                           child: Text(
                                               person.firstname.isNotEmpty
                                                   ? person.firstname[0]
                                                       .toUpperCase()
                                                   : '?',
                                               style: const TextStyle(
-                                                  color: Colors.white,
+                                                  color: AppColors.textPrimary,
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold)),
                                         ),
@@ -226,7 +231,7 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                                             '${person.firstname} ${person.lastname}'
                                                 .trim(),
                                             style: const TextStyle(
-                                                color: Colors.white,
+                                                color: AppColors.textPrimary,
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.bold)),
                                         const Spacer(),
@@ -236,12 +241,12 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             color: isSelected
-                                                ? Colors.blueAccent
+                                                ? AppColors.accentBlue
                                                 : Colors.transparent,
                                             border: Border.all(
                                               color: isSelected
-                                                  ? Colors.blueAccent
-                                                  : Colors.white,
+                                                  ? AppColors.accentBlue
+                                                  : AppColors.borderMuted,
                                               width: 1.5,
                                             ),
                                           ),

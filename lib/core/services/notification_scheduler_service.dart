@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import '../../features/task/data/local/models/task_reminder_local.dart';
 import '../../features/task/data/local/task_local_repository.dart';
 
 class NotificationSchedulerService {

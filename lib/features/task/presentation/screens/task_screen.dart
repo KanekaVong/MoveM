@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -8,17 +7,20 @@ import '../../../../l10n/app_localizations.dart';
 import '../controllers/task_controller.dart';
 import 'create_task_screen.dart';
 import 'task_detail_screen.dart';
+import 'task_invitation_screen.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class TaskScreen extends GetView<TaskController> {
   const TaskScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Get.put(TaskController());
-    final l10n = AppLocalizations.of(context);
+    if (!Get.isRegistered<TaskController>()) {
+      Get.put(TaskController());
+    }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0E0A07),
+      backgroundColor: AppColors.pageBackground,
       body: Stack(
         children: [
           Positioned(
@@ -41,9 +43,9 @@ class TaskScreen extends GetView<TaskController> {
                       colors: [
                         Colors.transparent,
                         Colors.transparent,
-                        Color(0xFF0E0A07),
+                        AppColors.pageBackground,
                       ],
-                      stops: [0.0, 0.6, 1.0],
+                      stops: [0.0, 0.5, 1.0],
                     ),
                   ),
                 ),
@@ -61,11 +63,11 @@ class TaskScreen extends GetView<TaskController> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          const Color(0xFF0E0A07).withValues(alpha: 0.0),
-                          const Color(0xFF0E0A07).withValues(alpha: 0.6),
-                          const Color(0xFF0E0A07),
+                          AppColors.pageBackground.withValues(alpha: 0.0),
+                          AppColors.pageBackground.withValues(alpha: 0.7),
+                          AppColors.pageBackground,
                         ],
-                        stops: const [0.0, 0.4, 0.8],
+                        stops: const [0.0, 0.4, 0.85],
                       ),
                     ),
                     child: Padding(
@@ -74,43 +76,18 @@ class TaskScreen extends GetView<TaskController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 16),
-                          Text(
-                            l10n?.todayProgress ?? 'Progress',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.italic,
+                          const Text(
+                            'PROGRESS',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.0,
                             ),
                           ),
                           const SizedBox(height: 16),
-                          _buildCreateTaskBanner(context),
-                          const SizedBox(height: 16),
-                          Obx(() => Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                flex: 5,
-                                child: _buildCompletedTasksCard(context),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                flex: 4,
-                                child: Column(
-                                  children: [
-                                    _buildMiniCard(
-                                        l10n?.upcoming ?? 'Upcoming Tasks',
-                                        '${controller.upcomingTasksCount}'),
-                                    const SizedBox(height: 16),
-                                    _buildMiniCard(
-                                        l10n?.ongoingTasks ??
-                                            'On-Going Tasks',
-                                        '${controller.ongoingTasksCount}'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          )),
+                          Obx(() => _buildProgressCard(context)),
+                          const SizedBox(height: 24),
                         ],
                       ),
                     ),
@@ -122,7 +99,7 @@ class TaskScreen extends GetView<TaskController> {
                     minHeight: 48.0 + MediaQuery.of(context).padding.top,
                     maxHeight: 48.0 + MediaQuery.of(context).padding.top,
                     child: Container(
-                      color: const Color(0xFF0E0A07),
+                      color: AppColors.pageBackground,
                       padding: EdgeInsets.only(
                         left: 20.0,
                         right: 20.0,
@@ -134,13 +111,13 @@ class TaskScreen extends GetView<TaskController> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            l10n?.allTasks ?? 'All Tasks',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.italic,
+                          const Text(
+                            'ALL TASKS',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.0,
                             ),
                           ),
                           _buildFilterButton(context),
@@ -153,9 +130,26 @@ class TaskScreen extends GetView<TaskController> {
             },
             body: RefreshIndicator(
               color: const Color(0xFF3B82F6),
-              backgroundColor: const Color(0xFF131B2F),
+              backgroundColor: AppColors.cardSurface,
               onRefresh: () => controller.fetchTasks(),
               child: _buildTaskList(),
+            ),
+          ),
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 8,
+            right: 20,
+            child: GestureDetector(
+              onTap: () => Get.to(() => const TaskInvitationScreen()),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.black.withValues(alpha: 0.28),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
+                ),
+                child: const Icon(Icons.mail_outline, color: Colors.white, size: 20),
+              ),
             ),
           ),
         ],
@@ -169,10 +163,10 @@ class TaskScreen extends GetView<TaskController> {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: isFiltered ? const Color(0xFF1E3A8A) : const Color(0xFF131B2F),
+          color: isFiltered ? AppColors.chipSurface : AppColors.cardSurface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isFiltered ? const Color(0xFF3B82F6) : const Color(0xFF1E293B),
+            color: isFiltered ? const Color(0xFF3B82F6) : AppColors.chipSurface,
             width: 1.2,
           ),
         ),
@@ -187,14 +181,14 @@ class TaskScreen extends GetView<TaskController> {
                 children: [
                   Icon(
                     Icons.filter_list_rounded,
-                    color: isFiltered ? const Color(0xFF60A5FA) : const Color(0xFFA0AAB2),
+                    color: isFiltered ? const Color(0xFF60A5FA) : AppColors.textCaption,
                     size: 16,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     isFiltered ? controller.filterSummary : 'Filter',
                     style: TextStyle(
-                      color: isFiltered ? Colors.white : const Color(0xFFA0AAB2),
+                      color: isFiltered ? Colors.white : AppColors.textCaption,
                       fontSize: 12,
                       fontWeight: isFiltered ? FontWeight.bold : FontWeight.w500,
                       fontStyle: FontStyle.italic,
@@ -218,7 +212,7 @@ class TaskScreen extends GetView<TaskController> {
                   ),
                   child: const Icon(
                     Icons.close,
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     size: 10,
                   ),
                 ),
@@ -236,7 +230,7 @@ class TaskScreen extends GetView<TaskController> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF131B2F),
+      backgroundColor: AppColors.cardSurface,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -279,7 +273,7 @@ class TaskScreen extends GetView<TaskController> {
                         width: 40,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: Colors.white24,
+                          color: AppColors.borderLight,
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -291,7 +285,7 @@ class TaskScreen extends GetView<TaskController> {
                         const Text(
                           'Filter Tasks',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: AppColors.textPrimary,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             fontStyle: FontStyle.italic,
@@ -320,7 +314,7 @@ class TaskScreen extends GetView<TaskController> {
                     const Text(
                       'STATUS',
                       style: TextStyle(
-                        color: Color(0xFFA0AAB2),
+                        color: AppColors.textCaption,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.0,
@@ -339,7 +333,7 @@ class TaskScreen extends GetView<TaskController> {
                             style: TextStyle(
                               color: isSelected
                                   ? Colors.white
-                                  : const Color(0xFFA0AAB2),
+                                  : AppColors.textCaption,
                               fontSize: 13,
                               fontWeight: isSelected
                                   ? FontWeight.bold
@@ -348,13 +342,13 @@ class TaskScreen extends GetView<TaskController> {
                           ),
                           selected: isSelected,
                           selectedColor: const Color(0xFF3B82F6),
-                          backgroundColor: const Color(0xFF0E1626),
+                          backgroundColor: AppColors.cardSurface,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                             side: BorderSide(
                               color: isSelected
                                   ? const Color(0xFF3B82F6)
-                                  : const Color(0xFF1E293B),
+                                  : AppColors.chipSurface,
                             ),
                           ),
                           onSelected: (_) {
@@ -369,7 +363,7 @@ class TaskScreen extends GetView<TaskController> {
                     const Text(
                       'PRIORITY',
                       style: TextStyle(
-                        color: Color(0xFFA0AAB2),
+                        color: AppColors.textCaption,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.0,
@@ -388,7 +382,7 @@ class TaskScreen extends GetView<TaskController> {
                             style: TextStyle(
                               color: isSelected
                                   ? Colors.white
-                                  : const Color(0xFFA0AAB2),
+                                  : AppColors.textCaption,
                               fontSize: 13,
                               fontWeight: isSelected
                                   ? FontWeight.bold
@@ -397,13 +391,13 @@ class TaskScreen extends GetView<TaskController> {
                           ),
                           selected: isSelected,
                           selectedColor: const Color(0xFF3B82F6),
-                          backgroundColor: const Color(0xFF0E1626),
+                          backgroundColor: AppColors.cardSurface,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                             side: BorderSide(
                               color: isSelected
                                   ? const Color(0xFF3B82F6)
-                                  : const Color(0xFF1E293B),
+                                  : AppColors.chipSurface,
                             ),
                           ),
                           onSelected: (_) {
@@ -435,7 +429,7 @@ class TaskScreen extends GetView<TaskController> {
                         child: const Text(
                           'Apply Filters',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: AppColors.textPrimary,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -461,164 +455,433 @@ class TaskScreen extends GetView<TaskController> {
       flexibleSpace: const FlexibleSpaceBar(
         background: Align(
           alignment: Alignment.center,
-          child: Text(
-            'Ready To Elevate Your\nTask To Another Level?',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Color(0xFFE2E8F0),
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              fontStyle: FontStyle.italic,
-              shadows: [
-                Shadow(
-                  color: Colors.black87,
-                  blurRadius: 10,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCreateTaskBanner(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return GestureDetector(
-      onTap: () {
-        Get.to(() => const CreateTaskScreen())
-            ?.then((_) => controller.fetchTasks());
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: const Color(0xFF131B2F),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF1E293B)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(l10n?.createTask ?? 'Create Task',
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic)),
-                const SizedBox(height: 4),
-                const Text('Let your brain relax, put it here.',
-                    style: TextStyle(
-                        color: Color(0xFFA0AAB2),
-                        fontSize: 10,
-                        fontStyle: FontStyle.italic)),
-              ],
-            ),
-            const Icon(Icons.add, color: Colors.white, size: 28),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCompletedTasksCard(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final total = controller.tasks.length;
-    final completed = controller.completedTasksCount;
-    final progress = total > 0 ? completed / total : 0.0;
-
-    return Container(
-      height: 160,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF131B2F),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF1E293B)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n?.completedTasks ?? 'Completed Tasks',
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic)),
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Center(
-              child: SizedBox(
-                width: 100,
-                height: 100,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    CircularProgressIndicator(
-                      value: progress,
-                      strokeWidth: 8,
-                      backgroundColor: const Color(0xFF1E293B),
-                      valueColor: const AlwaysStoppedAnimation<Color>(
-                          Color(0xFF3B82F6)),
-                    ),
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('$completed',
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold)),
-                          const Text('Completed',
-                              style: TextStyle(
-                                  color: Color(0xFFA0AAB2), fontSize: 10)),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+          child: Padding(
+            padding: EdgeInsets.only(top: 30),
+            child: Text(
+              'Ready To Elevate Your\nTask To Another Level?',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.3,
+                height: 1.35,
+                shadows: [
+                  Shadow(
+                    color: Colors.black87,
+                    blurRadius: 12,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
             ),
           ),
-          const Spacer(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProgressCard(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(22.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: AppColors.borderLight,
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            offset: const Offset(0, 8),
+            blurRadius: 16,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'COMPLETED TASKS',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.8,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildCircularProgressRing(),
+              const SizedBox(width: 20),
+              Expanded(
+                child: _buildTasksSummaryRight(),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              Get.to(() => const CreateTaskScreen())
+                  ?.then((_) => controller.fetchTasks());
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Text(
+                      'CREATE TASK',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Icon(
+                      Icons.add,
+                      color: AppColors.textPrimary,
+                      size: 20,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Let your brain relax, put it here.',
+                  style: TextStyle(
+                    color: AppColors.textCaption,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildMiniCard(String title, String subtitle) {
-    return Container(
-      width: double.infinity,
-      height: 72,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF131B2F),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF1E293B)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildCircularProgressRing() {
+    final total = controller.tasks.length;
+    final completed = controller.completedTasksCount;
+    final progress = total > 0 ? (completed / total).clamp(0.0, 1.0) : 0.0;
+
+    return SizedBox(
+      width: 136,
+      height: 136,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Text(title,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
+          SizedBox(
+            width: 136,
+            height: 136,
+            child: CircularProgressIndicator(
+              value: 1.0,
+              strokeWidth: 10,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                AppColors.borderLight.withValues(alpha: 0.9),
+              ),
+            ),
+          ),
+          if (progress > 0)
+            SizedBox(
+              width: 136,
+              height: 136,
+              child: CircularProgressIndicator(
+                value: progress,
+                strokeWidth: 10,
+                strokeCap: StrokeCap.round,
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  Color(0xFF3B82F6),
+                ),
+              ),
+            ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '$completed',
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 34,
                   fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic)),
-          const SizedBox(height: 8),
-          Center(
-              child: Text(subtitle,
-                  style: const TextStyle(
-                      color: Color(0xFFA0AAB2),
-                      fontSize: 12,
-                      fontStyle: FontStyle.italic))),
+                ),
+              ),
+              const SizedBox(height: 2),
+              const Text(
+                'COMPLETED',
+                style: TextStyle(
+                  color: AppColors.textCaption,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildTasksSummaryRight() {
+    final upcoming = controller.tasks
+        .where((t) =>
+            t.status != 'COMPLETE' &&
+            t.status != 'CANCELLED' &&
+            t.deadline != null)
+        .toList();
+
+    final ongoing = controller.tasks
+        .where((t) => t.status == 'IN_PROGRESS' || t.status == 'PENDING')
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Text(
+          'Upcoming Tasks',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 6),
+        if (upcoming.isNotEmpty) ...[
+          for (int i = 0; i < upcoming.length && i < 2; i++) ...[
+            _buildUpcomingItem(upcoming[i]),
+            if (i < upcoming.length - 1 && i < 1) const SizedBox(height: 4),
+          ],
+        ] else ...[
+          const Text(
+            'No upcoming tasks',
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+          ),
+        ],
+        const SizedBox(height: 16),
+        const Text(
+          'On-Going Tasks',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 6),
+        if (ongoing.isNotEmpty) ...[
+          _buildOngoingItem(ongoing.first),
+        ] else ...[
+          const Text(
+            'No ongoing tasks',
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildUpcomingItem(dynamic task) {
+    String dueText = 'Due Soon';
+    if (task.deadline != null) {
+      try {
+        final date = DateTime.parse(task.deadline!);
+        final diff = date.difference(DateTime.now()).inDays;
+        if (diff < 0) {
+          dueText = 'Overdue';
+        } else if (diff == 0) {
+          dueText = 'Due Today';
+        } else if (diff == 1) {
+          dueText = 'Due Tomorrow';
+        } else if (diff <= 7) {
+          dueText = 'Due Next Week';
+        } else if (diff <= 30) {
+          dueText = 'Due Next Month';
+        } else {
+          dueText = 'Due ${DateFormat('d MMM').format(date)}';
+        }
+      } catch (_) {}
+    }
+
+    return RichText(
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: '${task.activityName} ',
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          TextSpan(
+            text: dueText,
+            style: const TextStyle(
+              color: Color(0xFFEF4444),
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMockUpcomingItem(String title, String due) {
+    return RichText(
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: '$title ',
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          TextSpan(
+            text: due,
+            style: const TextStyle(
+              color: Color(0xFFEF4444),
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOngoingItem(dynamic task) {
+    String dueText = 'Due Next Month';
+    if (task.deadline != null) {
+      try {
+        final date = DateTime.parse(task.deadline!);
+        final diff = date.difference(DateTime.now()).inDays;
+        if (diff <= 30) {
+          dueText = 'Due Next Month';
+        } else {
+          dueText = 'Due ${DateFormat('d MMM').format(date)}';
+        }
+      } catch (_) {}
+    }
+
+    double prog = 0.5;
+    if (task.totalChecklistItems != null && task.totalChecklistItems > 0) {
+      prog = task.completedChecklistItems / task.totalChecklistItems;
+    } else if (task.checklistProgress != null) {
+      prog = task.checklistProgress;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        RichText(
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: '${task.activityName} ',
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text: dueText,
+                style: const TextStyle(
+                  color: Color(0xFF4ADE80),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(2),
+          child: Container(
+            height: 4,
+            width: double.infinity,
+            color: AppColors.chipSurface,
+            child: FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: prog.clamp(0.05, 1.0),
+              child: Container(
+                color: const Color(0xFF4ADE80),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMockOngoingItem(String title, String due, double prog) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        RichText(
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: '$title ',
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextSpan(
+                text: due,
+                style: const TextStyle(
+                  color: Color(0xFF4ADE80),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(2),
+          child: Container(
+            height: 4,
+            width: double.infinity,
+            color: AppColors.chipSurface,
+            child: FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: prog.clamp(0.05, 1.0),
+              child: Container(
+                color: const Color(0xFF4ADE80),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -626,16 +889,22 @@ class TaskScreen extends GetView<TaskController> {
     return Obx(() {
       if (controller.isLoading && controller.tasks.isEmpty) {
         return Container(
-          color: const Color(0xFF0E0A07),
-          child: const Center(
-            child: CircularProgressIndicator(color: Color(0xFF3B82F6)),
+          color: AppColors.pageBackground,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: const [
+              SizedBox(height: 80),
+              Center(
+                child: CircularProgressIndicator(color: Color(0xFF3B82F6)),
+              ),
+            ],
           ),
         );
       }
 
       if (controller.tasks.isEmpty) {
         return Container(
-          color: const Color(0xFF0E0A07),
+          color: AppColors.pageBackground,
           child: const SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
             padding: EdgeInsets.fromLTRB(20.0, 0, 20.0, 120.0),
@@ -645,10 +914,9 @@ class TaskScreen extends GetView<TaskController> {
                 child: Text(
                   'Empty',
                   style: TextStyle(
-                      color: Color(0xFF334155),
+                      color: AppColors.textCaption,
                       fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic),
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -657,7 +925,7 @@ class TaskScreen extends GetView<TaskController> {
       }
 
       return Container(
-        color: const Color(0xFF0E0A07),
+        color: AppColors.pageBackground,
         child: ListView.separated(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 120.0),
@@ -689,7 +957,7 @@ class TaskScreen extends GetView<TaskController> {
           Get.snackbar(
             l10n?.deleteTask ?? 'Delete Task',
             l10n?.taskDeletedSuccess ?? 'Task deleted successfully',
-            backgroundColor: const Color(0xFF131B2F),
+            backgroundColor: AppColors.emerald,
             colorText: Colors.white,
             icon: const Icon(Icons.check_circle_outline, color: Color(0xFF22C55E)),
             snackPosition: SnackPosition.TOP,
@@ -732,10 +1000,10 @@ class TaskScreen extends GetView<TaskController> {
           child: Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: const Color(0xFF131B2F),
+              color: AppColors.cardSurface,
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                color: const Color(0xFF1E293B),
+                color: AppColors.chipSurface,
                 width: 1.0,
               ),
               boxShadow: [
@@ -755,7 +1023,7 @@ class TaskScreen extends GetView<TaskController> {
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF450A0A),
+                        color: const Color(0xFFFEE2E2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
@@ -768,7 +1036,7 @@ class TaskScreen extends GetView<TaskController> {
                     Text(
                       l10n?.deleteTask ?? 'Delete Task',
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                         fontStyle: FontStyle.italic,
@@ -781,7 +1049,7 @@ class TaskScreen extends GetView<TaskController> {
                   l10n?.deleteTaskConfirm ??
                       'Are you sure you want to delete this task? This action cannot be undone.',
                   style: const TextStyle(
-                    color: Color(0xFFA0AAB2),
+                    color: AppColors.textCaption,
                     fontSize: 12,
                     height: 1.35,
                   ),
@@ -804,7 +1072,7 @@ class TaskScreen extends GetView<TaskController> {
                         child: Text(
                           l10n?.cancel ?? 'Cancel',
                           style: const TextStyle(
-                            color: Color(0xFFA0AAB2),
+                            color: AppColors.textCaption,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
@@ -828,7 +1096,7 @@ class TaskScreen extends GetView<TaskController> {
                         child: Text(
                           l10n?.delete ?? 'Delete',
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: AppColors.textPrimary,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -867,26 +1135,33 @@ class TaskScreen extends GetView<TaskController> {
       } catch (_) {}
     }
 
-    Color priorityColor = Colors.grey;
-    Color priorityBgColor = const Color(0xFF1E293B);
+    Color priorityColor = const Color(0xFF4ADE80);
+    Color priorityBgColor = const Color(0xFFECFDF3);
+    Color priorityBorderColor = const Color(0xFF22C55E).withValues(alpha: 0.3);
     String priorityText = task.priority ?? 'Low';
 
     if (priorityText.toUpperCase() == 'LOW') {
-      priorityColor = const Color(0xFF65A30D);
-      priorityBgColor = const Color(0xFF1A2E20);
+      priorityColor = const Color(0xFF4ADE80);
+      priorityBgColor = const Color(0xFFECFDF3);
+      priorityBorderColor = const Color(0xFF22C55E).withValues(alpha: 0.3);
     } else if (priorityText.toUpperCase() == 'NORMAL' ||
         priorityText.toUpperCase() == 'MEDIUM') {
-      priorityColor = const Color(0xFFEAB308);
-      priorityBgColor = const Color(0xFF422006);
+      priorityColor = const Color(0xFFFBBF24);
+      priorityBgColor = const Color(0xFFFFFBEB);
+      priorityBorderColor = const Color(0xFFF59E0B).withValues(alpha: 0.3);
     } else if (priorityText.toUpperCase() == 'HIGH' ||
         priorityText.toUpperCase() == 'URGENT') {
-      priorityColor = const Color(0xFFEF4444);
-      priorityBgColor = const Color(0xFF450A0A);
+      priorityColor = const Color(0xFFF87171);
+      priorityBgColor = const Color(0xFFFEF2F2);
+      priorityBorderColor = const Color(0xFFEF4444).withValues(alpha: 0.3);
     }
 
-    Color indicatorColor = task.status == 'COMPLETE'
-        ? const Color(0xFF22C55E)
-        : const Color(0xFFF97316);
+    Color indicatorColor = const Color(0xFF22C55E);
+    if (priorityText.toUpperCase() == 'HIGH' || priorityText.toUpperCase() == 'URGENT') {
+      indicatorColor = const Color(0xFFEF4444);
+    } else if (priorityText.toUpperCase() == 'NORMAL' || priorityText.toUpperCase() == 'MEDIUM') {
+      indicatorColor = const Color(0xFFF59E0B);
+    }
 
     double progression = 0.0;
     if (task.totalChecklistItems != null && task.totalChecklistItems > 0) {
@@ -899,216 +1174,211 @@ class TaskScreen extends GetView<TaskController> {
     int progressionPercent = (progression * 100).toInt();
 
     final isComplete = task.status == 'COMPLETE';
+    final isPastDeadline = _isPastDeadline(task);
+    final isFaded = isComplete || isPastDeadline;
 
     return Opacity(
-      opacity: isComplete ? 0.55 : 1.0,
+      opacity: isFaded ? 0.65 : 1.0,
       child: GestureDetector(
         onTap: () {
           Get.to(() => TaskDetailScreen(activityId: task.activityId))
               ?.then((_) => controller.fetchTasks());
         },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              padding:
-                  const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF002468).withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.14),
-                  width: 1.0,
-                ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: AppColors.borderLight,
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 46,
-                        decoration: BoxDecoration(
-                          color: indicatorColor,
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              task.activityName,
-                              style: TextStyle(
-                                color: isComplete
-                                    ? const Color(0xFFA0AAB2)
-                                    : Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                fontStyle: FontStyle.italic,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: priorityBgColor,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    priorityText.toLowerCase().capitalizeFirst ??
-                                        priorityText,
-                                    style: TextStyle(
-                                      color: priorityColor,
-                                      fontSize: 12,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    'Dateline : $formattedDate',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF0A1428).withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: const Color(0xFF1E3A8A).withValues(alpha: 0.6),
-                            width: 1.2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            )
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.assignment_outlined,
-                          color: Color(0xFF3B82F6),
-                          size: 24,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
                   Container(
-                    height: 6,
+                    width: 4,
+                    height: 34,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0F172A).withValues(alpha: 0.7),
-                      borderRadius: BorderRadius.circular(3),
-                      border: Border.all(
-                        color: Colors.black.withValues(alpha: 0.4),
-                        width: 0.5,
-                      ),
+                      color: indicatorColor,
+                      borderRadius: BorderRadius.circular(2),
                     ),
-                    child: Row(
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          flex: progressionPercent,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF3B82F6),
-                              borderRadius: BorderRadius.circular(3),
-                            ),
+                        Text(
+                          task.activityName,
+                          style: TextStyle(
+                            color: isFaded
+                                ? AppColors.textCaption
+                                : AppColors.textPrimary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        Expanded(
-                          flex: 100 - progressionPercent,
-                          child: const SizedBox(),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: priorityBgColor,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: priorityBorderColor,
+                                  width: 0.8,
+                                ),
+                              ),
+                              child: Text(
+                                priorityText.toLowerCase().capitalizeFirst ??
+                                    priorityText,
+                                style: TextStyle(
+                                  color: priorityColor,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Dateline : $formattedDate',
+                                style: const TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Progression : $progressionPercent%',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontStyle: FontStyle.italic,
-                        ),
+                  const SizedBox(width: 12),
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: AppColors.chipSurface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.chipSurface.withValues(alpha: 0.6),
+                        width: 1.2,
                       ),
-                      if (task.labels != null && task.labels!.isNotEmpty)
-                        Flexible(
-                          child: Wrap(
-                            spacing: 6,
-                            runSpacing: 4,
-                            alignment: WrapAlignment.end,
-                            children: task.labels!.map<Widget>((label) {
-                              Color labelColor;
-                              try {
-                                labelColor = Color(int.parse(
-                                    label.color.replaceFirst('#', '0xFF')));
-                              } catch (_) {
-                                labelColor = const Color(0xFF4ADE80);
-                              }
-                              return Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color: labelColor.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: labelColor.withValues(alpha: 0.5),
-                                    width: 0.8,
-                                  ),
-                                ),
-                                child: Text(
-                                  label.name,
-                                  style: TextStyle(
-                                    color: labelColor,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                    ],
+                    ),
+                    child: const Icon(
+                      Icons.assignment_outlined,
+                      color: Color(0xFF3B82F6),
+                      size: 24,
+                    ),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: Container(
+                  height: 6,
+                  width: double.infinity,
+                  color: AppColors.borderLight,
+                  child: FractionallySizedBox(
+                    alignment: Alignment.centerLeft,
+                    widthFactor: progression.clamp(0.0, 1.0),
+                    child: Container(
+                      color: const Color(0xFF22C55E),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Progression : $progressionPercent%',
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  if (task.labels != null && task.labels!.isNotEmpty)
+                    Flexible(
+                      child: Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        alignment: WrapAlignment.end,
+                        children: task.labels!.map<Widget>((label) {
+                          Color labelColor;
+                          try {
+                            labelColor = Color(int.parse(
+                                label.color.replaceFirst('#', '0xFF')));
+                          } catch (_) {
+                            labelColor = const Color(0xFF4ADE80);
+                          }
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: labelColor.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: labelColor.withValues(alpha: 0.5),
+                                width: 0.8,
+                              ),
+                            ),
+                            child: Text(
+                              label.name,
+                              style: TextStyle(
+                                color: labelColor,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  bool _isPastDeadline(dynamic task) {
+    final deadline = task.deadline;
+    if (deadline == null || deadline.toString().isEmpty) return false;
+    try {
+      return DateTime.parse(deadline.toString()).toLocal().isBefore(DateTime.now());
+    } catch (_) {
+      return false;
+    }
   }
 }
 

@@ -23,6 +23,16 @@ class AppColors {
   static const lightError = Color(0xFFE53935);
   static const lightOnError = Colors.white;
 
+  static const pageBackground = Color(0xFFF4F6F8);
+  static const cardSurface = Color(0xFFFFFFFF);
+  static const chipSurface = Color(0xFFDCE6F5);
+  static const textPrimary = Color(0xFF111827);
+  static const textSecondary = Color(0xFF6B7280);
+  static const textCaption = Color(0xFF8A94A6);
+  static const accentBlue = Color(0xFF3B6FE8);
+  static const borderLight = Color(0xFFE5E7EB);
+  static const borderMuted = Color(0xFFD1D5DB);
+
   static const darkPrimary = Color(0xFF8AB4F8);
   static const darkOnPrimary = Color(0xFF003A75);
   static const darkSecondary = Color(0xFF81C784);

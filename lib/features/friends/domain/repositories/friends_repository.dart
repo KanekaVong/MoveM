@@ -1,8 +1,10 @@
 import '../../../../core/network/api_result.dart';
 import '../../data/dto/response/friend_response.dart';
 import '../../data/dto/response/friend_request_response.dart';
+import '../../data/dto/response/public_user_profile_response.dart';
 
 abstract class FriendsRepository {
+  Future<ApiResult<PublicUserProfileResponse>> getUserById(String userId);
   Future<ApiResult<List<FriendResponse>>> getFriends();
   Future<ApiResult<List<FriendResponse>>> searchFriends(String keyword);
   Future<ApiResult<List<FriendResponse>>> getSuggestions();

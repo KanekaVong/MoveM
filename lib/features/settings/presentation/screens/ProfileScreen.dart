@@ -194,7 +194,6 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UserResponse? user = UserManager().getUser();
-    print('ProfileScreen: Retrieved user from UserManager: ${user?.toJson() ?? "null"}');
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),

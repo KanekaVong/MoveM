@@ -1,13 +1,17 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../data/models/solo_challenge_model.dart';
 import '../controllers/fitness_profile_controller.dart';
-import '../widgets/notched_card.dart';
-import 'create_group_screen.dart';
-import 'setup_goal_screen.dart';
-import 'solo_fitness_detail_screen.dart';
+import '../controllers/fitness_club_controller.dart';
+import '../widgets/solo_challenge_card.dart';
+import 'fitness_club_screen.dart';
+import 'fitness_profile_goal_screen.dart';
+import 'solo_challenge_list_screen.dart';
+import 'workout_history_screen.dart';
+import '../controllers/workout_history_controller.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class FitnessDashboardScreen extends StatelessWidget {
   final FitnessProfileController controller;
@@ -16,84 +20,94 @@ class FitnessDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final clubController = Get.isRegistered<FitnessClubController>()
+        ? Get.find<FitnessClubController>()
+        : Get.put(FitnessClubController());
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppColors.pageBackground,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0),
-              child: _buildTopCard(),
-            ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: RefreshIndicator(
-                color: Colors.blueAccent,
-                backgroundColor: const Color(0xFF1E293B),
-                onRefresh: () => controller.refreshData(),
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(24.0, 0, 24.0, 24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildCaloriesCard(),
-                      const SizedBox(height: 16),
-                      _buildStatsRow(),
-                      const SizedBox(height: 24),
-                      Text(
-                        l10n?.movemClub ?? 'MoveM Club',
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+        child: RefreshIndicator(
+          color: Colors.blueAccent,
+          backgroundColor: AppColors.chipSurface,
+          onRefresh: () async {
+            await Future.wait([
+              controller.refreshData(),
+              clubController.loadClubs(),
+            ]);
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20.0, 16.0, 20.0, 120.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTopCard(),
+                const SizedBox(height: 16),
+
+                _buildCaloriesCard(),
+                const SizedBox(height: 22),
+
+                _buildQuickAction(),
+                const SizedBox(height: 26),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      l10n?.soloChallenges ?? 'Solo Challenges',
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: 16),
-                      _buildGroupActivity(),
-                      const SizedBox(height: 24),
-                      _buildYourGoal(),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            l10n?.soloChallenges ?? 'Solo Challenges',
-                            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            l10n?.viewAll ?? 'see all',
-                            style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12),
-                          ),
-                        ],
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Get.to(() => const SoloChallengeListScreen());
+                      },
+                      child: Text(
+                        l10n?.viewAll ?? 'See All',
+                        style: TextStyle(
+                          color: AppColors.textPrimary.withValues(alpha: 0.7),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      const SizedBox(height: 16),
-                      Obx(() {
-                        if (controller.isLoadingChallenges.value && controller.soloChallenges.isEmpty) {
-                          return const Center(child: CircularProgressIndicator(color: Colors.blueAccent));
-                        }
-                        if (controller.soloChallenges.isEmpty) {
-                          return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Text('No trending challenges available', style: TextStyle(color: Colors.white70)),
-                            ),
-                          );
-                        }
-                        return Column(
-                          children: controller.soloChallenges.map((challenge) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16.0),
-                              child: _buildChallengeCard(challenge),
-                            );
-                          }).toList(),
-                        );
-                      }),
-                      const SizedBox(height: 120),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ),
+                const SizedBox(height: 16),
+
+                Obx(() {
+                  if (controller.isLoadingChallenges.value && controller.soloChallenges.isEmpty) {
+                    return const Center(child: CircularProgressIndicator(color: Colors.blueAccent));
+                  }
+                  if (controller.soloChallenges.isEmpty) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          'No solo challenges available',
+                          style: TextStyle(color: AppColors.textSecondary),
+                        ),
+                      ),
+                    );
+                  }
+                  return Column(
+                    children: controller.soloChallenges.map((challenge) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: SoloChallengeCard(
+                          challenge: challenge,
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -102,33 +116,62 @@ class FitnessDashboardScreen extends StatelessWidget {
   Widget _buildTopCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 18, 14, 18),
       decoration: BoxDecoration(
+        color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: AppColors.chipSurface),
       ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Today's Workout",
-                style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-              ),
-              Icon(Icons.directions_run, color: Colors.blueAccent, size: 32),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Today's Workout",
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 28),
+                const Text(
+                  "Small step, big changes",
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Start tracking your Fitness Journey with us now",
+                  style: TextStyle(
+                    color: AppColors.textPrimary.withValues(alpha: 0.8),
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
           ),
-          SizedBox(height: 32),
-          Text(
-            "Small step, big changes\nStart tracking your Fitness Journey with us now",
-            style: TextStyle(color: Colors.white70, fontSize: 12),
+          const SizedBox(width: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Image.asset(
+              AppImages.workoutDetailsHero,
+              width: 100,
+              height: 90,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => Image.asset(
+                AppImages.runningActivity,
+                width: 88,
+                height: 88,
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
         ],
       ),
@@ -136,11 +179,14 @@ class FitnessDashboardScreen extends StatelessWidget {
   }
 
   Widget _buildCaloriesCard() {
+    final currentWeekday = DateTime.now().weekday;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF0B2B6A),
+        color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.chipSurface),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,481 +194,337 @@ class FitnessDashboardScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Calories Burned', style: TextStyle(color: Colors.white70, fontSize: 14)),
-                  SizedBox(height: 4),
-                  Text('0 kcal', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                  const Text(
+                    'Calories Burned',
+                    style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                  ),
+                  const SizedBox(height: 4),
+                  Obx(() {
+                    final stats = controller.statistics.value;
+                    final calories = stats != null && stats.caloriesToday > 0
+                        ? stats.caloriesToday.toInt()
+                        : (stats != null && stats.totalCalories > 0
+                            ? stats.totalCalories.toInt()
+                            : 0);
+                    return RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '$calories ',
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const TextSpan(
+                            text: 'kcal',
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
                 ],
               ),
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
+                  color: AppColors.chipSurface,
                   shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFF1E356D), width: 1),
                 ),
-                child: const Icon(Icons.bar_chart, color: Colors.white),
-              )
+                child: const Icon(
+                  Icons.bar_chart_rounded,
+                  color: AppColors.textPrimary,
+                  size: 20,
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 22),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildChartBar('Mon', 0.1),
-              _buildChartBar('Tue', 0.1),
-              _buildChartBar('Wed', 0.1),
-              _buildChartBar('Thu', 0.1),
-              _buildChartBar('Fri', 0.1),
-              _buildChartBar('Sat', 0.1, isActive: true),
-              _buildChartBar('Sun', 0.1),
+              _buildDayPill('Mon', isActive: currentWeekday == 1),
+              _buildDayPill('Tue', isActive: currentWeekday == 2),
+              _buildDayPill('Wed', isActive: currentWeekday == 3),
+              _buildDayPill('Thu', isActive: currentWeekday == 4),
+              _buildDayPill('Fri', isActive: currentWeekday == 5),
+              _buildDayPill('Sat', isActive: currentWeekday == 6),
+              _buildDayPill('Sun', isActive: currentWeekday == 7),
             ],
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildChartBar(String label, double heightRatio, {bool isActive = false}) {
+  Widget _buildDayPill(String day, {required bool isActive}) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 24,
+          width: 34,
           height: 4,
           decoration: BoxDecoration(
-            color: isActive ? Colors.blueAccent : Colors.white,
+            color: isActive ? AppColors.accentBlue : AppColors.borderMuted,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          label,
+          day,
           style: TextStyle(
-            color: isActive ? Colors.blueAccent : Colors.white70,
-            fontSize: 10,
+            color: isActive ? AppColors.accentBlue : AppColors.textSecondary,
+            fontSize: 11,
+            fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildStatsRow() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0B2B6A),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Obx(() {
-        final w = controller.profile.value?.weight ?? 0;
-        final targetW = controller.profile.value?.fitnessGoal?.targetWeight;
-        final targetWeightDisplay = (targetW != null && targetW > 0)
-            ? '${targetW % 1 == 0 ? targetW.toInt() : targetW}kg'
-            : '${(w * 0.9).round()}kg';
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildStatItem('Weight', '${w.toInt()}kg'),
-            Container(width: 1, height: 40, color: Colors.white.withValues(alpha: 0.2)),
-            _buildStatItem('Target weight', targetWeightDisplay),
-            Container(width: 1, height: 40, color: Colors.white.withValues(alpha: 0.2)),
-            _buildStatItem('Challenge', '0', showDots: true),
-          ],
-        );
-      }),
-    );
-  }
-
-  Widget _buildStatItem(String label, String value, {bool showDots = false}) {
+  Widget _buildQuickAction() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (showDots) const Icon(Icons.more_horiz, color: Colors.white, size: 16),
-        Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-      ],
-    );
-  }
-
-  Widget _buildGroupActivity() {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0B2B6A),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
+        const Text(
+          'Quick Action',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 14),
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  Get.to(() => const FitnessClubScreen());
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 22),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
+                    color: AppColors.cardSurface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: const Color(0xFF1E2E4A),
+                      width: 1.2,
+                    ),
                   ),
-                  child: const Icon(Icons.login, color: Colors.white),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CustomPaint(
+                        size: const Size(26, 26),
+                        painter: const FitnessClubShieldPainter(color: Color(0xFF5B9BF6)),
+                      ),
+                      const SizedBox(width: 10),
+                      const Flexible(
+                        child: Text(
+                          'Fitness Club',
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Join Club',
-                  style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: GestureDetector(
+                onTap: () async {
+                  await Get.to(() => const FitnessProfileGoalScreen());
+                  controller.fetchProfile();
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 22),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardSurface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: const Color(0xFF1E2E4A),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CustomPaint(
+                        size: const Size(26, 26),
+                        painter: const GoalsBurstPainter(color: Color(0xFF5B9BF6)),
+                      ),
+                      const SizedBox(width: 10),
+                      const Flexible(
+                        child: Text(
+                          'Goals',
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 4),
-                const Text('Find an active club', style: TextStyle(color: Colors.white70, fontSize: 10)),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        GestureDetector(
+          onTap: () {
+            if (Get.isRegistered<WorkoutHistoryController>()) {
+              Get.delete<WorkoutHistoryController>(force: true);
+            }
+            Get.to(() => const WorkoutHistoryScreen());
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 22),
+            decoration: BoxDecoration(
+              color: AppColors.cardSurface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: const Color(0xFF1E2E4A),
+                width: 1.2,
+              ),
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.history, color: Color(0xFF5B9BF6), size: 26),
+                SizedBox(width: 10),
+                Text(
+                  'History',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
           ),
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              Get.to(() => const CreateGroupScreen());
-            },
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0B2B6A),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.add, color: Colors.white),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Create Club',
-                    style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text('Create Your Own\nCommunity', style: TextStyle(color: Colors.white70, fontSize: 10)),
-                ],
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }
+}
 
-  Widget _buildChallengeCard(SoloChallengeModel challenge) {
-    final progressPercentage = (challenge.progress * 100).toInt();
+class FitnessClubShieldPainter extends CustomPainter {
+  final Color color;
+  const FitnessClubShieldPainter({this.color = const Color(0xFF5B9BF6)});
 
-    return NotchedCard(
-      backgroundColor: const Color(0xFF0F1B36),
-      borderColor: const Color(0xFF2563EB).withValues(alpha: 0.25),
-      borderWidth: 1.0,
-      cornerRadius: 24,
-      notchSize: 52,
-      actionButtonSize: 38,
-      actionIcon: Icons.play_arrow_rounded,
-      actionIconColor: Colors.white,
-      actionButtonBg: const Color(0xFF0A1428),
-      actionButtonBorderColor: const Color(0xFF1E3A8A),
-      onTap: () {
-        Get.to(() => SoloFitnessDetailScreen(challenge: challenge));
-      },
-      onActionTap: () {
-        Get.to(() => SoloFitnessDetailScreen(challenge: challenge));
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                challenge.imagePath.isNotEmpty ? challenge.imagePath : AppImages.pushUpCard,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  width: 100,
-                  height: 100,
-                  color: Colors.black26,
-                  child: const Icon(Icons.fitness_center, color: Colors.white54, size: 40),
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.8
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
 
-            // Middle Info: Title, Category, Progress
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    challenge.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.2,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    challenge.category,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 5,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                          child: FractionallySizedBox(
-                            alignment: Alignment.centerLeft,
-                            widthFactor: challenge.progress.clamp(0.0, 1.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF0052FF),
-                                borderRadius: BorderRadius.circular(3),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        '$progressPercentage %',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    final w = size.width;
+    final h = size.height;
+
+    final shield = Path()
+      ..moveTo(w * 0.18, h * 0.15)
+      ..lineTo(w * 0.82, h * 0.15)
+      ..lineTo(w * 0.82, h * 0.52)
+      ..cubicTo(w * 0.82, h * 0.78, w * 0.50, h * 0.94, w * 0.50, h * 0.94)
+      ..cubicTo(w * 0.50, h * 0.94, w * 0.18, h * 0.78, w * 0.18, h * 0.52)
+      ..close();
+    canvas.drawPath(shield, paint);
+
+    final starPath = Path();
+    final starCenter = Offset(w * 0.50, h * 0.46);
+    final outerRadius = w * 0.17;
+    final innerRadius = outerRadius * 0.46;
+    for (int i = 0; i < 10; i++) {
+      final radius = i.isEven ? outerRadius : innerRadius;
+      final angle = (i * 36 - 90) * math.pi / 180;
+      final x = starCenter.dx + radius * math.cos(angle);
+      final y = starCenter.dy + radius * math.sin(angle);
+      if (i == 0) {
+        starPath.moveTo(x, y);
+      } else {
+        starPath.lineTo(x, y);
+      }
+    }
+    starPath.close();
+    canvas.drawPath(starPath, paint);
   }
 
-  Widget _buildYourGoal() {
-    return Obx(() {
-      final profile = controller.profile.value;
-      final goal = profile?.fitnessGoal;
-      final bool hasGoal = profile?.hasGoal ?? false;
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Your Goal',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          if (hasGoal && goal != null)
-            GestureDetector(
-              onTap: () async {
-                final result = await Get.to(() => const SetupGoalScreen());
-                if (result == true) {
-                  controller.fetchProfile();
-                }
-              },
-              child: _buildGoalCard(goal),
-            )
-          else
-            _buildSetupGoalButton(),
-        ],
-      );
-    });
+class GoalsBurstPainter extends CustomPainter {
+  final Color color;
+  const GoalsBurstPainter({this.color = const Color(0xFF5B9BF6)});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.6
+      ..strokeCap = StrokeCap.round;
+
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+
+    // Center star
+    final starPath = Path();
+    final starR = size.width * 0.15;
+    final innerR = starR * 0.45;
+    for (int i = 0; i < 8; i++) {
+      final r = i.isEven ? starR : innerR;
+      final angle = (i * 45 - 90) * math.pi / 180;
+      final x = cx + r * math.cos(angle);
+      final y = cy + r * math.sin(angle);
+      if (i == 0) {
+        starPath.moveTo(x, y);
+      } else {
+        starPath.lineTo(x, y);
+      }
+    }
+    starPath.close();
+    canvas.drawPath(starPath, paint);
+
+    // Radiating rays
+    final rayStart = size.width * 0.24;
+    final rayEnd = size.width * 0.46;
+    for (int i = 0; i < 12; i++) {
+      final angle = (i * 30) * math.pi / 180;
+      final x1 = cx + rayStart * math.cos(angle);
+      final y1 = cy + rayStart * math.sin(angle);
+      final x2 = cx + rayEnd * math.cos(angle);
+      final y2 = cy + rayEnd * math.sin(angle);
+      canvas.drawLine(Offset(x1, y1), Offset(x2, y2), paint);
+    }
   }
 
-  Widget _buildGoalCard(dynamic goal) {
-    final targetWeightVal = goal.targetWeight;
-    final targetWeightText = targetWeightVal % 1 == 0
-        ? targetWeightVal.toInt().toString()
-        : targetWeightVal.toString();
-    final workoutLevelText = goal.formattedWorkoutLevel;
-    final targetDateText = goal.formattedTargetDate.isNotEmpty
-        ? goal.formattedTargetDate
-        : 'Not set';
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0C1938),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF1E293B)),
-      ),
-      child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Target weight',
-                    style: TextStyle(
-                      color: Color(0xFFA0AAB2),
-                      fontSize: 13,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(
-                        targetWeightText,
-                        style: const TextStyle(
-                          color: Color(0xFFE2E8F0),
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'kg',
-                        style: TextStyle(
-                          color: Color(0xFFA0AAB2),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: 1.5,
-              height: 44,
-              color: Colors.white.withValues(alpha: 0.2),
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Fitness Level',
-                    style: TextStyle(
-                      color: Color(0xFFA0AAB2),
-                      fontSize: 13,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    workoutLevelText,
-                    style: const TextStyle(
-                      color: Color(0xFFE2E8F0),
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: 1.5,
-              height: 44,
-              color: Colors.white.withValues(alpha: 0.2),
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Target Date',
-                    style: TextStyle(
-                      color: Color(0xFFA0AAB2),
-                      fontSize: 13,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    targetDateText,
-                    style: const TextStyle(
-                      color: Color(0xFFE2E8F0),
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-  }
-
-  Widget _buildSetupGoalButton() {
-    return GestureDetector(
-      onTap: () async {
-        final result = await Get.to(() => const SetupGoalScreen());
-        if (result == true) {
-          controller.fetchProfile();
-        }
-      },
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: const Color(0xFF0B2B6A),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.add, color: Colors.white, size: 24),
-            ),
-            const SizedBox(width: 16),
-            const Text(
-              'Set Up Your Fitness Goal Now 🔥',
-              style: TextStyle(color: Colors.white, fontSize: 14),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

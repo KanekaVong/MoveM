@@ -52,6 +52,7 @@ app.*.map.json
 **/ios/.symlinks/
 **/ios/Flutter/.last_build_id
 **/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/Secrets.xcconfig
 
 # macOS (auto-generated / cached)
 **/macos/Pods/
@@ -76,6 +77,6 @@ windows/flutter/generated_plugins.cmake
 **/secrets.xcconfig
 
 # Test files
-test/
+/test/
 
 

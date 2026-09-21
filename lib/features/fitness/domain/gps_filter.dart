@@ -2,12 +2,11 @@ import 'package:geolocator/geolocator.dart';
 import '../data/models/track_point.dart';
 
 class GpsFilter {
-  static const double maxAcceptableAccuracy = 15.0;
+  static const double maxAcceptableAccuracy = 20.0;
   static const double minMovementDistance = 3.0;
   static const double maxPlausibleSpeed = 8.0;
 
   static bool isValid(Position candidate, TrackPoint? lastAccepted) {
-
     if (candidate.accuracy > maxAcceptableAccuracy) return false;
 
     if (lastAccepted == null) return true;

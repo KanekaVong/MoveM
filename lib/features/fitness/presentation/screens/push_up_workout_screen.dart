@@ -21,10 +21,10 @@ class PushUpWorkoutScreen extends StatefulWidget {
 
 class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
     with SingleTickerProviderStateMixin {
-  int _currentSet = 2; // Default to 2/4 matching screenshot or start at 1
-  int _currentReps = 7; // Default to 7 reps matching screenshot or start at 0
+  int _currentSet = 1;
+  int _currentReps = 0;
   int _totalRepsCompleted = 0;
-  int _secondsElapsed = 314; // 5:14 matching screenshot
+  int _secondsElapsed = 0;
   bool _isPaused = false;
   Timer? _durationTimer;
 
@@ -161,22 +161,6 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
     );
   }
 
-  Widget _buildSummaryItem(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-
   String _formatDuration(int totalSeconds) {
     final minutes = (totalSeconds ~/ 60).toString();
     final seconds = (totalSeconds % 60).toString().padLeft(2, '0');
@@ -201,7 +185,6 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Background push up exercise image
             Image.asset(
               AppImages.pushupExerciseBg,
               fit: BoxFit.cover,
@@ -210,7 +193,6 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
               ),
             ),
 
-            // AI Pose Skeleton Overlay
             AnimatedBuilder(
               animation: _pulseAnimation,
               builder: (context, child) {
@@ -221,7 +203,6 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
               },
             ),
 
-            // Top Bar
             SafeArea(
               child: Align(
                 alignment: Alignment.topCenter,
@@ -230,7 +211,6 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Circular Back Button
                       GestureDetector(
                         onTap: () {
                           Get.back();
@@ -256,7 +236,6 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
                         ),
                       ),
 
-                      // Center Reps Pill [ 7 REPS (↺) ]
                       Container(
                         height: 52,
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
@@ -320,7 +299,6 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
                         ),
                       ),
 
-                      // Dummy invisible box for balanced spacing
                       const SizedBox(width: 44),
                     ],
                   ),
@@ -328,7 +306,6 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
               ),
             ),
 
-            // Tap hint indicator
             Positioned(
               top: 100,
               left: 0,
@@ -355,7 +332,6 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
               ),
             ),
 
-            // Bottom Frosted Stats Card [ SET 2/4 | DURATION 5:14 (||) | GOAL 15 ]
             Positioned(
               left: 20,
               right: 20,
@@ -384,7 +360,6 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
                       ),
                       child: Row(
                         children: [
-                          // SET Column
                           Expanded(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
@@ -411,14 +386,12 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
                             ),
                           ),
 
-                          // Divider 1
                           Container(
                             width: 1,
                             height: 50,
                             color: Colors.white.withValues(alpha: 0.2),
                           ),
 
-                          // DURATION Column with Pause Button
                           Expanded(
                             flex: 2,
                             child: Column(
@@ -473,14 +446,12 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
                             ),
                           ),
 
-                          // Divider 2
                           Container(
                             width: 1,
                             height: 50,
                             color: Colors.white.withValues(alpha: 0.2),
                           ),
 
-                          // GOAL Column
                           Expanded(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
@@ -530,7 +501,6 @@ class _PoseSkeletonPainter extends CustomPainter {
     final w = size.width;
     final h = size.height;
 
-    // Joint landmark coordinates calibrated for the Great Wall athlete photo
     final head = Offset(0.79 * w, 0.58 * h);
     final neck = Offset(0.66 * w, 0.58 * h);
     final chest = Offset(0.60 * w, 0.68 * h);
@@ -557,7 +527,6 @@ class _PoseSkeletonPainter extends CustomPainter {
       canvas.drawLine(p1, p2, linePaint);
     }
 
-    // Connect anatomical lines
     drawSegment(head, neck);
     drawSegment(neck, chest);
     drawSegment(neck, leftWrist);

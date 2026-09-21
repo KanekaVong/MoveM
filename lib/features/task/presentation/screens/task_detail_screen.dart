@@ -1,14 +1,15 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/app_images.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/task_detail_controller.dart';
 import '../../data/dto/response/task_response.dart';
+import '../../data/dto/response/checklist_response.dart';
 import 'edit_task_screen.dart';
 import 'task_comment_screen.dart';
+import 'task_activity_feed_screen.dart';
 
 class TaskDetailScreen extends StatelessWidget {
   final String activityId;
@@ -21,33 +22,9 @@ class TaskDetailScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.taskDarkBackground,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              AppImages.taskDetailBackground,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.35),
-                    AppColors.taskDarkBackground.withOpacity(0.65),
-                    AppColors.taskDarkBackground.withOpacity(0.9),
-                  ],
-                  stops: const [0.0, 0.5, 1.0],
-                ),
-              ),
-            ),
-          ),
-          SafeArea(
-            child: Obx(() {
+      backgroundColor: AppColors.pageBackground,
+      body: SafeArea(
+        child: Obx(() {
               if (controller.isLoading && controller.task.value == null) {
                 return const Center(
                   child: CircularProgressIndicator(color: AppColors.taskBluePrimary),
@@ -57,7 +34,7 @@ class TaskDetailScreen extends StatelessWidget {
               final task = controller.task.value;
               if (task == null) {
                 return Center(
-                  child: Text(l10n?.noNotifications ?? 'Task not found', style: const TextStyle(color: Colors.white)),
+                  child: Text(l10n?.noNotifications ?? 'Task not found', style: const TextStyle(color: AppColors.textPrimary)),
                 );
               }
 
@@ -73,8 +50,8 @@ class TaskDetailScreen extends StatelessWidget {
                           Text(
                             task.activityName,
                             style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
+                              color: AppColors.textPrimary,
+                              fontSize: 26,
                               fontWeight: FontWeight.bold,
                               fontStyle: FontStyle.italic,
                             ),
@@ -83,77 +60,84 @@ class TaskDetailScreen extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'DEADLINES',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
+                              if (task.deadline != null && task.deadline!.isNotEmpty)
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'DEADLINES',
+                                      style: TextStyle(
+                                        color: AppColors.textPrimary,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 0.5,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    _formatDate(task.deadline),
-                                    style: const TextStyle(
-                                      color: AppColors.taskTextMuted,
-                                      fontSize: 12,
-                                      fontStyle: FontStyle.italic,
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _formatDate(task.deadline),
+                                      style: const TextStyle(
+                                        color: AppColors.textSecondary,
+                                        fontSize: 12,
+                                        fontStyle: FontStyle.italic,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'PRIORITY',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
+                                  ],
+                                ),
+                              if (task.priority != null && task.priority!.isNotEmpty)
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'PRIORITY',
+                                      style: TextStyle(
+                                        color: AppColors.textPrimary,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 0.5,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    task.priority?.toUpperCase() ?? 'LOW',
-                                    style: TextStyle(
-                                      color: _getPriorityColor(task.priority),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.italic,
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      task.priority!.toUpperCase(),
+                                      style: TextStyle(
+                                        color: _getPriorityColor(task.priority),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        fontStyle: FontStyle.italic,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          Container(
-                            height: 0.5,
-                            color: Colors.white.withOpacity(0.12),
-                          ),
-                          const SizedBox(height: 12),
-                          const Text(
-                            'DESCRIPTION',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
+                          if (task.description != null && task.description!.trim().isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            Container(
+                              height: 0.5,
+                              color: AppColors.textPrimary.withOpacity(0.12),
                             ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            task.description ?? 'No description provided',
-                            style: const TextStyle(
-                              color: AppColors.taskTextBody,
-                              fontSize: 12,
-                              fontStyle: FontStyle.italic,
-                              height: 1.4,
+                            const SizedBox(height: 12),
+                            const Text(
+                              'DESCRIPTION',
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: 6),
+                            Text(
+                              task.description!.trim(),
+                              style: const TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 12,
+                                fontStyle: FontStyle.italic,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
                           const SizedBox(height: 20),
                           _buildPropertiesCard(task, controller),
                           const SizedBox(height: 16),
@@ -166,13 +150,11 @@ class TaskDetailScreen extends StatelessWidget {
               );
             }),
           ),
-        ],
-      ),
-    );
-  }
+        );
+      }
 
   Widget _buildTopBar(TaskDetailController controller, TaskResponse task) {
-    final isCompleted = task.status == 'COMPLETE';
+    final isLocked = task.isComplete || task.isPastDeadline;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       child: Row(
@@ -199,9 +181,11 @@ class TaskDetailScreen extends StatelessWidget {
               _buildCircleButton(
                 icon: Icons.access_time,
                 iconSize: 18,
-                onTap: () {},
+                onTap: () {
+                  Get.to(() => TaskActivityFeedScreen(activityId: task.activityId));
+                },
               ),
-              if (!isCompleted) ...[
+              if (!isLocked) ...[
                 const SizedBox(width: 10),
                 _buildCircleButton(
                   icon: Icons.edit_outlined,
@@ -235,175 +219,178 @@ class TaskDetailScreen extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: const Color(0x33000000),
-          border: Border.all(color: Colors.white.withOpacity(0.24), width: 1),
+          border: Border.all(color: AppColors.textPrimary.withOpacity(0.24), width: 1),
         ),
         child: Center(
-          child: Icon(icon, color: Colors.white, size: iconSize),
+          child: Icon(icon, color: AppColors.textPrimary, size: iconSize),
         ),
       ),
     );
   }
 
   Widget _buildPropertiesCard(TaskResponse task, TaskDetailController controller) {
+    final hasLabels = task.labels != null && task.labels!.isNotEmpty;
+    final hasChecklists = task.checklists != null && task.checklists!.isNotEmpty;
+    final hasRepeat = task.recurring == true || (task.recurringType != null && task.recurringType!.isNotEmpty);
+    final hasReminders = task.reminders != null && task.reminders!.isNotEmpty;
+    final hasCollaborators = task.collaborators != null && task.collaborators!.isNotEmpty;
+    final hasAttachments = task.attachments != null && task.attachments!.isNotEmpty;
+
+    if (!hasLabels && !hasChecklists && !hasRepeat && !hasReminders && !hasCollaborators && !hasAttachments) {
+      return const SizedBox.shrink();
+    }
+
+    final List<Widget> sections = [];
+
+    if (hasLabels) {
+      sections.add(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text(
+                  'LABEL',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                Icon(
+                  Icons.keyboard_arrow_down,
+                  color: AppColors.textSecondary,
+                  size: 20,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            _buildLabels(task),
+          ],
+        ),
+      );
+    }
+
+    if (hasChecklists) {
+      sections.add(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'CHECKLISTS',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildChecklists(task, controller),
+          ],
+        ),
+      );
+    }
+
+    if (hasRepeat) {
+      sections.add(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'REPEAT',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              task.recurringType ?? 'RECURRING',
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (hasReminders) {
+      sections.add(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              'Your Next Reminder',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            _buildReminderDateView(task),
+          ],
+        ),
+      );
+    }
+
+    if (hasCollaborators) {
+      sections.add(_buildCollaboratorsSection(task));
+    }
+
+    if (hasAttachments) {
+      sections.add(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Attachments   (${task.attachments!.length})',
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                const Icon(
+                  Icons.keyboard_arrow_up,
+                  color: AppColors.textPrimary,
+                  size: 18,
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            _buildAttachments(task),
+          ],
+        ),
+      );
+    }
+
     return Container(
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
-        color: AppColors.taskFigmaCard.withOpacity(0.20),
-        borderRadius: BorderRadius.circular(25),
+        color: AppColors.cardSurface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.textPrimary.withOpacity(0.06)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: () => controller.toggleCardExpanded(),
-            behavior: HitTestBehavior.opaque,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'LABEL',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Obx(() => Icon(
-                  controller.isCardExpanded.value
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
-                  color: Colors.white70,
-                  size: 20,
-                )),
-              ],
-            ),
-          ),
-          Obx(() {
-            if (!controller.isCardExpanded.value) return const SizedBox();
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                _buildLabels(task),
-                const SizedBox(height: 22),
-                if (task.checklists != null && task.checklists!.isNotEmpty) ...[
-                  Row(
-                    children: [
-                      const Text(
-                        'CHECKLIST',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      if (task.status != 'COMPLETE') ...[
-                        const SizedBox(width: 4),
-                        const Icon(Icons.add, color: Colors.white, size: 14),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  _buildChecklists(task, controller),
-                  const SizedBox(height: 22),
-                ],
-                const Text(
-                  'REPEAT',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  task.recurringType ?? (task.recurring ? 'YES' : 'NONE'),
-                  style: const TextStyle(
-                    color: AppColors.taskTextMuted,
-                    fontSize: 12,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-                const SizedBox(height: 22),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: const [
-                        Text(
-                          'Your Next Reminder',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(width: 6),
-                        Icon(Icons.calendar_today_outlined, color: Colors.white70, size: 14),
-                      ],
-                    ),
-                    Text(
-                      _getNextReminderDate(task),
-                      style: const TextStyle(
-                        color: AppColors.taskTextMuted,
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ],
-                ),
-                if (task.collaborators != null && task.collaborators!.isNotEmpty) ...[
-                  const SizedBox(height: 22),
-                  Text(
-                    'Collaborators (${task.collaborators!.length})',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  _buildCollaborators(task),
-                ],
-                if (task.attachments != null && task.attachments!.isNotEmpty) ...[
-                  const SizedBox(height: 22),
-                  GestureDetector(
-                    onTap: () => controller.toggleAttachmentsExpanded(),
-                    behavior: HitTestBehavior.opaque,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Attachments (${task.attachments!.length})',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Obx(() => Icon(
-                          controller.isAttachmentsExpanded.value
-                              ? Icons.keyboard_arrow_up
-                              : Icons.keyboard_arrow_down,
-                          color: Colors.white70,
-                          size: 20,
-                        )),
-                      ],
-                    ),
-                  ),
-                  Obx(() {
-                    if (!controller.isAttachmentsExpanded.value) return const SizedBox();
-                    return Column(
-                      children: [
-                        const SizedBox(height: 12),
-                        _buildAttachments(task),
-                      ],
-                    );
-                  }),
-                ],
-              ],
-            );
-          }),
+          for (int i = 0; i < sections.length; i++) ...[
+            sections[i],
+            if (i < sections.length - 1) const SizedBox(height: 20),
+          ],
         ],
       ),
     );
@@ -411,14 +398,7 @@ class TaskDetailScreen extends StatelessWidget {
 
   Widget _buildLabels(TaskResponse task) {
     if (task.labels == null || task.labels!.isEmpty) {
-      return const Text(
-        'No labels',
-        style: TextStyle(
-          color: AppColors.taskTextSecondary,
-          fontSize: 12,
-          fontStyle: FontStyle.italic,
-        ),
-      );
+      return const SizedBox.shrink();
     }
 
     return Wrap(
@@ -429,18 +409,18 @@ class TaskDetailScreen extends StatelessWidget {
         try {
           color = Color(int.parse(label.color.replaceFirst('#', '0xFF')));
         } catch (_) {
-          color = AppColors.taskBluePrimary;
+          color = const Color(0xFF68B684);
         }
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.65),
+            color: color,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
             label.name,
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.textPrimary,
               fontSize: 11,
               fontWeight: FontWeight.w600,
               fontStyle: FontStyle.italic,
@@ -452,11 +432,17 @@ class TaskDetailScreen extends StatelessWidget {
   }
 
   Widget _buildChecklists(TaskResponse task, TaskDetailController controller) {
-    final isCompleted = task.status == 'COMPLETE';
+    if (task.checklists == null || task.checklists!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final isLocked = task.isComplete || task.isPastDeadline;
+    final List<ChecklistResponse> items = task.checklists!.whereType<ChecklistResponse>().toList();
+
     return Column(
-      children: task.checklists!.map((item) {
+      children: items.map((item) {
         return GestureDetector(
-          onTap: isCompleted ? null : () => controller.toggleChecklistItem(item.id, item.completed),
+          onTap: isLocked ? null : () => controller.toggleChecklistItem(item.id, item.completed),
           child: Padding(
             padding: const EdgeInsets.only(bottom: 12.0),
             child: Row(
@@ -465,7 +451,7 @@ class TaskDetailScreen extends StatelessWidget {
                   child: Text(
                     item.itemName,
                     style: TextStyle(
-                      color: isCompleted ? AppColors.taskTextMuted : Colors.white,
+                      color: isLocked ? AppColors.textSecondary : AppColors.textPrimary,
                       fontSize: 13,
                       fontStyle: FontStyle.italic,
                     ),
@@ -476,14 +462,14 @@ class TaskDetailScreen extends StatelessWidget {
                   height: 20,
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: item.completed ? AppColors.taskGreenAccent : AppColors.taskTextSecondary,
+                      color: item.completed ? const Color(0xFF68B684) : AppColors.textSecondary,
                       width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(3),
-                    color: item.completed ? AppColors.taskGreenAccent.withOpacity(0.2) : Colors.transparent,
+                    color: item.completed ? const Color(0xFF68B684).withOpacity(0.2) : Colors.transparent,
                   ),
                   child: item.completed
-                      ? const Icon(Icons.check, size: 14, color: AppColors.taskGreenAccent)
+                      ? const Icon(Icons.check, size: 14, color: Color(0xFF68B684))
                       : null,
                 ),
               ],
@@ -494,79 +480,182 @@ class TaskDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCollaborators(TaskResponse task) {
-    return Wrap(
-      spacing: 12,
-      runSpacing: 8,
-      children: task.collaborators!.map((collaborator) {
-        final name = collaborator is Map
-            ? (collaborator['name'] ?? collaborator['username'] ?? 'User')
-            : collaborator.toString();
-        final initial = name.isNotEmpty ? name[0].toUpperCase() : 'U';
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: AppColors.taskAvatarBg,
-              child: Text(
-                initial,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
+  Widget _buildReminderDateView(TaskResponse task) {
+    if (task.reminders == null || task.reminders!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final rem = task.reminders!.first;
+    String dayMonth = '';
+    String year = '';
+    try {
+      final dt = DateTime.parse(rem.remindAt).toLocal();
+      dayMonth = _formatDayMonth(dt);
+      year = DateFormat('yyyy').format(dt);
+    } catch (_) {
+      dayMonth = rem.remindAt;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          dayMonth,
+          style: const TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 12,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        if (year.isNotEmpty)
+          Text(
+            year,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 12,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildCollaboratorsSection(TaskResponse task) {
+    final taskCollaborators = task.collaborators ?? [];
+    if (taskCollaborators.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Collaborators   (${taskCollaborators.length})',
+          style: const TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 12,
+          runSpacing: 8,
+          children: taskCollaborators.map((c) {
+            final name = c is Map ? (c['name'] ?? c['username'] ?? 'User') : c.toString();
+            final initial = name.isNotEmpty ? name[0].toUpperCase() : 'U';
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: AppColors.cardSurface,
+                  child: Text(
+                    initial,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              name,
-              style: const TextStyle(
-                color: AppColors.taskTextMuted,
-                fontSize: 11,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ],
-        );
-      }).toList(),
+                const SizedBox(height: 4),
+                Text(
+                  name,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
   Widget _buildAttachments(TaskResponse task) {
+    if (task.attachments == null || task.attachments!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       children: task.attachments!.map((attachment) {
         String url = '';
+        String fileName = 'Attachment';
         if (attachment is Map) {
-          url = attachment['filePath'] ?? attachment['url'] ?? attachment['fileUrl'] ?? '';
+          url = attachment['url']?.toString() ?? '';
+          final orig = attachment['originalFileName'] ?? attachment['fileName'];
+          fileName = (orig != null && orig.toString().isNotEmpty)
+              ? orig.toString()
+              : (attachment['filePath']?.toString() ?? '').split('/').last;
         } else {
           url = attachment.toString();
+          fileName = url.split('/').last;
         }
-        if (url.isEmpty) return const SizedBox();
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-          final base = AppConfig.baseUrl.endsWith('/')
-              ? AppConfig.baseUrl.substring(0, AppConfig.baseUrl.length - 1)
-              : AppConfig.baseUrl;
-          final clean = url.startsWith('/') ? url.substring(1) : url;
-          url = '$base/$clean';
-        }
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.network(
-              url,
-              height: 180,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                height: 100,
-                color: AppColors.taskSlateDark,
-                child: const Center(
-                  child: Icon(Icons.insert_drive_file, color: Colors.white54, size: 36),
-                ),
+        if (fileName.isEmpty) fileName = 'Attachment';
+
+        final bool hasValidUrl = url.isNotEmpty &&
+            (url.startsWith('http://') || url.startsWith('https://'));
+
+        final isImage = fileName.toLowerCase().endsWith('.jpg') ||
+            fileName.toLowerCase().endsWith('.jpeg') ||
+            fileName.toLowerCase().endsWith('.png') ||
+            fileName.toLowerCase().endsWith('.webp') ||
+            fileName.toLowerCase().endsWith('.gif');
+
+        if (hasValidUrl && isImage) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(
+                url,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
               ),
             ),
+          );
+        }
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+          decoration: BoxDecoration(
+            color: AppColors.chipSurface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.06)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.cardSurface,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.attach_file, color: AppColors.textSecondary, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  fileName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       }).toList(),
@@ -574,35 +663,102 @@ class TaskDetailScreen extends StatelessWidget {
   }
 
   Widget _buildBottomButton(BuildContext context, TaskResponse task, TaskDetailController controller) {
-    final l10n = AppLocalizations.of(context);
     final isCompleted = task.status == 'COMPLETE';
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-      child: SizedBox(
-        width: double.infinity,
-        height: 52,
-        child: ElevatedButton(
-          onPressed: isCompleted ? null : () => controller.markAsComplete(),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.taskGreenButton,
-            disabledBackgroundColor: AppColors.taskSlateDark,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
-            ),
-            elevation: 0,
-          ),
-          child: Text(
-            isCompleted ? (l10n?.completedTasks ?? 'Completed') : (l10n?.finish ?? 'Mark Task as Complete'),
-            style: TextStyle(
-              color: isCompleted ? AppColors.taskTextSecondary : Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
+      child: GestureDetector(
+        onTap: isCompleted ? null : () => controller.markAsComplete(),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: Container(
+              width: double.infinity,
+              height: 48,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: isCompleted
+                      ? AppColors.textPrimary.withOpacity(0.12)
+                      : AppColors.textPrimary.withOpacity(0.35),
+                  width: 1.0,
+                ),
+                gradient: isCompleted
+                    ? null
+                    : LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          const Color(0xFF4B9D62).withOpacity(0.65),
+                          const Color(0xFF4B9D62).withOpacity(0.45),
+                          const Color(0xFF357A49).withOpacity(0.55),
+                        ],
+                      ),
+                color: isCompleted ? AppColors.chipSurface : null,
+                boxShadow: isCompleted
+                    ? null
+                    : [
+                        BoxShadow(
+                          color: const Color(0xFF4B9D62).withOpacity(0.30),
+                          blurRadius: 14,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+              ),
+              child: Stack(
+                children: [
+                  if (!isCompleted)
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: 24,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                          gradient: LinearGradient(
+                            begin: const Alignment(-0.5, -1.0),
+                            end: const Alignment(0.5, 1.0),
+                            colors: [
+                              AppColors.textPrimary.withOpacity(0.28),
+                              AppColors.textPrimary.withOpacity(0.0),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  Center(
+                    child: Text(
+                      isCompleted ? 'COMPLETED' : 'MARK AS COMPLETE',
+                      style: TextStyle(
+                        color: isCompleted ? AppColors.textSecondary : Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  String _formatDayMonth(DateTime date) {
+    String day = DateFormat('d').format(date);
+    String suffix = 'th';
+    if (day.endsWith('1') && !day.endsWith('11')) {
+      suffix = 'st';
+    } else if (day.endsWith('2') && !day.endsWith('12')) {
+      suffix = 'nd';
+    } else if (day.endsWith('3') && !day.endsWith('13')) {
+      suffix = 'rd';
+    }
+    String paddedDay = day.padLeft(2, '0');
+    return '$paddedDay$suffix ${DateFormat('MMMM').format(date)}';
   }
 
   String _formatDate(String? dateStr) {
@@ -625,19 +781,12 @@ class TaskDetailScreen extends StatelessWidget {
     }
   }
 
-  String _getNextReminderDate(TaskResponse task) {
-    if (task.reminders != null && task.reminders!.isNotEmpty) {
-      final reminder = task.reminders!.first;
-      return _formatDate(reminder.remindAt);
-    }
-    return 'None';
-  }
-
   Color _getPriorityColor(String? priority) {
     String p = priority?.toUpperCase() ?? 'LOW';
-    if (p == 'LOW') return AppColors.taskGreenAccent;
+    if (p == 'LOW') return const Color(0xFF68B684);
     if (p == 'NORMAL' || p == 'MEDIUM') return AppColors.taskYellowPriority;
     if (p == 'HIGH' || p == 'URGENT') return AppColors.taskRedPriority;
-    return AppColors.taskGreenAccent;
+    return const Color(0xFF68B684);
   }
 }
+

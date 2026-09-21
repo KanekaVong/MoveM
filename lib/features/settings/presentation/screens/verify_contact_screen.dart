@@ -293,12 +293,8 @@ class _VerifyContactScreenState extends State<VerifyContactScreen> {
                         Get.toNamed(
                           AppRoutes.profileScreen,
                         );
-                      } on FirebaseAuthException catch (e) {
-                        debugPrint(
-                          'Firebase phone verification error: ${e.message}',
-                        );
-                      } catch (e) {
-                        debugPrint('Phone verification error: $e');
+                      } on FirebaseAuthException catch (_) {
+                      } catch (_) {
                       }
                     }
                   },

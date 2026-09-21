@@ -1,24 +1,25 @@
 import 'package:get/get.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../data/models/fitness_profile_model.dart';
+import '../../data/models/fitness_statistics_model.dart';
 import '../../data/models/solo_challenge_model.dart';
 import '../../data/repositories/fitness_profile_repository.dart';
+import '../../data/repositories/fitness_achievement_repository.dart';
 
 class FitnessProfileController extends BaseController {
   final FitnessProfileRepository _repository = FitnessProfileRepository();
+  final FitnessAchievementRepository _achievementRepository = FitnessAchievementRepository();
 
-  final profile = Rxn<FitnessProfileModel>(
-    FitnessProfileModel(
-      userId: 1,
-      height: 175.0,
-      weight: 70.0,
-      bmi: 22.9,
-    ),
-  );
-  final hasProfile = true.obs;
+  final profile = Rxn<FitnessProfileModel>();
+  final hasProfile = false.obs;
 
   final soloChallenges = <SoloChallengeModel>[].obs;
   final isLoadingChallenges = false.obs;
+
+  final statistics = Rxn<FitnessStatisticsModel>();
+  final isLoadingStatistics = false.obs;
+
+  final achievementCount = 0.obs;
 
   final inputHeight = 0.0.obs;
   final inputWeight = 0.0.obs;
@@ -28,12 +29,16 @@ class FitnessProfileController extends BaseController {
     super.onInit();
     fetchProfile();
     fetchSoloChallenges();
+    fetchStatistics();
+    fetchAchievementCount();
   }
 
   Future<void> refreshData() async {
     await Future.wait([
       fetchProfile(),
       fetchSoloChallenges(),
+      fetchStatistics(),
+      fetchAchievementCount(),
     ]);
   }
 
@@ -48,7 +53,6 @@ class FitnessProfileController extends BaseController {
         isLoadingChallenges.value = false;
       },
       onError: (e) {
-        soloChallenges.clear();
         isLoadingChallenges.value = false;
       },
     );
@@ -63,13 +67,38 @@ class FitnessProfileController extends BaseController {
         if (data.height > 0 && data.weight > 0) {
           profile.value = data;
           hasProfile.value = true;
+        } else {
+          profile.value = data;
+          hasProfile.value = false;
         }
       },
       onError: (e) {
-        // Keep default mock profile if backend is not available
-        hasProfile.value = true;
+        hasProfile.value = false;
       },
     );
+  }
+
+  Future<void> fetchStatistics() async {
+    isLoadingStatistics.value = true;
+    await executeApi<FitnessStatisticsModel>(
+      showLoading: false,
+      showErrorDialog: false,
+      apiCall: () => _repository.getFitnessStatistics(),
+      onSuccess: (data) {
+        statistics.value = data;
+        isLoadingStatistics.value = false;
+      },
+      onError: (e) {
+        isLoadingStatistics.value = false;
+      },
+    );
+  }
+
+  Future<void> fetchAchievementCount() async {
+    final result = await _achievementRepository.getMyAchievementCount();
+    if (result.isSuccess && result.data != null) {
+      achievementCount.value = result.data!;
+    }
   }
 
   void setHeight(double cm) {
@@ -97,21 +126,58 @@ class FitnessProfileController extends BaseController {
         profile.value = data;
         hasProfile.value = true;
         success = true;
-        Get.back();
       },
       onError: (e) {
-        // Offline fallback
-        final heightM = inputHeight.value / 100.0;
-        final bmi = inputWeight.value / (heightM * heightM);
-        profile.value = FitnessProfileModel(
-          userId: 1,
-          height: inputHeight.value,
-          weight: inputWeight.value,
-          bmi: bmi,
-        );
+        success = false;
+        Get.snackbar('Error', 'Failed to save profile. Please try again.');
+      },
+    );
+    return success;
+  }
+
+  Future<bool> updateProfile(double height, double weight) async {
+    bool success = false;
+    await executeApi<FitnessProfileModel>(
+      showLoading: false,
+      apiCall: () => _repository.updateProfile(height, weight),
+      onSuccess: (data) {
+        profile.value = data;
+        success = true;
+      },
+      onError: (e) {
+        success = false;
+        Get.snackbar('Error', 'Failed to update profile. Please try again.');
+      },
+    );
+    return success;
+  }
+
+  Future<bool> saveBodyMetrics(double height, double weight) async {
+    if (height < 50 || height > 300) {
+      Get.snackbar('Error', 'Please enter a valid height in cm (e.g., 170 cm).');
+      return false;
+    }
+    if (weight < 20 || weight > 500) {
+      Get.snackbar('Error', 'Please enter a valid weight in kg (e.g., 65 kg).');
+      return false;
+    }
+
+    if (hasProfile.value) {
+      return updateProfile(height, weight);
+    }
+
+    bool success = false;
+    await executeApi<FitnessProfileModel>(
+      showLoading: false,
+      apiCall: () => _repository.createProfile(height, weight),
+      onSuccess: (data) {
+        profile.value = data;
         hasProfile.value = true;
         success = true;
-        Get.back();
+      },
+      onError: (e) {
+        success = false;
+        Get.snackbar('Error', 'Failed to save profile. Please try again.');
       },
     );
     return success;

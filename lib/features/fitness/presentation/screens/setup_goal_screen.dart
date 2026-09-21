@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../../shared/widgets/glass_button.dart';
 import '../../../../shared/widgets/glass_container.dart';
 import '../controllers/setup_goal_controller.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class SetupGoalScreen extends StatelessWidget {
   const SetupGoalScreen({super.key});
@@ -21,7 +22,7 @@ class SetupGoalScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF0F172A),
+        backgroundColor: AppColors.pageBackground,
         body: SafeArea(
           child: Column(
             children: [
@@ -30,7 +31,7 @@ class SetupGoalScreen extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
                     onPressed: controller.previousStep,
                   ),
                 ),
@@ -42,7 +43,7 @@ class SetupGoalScreen extends StatelessWidget {
                 child: Container(
                   width: double.infinity,
                   decoration: const BoxDecoration(
-                    color: Color(0xFF0F172A),
+                    color: AppColors.cardSurface,
                   ),
                   child: Obx(() {
                     final step = controller.currentStep.value;
@@ -51,7 +52,7 @@ class SetupGoalScreen extends StatelessWidget {
                     return Column(
                       children: [
                         const SizedBox(height: 24),
-                        Text(title, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                        Text(title, style: const TextStyle(color: AppColors.textPrimary, fontSize: 24, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 24),
 
                         Row(
@@ -62,7 +63,7 @@ class SetupGoalScreen extends StatelessWidget {
                               height: 4,
                               margin: const EdgeInsets.symmetric(horizontal: 4),
                               decoration: BoxDecoration(
-                                color: index <= step ? Colors.blueAccent : const Color(0xFF1E293B),
+                                color: index <= step ? Colors.blueAccent : AppColors.chipSurface,
                                 borderRadius: BorderRadius.circular(2),
                               ),
                             );
@@ -108,7 +109,7 @@ class SetupGoalScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         children: [
-          const Text('What’s your main goal?', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text('What’s your main goal?', style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 32),
           _buildGoalCard(controller, 'Lose Weight', 'WEIGHT_LOSS', 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=500&auto=format&fit=crop'),
           const SizedBox(height: 16),
@@ -130,7 +131,7 @@ class SetupGoalScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           opacity: isSelected ? 0.20 : 0.0,
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.2),
+            color: AppColors.textPrimary.withValues(alpha: 0.2),
             width: isSelected ? 1.5 : 0.3,
           ),
           child: Stack(
@@ -160,7 +161,7 @@ class SetupGoalScreen extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 24.0),
-                  child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  child: Text(title, style: const TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -175,15 +176,15 @@ class SetupGoalScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         children: [
-          const Text('What’s your target\nweight ?', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+          const Text('What’s your target\nweight ?', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textPrimary, fontSize: 24, fontWeight: FontWeight.bold)),
           const SizedBox(height: 32),
           Obx(() => Container(
             width: 200,
             height: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
+              color: AppColors.chipSurface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.1)),
             ),
             child: Row(
               children: [
@@ -192,11 +193,11 @@ class SetupGoalScreen extends StatelessWidget {
                     onTap: () => controller.isKg.value = true,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: controller.isKg.value ? Colors.white.withValues(alpha: 0.2) : Colors.transparent,
+                        color: controller.isKg.value ? AppColors.textPrimary.withValues(alpha: 0.2) : Colors.transparent,
                         borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
                       ),
                       alignment: Alignment.center,
-                      child: const Text('kg', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      child: const Text('kg', style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ),
@@ -205,11 +206,11 @@ class SetupGoalScreen extends StatelessWidget {
                     onTap: () => controller.isKg.value = false,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: !controller.isKg.value ? Colors.white.withValues(alpha: 0.2) : Colors.transparent,
+                        color: !controller.isKg.value ? AppColors.textPrimary.withValues(alpha: 0.2) : Colors.transparent,
                         borderRadius: const BorderRadius.horizontal(right: Radius.circular(16)),
                       ),
                       alignment: Alignment.center,
-                      child: const Text('Lbs', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      child: const Text('Lbs', style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ),
@@ -221,9 +222,9 @@ class SetupGoalScreen extends StatelessWidget {
             width: 150,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFF0B1220),
+              color: AppColors.chipSurface,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.1)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -233,16 +234,16 @@ class SetupGoalScreen extends StatelessWidget {
                   child: TextField(
                     controller: controller.weightTextController,
                     keyboardType: TextInputType.number,
-                    style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                    style: const TextStyle(color: AppColors.textPrimary, fontSize: 32, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
-                    decoration: const InputDecoration(border: InputBorder.none, hintText: '0', hintStyle: TextStyle(color: Colors.white24)),
+                    decoration: const InputDecoration(border: InputBorder.none, hintText: '0', hintStyle: TextStyle(color: AppColors.textCaption)),
                     onChanged: (val) {
                       controller.targetWeight.value = double.tryParse(val) ?? 0;
                     },
                   ),
                 ),
                 const SizedBox(width: 8),
-                Obx(() => Text(controller.isKg.value ? 'kg' : 'Lbs', style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))),
+                Obx(() => Text(controller.isKg.value ? 'kg' : 'Lbs', style: const TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold))),
               ],
             ),
           ),
@@ -256,14 +257,14 @@ class SetupGoalScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         children: [
-          const Text('What’s your target\ndate ?', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+          const Text('What’s your target\ndate ?', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textPrimary, fontSize: 24, fontWeight: FontWeight.bold)),
           const SizedBox(height: 48),
           GlassContainer(
             height: 252,
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             borderRadius: BorderRadius.circular(12),
-            color: const Color(0xFF002468),
-            opacity: 0.20,
+            color: AppColors.chipSurface,
+            opacity: 0.85,
             border: Border.all(color: Colors.transparent),
             child: _buildCustomDatePicker(controller),
           ),
@@ -293,9 +294,9 @@ class SetupGoalScreen extends StatelessWidget {
               child: GlassContainer(
                 height: 39,
                 width: double.infinity,
-                color: const Color(0xFF002468),
-                opacity: 0.20,
-                border: Border.all(color: Colors.white.withValues(alpha: 0.40), width: 0.8),
+                color: AppColors.chipSurface,
+                opacity: 0.85,
+                border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.40), width: 0.8),
                 borderRadius: BorderRadius.circular(6),
                 child: const SizedBox.shrink(),
               ),
@@ -310,7 +311,7 @@ class SetupGoalScreen extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(
                     item,
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                    style: const TextStyle(color: AppColors.textPrimary, fontSize: 16),
                   ),
                 );
               }).toList(),
@@ -355,7 +356,7 @@ class SetupGoalScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         children: [
-          const Text('Choose your preferred\nworkout level?', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text('Choose your preferred\nworkout level?', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 32),
           _buildWorkoutLevelCard(controller, 'New Beginner', 'Small steps, big changes. Perfect if you\'re just starting your fitness journey.', 'NOVICE_LEVEL'),
           const SizedBox(height: 16),
@@ -378,20 +379,20 @@ class SetupGoalScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           opacity: isSelected ? 0.20 : 0.0,
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.2),
+            color: AppColors.textPrimary.withValues(alpha: 0.2),
             width: isSelected ? 1.5 : 0.3,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(title, style: const TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
               AnimatedSize(
                 duration: const Duration(milliseconds: 300),
                 alignment: Alignment.topCenter,
                 child: isSelected && subtitle.isNotEmpty
                     ? Padding(
                         padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4)),
+                        child: Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4)),
                       )
                     : const SizedBox.shrink(),
               ),

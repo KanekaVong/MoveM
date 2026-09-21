@@ -64,16 +64,27 @@ class TaskController extends BaseController {
       queryParams['priority'] = selectedPriority.value;
     }
 
-    await executeApi(
-      apiCall: () => repository.getTasks(
-        queryParameters: queryParams.isNotEmpty ? queryParams : null,
-      ),
-      onSuccess: (data) {
-        tasks.value = data;
-        _syncReminders(data);
-      },
-      showLoading: false,
-    );
+    try {
+      await executeApi(
+        apiCall: () => repository.getTasks(
+          queryParameters: queryParams.isNotEmpty ? queryParams : null,
+        ),
+        onSuccess: (data) {
+          tasks.value = data;
+          _syncReminders(data);
+        },
+        onError: (_) {
+          if (tasks.isEmpty) {
+            tasks.clear();
+          }
+        },
+        showLoading: false,
+      );
+    } finally {
+      if (state.value == ViewState.loading) {
+        state.value = ViewState.idle;
+      }
+    }
   }
 
   Future<void> _syncReminders(List<TaskResponse> taskList) async {

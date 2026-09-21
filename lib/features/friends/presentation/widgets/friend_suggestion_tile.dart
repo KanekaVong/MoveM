@@ -47,7 +47,7 @@ class FriendSuggestionTile extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                  style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
@@ -64,9 +64,9 @@ class FriendSuggestionTile extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.slate800.withValues(alpha: 0.5),
+                  color: AppColors.chipSurface,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.slate800),
+                  border: Border.all(color: AppColors.borderMuted),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -82,9 +82,9 @@ class FriendSuggestionTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.slate800.withValues(alpha: 0.5),
+                color: AppColors.chipSurface,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.slate800),
+                border: Border.all(color: AppColors.borderMuted),
               ),
               child: const Text('Friends', style: TextStyle(color: AppColors.emeraldLight, fontSize: 12, fontWeight: FontWeight.bold)),
             )
@@ -94,9 +94,9 @@ class FriendSuggestionTile extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.slate800.withValues(alpha: 0.5),
+                  color: AppColors.chipSurface,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.slate800),
+                  border: Border.all(color: AppColors.borderMuted),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -116,11 +116,11 @@ class FriendSuggestionTile extends StatelessWidget {
   Widget _buildPlaceholder(String initial) {
     return CircleAvatar(
       radius: 20,
-      backgroundColor: AppColors.slate700,
+      backgroundColor: AppColors.chipSurface,
       child: Text(
         initial,
         style: const TextStyle(
-          color: Colors.white,
+          color: AppColors.textPrimary,
           fontWeight: FontWeight.bold,
           fontSize: 14,
         ),

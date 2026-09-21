@@ -191,13 +191,10 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
                         ? _contactController.text.trim()
                         : _completePhoneNumber;
 
-                    debugPrint('Phone sent to Firebase: $value');
-
                     if (value.isEmpty) {
                       return;
                     }
 
-                    // EMAIL
                     if (widget.type == ContactType.email) {
                       final success =
                       await _settingController.requestEmailChange(value);
@@ -217,7 +214,6 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
                       return;
                     }
 
-                    // PHONE
                     if (widget.type == ContactType.phone) {
                       try {
                         final verificationId =
@@ -238,15 +234,9 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
                           },
                         );
                       } catch (e) {
-                        debugPrint(
-                          'Firebase phone verification error: $e',
-                        );
-
                         if (!mounted) {
                           return;
                         }
-
-                        // Show your existing error message here.
                       }
                     }
                   },

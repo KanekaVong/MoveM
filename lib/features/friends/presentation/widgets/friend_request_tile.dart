@@ -45,7 +45,7 @@ class FriendRequestTile extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                  style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
@@ -64,7 +64,7 @@ class FriendRequestTile extends StatelessWidget {
                   width: 32,
                   height: 32,
                   decoration: const BoxDecoration(
-                    color: AppColors.slate800,
+                    color: AppColors.chipSurface,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.close, color: AppColors.blueAccent, size: 16),
@@ -93,11 +93,11 @@ class FriendRequestTile extends StatelessWidget {
   Widget _buildPlaceholder(String initial) {
     return CircleAvatar(
       radius: 20,
-      backgroundColor: AppColors.slate700,
+      backgroundColor: AppColors.chipSurface,
       child: Text(
         initial,
         style: const TextStyle(
-          color: Colors.white,
+          color: AppColors.textPrimary,
           fontWeight: FontWeight.bold,
           fontSize: 14,
         ),

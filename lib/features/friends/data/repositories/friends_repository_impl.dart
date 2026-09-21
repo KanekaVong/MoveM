@@ -7,6 +7,7 @@ import '../../domain/repositories/friends_repository.dart';
 import '../services/friends_service.dart';
 import '../dto/response/friend_response.dart';
 import '../dto/response/friend_request_response.dart';
+import '../dto/response/public_user_profile_response.dart';
 
 class FriendsRepositoryImpl implements FriendsRepository {
   final FriendsService friendsService;
@@ -45,12 +46,40 @@ class FriendsRepositoryImpl implements FriendsRepository {
     return data.toString();
   }
 
+  Map<String, dynamic>? _asMap(dynamic data) {
+    if (data is Map<String, dynamic>) return data;
+    if (data is Map) return Map<String, dynamic>.from(data);
+    if (data is String) {
+      try {
+        final decoded = jsonDecode(data);
+        if (decoded is Map) return Map<String, dynamic>.from(decoded);
+      } catch (_) {}
+    }
+    return null;
+  }
+
+  @override
+  Future<ApiResult<PublicUserProfileResponse>> getUserById(String userId) async {
+    try {
+      final response = await friendsService.getUserById(userId);
+      final map = _asMap(response.data);
+      if (map == null) {
+        return ApiError(ApiException(message: 'Invalid user profile response from server.'));
+      }
+      return ApiSuccess(PublicUserProfileResponse.fromJson(map));
+    } on DioException catch (e) {
+      _logger.e('getUserById Error: ${e.response?.data ?? e.message}');
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      _logger.e('getUserById Error: $e');
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
   @override
   Future<ApiResult<List<FriendResponse>>> getFriends() async {
     try {
-      _logger.i('Calling GET api/friends');
       final response = await friendsService.getFriends();
-      _logger.i('getFriends Response [${response.statusCode}]');
 
       final List<dynamic> data = response.data;
       final friends = data.map((e) => FriendResponse.fromJson(e)).toList();
@@ -67,9 +96,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
   @override
   Future<ApiResult<List<FriendResponse>>> searchFriends(String keyword) async {
     try {
-      _logger.i('Calling GET api/friends/search with keyword: $keyword');
       final response = await friendsService.searchFriends(keyword);
-      _logger.i('searchFriends Response [${response.statusCode}]');
 
       final List<dynamic> data = response.data;
       final friends = data.map((e) => FriendResponse.fromJson(e)).toList();
@@ -86,9 +113,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
   @override
   Future<ApiResult<List<FriendResponse>>> getSuggestions() async {
     try {
-      _logger.i('Calling GET api/friends/suggestions');
       final response = await friendsService.getSuggestions();
-      _logger.i('getSuggestions Response [${response.statusCode}]');
 
       final List<dynamic> data = response.data;
       final suggestions = data.map((e) => FriendResponse.fromJson(e)).toList();
@@ -105,9 +130,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
   @override
   Future<ApiResult<String>> deleteFriend(int friendId) async {
     try {
-      _logger.i('Calling DELETE api/friends/$friendId');
       final response = await friendsService.deleteFriend(friendId);
-      _logger.i('deleteFriend Response [${response.statusCode}]');
       return ApiSuccess(_parseSuccessMessage(response.data));
     } on DioException catch (e) {
       _logger.e('deleteFriend Error: ${e.response?.data ?? e.message}');
@@ -121,9 +144,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
   @override
   Future<ApiResult<List<FriendRequestResponse>>> getIncomingRequests() async {
     try {
-      _logger.i('Calling GET api/friends/requests/incoming');
       final response = await friendsService.getIncomingRequests();
-      _logger.i('getIncomingRequests Response [${response.statusCode}]');
 
       final List<dynamic> data = response.data;
       final requests = data.map((e) => FriendRequestResponse.fromJson(e)).toList();
@@ -140,9 +161,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
   @override
   Future<ApiResult<List<FriendRequestResponse>>> getOutgoingRequests() async {
     try {
-      _logger.i('Calling GET api/friends/requests/outgoing');
       final response = await friendsService.getOutgoingRequests();
-      _logger.i('getOutgoingRequests Response [${response.statusCode}]');
 
       final List<dynamic> data = response.data;
       final requests = data.map((e) => FriendRequestResponse.fromJson(e)).toList();
@@ -159,7 +178,6 @@ class FriendsRepositoryImpl implements FriendsRepository {
   @override
   Future<ApiResult<String>> sendFriendRequest(String username) async {
     try {
-      _logger.i('Calling POST api/friends/request with username: $username');
       final response = await friendsService.sendFriendRequest(username);
       return ApiSuccess(_parseSuccessMessage(response.data));
     } on DioException catch (e) {
@@ -172,7 +190,6 @@ class FriendsRepositoryImpl implements FriendsRepository {
   @override
   Future<ApiResult<String>> acceptFriendRequest(int requestId) async {
     try {
-      _logger.i('Calling PUT api/friends/requests/$requestId/accept');
       final response = await friendsService.acceptFriendRequest(requestId);
       return ApiSuccess(_parseSuccessMessage(response.data));
     } on DioException catch (e) {
@@ -185,7 +202,6 @@ class FriendsRepositoryImpl implements FriendsRepository {
   @override
   Future<ApiResult<String>> rejectFriendRequest(int requestId) async {
     try {
-      _logger.i('Calling PUT api/friends/requests/$requestId/reject');
       final response = await friendsService.rejectFriendRequest(requestId);
       return ApiSuccess(_parseSuccessMessage(response.data));
     } on DioException catch (e) {
@@ -198,7 +214,6 @@ class FriendsRepositoryImpl implements FriendsRepository {
   @override
   Future<ApiResult<String>> cancelFriendRequest(int requestId) async {
     try {
-      _logger.i('Calling DELETE api/friends/friend-requests/$requestId');
       final response = await friendsService.cancelFriendRequest(requestId);
       return ApiSuccess(_parseSuccessMessage(response.data));
     } on DioException catch (e) {

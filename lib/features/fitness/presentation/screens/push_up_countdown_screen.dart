@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../data/models/solo_challenge_model.dart';
 import 'push_up_detection_screen.dart';
+import 'running_tracking_screen.dart';
+import 'squat_detection_screen.dart';
 
 class PushUpCountdownScreen extends StatefulWidget {
   final SoloChallengeModel challenge;
@@ -56,11 +58,30 @@ class _PushUpCountdownScreenState extends State<PushUpCountdownScreen>
 
   void _proceedToWorkout() {
     _timer?.cancel();
-    Get.off(
-      () => PushUpDetectionScreen(challenge: widget.challenge),
-      transition: Transition.fadeIn,
-      duration: const Duration(milliseconds: 400),
-    );
+    final t = widget.challenge.type.toUpperCase();
+    final n = widget.challenge.name.toLowerCase();
+    final u = widget.challenge.targetUnit.toUpperCase();
+    final isRunning = t == 'RUNNING' || n.contains('run') || n.contains('sprint') || u == 'KM' || u == 'STEPS';
+
+    if (isRunning) {
+      Get.off(
+        () => RunningTrackingScreen(challenge: widget.challenge),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 400),
+      );
+    } else if (t == 'SQUATS' || ((t == 'BODYWEIGHT' || t == 'STRENGTH_TRAINING') && n.contains('squat')) || n.contains('squat')) {
+      Get.off(
+        () => SquatDetectionScreen(challenge: widget.challenge),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 400),
+      );
+    } else {
+      Get.off(
+        () => PushUpDetectionScreen(challenge: widget.challenge),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 400),
+      );
+    }
   }
 
   @override
@@ -72,20 +93,22 @@ class _PushUpCountdownScreenState extends State<PushUpCountdownScreen>
 
   @override
   Widget build(BuildContext context) {
+    final t = widget.challenge.type.toUpperCase();
+    final n = widget.challenge.name.toLowerCase();
+    final isRunning = t == 'RUNNING' || n.contains('run') || n.contains('sprint');
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background Image
           Image.asset(
-            AppImages.pushupExerciseBg,
+            isRunning ? AppImages.runningActivity : AppImages.pushupExerciseBg,
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => Container(
               color: const Color(0xFF0F172A),
             ),
           ),
 
-          // Subtle gradient overlay for readability
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -100,7 +123,6 @@ class _PushUpCountdownScreenState extends State<PushUpCountdownScreen>
             ),
           ),
 
-          // Top Bar with Back Button
           SafeArea(
             child: Align(
               alignment: Alignment.topLeft,
@@ -135,7 +157,6 @@ class _PushUpCountdownScreenState extends State<PushUpCountdownScreen>
             ),
           ),
 
-          // Center Countdown Widget
           Center(
             child: ScaleTransition(
               scale: _scaleAnimation,
@@ -172,7 +193,6 @@ class _PushUpCountdownScreenState extends State<PushUpCountdownScreen>
             ),
           ),
 
-          // Bottom "Skip" Button
           Positioned(
             left: 24,
             right: 24,

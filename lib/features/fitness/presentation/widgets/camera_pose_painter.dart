@@ -8,6 +8,7 @@ class CameraPosePainter extends CustomPainter {
   final InputImageRotation rotation;
   final bool isFrontCamera;
   final double currentAngle;
+  final bool isSquat;
 
   CameraPosePainter({
     required this.poses,
@@ -15,13 +16,13 @@ class CameraPosePainter extends CustomPainter {
     required this.rotation,
     this.isFrontCamera = true,
     this.currentAngle = 170.0,
+    this.isSquat = false,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     if (poses.isEmpty || imageSize.width == 0 || imageSize.height == 0) return;
 
-    // Line & joint paints
     final linePaint = Paint()
       ..color = Colors.white.withValues(alpha: 0.8)
       ..strokeWidth = 2.5
@@ -41,19 +42,16 @@ class CameraPosePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     for (final pose in poses) {
-      // Helper function to translate coordinate
       Offset? translatePoint(PoseLandmark? landmark) {
         if (landmark == null || landmark.likelihood < 0.4) return null;
 
         double x = landmark.x;
         double y = landmark.y;
 
-        // Scale factors
         double scaleX = size.width / imageSize.width;
         double scaleY = size.height / imageSize.height;
 
         if (Platform.isAndroid) {
-          // Adjust for android camera preview orientation
           if (rotation == InputImageRotation.rotation90deg ||
               rotation == InputImageRotation.rotation270deg) {
             scaleX = size.width / imageSize.height;
@@ -65,7 +63,7 @@ class CameraPosePainter extends CustomPainter {
         double destY = y * scaleY;
 
         if (isFrontCamera) {
-          destX = size.width - destX; // Mirror horizontally
+          destX = size.width - destX;
         }
 
         return Offset(destX, destY);
@@ -83,34 +81,37 @@ class CameraPosePainter extends CustomPainter {
         }
       }
 
-      // Draw Upper Body (Arms & Torso) with Active Form Paint
-      drawLineBetween(PoseLandmarkType.leftShoulder, PoseLandmarkType.leftElbow, customPaint: formPaint);
-      drawLineBetween(PoseLandmarkType.leftElbow, PoseLandmarkType.leftWrist, customPaint: formPaint);
-      drawLineBetween(PoseLandmarkType.rightShoulder, PoseLandmarkType.rightElbow, customPaint: formPaint);
-      drawLineBetween(PoseLandmarkType.rightElbow, PoseLandmarkType.rightWrist, customPaint: formPaint);
+      drawLineBetween(PoseLandmarkType.leftShoulder, PoseLandmarkType.leftElbow, customPaint: isSquat ? linePaint : formPaint);
+      drawLineBetween(PoseLandmarkType.leftElbow, PoseLandmarkType.leftWrist, customPaint: isSquat ? linePaint : formPaint);
+      drawLineBetween(PoseLandmarkType.rightShoulder, PoseLandmarkType.rightElbow, customPaint: isSquat ? linePaint : formPaint);
+      drawLineBetween(PoseLandmarkType.rightElbow, PoseLandmarkType.rightWrist, customPaint: isSquat ? linePaint : formPaint);
 
-      // Torso & Shoulders
       drawLineBetween(PoseLandmarkType.leftShoulder, PoseLandmarkType.rightShoulder);
       drawLineBetween(PoseLandmarkType.leftShoulder, PoseLandmarkType.leftHip);
       drawLineBetween(PoseLandmarkType.rightShoulder, PoseLandmarkType.rightHip);
       drawLineBetween(PoseLandmarkType.leftHip, PoseLandmarkType.rightHip);
 
-      // Lower Body
-      drawLineBetween(PoseLandmarkType.leftHip, PoseLandmarkType.leftKnee);
-      drawLineBetween(PoseLandmarkType.leftKnee, PoseLandmarkType.leftAnkle);
-      drawLineBetween(PoseLandmarkType.rightHip, PoseLandmarkType.rightKnee);
-      drawLineBetween(PoseLandmarkType.rightKnee, PoseLandmarkType.rightAnkle);
+      drawLineBetween(PoseLandmarkType.leftHip, PoseLandmarkType.leftKnee, customPaint: isSquat ? formPaint : linePaint);
+      drawLineBetween(PoseLandmarkType.leftKnee, PoseLandmarkType.leftAnkle, customPaint: isSquat ? formPaint : linePaint);
+      drawLineBetween(PoseLandmarkType.rightHip, PoseLandmarkType.rightKnee, customPaint: isSquat ? formPaint : linePaint);
+      drawLineBetween(PoseLandmarkType.rightKnee, PoseLandmarkType.rightAnkle, customPaint: isSquat ? formPaint : linePaint);
 
-      // Draw Joint Nodes
       for (final landmark in pose.landmarks.values) {
         final pt = translatePoint(landmark);
         if (pt != null) {
-          final isArmJoint = landmark.type == PoseLandmarkType.leftElbow ||
-              landmark.type == PoseLandmarkType.rightElbow ||
-              landmark.type == PoseLandmarkType.leftShoulder ||
-              landmark.type == PoseLandmarkType.rightShoulder;
+          final isPrimaryJoint = isSquat
+              ? (landmark.type == PoseLandmarkType.leftKnee ||
+                  landmark.type == PoseLandmarkType.rightKnee ||
+                  landmark.type == PoseLandmarkType.leftHip ||
+                  landmark.type == PoseLandmarkType.rightHip ||
+                  landmark.type == PoseLandmarkType.leftAnkle ||
+                  landmark.type == PoseLandmarkType.rightAnkle)
+              : (landmark.type == PoseLandmarkType.leftElbow ||
+                  landmark.type == PoseLandmarkType.rightElbow ||
+                  landmark.type == PoseLandmarkType.leftShoulder ||
+                  landmark.type == PoseLandmarkType.rightShoulder);
 
-          if (isArmJoint) {
+          if (isPrimaryJoint) {
             canvas.drawCircle(pt, 8.0, jointGlow);
             canvas.drawCircle(pt, 4.0, jointFill);
           } else {
@@ -122,9 +123,9 @@ class CameraPosePainter extends CustomPainter {
   }
 
   Color _getAngleColor(double angle) {
-    if (angle <= 90.0) {
+    if (angle <= 95.0) {
       return const Color(0xFF10B981);
-    } else if (angle <= 120.0) {
+    } else if (angle <= 125.0) {
       return const Color(0xFFF59E0B);
     } else {
       return const Color(0xFF38BDF8);
@@ -135,6 +136,7 @@ class CameraPosePainter extends CustomPainter {
   bool shouldRepaint(covariant CameraPosePainter oldDelegate) {
     return oldDelegate.poses != poses ||
         oldDelegate.currentAngle != currentAngle ||
-        oldDelegate.isFrontCamera != isFrontCamera;
+        oldDelegate.isFrontCamera != isFrontCamera ||
+        oldDelegate.isSquat != isSquat;
   }
 }

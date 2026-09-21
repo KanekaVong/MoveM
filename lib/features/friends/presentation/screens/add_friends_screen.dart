@@ -23,7 +23,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.slate900,
+      backgroundColor: AppColors.pageBackground,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -67,12 +67,12 @@ class AddFriendsScreen extends GetView<FriendsController> {
           children: [
             GestureDetector(
               onTap: () => Navigator.pop(context),
-              child: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+              child: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary, size: 20),
             ),
             const SizedBox(width: 8),
             Text(
               l10n?.addFriends ?? 'Add Friends',
-              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -81,7 +81,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
           padding: EdgeInsets.only(left: 28.0),
           child: Text(
             'Find And Connect With Friends To Stay Active Together',
-            style: TextStyle(color: AppColors.slate200, fontSize: 12),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
         ),
       ],
@@ -92,12 +92,12 @@ class AddFriendsScreen extends GetView<FriendsController> {
     final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.slate850,
+        color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.slate800),
+        border: Border.all(color: AppColors.borderLight),
       ),
       child: TextField(
-        style: const TextStyle(color: Colors.white, fontSize: 12),
+        style: const TextStyle(color: AppColors.textPrimary, fontSize: 12),
         onChanged: (value) => controller.searchFriends(value),
         decoration: InputDecoration(
           hintText: l10n?.search ?? 'Search For People On MoveM',
@@ -143,16 +143,16 @@ class AddFriendsScreen extends GetView<FriendsController> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.slate850,
+        color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.slate800),
+        border: Border.all(color: AppColors.borderLight),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.primaryBlueStart.withValues(alpha: 0.5),
+              color: AppColors.chipSurface,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: AppColors.blueAccent, size: 24),
@@ -162,13 +162,13 @@ class AddFriendsScreen extends GetView<FriendsController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(title, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14)),
                 const SizedBox(height: 2),
                 Text(subtitle, style: const TextStyle(color: AppColors.textMuted, fontSize: 12), overflow: TextOverflow.ellipsis),
               ],
             ),
           ),
-          const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 12),
+          const Icon(Icons.arrow_forward_ios, color: AppColors.textCaption, size: 12),
         ],
       ),
     );
@@ -178,7 +178,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+        Text(title, style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.bold)),
         GestureDetector(
           onTap: () {
             Get.to(() => FriendsTabScreen(initialIndex: tabIndex));
@@ -209,9 +209,9 @@ class AddFriendsScreen extends GetView<FriendsController> {
         padding: const EdgeInsets.all(24),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: AppColors.slate850,
+          color: AppColors.cardSurface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.slate800),
+          border: Border.all(color: AppColors.borderLight),
         ),
         child: const Center(child: Text('No friend requests.', style: TextStyle(color: AppColors.textMuted))),
       );
@@ -222,9 +222,9 @@ class AddFriendsScreen extends GetView<FriendsController> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.slate850,
+        color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.slate800),
+        border: Border.all(color: AppColors.borderLight),
       ),
       child: Column(
         children: displayList.asMap().entries.map((entry) {
@@ -240,7 +240,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
                 onAccept: () => controller.acceptRequest(req.requestId),
                 onReject: () => controller.rejectRequest(req.requestId),
               ),
-              if (!isLast) const Divider(color: AppColors.slate800),
+              if (!isLast) const Divider(color: AppColors.borderLight),
             ],
           );
         }).toList(),
@@ -257,9 +257,9 @@ class AddFriendsScreen extends GetView<FriendsController> {
         padding: const EdgeInsets.all(24),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: AppColors.slate850,
+          color: AppColors.cardSurface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.slate800),
+          border: Border.all(color: AppColors.borderLight),
         ),
         child: Center(
           child: Text(
@@ -275,9 +275,9 @@ class AddFriendsScreen extends GetView<FriendsController> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.slate850,
+        color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.slate800),
+        border: Border.all(color: AppColors.borderLight),
       ),
       child: Column(
         children: displayList.asMap().entries.map((entry) {
@@ -295,7 +295,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
                 onAdd: () => controller.sendRequest(user.username),
                 onCancel: () => controller.cancelRequest(user.username),
               ),
-              if (!isLast) const Divider(color: AppColors.slate800),
+              if (!isLast) const Divider(color: AppColors.borderLight),
             ],
           );
         }).toList(),
@@ -308,7 +308,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n?.shareYourProfile ?? 'Share Your Profile', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(l10n?.shareYourProfile ?? 'Share Your Profile', style: const TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
         Obx(() {
           final profileName = controller.profileName;
@@ -320,9 +320,9 @@ class AddFriendsScreen extends GetView<FriendsController> {
           return Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.slate850,
+              color: AppColors.cardSurface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.slate800),
+              border: Border.all(color: AppColors.borderLight),
             ),
             child: Row(
               children: [
@@ -335,17 +335,17 @@ class AddFriendsScreen extends GetView<FriendsController> {
                             imageUrl: profilePic,
                             fit: BoxFit.cover,
                             placeholder: (_, __) => CircleAvatar(
-                              backgroundColor: AppColors.slate700,
-                              child: Text(initial, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              backgroundColor: AppColors.chipSurface,
+                              child: Text(initial, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
                             ),
                             errorWidget: (_, __, ___) => CircleAvatar(
-                              backgroundColor: AppColors.slate700,
-                              child: Text(initial, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              backgroundColor: AppColors.chipSurface,
+                              child: Text(initial, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
                             ),
                           )
                         : CircleAvatar(
-                            backgroundColor: AppColors.slate700,
-                            child: Text(initial, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            backgroundColor: AppColors.chipSurface,
+                            child: Text(initial, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
                           ),
                   ),
                 ),
@@ -356,7 +356,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
                     children: [
                       Text(
                         profileName,
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                        style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
@@ -392,14 +392,14 @@ class AddFriendsScreen extends GetView<FriendsController> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.primaryBlueStart.withValues(alpha: 0.5),
+              color: AppColors.chipSurface,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: AppColors.blueAccent.withValues(alpha: 0.3)),
             ),
             child: Icon(icon, color: AppColors.blueAccent, size: 20),
           ),
           const SizedBox(height: 4),
-          Text(label, style: const TextStyle(color: Colors.white, fontSize: 8)),
+          Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 8)),
         ],
       ),
     );

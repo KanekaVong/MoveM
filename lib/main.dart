@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -18,7 +19,11 @@ import 'core/storage/local_storage.dart';
 import 'core/storage/user_manager.dart';
 
 void main() async {
-  await mainCommon(environment: Environment.dev);
+  final flavor = appFlavor;
+  final environment = (flavor == 'prod' || flavor == 'release')
+      ? Environment.release
+      : Environment.dev;
+  await mainCommon(environment: environment);
 }
 
 Future<void> mainCommon({required Environment environment}) async {

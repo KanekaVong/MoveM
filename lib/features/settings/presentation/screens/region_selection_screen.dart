@@ -73,8 +73,6 @@ class _RegionSelectionScreenState
         });
       }
     } catch (e) {
-      debugPrint('Failed to load location data: $e');
-
       if (mounted) {
         setState(() {
           _isLoading = false;
