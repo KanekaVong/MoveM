@@ -233,7 +233,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchCollaboratorsHint => 'Search friends by name...';
 
   @override
-  String get friends => 'Friends';
+  String get friends => 'FRIENDS';
 
   @override
   String get addFriends => 'Add Friends';
@@ -338,7 +338,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get avgPace => 'Avg Pace';
 
   @override
-  String get duration => 'Duration';
+  String get duration => 'DURATION';
 
   @override
   String get caloriesBurned => 'Calories';
@@ -498,4 +498,375 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get taskDeletedSuccess => 'Task deleted successfully';
+
+  @override
+  String get createNewTrip => 'Create New Trip';
+
+  @override
+  String get tripStepName => 'NAME';
+
+  @override
+  String get tripStepLocation => 'LOCATION';
+
+  @override
+  String get tripStepDuration => 'DURATION';
+
+  @override
+  String get tripStepStops => 'STOPS';
+
+  @override
+  String get tripStepFriends => 'FRIENDS';
+
+  @override
+  String get continueButton => 'CONTINUE';
+
+  @override
+  String get tripNameLabel => 'TRIP NAME';
+
+  @override
+  String get tripNameHint => 'Enter your trip name...';
+
+  @override
+  String get tripNameRequired => 'Please enter your trip name.';
+
+  @override
+  String get tripNameTitle => 'What\'s the Trip Called?';
+
+  @override
+  String get tripNameSubtitle => 'Give your adventure a name';
+
+  @override
+  String get tripLocationTitle => 'Where are you going?';
+
+  @override
+  String get tripLocationSubtitle =>
+      'Search for a place or tap the map to choose it';
+
+  @override
+  String get tripLocationSearchHint => 'Search destination...';
+
+  @override
+  String get tripLocationSelected => 'Selected location';
+
+  @override
+  String get tripLocationRequired => 'Please select your destination.';
+
+  @override
+  String get tripLocationSearchFailed =>
+      'Couldn\'t search for locations. Please try again.';
+
+  @override
+  String get tripLocationNotFound => 'No locations found.';
+
+  @override
+  String get tripLocationPermissionDenied =>
+      'Location permission is required to use your current location.';
+
+  @override
+  String get tripLocationServiceDisabled => 'Please turn on location services.';
+
+  @override
+  String get tripLocationSearching => 'Searching...';
+
+  @override
+  String get tripDurationTitle => 'Duration & Budget';
+
+  @override
+  String get tripDurationSubtitle => 'How long and how much?';
+
+  @override
+  String get tripDurationLabel => 'Trip Duration';
+
+  @override
+  String get tripDaysLabel => 'days';
+
+  @override
+  String get tripSetupDates => 'Set up dates';
+
+  @override
+  String get tripDurationRequired => 'Please select your trip dates.';
+
+  @override
+  String get tripBudgetTitle => 'Trip Budget';
+
+  @override
+  String get tripBudgetSubtitle => 'Set the budget for your adventure';
+
+  @override
+  String get tripBudgetLabel => 'Budget';
+
+  @override
+  String get tripBudgetHint => '0';
+
+  @override
+  String get tripStopsTitle => 'Plan your stops';
+
+  @override
+  String get tripStopsSubtitle => 'Add checkpoints along your route';
+
+  @override
+  String get tripAddStop => 'Add a stop';
+
+  @override
+  String get tripStopsEmpty => 'No stops added yet';
+
+  @override
+  String get tripUnnamedStop => 'Unnamed stop';
+
+  @override
+  String get tripStepPacking => 'PACKING';
+
+  @override
+  String get tripStepChecklist => 'CHECKLIST';
+
+  @override
+  String get tripFriendsTitle => 'WHO\'S COMING?';
+
+  @override
+  String get tripFriendsSubtitle => 'Invite friends to join your trip';
+
+  @override
+  String get tripFriendsSearchHint => 'Invite Friends';
+
+  @override
+  String get tripFriendsInvitedTitle => 'Invited Friends';
+
+  @override
+  String get tripFriendsSuggestedTitle => 'Suggested Friends';
+
+  @override
+  String get tripFriendsSearchResultsTitle => 'Search Results';
+
+  @override
+  String get tripFriendsNoFriendsFound => 'No friends found';
+
+  @override
+  String get tripYourTrip => 'Your Trip';
+
+  @override
+  String get tripLocationFallback => 'Location';
+
+  @override
+  String get tripDay => 'DAY';
+
+  @override
+  String get tripDays => 'DAYS';
+
+  @override
+  String get tripStop => 'STOP';
+
+  @override
+  String get tripStops => 'STOPS';
+
+  @override
+  String get tripPackingTitle => 'NEED HELP WITH WHAT TO PACK?';
+
+  @override
+  String get tripPackingDescription =>
+      'Check what you and your friends need to pack!';
+
+  @override
+  String get tripEssentials => 'Trip Essentials';
+
+  @override
+  String get packingItemsHint => 'List packing items...';
+
+  @override
+  String get tripChecklistTitle => 'TRIP CHECKLIST';
+
+  @override
+  String get tripChecklistDescription =>
+      'Make sure everything is ready for your trip!';
+
+  @override
+  String get checklistItemsHint => 'List checklist items...';
+
+  @override
+  String get tripSummaryTitle => 'Trip Summary';
+
+  @override
+  String get readyButton => 'READY';
+
+  @override
+  String get yourTrip => 'YOUR TRIP';
+
+  @override
+  String get locationNotSelected => 'Location not selected';
+
+  @override
+  String get destination => 'DESTINATION';
+
+  @override
+  String get budget => 'BUDGET';
+
+  @override
+  String get stops => 'STOPS';
+
+  @override
+  String get places => 'Places';
+
+  @override
+  String get essentials => 'ESSENTIALS';
+
+  @override
+  String get itemsToBePacked => 'Items to be packed';
+
+  @override
+  String get routes => 'ROUTES';
+
+  @override
+  String get noStopsAdded => 'No stops added';
+
+  @override
+  String get unnamedStop => 'Unnamed stop';
+
+  @override
+  String get editTripTitle => 'Edit Trip';
+
+  @override
+  String get error => 'Error';
+
+  @override
+  String get editTripName => 'Trip Name';
+
+  @override
+  String get editTripDuration => 'Duration';
+
+  @override
+  String get editTripMembers => 'Members';
+
+  @override
+  String get editTripStops => 'STOPS';
+
+  @override
+  String get editTripPacking => 'Packing Items';
+
+  @override
+  String get editTripChecklist => 'Checklist';
+
+  @override
+  String get editTripAttachments => 'Attachments';
+
+  @override
+  String get editTripStartDate => 'Start Date';
+
+  @override
+  String get editTripEndDate => 'End Date';
+
+  @override
+  String get editTripSaveChanges => 'SAVE CHANGES';
+
+  @override
+  String get editTripNameHint => 'Enter trip name';
+
+  @override
+  String get editTripNameRequired => 'Trip name cannot be empty';
+
+  @override
+  String get editTripNameUpdated => 'Trip name updated';
+
+  @override
+  String get editTripUpdateSuccess => 'Success';
+
+  @override
+  String get editTripUpdateFailed => 'Failed to update trip';
+
+  @override
+  String get editTripAddItem => 'Add Item';
+
+  @override
+  String get editTripAddMember => 'Add Member';
+
+  @override
+  String get editTripUploadAttachment => 'Upload Attachment';
+
+  @override
+  String get editTripNoMembers => 'No members yet';
+
+  @override
+  String get editTripNoAttachments => 'No attachments yet';
+
+  @override
+  String get editTripNoPackingItems => 'No packing items yet';
+
+  @override
+  String get editTripNoChecklistItems => 'No checklist items yet';
+
+  @override
+  String get editTripReorderStops => 'Drag to reorder stops';
+
+  @override
+  String get editTripSectionTripName => 'Trip Name';
+
+  @override
+  String get editTripSectionDuration => 'Duration';
+
+  @override
+  String get editTripSectionMembers => 'Members';
+
+  @override
+  String get editTripSectionStops => 'Stops';
+
+  @override
+  String get editTripSectionPacking => 'Packing Items';
+
+  @override
+  String get editTripSectionChecklist => 'Checklist';
+
+  @override
+  String get editTripSectionAttachments => 'Attachments';
+
+  @override
+  String get editTripSectionBudget => 'Budget';
+
+  @override
+  String get editTripSectionRoutes => 'Routes';
+
+  @override
+  String get editTripDetails => 'Trip Details';
+
+  @override
+  String get editTripDatesNotSet => 'Dates not set';
+
+  @override
+  String get editTripNotSelected => 'Not selected';
+
+  @override
+  String get editTripDestination => 'DESTINATION';
+
+  @override
+  String get editTripBudget => 'BUDGET';
+
+  @override
+  String get editTripFriends => 'FRIENDS';
+
+  @override
+  String get editTripDurations => 'DURATIONS';
+
+  @override
+  String get editTripEssentials => 'ESSENTIALS';
+
+  @override
+  String get editTripItemsToBePacked => 'Items to be packed';
+
+  @override
+  String get editTripChecklists => 'CHECKLISTS';
+
+  @override
+  String get editTripRoutes => 'ROUTES';
+
+  @override
+  String get editTripNoStopsAdded => 'No stops added';
+
+  @override
+  String get editTripUnnamedStop => 'Unnamed stop';
+
+  @override
+  String get editTripItem => 'Item';
+
+  @override
+  String get editTripItems => 'Items';
+
+  @override
+  String get editTripToBePrepared => 'to be prepared';
 }

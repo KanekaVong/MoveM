@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:movem/l10n/app_localizations.dart';
 
-import 'package:movem/features/trip/presentation/models/create_trip_draft.dart';
 import 'create_trip_packing_screen.dart';
+import 'package:movem/features/trip/presentation/widgets/create_trip_component.dart';
+import '../../controllers/create_trip_controller.dart';
+import 'package:get/get.dart';
+import 'package:movem/features/friends/data/dto/response/friend_response.dart';
+import 'package:movem/features/friends/domain/repositories/friends_repository.dart';
+import '../../../../../core/network/api_result.dart';
 
-import '../../controllers/trip_controller.dart';
+
 
 class CreateTripFriendsScreen extends StatefulWidget {
-  final CreateTripDraft draft;
-  final TripController tripController;
 
   const CreateTripFriendsScreen({
     super.key,
-    required this.draft,
-    required this.tripController,
   });
 
   @override
@@ -22,10 +24,102 @@ class CreateTripFriendsScreen extends StatefulWidget {
 
 class _CreateTripFriendsScreenState
     extends State<CreateTripFriendsScreen> {
-  final TextEditingController _searchController =
-  TextEditingController();
 
-  bool _showFriends = true;
+  final CreateTripController controller = Get.find<CreateTripController>();
+
+  late final FriendsRepository _friendsRepository;
+
+
+  final TextEditingController _searchController = TextEditingController();
+
+
+  List<FriendResponse> _friends = [];
+  bool _isLoadingFriends = true;
+  String? _friendsError;
+
+
+  Future<void> _searchFriends(String keyword) async {
+    final query = keyword.trim();
+
+    if (query.isEmpty) {
+      await _loadSuggestions();
+      return;
+    }
+
+    setState(() {
+      _isLoadingFriends = true;
+      _friendsError = null;
+    });
+
+    final result =
+    await _friendsRepository.searchFriends(query);
+
+    if (!mounted) return;
+
+    if (result is ApiSuccess<List<FriendResponse>>) {
+      setState(() {
+        _friends = result.data;
+        _isLoadingFriends = false;
+      });
+    } else if (result is ApiError<List<FriendResponse>>) {
+      setState(() {
+        _friends = [];
+        _isLoadingFriends = false;
+        _friendsError = result.exception.message;
+      });
+    }
+  }
+
+  void _toggleFriend(FriendResponse friend) {
+    setState(() {
+      final alreadySelected =
+      controller.currentDraft.friends.any(
+            (item) => item.userId == friend.userId,
+      );
+
+      if (alreadySelected) {
+        controller.currentDraft.friends.removeWhere(
+              (item) => item.userId == friend.userId,
+        );
+      } else {
+        controller.currentDraft.friends.add(friend);
+      }
+    });
+  }
+
+  Future<void> _loadSuggestions() async {
+    setState(() {
+      _isLoadingFriends = true;
+      _friendsError = null;
+    });
+
+    final result =
+    await _friendsRepository.getSuggestions();
+
+    if (!mounted) return;
+
+    if (result is ApiSuccess<List<FriendResponse>>) {
+      setState(() {
+        _friends = result.data;
+        _isLoadingFriends = false;
+      });
+    } else if (result is ApiError<List<FriendResponse>>) {
+      setState(() {
+        _friends = [];
+        _isLoadingFriends = false;
+        _friendsError = result.exception.message;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _friendsRepository = Get.find<FriendsRepository>();
+
+    _loadSuggestions();
+  }
 
   @override
   void dispose() {
@@ -34,465 +128,324 @@ class _CreateTripFriendsScreenState
   }
 
   void _continue() {
-    setState(() {
-      _showFriends = false;
-    });
-  }
-
-  void _goToPacking() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => CreateTripPackingScreen(
-          draft: widget.draft,
-          tripController: widget.tripController,
-        )
-      ),
+    Get.to(
+          () => const CreateTripPackingScreen(),
     );
-  }
-
-  void _addFriend() {
-    final name = _searchController.text.trim();
-
-    if (name.isEmpty) {
-      return;
-    }
-
-    setState(() {
-      widget.draft.friends.add(name);
-      _searchController.clear();
-    });
-  }
-
-  void _removeFriend(int index) {
-    setState(() {
-      widget.draft.friends.removeAt(index);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    final mediaQuery = MediaQuery.of(context);
+    final screenHeight = mediaQuery.size.height;
+    final keyboardHeight = mediaQuery.viewInsets.bottom;
+    final keyboardOpen = keyboardHeight > 0;
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final imageHeight = screenHeight * 0.50;
+
+    final panelTop = keyboardOpen
+        ? screenHeight * 0.15
+        : screenHeight * 0.43;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0B101D),
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            _buildStepIndicator(),
-            Expanded(
-              child: _showFriends
-                  ? _buildFriendsContent()
-                  : _buildPackingIntro(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        14,
-        20,
-        8,
-      ),
-      child: Row(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: isDark
+          ? CreateTripColors.darkBackground
+          : CreateTripColors.lightBackground,
+      body: Stack(
         children: [
-          GestureDetector(
-            onTap: () {
-              if (!_showFriends) {
-                setState(() {
-                  _showFriends = true;
-                });
-              } else {
-                Navigator.pop(context);
-              }
-            },
-            child: const Icon(
-              Icons.chevron_left_rounded,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
-          const SizedBox(width: 8),
-          const Text(
-            'Create New Trip',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildStepIndicator() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 12,
-      ),
-      child: Row(
-        children: [
-          _buildStep(true),
-          const SizedBox(width: 6),
-          _buildStep(true),
-          const SizedBox(width: 6),
-          _buildStep(true),
-          const SizedBox(width: 6),
-          _buildStep(true),
-          const SizedBox(width: 6),
-          _buildStep(true),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStep(bool active) {
-    return Expanded(
-      child: Container(
-        height: 3,
-        decoration: BoxDecoration(
-          color: active ? Colors.white : Colors.white24,
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFriendsContent() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        20,
-        20,
-        32,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildTripHeader(),
-
-          const SizedBox(height: 28),
-
-          const Text(
-            "Who's Coming?",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 28,
-              fontWeight: FontWeight.w900,
-              height: 1.1,
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          const Text(
-            'Invite friends to join your trip',
-            style: TextStyle(
-              color: Colors.white54,
-              fontSize: 13,
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Search',
-                    hintStyle: const TextStyle(
-                      color: Colors.white30,
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.search_rounded,
-                      color: Colors.white54,
-                    ),
-                    filled: true,
-                    fillColor: const Color(0xFF171E2D),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
+          // Background image
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: imageHeight,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(40),
+                bottomRight: Radius.circular(40),
               ),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: _addFriend,
-                child: Container(
-                  width: 52,
-                  height: 52,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.add,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-
-          if (widget.draft.friends.isEmpty)
-            _buildEmptyFriends()
-          else
-            _buildFriendsList(),
-
-          const SizedBox(height: 30),
-
-          _buildContinueButton(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyFriends() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFF171E2D),
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: const Text(
-        'No friends added yet.',
-        style: TextStyle(
-          color: Colors.white54,
-          fontSize: 13,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFriendsList() {
-    return Column(
-      children: [
-        for (int i = 0;
-        i < widget.draft.friends.length;
-        i++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF171E2D),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Row(
+              child: Stack(
+                fit: StackFit.expand,
                 children: [
-                  const CircleAvatar(
-                    radius: 20,
-                    child: Icon(Icons.person),
+                  Image.asset(
+                    'assets/images/create_new_trip_bg.png',
+                    fit: BoxFit.cover,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      widget.draft.friends[i].toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.45),
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.15),
+                        ],
                       ),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => _removeFriend(i),
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.white54,
                     ),
                   ),
                 ],
               ),
             ),
           ),
+
+          // Header
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                20,
+                14,
+                20,
+                0,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CreateTripHeader(
+                    title: l10n.createNewTrip,
+                    onBack: () => Navigator.pop(context),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  CreateTripStepIndicator(
+                    activeIndex: 4,
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Friends form panel
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
+            top: panelTop,
+            left: 0,
+            right: 0,
+            bottom: keyboardOpen
+                ? keyboardHeight
+                : 0,
+            child: Obx(
+                  () => _buildFriendsContent(l10n),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFriendsContent(AppLocalizations l10n) {
+
+    final selectedFriends = controller.currentDraft.friends;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final titleColor = isDark
+        ? Colors.white
+        : CreateTripColors.lightText;
+
+    final secondaryColor = isDark
+        ? Colors.white54
+        : CreateTripColors.lightText.withValues(
+      alpha: 0.5,
+    );
+
+    final query = _searchController.text.trim();
+    final friends = _friends;
+
+    return CreateTripFormPanel(
+      bottomAction: CreateTripBottomButton(
+        text: l10n.continueButton,
+        onPressed: _continue,
+      ),
+      children: [
+      SliverToBoxAdapter(
+        child: Text(
+          l10n.tripFriendsTitle,
+          style: TextStyle(
+            fontFamily: CreateTripFonts.condensed,
+            fontFamilyFallback: CreateTripFonts.khmerFallback,
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
+            color: titleColor,
+          ),
+        ),
+      ),
+
+      const SliverToBoxAdapter(
+        child: SizedBox(height: 8),
+      ),
+
+      SliverToBoxAdapter(
+        child: Text(
+          l10n.tripFriendsSubtitle,
+          style: TextStyle(
+            fontFamily: CreateTripFonts.condensed,
+            fontFamilyFallback: CreateTripFonts.khmerFallback,
+            fontSize: 13,
+            color: secondaryColor,
+          ),
+        ),
+      ),
+
+      const SliverToBoxAdapter(
+        child: SizedBox(height: 22),
+      ),
+
+      SliverToBoxAdapter(
+        child: TextField(
+          controller: _searchController,
+          onChanged: _searchFriends,
+          style: TextStyle(
+            fontFamily: CreateTripFonts.condensed,
+            fontFamilyFallback: CreateTripFonts.khmerFallback,
+            color: titleColor,
+          ),
+          decoration: InputDecoration(
+            hintText: l10n.tripFriendsSearchHint,
+            hintStyle: TextStyle(
+              fontFamily: CreateTripFonts.condensed,
+              fontFamilyFallback: CreateTripFonts.khmerFallback,
+              color: secondaryColor,
+            ),
+            prefixIcon: Icon(
+              Icons.search_rounded,
+              color: secondaryColor,
+            ),
+            filled: true,
+            fillColor: isDark
+                ? const Color(0xFF171E2D)
+                : const Color(0xFFF2F2F2),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 15,
+            ),
+          ),
+        ),
+      ),
+
+      if (selectedFriends.isNotEmpty) ...[
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 28),
+        ),
+
+        SliverToBoxAdapter(
+          child: Text(
+            l10n.tripFriendsInvitedTitle,
+            style: TextStyle(
+              fontFamily: CreateTripFonts.condensed,
+              fontFamilyFallback: CreateTripFonts.khmerFallback,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: titleColor,
+            ),
+          ),
+        ),
+
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 14),
+        ),
+
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 88,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: selectedFriends.length,
+              separatorBuilder: (_, __) =>
+              const SizedBox(width: 14),
+              itemBuilder: (context, index) {
+                final friend = selectedFriends[index];
+
+                return CreateTripAvatarChip(
+                  name:
+                  '${friend.firstname} ${friend.lastname}'.trim(),
+                  imageUrl: friend.profilePic,
+                  onRemove: () {
+                    setState(() {
+                      selectedFriends.removeAt(index);
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+
+      const SliverToBoxAdapter(
+        child: SizedBox(height: 28),
+      ),
+
+      SliverToBoxAdapter(
+        child: Text(
+          query.isEmpty
+              ? l10n.tripFriendsSuggestedTitle
+              : l10n.tripFriendsSearchResultsTitle,
+          style: TextStyle(
+            fontFamily: CreateTripFonts.condensed,
+            fontFamilyFallback: CreateTripFonts.khmerFallback,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: titleColor,
+          ),
+        ),
+      ),
+
+      const SliverToBoxAdapter(
+        child: SizedBox(height: 8),
+      ),
+
+      if (friends.isEmpty)
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 24,
+            ),
+            child: Center(
+              child: Text(
+                l10n.tripFriendsNoFriendsFound,
+                style: TextStyle(
+                  fontFamily: CreateTripFonts.condensed,
+                  fontFamilyFallback:
+                  CreateTripFonts.khmerFallback,
+                  color: secondaryColor,
+                ),
+              ),
+            ),
+          ),
+        )
+      else
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+                (context, index) {
+              final friend = friends[index];
+
+              return CreateTripSelectableFriendTile(
+                name:
+                '${friend.firstname} ${friend.lastname}'.trim(),
+                username: friend.username,
+                imageUrl: friend.profilePic,
+                selected: selectedFriends.any(
+                      (item) => item.userId == friend.userId,
+                ),
+                onTap: () => _toggleFriend(friend),
+              );
+            },
+            childCount: friends.length,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildPackingIntro() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        20,
-        20,
-        32,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildTripHeader(),
-
-          const SizedBox(height: 28),
-
-          const Text(
-            'Need help with what to pack?',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 26,
-              fontWeight: FontWeight.w900,
-              height: 1.1,
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          const Text(
-            'Check what you and your friends need to pack!',
-            style: TextStyle(
-              color: Colors.white54,
-              fontSize: 13,
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFF171E2D),
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                color: Colors.white12,
-              ),
-            ),
-            child: const Row(
-              children: [
-                Icon(
-                  Icons.backpack_outlined,
-                  color: Colors.white,
-                  size: 30,
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Trip Essentials+',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: Colors.white54,
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 30),
-
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              onPressed: _goToPacking,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(28),
-                ),
-              ),
-              child: const Text(
-                'CONTINUE',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTripHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFF151C2A),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.draft.activityName ?? 'Your Trip',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            widget.draft.locationName ??
-                widget.draft.destination ??
-                'Location',
-            style: const TextStyle(
-              color: Colors.white54,
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '${widget.draft.durationDays} '
-                '${widget.draft.durationDays == 1 ? 'day' : 'days'}',
-            style: const TextStyle(
-              color: Colors.white38,
-              fontSize: 11,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContinueButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: ElevatedButton(
-        onPressed: _continue,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
-          ),
-        ),
-        child: const Text(
-          'CONTINUE',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1.2,
-          ),
-        ),
-      ),
-    );
-  }
 }

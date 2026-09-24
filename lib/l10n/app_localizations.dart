@@ -545,7 +545,7 @@ abstract class AppLocalizations {
   /// No description provided for @friends.
   ///
   /// In en, this message translates to:
-  /// **'Friends'**
+  /// **'FRIENDS'**
   String get friends;
 
   /// No description provided for @addFriends.
@@ -755,7 +755,7 @@ abstract class AppLocalizations {
   /// No description provided for @duration.
   ///
   /// In en, this message translates to:
-  /// **'Duration'**
+  /// **'DURATION'**
   String get duration;
 
   /// No description provided for @caloriesBurned.
@@ -1069,6 +1069,738 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Task deleted successfully'**
   String get taskDeletedSuccess;
+
+  /// No description provided for @createNewTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Create New Trip'**
+  String get createNewTrip;
+
+  /// No description provided for @tripStepName.
+  ///
+  /// In en, this message translates to:
+  /// **'NAME'**
+  String get tripStepName;
+
+  /// No description provided for @tripStepLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'LOCATION'**
+  String get tripStepLocation;
+
+  /// No description provided for @tripStepDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'DURATION'**
+  String get tripStepDuration;
+
+  /// No description provided for @tripStepStops.
+  ///
+  /// In en, this message translates to:
+  /// **'STOPS'**
+  String get tripStepStops;
+
+  /// No description provided for @tripStepFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'FRIENDS'**
+  String get tripStepFriends;
+
+  /// No description provided for @continueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'CONTINUE'**
+  String get continueButton;
+
+  /// No description provided for @tripNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TRIP NAME'**
+  String get tripNameLabel;
+
+  /// No description provided for @tripNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your trip name...'**
+  String get tripNameHint;
+
+  /// No description provided for @tripNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your trip name.'**
+  String get tripNameRequired;
+
+  /// No description provided for @tripNameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s the Trip Called?'**
+  String get tripNameTitle;
+
+  /// No description provided for @tripNameSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Give your adventure a name'**
+  String get tripNameSubtitle;
+
+  /// No description provided for @tripLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you going?'**
+  String get tripLocationTitle;
+
+  /// No description provided for @tripLocationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a place or tap the map to choose it'**
+  String get tripLocationSubtitle;
+
+  /// No description provided for @tripLocationSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search destination...'**
+  String get tripLocationSearchHint;
+
+  /// No description provided for @tripLocationSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected location'**
+  String get tripLocationSelected;
+
+  /// No description provided for @tripLocationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select your destination.'**
+  String get tripLocationRequired;
+
+  /// No description provided for @tripLocationSearchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t search for locations. Please try again.'**
+  String get tripLocationSearchFailed;
+
+  /// No description provided for @tripLocationNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No locations found.'**
+  String get tripLocationNotFound;
+
+  /// No description provided for @tripLocationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is required to use your current location.'**
+  String get tripLocationPermissionDenied;
+
+  /// No description provided for @tripLocationServiceDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Please turn on location services.'**
+  String get tripLocationServiceDisabled;
+
+  /// No description provided for @tripLocationSearching.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching...'**
+  String get tripLocationSearching;
+
+  /// No description provided for @tripDurationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration & Budget'**
+  String get tripDurationTitle;
+
+  /// No description provided for @tripDurationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How long and how much?'**
+  String get tripDurationSubtitle;
+
+  /// No description provided for @tripDurationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Duration'**
+  String get tripDurationLabel;
+
+  /// No description provided for @tripDaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get tripDaysLabel;
+
+  /// No description provided for @tripSetupDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up dates'**
+  String get tripSetupDates;
+
+  /// No description provided for @tripDurationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select your trip dates.'**
+  String get tripDurationRequired;
+
+  /// No description provided for @tripBudgetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Budget'**
+  String get tripBudgetTitle;
+
+  /// No description provided for @tripBudgetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set the budget for your adventure'**
+  String get tripBudgetSubtitle;
+
+  /// No description provided for @tripBudgetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget'**
+  String get tripBudgetLabel;
+
+  /// No description provided for @tripBudgetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'0'**
+  String get tripBudgetHint;
+
+  /// No description provided for @tripStopsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan your stops'**
+  String get tripStopsTitle;
+
+  /// No description provided for @tripStopsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add checkpoints along your route'**
+  String get tripStopsSubtitle;
+
+  /// No description provided for @tripAddStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a stop'**
+  String get tripAddStop;
+
+  /// No description provided for @tripStopsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No stops added yet'**
+  String get tripStopsEmpty;
+
+  /// No description provided for @tripUnnamedStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed stop'**
+  String get tripUnnamedStop;
+
+  /// No description provided for @tripStepPacking.
+  ///
+  /// In en, this message translates to:
+  /// **'PACKING'**
+  String get tripStepPacking;
+
+  /// No description provided for @tripStepChecklist.
+  ///
+  /// In en, this message translates to:
+  /// **'CHECKLIST'**
+  String get tripStepChecklist;
+
+  /// No description provided for @tripFriendsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'WHO\'S COMING?'**
+  String get tripFriendsTitle;
+
+  /// No description provided for @tripFriendsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite friends to join your trip'**
+  String get tripFriendsSubtitle;
+
+  /// No description provided for @tripFriendsSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Friends'**
+  String get tripFriendsSearchHint;
+
+  /// No description provided for @tripFriendsInvitedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited Friends'**
+  String get tripFriendsInvitedTitle;
+
+  /// No description provided for @tripFriendsSuggestedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested Friends'**
+  String get tripFriendsSuggestedTitle;
+
+  /// No description provided for @tripFriendsSearchResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Results'**
+  String get tripFriendsSearchResultsTitle;
+
+  /// No description provided for @tripFriendsNoFriendsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No friends found'**
+  String get tripFriendsNoFriendsFound;
+
+  /// No description provided for @tripYourTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Trip'**
+  String get tripYourTrip;
+
+  /// No description provided for @tripLocationFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get tripLocationFallback;
+
+  /// No description provided for @tripDay.
+  ///
+  /// In en, this message translates to:
+  /// **'DAY'**
+  String get tripDay;
+
+  /// No description provided for @tripDays.
+  ///
+  /// In en, this message translates to:
+  /// **'DAYS'**
+  String get tripDays;
+
+  /// No description provided for @tripStop.
+  ///
+  /// In en, this message translates to:
+  /// **'STOP'**
+  String get tripStop;
+
+  /// No description provided for @tripStops.
+  ///
+  /// In en, this message translates to:
+  /// **'STOPS'**
+  String get tripStops;
+
+  /// No description provided for @tripPackingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'NEED HELP WITH WHAT TO PACK?'**
+  String get tripPackingTitle;
+
+  /// No description provided for @tripPackingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Check what you and your friends need to pack!'**
+  String get tripPackingDescription;
+
+  /// No description provided for @tripEssentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Essentials'**
+  String get tripEssentials;
+
+  /// No description provided for @packingItemsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'List packing items...'**
+  String get packingItemsHint;
+
+  /// No description provided for @tripChecklistTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'TRIP CHECKLIST'**
+  String get tripChecklistTitle;
+
+  /// No description provided for @tripChecklistDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure everything is ready for your trip!'**
+  String get tripChecklistDescription;
+
+  /// No description provided for @checklistItemsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'List checklist items...'**
+  String get checklistItemsHint;
+
+  /// No description provided for @tripSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Summary'**
+  String get tripSummaryTitle;
+
+  /// No description provided for @readyButton.
+  ///
+  /// In en, this message translates to:
+  /// **'READY'**
+  String get readyButton;
+
+  /// No description provided for @yourTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR TRIP'**
+  String get yourTrip;
+
+  /// No description provided for @locationNotSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Location not selected'**
+  String get locationNotSelected;
+
+  /// No description provided for @destination.
+  ///
+  /// In en, this message translates to:
+  /// **'DESTINATION'**
+  String get destination;
+
+  /// No description provided for @budget.
+  ///
+  /// In en, this message translates to:
+  /// **'BUDGET'**
+  String get budget;
+
+  /// No description provided for @stops.
+  ///
+  /// In en, this message translates to:
+  /// **'STOPS'**
+  String get stops;
+
+  /// No description provided for @places.
+  ///
+  /// In en, this message translates to:
+  /// **'Places'**
+  String get places;
+
+  /// No description provided for @essentials.
+  ///
+  /// In en, this message translates to:
+  /// **'ESSENTIALS'**
+  String get essentials;
+
+  /// No description provided for @itemsToBePacked.
+  ///
+  /// In en, this message translates to:
+  /// **'Items to be packed'**
+  String get itemsToBePacked;
+
+  /// No description provided for @routes.
+  ///
+  /// In en, this message translates to:
+  /// **'ROUTES'**
+  String get routes;
+
+  /// No description provided for @noStopsAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'No stops added'**
+  String get noStopsAdded;
+
+  /// No description provided for @unnamedStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed stop'**
+  String get unnamedStop;
+
+  /// No description provided for @editTripTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Trip'**
+  String get editTripTitle;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @editTripName.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Name'**
+  String get editTripName;
+
+  /// No description provided for @editTripDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get editTripDuration;
+
+  /// No description provided for @editTripMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get editTripMembers;
+
+  /// No description provided for @editTripStops.
+  ///
+  /// In en, this message translates to:
+  /// **'STOPS'**
+  String get editTripStops;
+
+  /// No description provided for @editTripPacking.
+  ///
+  /// In en, this message translates to:
+  /// **'Packing Items'**
+  String get editTripPacking;
+
+  /// No description provided for @editTripChecklist.
+  ///
+  /// In en, this message translates to:
+  /// **'Checklist'**
+  String get editTripChecklist;
+
+  /// No description provided for @editTripAttachments.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachments'**
+  String get editTripAttachments;
+
+  /// No description provided for @editTripStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get editTripStartDate;
+
+  /// No description provided for @editTripEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End Date'**
+  String get editTripEndDate;
+
+  /// No description provided for @editTripSaveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'SAVE CHANGES'**
+  String get editTripSaveChanges;
+
+  /// No description provided for @editTripNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter trip name'**
+  String get editTripNameHint;
+
+  /// No description provided for @editTripNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip name cannot be empty'**
+  String get editTripNameRequired;
+
+  /// No description provided for @editTripNameUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip name updated'**
+  String get editTripNameUpdated;
+
+  /// No description provided for @editTripUpdateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get editTripUpdateSuccess;
+
+  /// No description provided for @editTripUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update trip'**
+  String get editTripUpdateFailed;
+
+  /// No description provided for @editTripAddItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Item'**
+  String get editTripAddItem;
+
+  /// No description provided for @editTripAddMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Member'**
+  String get editTripAddMember;
+
+  /// No description provided for @editTripUploadAttachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Attachment'**
+  String get editTripUploadAttachment;
+
+  /// No description provided for @editTripNoMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'No members yet'**
+  String get editTripNoMembers;
+
+  /// No description provided for @editTripNoAttachments.
+  ///
+  /// In en, this message translates to:
+  /// **'No attachments yet'**
+  String get editTripNoAttachments;
+
+  /// No description provided for @editTripNoPackingItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No packing items yet'**
+  String get editTripNoPackingItems;
+
+  /// No description provided for @editTripNoChecklistItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No checklist items yet'**
+  String get editTripNoChecklistItems;
+
+  /// No description provided for @editTripReorderStops.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to reorder stops'**
+  String get editTripReorderStops;
+
+  /// No description provided for @editTripSectionTripName.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Name'**
+  String get editTripSectionTripName;
+
+  /// No description provided for @editTripSectionDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get editTripSectionDuration;
+
+  /// No description provided for @editTripSectionMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get editTripSectionMembers;
+
+  /// No description provided for @editTripSectionStops.
+  ///
+  /// In en, this message translates to:
+  /// **'Stops'**
+  String get editTripSectionStops;
+
+  /// No description provided for @editTripSectionPacking.
+  ///
+  /// In en, this message translates to:
+  /// **'Packing Items'**
+  String get editTripSectionPacking;
+
+  /// No description provided for @editTripSectionChecklist.
+  ///
+  /// In en, this message translates to:
+  /// **'Checklist'**
+  String get editTripSectionChecklist;
+
+  /// No description provided for @editTripSectionAttachments.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachments'**
+  String get editTripSectionAttachments;
+
+  /// No description provided for @editTripSectionBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget'**
+  String get editTripSectionBudget;
+
+  /// No description provided for @editTripSectionRoutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Routes'**
+  String get editTripSectionRoutes;
+
+  /// No description provided for @editTripDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Details'**
+  String get editTripDetails;
+
+  /// No description provided for @editTripDatesNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates not set'**
+  String get editTripDatesNotSet;
+
+  /// No description provided for @editTripNotSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not selected'**
+  String get editTripNotSelected;
+
+  /// No description provided for @editTripDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'DESTINATION'**
+  String get editTripDestination;
+
+  /// No description provided for @editTripBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'BUDGET'**
+  String get editTripBudget;
+
+  /// No description provided for @editTripFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'FRIENDS'**
+  String get editTripFriends;
+
+  /// No description provided for @editTripDurations.
+  ///
+  /// In en, this message translates to:
+  /// **'DURATIONS'**
+  String get editTripDurations;
+
+  /// No description provided for @editTripEssentials.
+  ///
+  /// In en, this message translates to:
+  /// **'ESSENTIALS'**
+  String get editTripEssentials;
+
+  /// No description provided for @editTripItemsToBePacked.
+  ///
+  /// In en, this message translates to:
+  /// **'Items to be packed'**
+  String get editTripItemsToBePacked;
+
+  /// No description provided for @editTripChecklists.
+  ///
+  /// In en, this message translates to:
+  /// **'CHECKLISTS'**
+  String get editTripChecklists;
+
+  /// No description provided for @editTripRoutes.
+  ///
+  /// In en, this message translates to:
+  /// **'ROUTES'**
+  String get editTripRoutes;
+
+  /// No description provided for @editTripNoStopsAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'No stops added'**
+  String get editTripNoStopsAdded;
+
+  /// No description provided for @editTripUnnamedStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed stop'**
+  String get editTripUnnamedStop;
+
+  /// No description provided for @editTripItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Item'**
+  String get editTripItem;
+
+  /// No description provided for @editTripItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get editTripItems;
+
+  /// No description provided for @editTripToBePrepared.
+  ///
+  /// In en, this message translates to:
+  /// **'to be prepared'**
+  String get editTripToBePrepared;
 }
 
 class _AppLocalizationsDelegate

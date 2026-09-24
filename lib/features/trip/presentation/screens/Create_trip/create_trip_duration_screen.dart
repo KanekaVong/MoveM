@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:movem/l10n/app_localizations.dart';
+import 'package:get/get.dart';
 
-import 'package:movem/features/trip/presentation/models/create_trip_draft.dart';
+import '../../controllers/create_trip_controller.dart';
 import 'create_trip_stop_screen.dart';
-import '../../controllers/trip_controller.dart';
+import 'package:movem/features/trip/presentation/widgets/create_trip_component.dart';
 
 class CreateTripDurationScreen extends StatefulWidget {
-  final CreateTripDraft draft;
-  final TripController tripController;
-
   const CreateTripDurationScreen({
     super.key,
-    required this.draft,
-    required this.tripController,
   });
 
   @override
@@ -21,16 +18,45 @@ class CreateTripDurationScreen extends StatefulWidget {
 
 class _CreateTripDurationScreenState
     extends State<CreateTripDurationScreen> {
+
+  final CreateTripController controller = Get.find<CreateTripController>();
+
   late final TextEditingController _budgetController;
 
   bool _showBudget = false;
+
+  TimeOfDay _startTime = const TimeOfDay(
+    hour: 9,
+    minute: 0,
+  );
+
+  TimeOfDay _endTime = const TimeOfDay(
+    hour: 17,
+    minute: 0,
+  );
 
   @override
   void initState() {
     super.initState();
 
+    final draft = controller.currentDraft;
+
+    if (draft.startDate != null) {
+      _startTime = TimeOfDay.fromDateTime(
+        draft.startDate!,
+      );
+    }
+
+    if (draft.endDate != null) {
+      _endTime = TimeOfDay.fromDateTime(
+        draft.endDate!,
+      );
+    }
+
     _budgetController = TextEditingController(
-      text: widget.draft.budget.toStringAsFixed(0),
+      text: controller.currentDraft.budget > 0
+          ? controller.currentDraft.budget.toStringAsFixed(0)
+          : '',
     );
   }
 
@@ -41,6 +67,7 @@ class _CreateTripDurationScreenState
   }
 
   Future<void> _setupDates() async {
+
     final now = DateTime.now();
 
     final range = await showDateRangePicker(
@@ -48,64 +75,78 @@ class _CreateTripDurationScreenState
       firstDate: now,
       lastDate: DateTime(now.year + 5),
       initialDateRange:
-      widget.draft.startDate != null &&
-          widget.draft.endDate != null
+      controller.currentDraft.startDate != null &&
+          controller.currentDraft.endDate != null
           ? DateTimeRange(
-        start: widget.draft.startDate!,
-        end: widget.draft.endDate!,
+        start: controller.currentDraft.startDate!,
+        end: controller.currentDraft.endDate!,
       )
           : null,
     );
 
     if (range == null) return;
 
-    final days =
-        range.end.difference(range.start).inDays + 1;
+    final startTime = await showTimePicker(
+      context: context,
+      initialTime: _startTime,
+    );
+
+    if (startTime == null) return;
+
+    final endTime = await showTimePicker(
+      context: context,
+      initialTime: _endTime,
+    );
+
+    if (endTime == null) return;
+
 
     setState(() {
-      widget.draft.startDate = range.start;
-      widget.draft.endDate = range.end;
-      widget.draft.durationDays = days;
+      _startTime = startTime;
+      _endTime = endTime;
+
     });
+
+    final startDateTime = DateTime(
+      range.start.year,
+      range.start.month,
+      range.start.day,
+      startTime.hour,
+      startTime.minute,
+    );
+
+    final endDateTime = DateTime(
+      range.end.year,
+      range.end.month,
+      range.end.day,
+      endTime.hour,
+      endTime.minute,
+    );
+
+    controller.setDates(
+      startDate: startDateTime,
+      endDate: endDateTime,
+    );
   }
 
   void _increaseDuration() {
-    setState(() {
-      widget.draft.durationDays++;
-    });
-
-    _updateEndDate();
+    controller.increaseDuration();
   }
 
   void _decreaseDuration() {
-    if (widget.draft.durationDays <= 1) return;
-
-    setState(() {
-      widget.draft.durationDays--;
-    });
-
-    _updateEndDate();
-  }
-
-  void _updateEndDate() {
-    if (widget.draft.startDate == null) return;
-
-    setState(() {
-      widget.draft.endDate =
-          widget.draft.startDate!.add(
-            Duration(
-              days: widget.draft.durationDays - 1,
-            ),
-          );
-    });
+    controller.decreaseDuration();
   }
 
   void _continue() {
+    final l10n = AppLocalizations.of(context)!;
+
     if (!_showBudget) {
-      if (widget.draft.startDate == null) {
+      if (controller.currentDraft.startDate == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select your trip dates.'),
+          SnackBar(
+            content: Text(
+              l10n.tripDurationRequired,
+            ),
           ),
         );
         return;
@@ -118,218 +159,281 @@ class _CreateTripDurationScreenState
       return;
     }
 
-    widget.draft.budget =
-        double.tryParse(_budgetController.text.trim()) ?? 0;
+    controller.setBudget(
+      double.tryParse(
+        _budgetController.text.trim(),
+      ) ?? 0,
+    );
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => CreateTripStopScreen(
-          draft: widget.draft,
-          tripController: widget.tripController,
-        )
-      ),
+    Get.to(
+          () => const CreateTripStopScreen(),
     );
   }
 
-  String _formatDate(DateTime? date) {
-    if (date == null) return 'Setup dates';
+  String _formatDate(BuildContext context, DateTime? date,) {
+    if (date == null) {
+      return AppLocalizations.of(context)!
+          .tripSetupDates;
+    }
 
-    const months = [
-      '',
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-
-    return '${months[date.month]} ${date.day}, ${date.year}';
+    return MaterialLocalizations.of(context)
+        .formatMediumDate(date);
   }
 
-  String _formatDateRange() {
-    if (widget.draft.startDate == null) {
-      return 'Setup dates';
+  String _formatDateRange(BuildContext context) {
+
+    final l10n = AppLocalizations.of(context)!;
+    final draft = controller.currentDraft;
+
+    if (draft.startDate == null) {
+      return l10n.tripSetupDates;
     }
 
-    if (widget.draft.endDate == null) {
-      return _formatDate(widget.draft.startDate);
+    final startDate = _formatDate(context, draft.startDate,
+    );
+
+    if (draft.endDate == null) {
+      return startDate;
     }
 
-    return '${_formatDate(widget.draft.startDate)} - '
-        '${_formatDate(widget.draft.endDate)}';
+    final endDate = _formatDate(context, draft.endDate,);
+
+    final startTime = _startTime.format(context);
+    final endTime = _endTime.format(context);
+
+    return '$startDate – $endDate\n'
+        '$startTime – $endTime';
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final keyboardOpen = keyboardHeight > 0;
+
+    final imageHeight = screenHeight * 0.50;
+    final panelTop = keyboardOpen
+        ? screenHeight * 0.20
+        : screenHeight * 0.43;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0B101D),
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            _buildStepIndicator(),
-            Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
-                child: _showBudget
-                    ? _buildBudgetStage()
-                    : _buildDurationStage(),
+      resizeToAvoidBottomInset: false,
+      backgroundColor: isDark
+          ? CreateTripColors.darkBackground
+          : CreateTripColors.lightBackground,
+      body: Stack(
+        children: [
+          // background image
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: imageHeight,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(40),
+                bottomRight: Radius.circular(40),
+              ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    'assets/images/create_new_trip_bg.png',
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.45),
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.15),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
+          ),
 
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        14,
-        20,
-        8,
-      ),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () {
-              if (_showBudget) {
-                setState(() {
-                  _showBudget = false;
-                });
-                return;
-              }
-
-              Navigator.pop(context);
-            },
-            child: const Icon(
-              Icons.chevron_left_rounded,
-              color: Colors.white,
-              size: 32,
+          // HEADER
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CreateTripHeader(
+                    title: l10n.createNewTrip,
+                    onBack: () {
+                      if (_showBudget) {
+                        setState(() {
+                          _showBudget = false;
+                        });
+                        return;
+                      }
+                      Navigator.pop(context);
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  const CreateTripStepIndicator(activeIndex: 2),
+                  const SizedBox(height: 10),
+                  Text(
+                    controller.currentDraft.activityName ?? '',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: CreateTripFonts.condensed,
+                      fontFamilyFallback: CreateTripFonts.khmerFallback,
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    controller.currentDraft.locationName ??
+                        controller.currentDraft.destination ??
+                        '',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: CreateTripFonts.condensed,
+                      fontFamilyFallback: CreateTripFonts.khmerFallback,
+                      color: Colors.white70,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(width: 8),
-          const Text(
-            'Create New Trip',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
+
+          // form panel
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
+            top: panelTop,
+            left: 0,
+            right: 0,
+            bottom: keyboardHeight,
+            child: CreateTripFormPanel(
+              children: [
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: _showBudget
+                      ? _buildBudgetStage()
+                      : _buildDurationStage(),
+                ),
+              ],
+              bottomAction: CreateTripBottomButton(
+                text: l10n.continueButton,
+                onPressed: _continue,
+              ),
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildStepIndicator() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 12,
-      ),
-      child: Row(
-        children: [
-          _buildStep(true),
-          const SizedBox(width: 6),
-          _buildStep(true),
-          const SizedBox(width: 6),
-          _buildStep(true),
-          const SizedBox(width: 6),
-          _buildStep(false),
-          const SizedBox(width: 6),
-          _buildStep(false),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStep(bool active) {
-    return Expanded(
-      child: Container(
-        height: 3,
-        decoration: BoxDecoration(
-          color: active ? Colors.white : Colors.white24,
-          borderRadius: BorderRadius.circular(10),
-        ),
       ),
     );
   }
 
   Widget _buildDurationStage() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        20,
-        20,
-        32,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildTripHeader(),
+    final l10n = AppLocalizations.of(context)!;
 
-          const SizedBox(height: 28),
+    final isDark =
+        Theme.of(context).brightness == Brightness.dark;
 
-          const Text(
-            'Duration & Budget',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 28,
-              fontWeight: FontWeight.w900,
-              height: 1.1,
-            ),
+    final textColor = isDark
+        ? Colors.white
+        : CreateTripColors.lightText;
+
+    final secondaryColor = isDark
+        ? Colors.white60
+        : const Color(0xFF6B7280);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.tripDurationTitle,
+          style: TextStyle(
+            fontFamily: CreateTripFonts.condensed,
+            fontFamilyFallback:
+            CreateTripFonts.khmerFallback,
+            color: textColor,
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            height: 1.1,
           ),
+        ),
 
-          const SizedBox(height: 8),
+        const SizedBox(height: 8),
 
-          const Text(
-            'How long and how much?',
-            style: TextStyle(
-              color: Colors.white54,
-              fontSize: 13,
-            ),
+        Text(
+          l10n.tripDurationSubtitle,
+          style: TextStyle(
+            fontFamily: CreateTripFonts.condensed,
+            fontFamilyFallback:
+            CreateTripFonts.khmerFallback,
+            color: secondaryColor,
+            fontSize: 13,
           ),
+        ),
 
-          const SizedBox(height: 24),
+        const SizedBox(height: 24),
 
-          _buildDurationCard(),
-
-          const SizedBox(height: 28),
-
-          _buildContinueButton(),
-        ],
-      ),
+        _buildDurationCard(),
+      ],
     );
   }
 
   Widget _buildDurationCard() {
+    final l10n = AppLocalizations.of(context)!;
+
+    final isDark =
+        Theme.of(context).brightness == Brightness.dark;
+
+    final textColor = isDark
+        ? Colors.white
+        : CreateTripColors.lightText;
+
+    final cardColor = isDark
+        ? const Color(0xFF171E2D)
+        : const Color(0xFFF1F3F6);
+
+    final controlColor = isDark
+        ? const Color(0xFF222B3D)
+        : Colors.white;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF171E2D),
+        color: cardColor,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: Colors.white12,
+          color: isDark
+              ? Colors.white12
+              : CreateTripColors.lightBorder,
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+        CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Trip Duration',
+          Text(
+            l10n.tripDurationLabel,
             style: TextStyle(
-              color: Colors.white,
+              fontFamily: CreateTripFonts.condensed,
+              fontFamilyFallback:
+              CreateTripFonts.khmerFallback,
+              color: textColor,
               fontSize: 15,
               fontWeight: FontWeight.w700,
             ),
@@ -344,22 +448,35 @@ class _CreateTripDurationScreenState
               _roundButton(
                 icon: Icons.remove,
                 onTap: _decreaseDuration,
+                backgroundColor: controlColor,
+                iconColor: textColor,
               ),
 
               Column(
                 children: [
-                  Text(
-                    '${widget.draft.durationDays}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
+                  Obx(
+                        () => Text(
+                      '${controller.draft.value.durationDays}',
+                      style: TextStyle(
+                        fontFamily: CreateTripFonts.condensed,
+                        fontFamilyFallback: CreateTripFonts.khmerFallback,
+                        color: textColor,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
-                  const Text(
-                    'days',
+
+                  Text(
+                    l10n.tripDaysLabel,
                     style: TextStyle(
-                      color: Colors.white54,
+                      fontFamily:
+                      CreateTripFonts.condensed,
+                      fontFamilyFallback:
+                      CreateTripFonts.khmerFallback,
+                      color: isDark
+                          ? Colors.white54
+                          : const Color(0xFF6B7280),
                       fontSize: 12,
                     ),
                   ),
@@ -369,6 +486,8 @@ class _CreateTripDurationScreenState
               _roundButton(
                 icon: Icons.add,
                 onTap: _increaseDuration,
+                backgroundColor: controlColor,
+                iconColor: textColor,
               ),
             ],
           ),
@@ -377,34 +496,46 @@ class _CreateTripDurationScreenState
 
           InkWell(
             onTap: _setupDates,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius:
+            BorderRadius.circular(14),
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: const Color(0xFF222B3D),
-                borderRadius: BorderRadius.circular(14),
+                color: controlColor,
+                borderRadius:
+                BorderRadius.circular(14),
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.calendar_month_outlined,
-                    color: Colors.white,
+                    color: textColor,
                     size: 20,
                   ),
+
                   const SizedBox(width: 10),
+
                   Expanded(
-                    child: Text(
-                      _formatDateRange(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
+                    child: Obx(
+                          () => Text(
+                        _formatDateRange(context),
+                        style: TextStyle(
+                          fontFamily: CreateTripFonts.condensed,
+                          fontFamilyFallback:
+                          CreateTripFonts.khmerFallback,
+                          color: textColor,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ),
-                  const Icon(
+
+                  Icon(
                     Icons.chevron_right_rounded,
-                    color: Colors.white54,
+                    color: isDark
+                        ? Colors.white54
+                        : const Color(0xFF6B7280),
                   ),
                 ],
               ),
@@ -416,195 +547,166 @@ class _CreateTripDurationScreenState
   }
 
   Widget _buildBudgetStage() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        20,
-        20,
-        32,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildTripHeader(),
+    final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark
+        ? Colors.white
+        : CreateTripColors.lightText;
 
-          const SizedBox(height: 28),
+    final secondaryColor = isDark
+        ? Colors.white60
+        : const Color(0xFF6B7280);
 
-          const Text(
-            'Duration & Budget',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 28,
-              fontWeight: FontWeight.w900,
+    final cardColor = isDark
+        ? const Color(0xFF171E2D)
+        : const Color(0xFFF1F3F6);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.tripBudgetTitle,
+          style: TextStyle(
+            fontFamily: CreateTripFonts.condensed,
+            fontFamilyFallback:
+            CreateTripFonts.khmerFallback,
+            color: textColor,
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            height: 1.1,
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        Text(
+          l10n.tripBudgetSubtitle,
+          style: TextStyle(
+            fontFamily: CreateTripFonts.condensed,
+            fontFamilyFallback:
+            CreateTripFonts.khmerFallback,
+            color: secondaryColor,
+            fontSize: 13,
+          ),
+        ),
+
+        const SizedBox(height: 24),
+
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius:
+            BorderRadius.circular(22),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white12
+                  : CreateTripColors.lightBorder,
             ),
           ),
-
-          const SizedBox(height: 8),
-
-          const Text(
-            'How long and how much?',
-            style: TextStyle(
-              color: Colors.white54,
-              fontSize: 13,
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: const Color(0xFF171E2D),
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                color: Colors.white12,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Trip Budget',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
+          child: Column(
+            crossAxisAlignment:
+            CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.tripBudgetLabel,
+                style: TextStyle(
+                  fontFamily:
+                  CreateTripFonts.condensed,
+                  fontFamilyFallback:
+                  CreateTripFonts.khmerFallback,
+                  color: textColor,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
                 ),
+              ),
 
-                const SizedBox(height: 14),
+              const SizedBox(height: 14),
 
-                TextField(
-                  controller: _budgetController,
-                  keyboardType:
-                  const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  style: const TextStyle(
-                    color: Colors.white,
+              TextField(
+                controller: _budgetController,
+                keyboardType:
+                const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                style: TextStyle(
+                  fontFamily:
+                  CreateTripFonts.condensed,
+                  fontFamilyFallback:
+                  CreateTripFonts.khmerFallback,
+                  color: textColor,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w800,
+                ),
+                decoration: InputDecoration(
+                  prefixText: '\$',
+                  prefixStyle: TextStyle(
+                    color: textColor,
                     fontSize: 30,
                     fontWeight: FontWeight.w800,
                   ),
-                  decoration:
-                  const InputDecoration(
-                    prefixText: '\$',
-                    prefixStyle: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    border: InputBorder.none,
-                    hintText: '0',
-                    hintStyle: TextStyle(
-                      color: Colors.white30,
-                    ),
+                  border: InputBorder.none,
+                  hintText: l10n.tripBudgetHint,
+                  hintStyle: TextStyle(
+                    color: isDark
+                        ? Colors.white30
+                        : const Color(0xFF9CA3AF),
                   ),
                 ),
+              ),
 
-                const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: const [
-                    50,
-                    100,
-                    300,
-                    500,
-                    1000,
-                  ].map(_BudgetChip.new).toList(),
-                ),
-              ],
-            ),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  50,
+                  100,
+                  300,
+                  500,
+                  1000,
+                ].map(
+                      (amount) => _BudgetChip(
+                    amount: amount,
+                    onSelected: () {
+                      _budgetController.text =
+                          amount.toString();
+                    },
+                  ),
+                ).toList(),
+              ),
+            ],
           ),
-
-          const SizedBox(height: 28),
-
-          _buildContinueButton(),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildTripHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFF151C2A),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.draft.activityName ??
-                'Your Trip',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            widget.draft.locationName ??
-                widget.draft.destination ??
-                'Location',
-            style: const TextStyle(
-              color: Colors.white54,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _roundButton({
     required IconData icon,
     required VoidCallback onTap,
+    required Color backgroundColor,
+    required Color iconColor,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 42,
-        height: 42,
-        decoration: const BoxDecoration(
-          color: Color(0xFF222B3D),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          icon,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContinueButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: ElevatedButton(
-        onPressed: _continue,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(21),
+        child: Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            shape: BoxShape.circle,
           ),
-        ),
-        child: Text(
-          _showBudget ? 'CONTINUE' : 'CONTINUE',
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1.2,
+          child: Icon(
+            icon,
+            color: iconColor,
           ),
         ),
       ),
@@ -614,33 +716,52 @@ class _CreateTripDurationScreenState
 
 class _BudgetChip extends StatelessWidget {
   final int amount;
+  final VoidCallback? onSelected;
 
-  const _BudgetChip(this.amount);
+  const _BudgetChip({
+    required this.amount,
+    required this.onSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        final parent = context
-            .findAncestorStateOfType<
-            _CreateTripDurationScreenState>();
+    final isDark =
+        Theme.of(context).brightness ==
+            Brightness.dark;
 
-        parent?._budgetController.text =
-            amount.toString();
-      },
+    final textColor = isDark
+        ? Colors.white
+        : CreateTripColors.lightText;
+
+    final backgroundColor = isDark
+        ? const Color(0xFF222B3D)
+        : Colors.white;
+
+    return GestureDetector(
+      onTap: onSelected,
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 9,
         ),
         decoration: BoxDecoration(
-          color: const Color(0xFF222B3D),
-          borderRadius: BorderRadius.circular(20),
+          color: backgroundColor,
+          borderRadius:
+          BorderRadius.circular(20),
+          border: Border.all(
+            color: isDark
+                ? Colors.white12
+                : CreateTripColors.lightBorder,
+          ),
         ),
         child: Text(
           '\$$amount',
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            fontFamily:
+            CreateTripFonts.condensed,
+            fontFamilyFallback:
+            CreateTripFonts.khmerFallback,
+            color: textColor,
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
