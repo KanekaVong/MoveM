@@ -1070,1277 +1070,737 @@ abstract class AppLocalizations {
   /// **'Task deleted successfully'**
   String get taskDeletedSuccess;
 
-  /// No description provided for @createClub.
+  /// No description provided for @createNewTrip.
   ///
   /// In en, this message translates to:
-  /// **'Create Club'**
-  String get createClub;
+  /// **'Create New Trip'**
+  String get createNewTrip;
 
-  /// No description provided for @clubNameLabel.
+  /// No description provided for @tripStepName.
   ///
   /// In en, this message translates to:
-  /// **'CLUB NAME'**
-  String get clubNameLabel;
+  /// **'NAME'**
+  String get tripStepName;
 
-  /// No description provided for @clubNameHint.
+  /// No description provided for @tripStepLocation.
   ///
   /// In en, this message translates to:
-  /// **'Enter club name'**
-  String get clubNameHint;
+  /// **'LOCATION'**
+  String get tripStepLocation;
 
-  /// No description provided for @clubDescriptionLabel.
+  /// No description provided for @tripStepDuration.
   ///
   /// In en, this message translates to:
-  /// **'CLUB DESCRIPTION'**
-  String get clubDescriptionLabel;
+  /// **'DURATION'**
+  String get tripStepDuration;
 
-  /// No description provided for @searchForClub.
+  /// No description provided for @tripStepStops.
   ///
   /// In en, this message translates to:
-  /// **'Search for Club'**
-  String get searchForClub;
+  /// **'STOPS'**
+  String get tripStepStops;
 
-  /// No description provided for @clubInvitations.
+  /// No description provided for @tripStepFriends.
   ///
   /// In en, this message translates to:
-  /// **'Invitations'**
-  String get clubInvitations;
+  /// **'FRIENDS'**
+  String get tripStepFriends;
 
-  /// No description provided for @clubMembers.
+  /// No description provided for @continueButton.
   ///
   /// In en, this message translates to:
-  /// **'Members'**
-  String get clubMembers;
+  /// **'CONTINUE'**
+  String get continueButton;
 
-  /// No description provided for @clubOverview.
+  /// No description provided for @tripNameLabel.
   ///
   /// In en, this message translates to:
-  /// **'Overview'**
-  String get clubOverview;
+  /// **'TRIP NAME'**
+  String get tripNameLabel;
 
-  /// No description provided for @exploreClubs.
+  /// No description provided for @tripNameHint.
   ///
   /// In en, this message translates to:
-  /// **'Explore Clubs'**
-  String get exploreClubs;
+  /// **'Enter your trip name...'**
+  String get tripNameHint;
 
-  /// No description provided for @publicLabel.
+  /// No description provided for @tripNameRequired.
   ///
   /// In en, this message translates to:
-  /// **'Public'**
-  String get publicLabel;
+  /// **'Please enter your trip name.'**
+  String get tripNameRequired;
 
-  /// No description provided for @privateLabel.
+  /// No description provided for @tripNameTitle.
   ///
   /// In en, this message translates to:
-  /// **'Private'**
-  String get privateLabel;
+  /// **'What\'s the Trip Called?'**
+  String get tripNameTitle;
 
-  /// No description provided for @selectPrivacy.
+  /// No description provided for @tripNameSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Select Privacy'**
-  String get selectPrivacy;
+  /// **'Give your adventure a name'**
+  String get tripNameSubtitle;
 
-  /// No description provided for @requiredField.
+  /// No description provided for @tripLocationTitle.
   ///
   /// In en, this message translates to:
-  /// **'Required'**
-  String get requiredField;
+  /// **'Where are you going?'**
+  String get tripLocationTitle;
 
-  /// No description provided for @pleaseEnterClubName.
+  /// No description provided for @tripLocationSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Please enter a club name'**
-  String get pleaseEnterClubName;
+  /// **'Search for a place or tap the map to choose it'**
+  String get tripLocationSubtitle;
 
-  /// No description provided for @myFriends.
+  /// No description provided for @tripLocationSearchHint.
   ///
   /// In en, this message translates to:
-  /// **'My Friends'**
-  String get myFriends;
+  /// **'Search destination...'**
+  String get tripLocationSearchHint;
 
-  /// No description provided for @myRequests.
+  /// No description provided for @tripLocationSelected.
   ///
   /// In en, this message translates to:
-  /// **'My Requests'**
-  String get myRequests;
+  /// **'Selected location'**
+  String get tripLocationSelected;
 
-  /// No description provided for @suggestionsTab.
+  /// No description provided for @tripLocationRequired.
   ///
   /// In en, this message translates to:
-  /// **'Suggestions'**
-  String get suggestionsTab;
+  /// **'Please select your destination.'**
+  String get tripLocationRequired;
 
-  /// No description provided for @noFriendsYet.
+  /// No description provided for @tripLocationSearchFailed.
   ///
   /// In en, this message translates to:
-  /// **'No friends yet'**
-  String get noFriendsYet;
+  /// **'Couldn\'t search for locations. Please try again.'**
+  String get tripLocationSearchFailed;
 
-  /// No description provided for @noFriendsYetSub.
+  /// No description provided for @tripLocationNotFound.
   ///
   /// In en, this message translates to:
-  /// **'People you add will appear here.'**
-  String get noFriendsYetSub;
+  /// **'No locations found.'**
+  String get tripLocationNotFound;
 
-  /// No description provided for @noFriendRequests.
+  /// No description provided for @tripLocationPermissionDenied.
   ///
   /// In en, this message translates to:
-  /// **'No friend requests'**
-  String get noFriendRequests;
+  /// **'Location permission is required to use your current location.'**
+  String get tripLocationPermissionDenied;
 
-  /// No description provided for @noFriendRequestsSub.
-  ///
-  /// In en, this message translates to:
-  /// **'When someone sends you a request, it will show up here.'**
-  String get noFriendRequestsSub;
-
-  /// No description provided for @noRequestsSent.
-  ///
-  /// In en, this message translates to:
-  /// **'No requests sent'**
-  String get noRequestsSent;
-
-  /// No description provided for @noRequestsSentSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Friend requests you send will appear here.'**
-  String get noRequestsSentSub;
-
-  /// No description provided for @noSuggestionsFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No suggestions found'**
-  String get noSuggestionsFound;
-
-  /// No description provided for @noSuggestionsFoundSub.
-  ///
-  /// In en, this message translates to:
-  /// **'We do not have anyone to suggest right now.'**
-  String get noSuggestionsFoundSub;
-
-  /// No description provided for @noUsersFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No users found'**
-  String get noUsersFound;
-
-  /// No description provided for @nothingMatchesSearch.
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing matches your search.'**
-  String get nothingMatchesSearch;
-
-  /// No description provided for @workoutChallenge.
-  ///
-  /// In en, this message translates to:
-  /// **'Workout Challenge'**
-  String get workoutChallenge;
-
-  /// No description provided for @filterChallenges.
-  ///
-  /// In en, this message translates to:
-  /// **'Filter Challenges'**
-  String get filterChallenges;
-
-  /// No description provided for @allFilter.
-  ///
-  /// In en, this message translates to:
-  /// **'All'**
-  String get allFilter;
-
-  /// No description provided for @noChallengesFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No challenges found'**
-  String get noChallengesFound;
-
-  /// No description provided for @workoutHistory.
-  ///
-  /// In en, this message translates to:
-  /// **'Workout History'**
-  String get workoutHistory;
-
-  /// No description provided for @noWorkoutsYet.
-  ///
-  /// In en, this message translates to:
-  /// **'No workouts yet'**
-  String get noWorkoutsYet;
-
-  /// No description provided for @noWorkoutsYetSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Finish a run or workout to see it here.'**
-  String get noWorkoutsYetSub;
-
-  /// No description provided for @noWorkoutSessionsYet.
-  ///
-  /// In en, this message translates to:
-  /// **'No workout sessions yet'**
-  String get noWorkoutSessionsYet;
-
-  /// No description provided for @noWorkoutSessionsYetSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Complete a run or push-up workout to see it here!'**
-  String get noWorkoutSessionsYetSub;
-
-  /// No description provided for @tryAgain.
-  ///
-  /// In en, this message translates to:
-  /// **'Try again'**
-  String get tryAgain;
-
-  /// No description provided for @quickActions.
-  ///
-  /// In en, this message translates to:
-  /// **'Quick Actions'**
-  String get quickActions;
-
-  /// No description provided for @challengeAction.
-  ///
-  /// In en, this message translates to:
-  /// **'Challenge'**
-  String get challengeAction;
-
-  /// No description provided for @fitnessClubAction.
-  ///
-  /// In en, this message translates to:
-  /// **'Fitness Club'**
-  String get fitnessClubAction;
-
-  /// No description provided for @historyTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'History'**
-  String get historyTitle;
-
-  /// No description provided for @noActivityYet.
-  ///
-  /// In en, this message translates to:
-  /// **'No activity yet'**
-  String get noActivityYet;
-
-  /// No description provided for @noActivityYetSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Updates for this task will appear here.'**
-  String get noActivityYetSub;
-
-  /// No description provided for @retry.
-  ///
-  /// In en, this message translates to:
-  /// **'Retry'**
-  String get retry;
-
-  /// No description provided for @noNotificationsSub.
-  ///
-  /// In en, this message translates to:
-  /// **'When something happens, you will see it here.'**
-  String get noNotificationsSub;
-
-  /// No description provided for @endWorkout.
-  ///
-  /// In en, this message translates to:
-  /// **'End Workout?'**
-  String get endWorkout;
-
-  /// No description provided for @endWorkoutConfirm.
-  ///
-  /// In en, this message translates to:
-  /// **'Your progress will be saved.'**
-  String get endWorkoutConfirm;
-
-  /// No description provided for @keepGoing.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep Going'**
-  String get keepGoing;
-
-  /// No description provided for @exitRun.
-  ///
-  /// In en, this message translates to:
-  /// **'Exit Run?'**
-  String get exitRun;
-
-  /// No description provided for @exitRunConfirm.
-  ///
-  /// In en, this message translates to:
-  /// **'Your run progress will be saved.'**
-  String get exitRunConfirm;
-
-  /// No description provided for @unfriend.
-  ///
-  /// In en, this message translates to:
-  /// **'Unfriend'**
-  String get unfriend;
-
-  /// No description provided for @newsFeed.
-  ///
-  /// In en, this message translates to:
-  /// **'News Feed'**
-  String get newsFeed;
-
-  /// No description provided for @feedEmptySub.
-  ///
-  /// In en, this message translates to:
-  /// **'Workouts and updates from your circle will show up here.'**
-  String get feedEmptySub;
-
-  /// No description provided for @writeAComment.
-  ///
-  /// In en, this message translates to:
-  /// **'Write a comment'**
-  String get writeAComment;
-
-  /// No description provided for @joinClub.
-  ///
-  /// In en, this message translates to:
-  /// **'Join Club'**
-  String get joinClub;
-
-  /// No description provided for @joinClubSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Find an active club'**
-  String get joinClubSub;
-
-  /// No description provided for @createClubSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Create your own community'**
-  String get createClubSub;
-
-  /// No description provided for @noClubsFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No clubs found'**
-  String get noClubsFound;
-
-  /// No description provided for @noClubsAvailable.
-  ///
-  /// In en, this message translates to:
-  /// **'No clubs yet'**
-  String get noClubsAvailable;
-
-  /// No description provided for @noClubsAvailableSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Create a club or look around to find friends to train with.'**
-  String get noClubsAvailableSub;
-
-  /// No description provided for @yourClubs.
-  ///
-  /// In en, this message translates to:
-  /// **'Your Clubs'**
-  String get yourClubs;
-
-  /// No description provided for @discoverClubs.
-  ///
-  /// In en, this message translates to:
-  /// **'Discover Clubs'**
-  String get discoverClubs;
-
-  /// No description provided for @exploreAll.
-  ///
-  /// In en, this message translates to:
-  /// **'Explore all'**
-  String get exploreAll;
-
-  /// No description provided for @beFirstClub.
-  ///
-  /// In en, this message translates to:
-  /// **'Be the first to start a club!'**
-  String get beFirstClub;
-
-  /// No description provided for @haventJoinedClubs.
-  ///
-  /// In en, this message translates to:
-  /// **'You haven\'t joined a club yet'**
-  String get haventJoinedClubs;
-
-  /// No description provided for @haventJoinedClubsSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Join a club or start your own to train together.'**
-  String get haventJoinedClubsSub;
-
-  /// No description provided for @noClubInvitations.
-  ///
-  /// In en, this message translates to:
-  /// **'No club invitations'**
-  String get noClubInvitations;
-
-  /// No description provided for @noClubInvitationsSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Invites to join a club will show up here.'**
-  String get noClubInvitationsSub;
-
-  /// No description provided for @noJoinRequests.
-  ///
-  /// In en, this message translates to:
-  /// **'No join requests'**
-  String get noJoinRequests;
-
-  /// No description provided for @noJoinRequestsSub.
-  ///
-  /// In en, this message translates to:
-  /// **'When someone asks to join your club, you\'ll see it here.'**
-  String get noJoinRequestsSub;
-
-  /// No description provided for @noMembersYet.
-  ///
-  /// In en, this message translates to:
-  /// **'No members yet'**
-  String get noMembersYet;
-
-  /// No description provided for @inviteToGrowClub.
-  ///
-  /// In en, this message translates to:
-  /// **'Invite friends to grow this club.'**
-  String get inviteToGrowClub;
-
-  /// No description provided for @noCompletedChallenges.
-  ///
-  /// In en, this message translates to:
-  /// **'No finished challenges yet'**
-  String get noCompletedChallenges;
-
-  /// No description provided for @createChallenge.
-  ///
-  /// In en, this message translates to:
-  /// **'Create Challenge'**
-  String get createChallenge;
-
-  /// No description provided for @pleaseEnterChallengeName.
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter a challenge name.'**
-  String get pleaseEnterChallengeName;
-
-  /// No description provided for @endDateAfterStart.
-  ///
-  /// In en, this message translates to:
-  /// **'End date must be after the start date.'**
-  String get endDateAfterStart;
-
-  /// No description provided for @achievementsBadges.
-  ///
-  /// In en, this message translates to:
-  /// **'Achievements'**
-  String get achievementsBadges;
-
-  /// No description provided for @noAchievementsFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No achievements yet'**
-  String get noAchievementsFound;
-
-  /// No description provided for @noAchievementsYet.
-  ///
-  /// In en, this message translates to:
-  /// **'No achievements yet'**
-  String get noAchievementsYet;
-
-  /// No description provided for @profileTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Profile'**
-  String get profileTitle;
-
-  /// No description provided for @noMutuals.
-  ///
-  /// In en, this message translates to:
-  /// **'No mutual friends'**
-  String get noMutuals;
-
-  /// No description provided for @invitation.
-  ///
-  /// In en, this message translates to:
-  /// **'Invitation'**
-  String get invitation;
-
-  /// No description provided for @invitationsLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'INVITATIONS'**
-  String get invitationsLabel;
-
-  /// No description provided for @noInvitations.
-  ///
-  /// In en, this message translates to:
-  /// **'No invitations'**
-  String get noInvitations;
-
-  /// No description provided for @noInvitationsSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Task invitations you receive will show up here.'**
-  String get noInvitationsSub;
-
-  /// No description provided for @noFriendsFoundInvite.
-  ///
-  /// In en, this message translates to:
-  /// **'No friends found'**
-  String get noFriendsFoundInvite;
-
-  /// No description provided for @addFriendsThenInvite.
-  ///
-  /// In en, this message translates to:
-  /// **'Add friends first, then invite them to this club.'**
-  String get addFriendsThenInvite;
-
-  /// No description provided for @createButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Create'**
-  String get createButton;
-
-  /// No description provided for @success.
-  ///
-  /// In en, this message translates to:
-  /// **'Done'**
-  String get success;
-
-  /// No description provided for @errorTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Oops'**
-  String get errorTitle;
-
-  /// No description provided for @taskTitleEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'Please name your task.'**
-  String get taskTitleEmpty;
-
-  /// No description provided for @taskCreatedSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Task created!'**
-  String get taskCreatedSuccess;
-
-  /// No description provided for @taskUpdatedSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Task updated!'**
-  String get taskUpdatedSuccess;
-
-  /// No description provided for @labelCreatedSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Label created!'**
-  String get labelCreatedSuccess;
-
-  /// No description provided for @cannotEditAfterDeadline.
-  ///
-  /// In en, this message translates to:
-  /// **'This task can\'t be changed after the deadline.'**
-  String get cannotEditAfterDeadline;
-
-  /// No description provided for @noLabelsAvailable.
-  ///
-  /// In en, this message translates to:
-  /// **'No labels yet.'**
-  String get noLabelsAvailable;
-
-  /// No description provided for @taskMarkedComplete.
-  ///
-  /// In en, this message translates to:
-  /// **'Nice! Task marked complete.'**
-  String get taskMarkedComplete;
-
-  /// No description provided for @pleaseEnterHeight.
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter your height.'**
-  String get pleaseEnterHeight;
-
-  /// No description provided for @pleaseEnterWeight.
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter your weight.'**
-  String get pleaseEnterWeight;
-
-  /// No description provided for @profileUpdated.
-  ///
-  /// In en, this message translates to:
-  /// **'Profile saved.'**
-  String get profileUpdated;
-
-  /// No description provided for @enterHeightRange.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter height in cm (50–300).'**
-  String get enterHeightRange;
-
-  /// No description provided for @enterWeightRange.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter weight in kg (20–500).'**
-  String get enterWeightRange;
-
-  /// No description provided for @swipeToStart.
-  ///
-  /// In en, this message translates to:
-  /// **'Swipe to start'**
-  String get swipeToStart;
-
-  /// No description provided for @mainGoalQuestion.
-  ///
-  /// In en, this message translates to:
-  /// **'What\'s your main goal?'**
-  String get mainGoalQuestion;
-
-  /// No description provided for @targetWeightQuestion.
-  ///
-  /// In en, this message translates to:
-  /// **'What\'s your target weight?'**
-  String get targetWeightQuestion;
-
-  /// No description provided for @targetDateQuestion.
-  ///
-  /// In en, this message translates to:
-  /// **'What\'s your target date?'**
-  String get targetDateQuestion;
-
-  /// No description provided for @workoutLevelQuestion.
-  ///
-  /// In en, this message translates to:
-  /// **'Which workout level feels right?'**
-  String get workoutLevelQuestion;
-
-  /// No description provided for @fitnessAssessment.
-  ///
-  /// In en, this message translates to:
-  /// **'Fitness check'**
-  String get fitnessAssessment;
-
-  /// No description provided for @pleaseSelectMainGoal.
-  ///
-  /// In en, this message translates to:
-  /// **'Please pick a main goal.'**
-  String get pleaseSelectMainGoal;
-
-  /// No description provided for @pleaseEnterTargetWeight.
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter a target weight.'**
-  String get pleaseEnterTargetWeight;
-
-  /// No description provided for @pleaseSelectFutureDate.
-  ///
-  /// In en, this message translates to:
-  /// **'Please pick a future date.'**
-  String get pleaseSelectFutureDate;
-
-  /// No description provided for @pleaseSelectWorkoutLevel.
-  ///
-  /// In en, this message translates to:
-  /// **'Please pick a workout level.'**
-  String get pleaseSelectWorkoutLevel;
-
-  /// No description provided for @locationRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'We need location to track your run.'**
-  String get locationRequired;
-
-  /// No description provided for @enableLocation.
+  /// No description provided for @tripLocationServiceDisabled.
   ///
   /// In en, this message translates to:
   /// **'Please turn on location services.'**
-  String get enableLocation;
+  String get tripLocationServiceDisabled;
 
-  /// No description provided for @alreadyMember.
+  /// No description provided for @tripLocationSearching.
   ///
   /// In en, this message translates to:
-  /// **'Already in this task.'**
-  String get alreadyMember;
+  /// **'Searching...'**
+  String get tripLocationSearching;
 
-  /// No description provided for @alreadyInvited.
+  /// No description provided for @tripDurationTitle.
   ///
   /// In en, this message translates to:
-  /// **'Already invited.'**
-  String get alreadyInvited;
+  /// **'Duration & Budget'**
+  String get tripDurationTitle;
 
-  /// No description provided for @noSoloChallenges.
+  /// No description provided for @tripDurationSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'No solo challenges right now'**
-  String get noSoloChallenges;
+  /// **'How long and how much?'**
+  String get tripDurationSubtitle;
 
-  /// No description provided for @anyoneCanJoin.
+  /// No description provided for @tripDurationLabel.
   ///
   /// In en, this message translates to:
-  /// **'Anyone can find and join this club'**
-  String get anyoneCanJoin;
+  /// **'Trip Duration'**
+  String get tripDurationLabel;
 
-  /// No description provided for @requiresInvite.
+  /// No description provided for @tripDaysLabel.
   ///
   /// In en, this message translates to:
-  /// **'Needs an invite to join'**
-  String get requiresInvite;
+  /// **'days'**
+  String get tripDaysLabel;
 
-  /// No description provided for @searchClubsHint.
+  /// No description provided for @tripSetupDates.
   ///
   /// In en, this message translates to:
-  /// **'Search clubs by name...'**
-  String get searchClubsHint;
+  /// **'Set up dates'**
+  String get tripSetupDates;
 
-  /// No description provided for @movemClubs.
+  /// No description provided for @tripDurationRequired.
   ///
   /// In en, this message translates to:
-  /// **'MoveM Clubs'**
-  String get movemClubs;
+  /// **'Please select your trip dates.'**
+  String get tripDurationRequired;
 
-  /// No description provided for @clubInvitationsTitle.
+  /// No description provided for @tripBudgetTitle.
   ///
   /// In en, this message translates to:
-  /// **'Club Invitations'**
-  String get clubInvitationsTitle;
+  /// **'Trip Budget'**
+  String get tripBudgetTitle;
 
-  /// No description provided for @noClubChallenges.
+  /// No description provided for @tripBudgetSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'No club challenges yet'**
-  String get noClubChallenges;
+  /// **'Set the budget for your adventure'**
+  String get tripBudgetSubtitle;
 
-  /// No description provided for @createOneToStart.
+  /// No description provided for @tripBudgetLabel.
   ///
   /// In en, this message translates to:
-  /// **'Create one to get started.'**
-  String get createOneToStart;
+  /// **'Budget'**
+  String get tripBudgetLabel;
 
-  /// No description provided for @noMembersJoined.
+  /// No description provided for @tripBudgetHint.
   ///
   /// In en, this message translates to:
-  /// **'No members have joined yet'**
-  String get noMembersJoined;
+  /// **'0'**
+  String get tripBudgetHint;
 
-  /// No description provided for @endSessionBody.
+  /// No description provided for @tripStopsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Want to stop and see your summary?'**
-  String get endSessionBody;
+  /// **'Plan your stops'**
+  String get tripStopsTitle;
 
-  /// No description provided for @exitRunBody.
+  /// No description provided for @tripStopsSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Your run will be paused. Leave now?'**
-  String get exitRunBody;
+  /// **'Add checkpoints along your route'**
+  String get tripStopsSubtitle;
 
-  /// No description provided for @kgUnit.
+  /// No description provided for @tripAddStop.
   ///
   /// In en, this message translates to:
-  /// **'kg'**
-  String get kgUnit;
+  /// **'Add a stop'**
+  String get tripAddStop;
 
-  /// No description provided for @lbsUnit.
+  /// No description provided for @tripStopsEmpty.
   ///
   /// In en, this message translates to:
-  /// **'lbs'**
-  String get lbsUnit;
+  /// **'No stops added yet'**
+  String get tripStopsEmpty;
 
-  /// No description provided for @join.
+  /// No description provided for @tripUnnamedStop.
   ///
   /// In en, this message translates to:
-  /// **'Join'**
-  String get join;
+  /// **'Unnamed stop'**
+  String get tripUnnamedStop;
 
-  /// No description provided for @requestJoin.
+  /// No description provided for @tripStepPacking.
   ///
   /// In en, this message translates to:
-  /// **'Request'**
-  String get requestJoin;
+  /// **'PACKING'**
+  String get tripStepPacking;
 
-  /// No description provided for @next.
+  /// No description provided for @tripStepChecklist.
   ///
   /// In en, this message translates to:
-  /// **'Next'**
-  String get next;
+  /// **'CHECKLIST'**
+  String get tripStepChecklist;
 
-  /// No description provided for @submit.
+  /// No description provided for @tripFriendsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Submit'**
-  String get submit;
+  /// **'WHO\'S COMING?'**
+  String get tripFriendsTitle;
 
-  /// No description provided for @invited.
+  /// No description provided for @tripFriendsSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Invited'**
-  String get invited;
+  /// **'Invite friends to join your trip'**
+  String get tripFriendsSubtitle;
 
-  /// No description provided for @joinedTitle.
+  /// No description provided for @tripFriendsSearchHint.
   ///
   /// In en, this message translates to:
-  /// **'You\'re in!'**
-  String get joinedTitle;
+  /// **'Invite Friends'**
+  String get tripFriendsSearchHint;
 
-  /// No description provided for @requestSentTitle.
+  /// No description provided for @tripFriendsInvitedTitle.
   ///
   /// In en, this message translates to:
-  /// **'Request sent'**
-  String get requestSentTitle;
+  /// **'Invited Friends'**
+  String get tripFriendsInvitedTitle;
 
-  /// No description provided for @savedTitle.
+  /// No description provided for @tripFriendsSuggestedTitle.
   ///
   /// In en, this message translates to:
-  /// **'Saved'**
-  String get savedTitle;
+  /// **'Suggested Friends'**
+  String get tripFriendsSuggestedTitle;
 
-  /// No description provided for @removedTitle.
+  /// No description provided for @tripFriendsSearchResultsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Removed'**
-  String get removedTitle;
+  /// **'Search Results'**
+  String get tripFriendsSearchResultsTitle;
 
-  /// No description provided for @clubCreatedMsg.
+  /// No description provided for @tripFriendsNoFriendsFound.
   ///
   /// In en, this message translates to:
-  /// **'Club \"{name}\" is ready!'**
-  String clubCreatedMsg(String name);
+  /// **'No friends found'**
+  String get tripFriendsNoFriendsFound;
 
-  /// No description provided for @challengeCreatedMsg.
+  /// No description provided for @tripYourTrip.
   ///
   /// In en, this message translates to:
-  /// **'Challenge \"{name}\" is ready!'**
-  String challengeCreatedMsg(String name);
+  /// **'Your Trip'**
+  String get tripYourTrip;
 
-  /// No description provided for @joinedClubMsg.
+  /// No description provided for @tripLocationFallback.
   ///
   /// In en, this message translates to:
-  /// **'You\'re now in {name}'**
-  String joinedClubMsg(String name);
+  /// **'Location'**
+  String get tripLocationFallback;
 
-  /// No description provided for @joinRequestSentMsg.
+  /// No description provided for @tripDay.
   ///
   /// In en, this message translates to:
-  /// **'Your request to join {name} is waiting.'**
-  String joinRequestSentMsg(String name);
+  /// **'DAY'**
+  String get tripDay;
 
-  /// No description provided for @failedToCreateClub.
+  /// No description provided for @tripDays.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t create the club. Try again.'**
-  String get failedToCreateClub;
+  /// **'DAYS'**
+  String get tripDays;
 
-  /// No description provided for @failedToJoinClub.
+  /// No description provided for @tripStop.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t join the club. Try again.'**
-  String get failedToJoinClub;
+  /// **'STOP'**
+  String get tripStop;
 
-  /// No description provided for @failedToSubmitJoinRequest.
+  /// No description provided for @tripStops.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t send the join request. Try again.'**
-  String get failedToSubmitJoinRequest;
+  /// **'STOPS'**
+  String get tripStops;
 
-  /// No description provided for @failedToCreateChallenge.
+  /// No description provided for @tripPackingTitle.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t create the challenge. Try again.'**
-  String get failedToCreateChallenge;
+  /// **'NEED HELP WITH WHAT TO PACK?'**
+  String get tripPackingTitle;
 
-  /// No description provided for @failedToRemoveMember.
+  /// No description provided for @tripPackingDescription.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t remove this member.'**
-  String get failedToRemoveMember;
+  /// **'Check what you and your friends need to pack!'**
+  String get tripPackingDescription;
 
-  /// No description provided for @couldNotApproveRequest.
+  /// No description provided for @tripEssentials.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t approve that request.'**
-  String get couldNotApproveRequest;
+  /// **'Trip Essentials'**
+  String get tripEssentials;
 
-  /// No description provided for @couldNotRejectRequest.
+  /// No description provided for @packingItemsHint.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t reject that request.'**
-  String get couldNotRejectRequest;
+  /// **'List packing items...'**
+  String get packingItemsHint;
 
-  /// No description provided for @couldNotCancelRequest.
+  /// No description provided for @tripChecklistTitle.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t cancel that request.'**
-  String get couldNotCancelRequest;
+  /// **'TRIP CHECKLIST'**
+  String get tripChecklistTitle;
 
-  /// No description provided for @enterTargetInUnit.
+  /// No description provided for @tripChecklistDescription.
   ///
   /// In en, this message translates to:
-  /// **'Enter a target in {unit}.'**
-  String enterTargetInUnit(String unit);
+  /// **'Make sure everything is ready for your trip!'**
+  String get tripChecklistDescription;
 
-  /// No description provided for @loadingChallenges.
+  /// No description provided for @checklistItemsHint.
   ///
   /// In en, this message translates to:
-  /// **'Loading challenges...'**
-  String get loadingChallenges;
+  /// **'List checklist items...'**
+  String get checklistItemsHint;
 
-  /// No description provided for @membersCount.
+  /// No description provided for @tripSummaryTitle.
   ///
   /// In en, this message translates to:
-  /// **'Members ({count})'**
-  String membersCount(int count);
+  /// **'Trip Summary'**
+  String get tripSummaryTitle;
 
-  /// No description provided for @completedChallengesLabel.
+  /// No description provided for @readyButton.
   ///
   /// In en, this message translates to:
-  /// **'Completed challenges'**
-  String get completedChallengesLabel;
+  /// **'READY'**
+  String get readyButton;
 
-  /// No description provided for @viewAllArrow.
+  /// No description provided for @yourTrip.
   ///
   /// In en, this message translates to:
-  /// **'View all >>'**
-  String get viewAllArrow;
+  /// **'YOUR TRIP'**
+  String get yourTrip;
 
-  /// No description provided for @heightLabel.
+  /// No description provided for @locationNotSelected.
   ///
   /// In en, this message translates to:
-  /// **'Height'**
-  String get heightLabel;
+  /// **'Location not selected'**
+  String get locationNotSelected;
 
-  /// No description provided for @weightLabel.
+  /// No description provided for @destination.
   ///
   /// In en, this message translates to:
-  /// **'Weight'**
-  String get weightLabel;
+  /// **'DESTINATION'**
+  String get destination;
 
-  /// No description provided for @challengeNameTitle.
+  /// No description provided for @budget.
   ///
   /// In en, this message translates to:
-  /// **'Challenge name'**
-  String get challengeNameTitle;
+  /// **'BUDGET'**
+  String get budget;
 
-  /// No description provided for @datesTitle.
+  /// No description provided for @stops.
   ///
   /// In en, this message translates to:
-  /// **'Dates'**
-  String get datesTitle;
+  /// **'STOPS'**
+  String get stops;
 
-  /// No description provided for @targetTitle.
+  /// No description provided for @places.
   ///
   /// In en, this message translates to:
-  /// **'Target'**
-  String get targetTitle;
+  /// **'Places'**
+  String get places;
 
-  /// No description provided for @failedToSaveProfile.
+  /// No description provided for @essentials.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t save your profile. Try again.'**
-  String get failedToSaveProfile;
+  /// **'ESSENTIALS'**
+  String get essentials;
 
-  /// No description provided for @failedToUpdateProfile.
+  /// No description provided for @itemsToBePacked.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t update your profile. Try again.'**
-  String get failedToUpdateProfile;
+  /// **'Items to be packed'**
+  String get itemsToBePacked;
 
-  /// No description provided for @invalidHeight.
+  /// No description provided for @routes.
   ///
   /// In en, this message translates to:
-  /// **'Please enter a valid height in cm (for example 170).'**
-  String get invalidHeight;
+  /// **'ROUTES'**
+  String get routes;
 
-  /// No description provided for @invalidWeight.
+  /// No description provided for @noStopsAdded.
   ///
   /// In en, this message translates to:
-  /// **'Please enter a valid weight in kg (for example 65).'**
-  String get invalidWeight;
+  /// **'No stops added'**
+  String get noStopsAdded;
 
-  /// No description provided for @goalSetSuccess.
+  /// No description provided for @unnamedStop.
   ///
   /// In en, this message translates to:
-  /// **'Your goal is saved!'**
-  String get goalSetSuccess;
+  /// **'Unnamed stop'**
+  String get unnamedStop;
 
-  /// No description provided for @failedToSetGoal.
+  /// No description provided for @editTripTitle.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t set your goal. Try again.'**
-  String get failedToSetGoal;
+  /// **'Edit Trip'**
+  String get editTripTitle;
 
-  /// No description provided for @permissionDeniedTitle.
+  /// No description provided for @error.
   ///
   /// In en, this message translates to:
-  /// **'Permission needed'**
-  String get permissionDeniedTitle;
+  /// **'Error'**
+  String get error;
 
-  /// No description provided for @serviceDisabledTitle.
+  /// No description provided for @editTripName.
   ///
   /// In en, this message translates to:
-  /// **'Location is off'**
-  String get serviceDisabledTitle;
+  /// **'Trip Name'**
+  String get editTripName;
 
-  /// No description provided for @noTaskData.
+  /// No description provided for @editTripDuration.
   ///
   /// In en, this message translates to:
-  /// **'No task data found.'**
-  String get noTaskData;
+  /// **'Duration'**
+  String get editTripDuration;
 
-  /// No description provided for @updateFailedTitle.
+  /// No description provided for @editTripMembers.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t update'**
-  String get updateFailedTitle;
+  /// **'Members'**
+  String get editTripMembers;
 
-  /// No description provided for @unexpectedError.
+  /// No description provided for @editTripStops.
   ///
   /// In en, this message translates to:
-  /// **'Something went wrong. Try again.'**
-  String get unexpectedError;
+  /// **'STOPS'**
+  String get editTripStops;
 
-  /// No description provided for @copiedProfileLink.
+  /// No description provided for @editTripPacking.
   ///
   /// In en, this message translates to:
-  /// **'Profile link copied'**
-  String get copiedProfileLink;
+  /// **'Packing Items'**
+  String get editTripPacking;
 
-  /// No description provided for @unableToCancelFriendRequest.
+  /// No description provided for @editTripChecklist.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t cancel that request. Try later.'**
-  String get unableToCancelFriendRequest;
+  /// **'Checklist'**
+  String get editTripChecklist;
 
-  /// No description provided for @failedToSendComment.
+  /// No description provided for @editTripAttachments.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t post that comment right now.'**
-  String get failedToSendComment;
+  /// **'Attachments'**
+  String get editTripAttachments;
 
-  /// No description provided for @alreadyMemberTitle.
+  /// No description provided for @editTripStartDate.
   ///
   /// In en, this message translates to:
-  /// **'Already a member'**
-  String get alreadyMemberTitle;
+  /// **'Start Date'**
+  String get editTripStartDate;
 
-  /// No description provided for @alreadyInvitedTitle.
+  /// No description provided for @editTripEndDate.
   ///
   /// In en, this message translates to:
-  /// **'Already invited'**
-  String get alreadyInvitedTitle;
+  /// **'End Date'**
+  String get editTripEndDate;
 
-  /// No description provided for @membersAdded.
+  /// No description provided for @editTripSaveChanges.
   ///
   /// In en, this message translates to:
-  /// **'{count} added to {name}.'**
-  String membersAdded(int count, String name);
+  /// **'SAVE CHANGES'**
+  String get editTripSaveChanges;
 
-  /// No description provided for @couldNotAddMembers.
+  /// No description provided for @editTripNameHint.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t add members. Try again.'**
-  String get couldNotAddMembers;
+  /// **'Enter trip name'**
+  String get editTripNameHint;
 
-  /// No description provided for @removeMemberTitle.
+  /// No description provided for @editTripNameRequired.
   ///
   /// In en, this message translates to:
-  /// **'Remove member'**
-  String get removeMemberTitle;
+  /// **'Trip name cannot be empty'**
+  String get editTripNameRequired;
 
-  /// No description provided for @removeMemberConfirm.
+  /// No description provided for @editTripNameUpdated.
   ///
   /// In en, this message translates to:
-  /// **'Remove {name} from {club}?'**
-  String removeMemberConfirm(String name, String club);
+  /// **'Trip name updated'**
+  String get editTripNameUpdated;
 
-  /// No description provided for @thisMember.
+  /// No description provided for @editTripUpdateSuccess.
   ///
   /// In en, this message translates to:
-  /// **'this member'**
-  String get thisMember;
+  /// **'Success'**
+  String get editTripUpdateSuccess;
 
-  /// No description provided for @memberRemoved.
+  /// No description provided for @editTripUpdateFailed.
   ///
   /// In en, this message translates to:
-  /// **'{name} was removed from {club}.'**
-  String memberRemoved(String name, String club);
+  /// **'Failed to update trip'**
+  String get editTripUpdateFailed;
 
-  /// No description provided for @youJoinedChallenge.
+  /// No description provided for @editTripAddItem.
   ///
   /// In en, this message translates to:
-  /// **'You\'re in {name}.'**
-  String youJoinedChallenge(String name);
+  /// **'Add Item'**
+  String get editTripAddItem;
 
-  /// No description provided for @failedToJoinChallenge.
+  /// No description provided for @editTripAddMember.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t join this challenge.'**
-  String get failedToJoinChallenge;
+  /// **'Add Member'**
+  String get editTripAddMember;
 
-  /// No description provided for @membersJoinedLabel.
+  /// No description provided for @editTripUploadAttachment.
   ///
   /// In en, this message translates to:
-  /// **'Members joined'**
-  String get membersJoinedLabel;
+  /// **'Upload Attachment'**
+  String get editTripUploadAttachment;
 
-  /// No description provided for @addFriendsForTask.
+  /// No description provided for @editTripNoMembers.
   ///
   /// In en, this message translates to:
-  /// **'Add friends so you can invite them to this task.'**
-  String get addFriendsForTask;
+  /// **'No members yet'**
+  String get editTripNoMembers;
 
-  /// No description provided for @loseWeightGoal.
+  /// No description provided for @editTripNoAttachments.
   ///
   /// In en, this message translates to:
-  /// **'Lose weight'**
-  String get loseWeightGoal;
+  /// **'No attachments yet'**
+  String get editTripNoAttachments;
 
-  /// No description provided for @buildMuscleGoal.
+  /// No description provided for @editTripNoPackingItems.
   ///
   /// In en, this message translates to:
-  /// **'Build muscle'**
-  String get buildMuscleGoal;
+  /// **'No packing items yet'**
+  String get editTripNoPackingItems;
 
-  /// No description provided for @keepFitGoal.
+  /// No description provided for @editTripNoChecklistItems.
   ///
   /// In en, this message translates to:
-  /// **'Keep fit'**
-  String get keepFitGoal;
+  /// **'No checklist items yet'**
+  String get editTripNoChecklistItems;
 
-  /// No description provided for @noviceLevel.
+  /// No description provided for @editTripReorderStops.
   ///
   /// In en, this message translates to:
-  /// **'Just starting'**
-  String get noviceLevel;
+  /// **'Drag to reorder stops'**
+  String get editTripReorderStops;
 
-  /// No description provided for @noviceLevelSub.
+  /// No description provided for @editTripSectionTripName.
   ///
   /// In en, this message translates to:
-  /// **'Small steps, big changes. Perfect if you\'re new to fitness.'**
-  String get noviceLevelSub;
+  /// **'Trip Name'**
+  String get editTripSectionTripName;
 
-  /// No description provided for @intermediateLevel.
+  /// No description provided for @editTripSectionDuration.
   ///
   /// In en, this message translates to:
-  /// **'A little experience'**
-  String get intermediateLevel;
+  /// **'Duration'**
+  String get editTripSectionDuration;
 
-  /// No description provided for @intermediateLevelSub.
+  /// No description provided for @editTripSectionMembers.
   ///
   /// In en, this message translates to:
-  /// **'You know the basics. Great if you exercise now and then.'**
-  String get intermediateLevelSub;
+  /// **'Members'**
+  String get editTripSectionMembers;
 
-  /// No description provided for @advancedLevel.
+  /// No description provided for @editTripSectionStops.
   ///
   /// In en, this message translates to:
-  /// **'Fitness fan'**
-  String get advancedLevel;
+  /// **'Stops'**
+  String get editTripSectionStops;
 
-  /// No description provided for @advancedLevelSub.
+  /// No description provided for @editTripSectionPacking.
   ///
   /// In en, this message translates to:
-  /// **'Push yourself. For people who train often.'**
-  String get advancedLevelSub;
+  /// **'Packing Items'**
+  String get editTripSectionPacking;
 
-  /// No description provided for @requestsLabel.
+  /// No description provided for @editTripSectionChecklist.
   ///
   /// In en, this message translates to:
-  /// **'REQUESTS'**
-  String get requestsLabel;
+  /// **'Checklist'**
+  String get editTripSectionChecklist;
 
-  /// No description provided for @youRequestedJoin.
+  /// No description provided for @editTripSectionAttachments.
   ///
   /// In en, this message translates to:
-  /// **'You asked to join {name}'**
-  String youRequestedJoin(String name);
+  /// **'Attachments'**
+  String get editTripSectionAttachments;
 
-  /// No description provided for @aClub.
+  /// No description provided for @editTripSectionBudget.
   ///
   /// In en, this message translates to:
-  /// **'a club'**
-  String get aClub;
+  /// **'Budget'**
+  String get editTripSectionBudget;
 
-  /// No description provided for @noTasksYet.
+  /// No description provided for @editTripSectionRoutes.
   ///
   /// In en, this message translates to:
-  /// **'No tasks yet'**
-  String get noTasksYet;
+  /// **'Routes'**
+  String get editTripSectionRoutes;
 
-  /// No description provided for @createTaskToStart.
+  /// No description provided for @editTripDetails.
   ///
   /// In en, this message translates to:
-  /// **'Create a task to get started.'**
-  String get createTaskToStart;
+  /// **'Trip Details'**
+  String get editTripDetails;
 
-  /// No description provided for @goals.
+  /// No description provided for @editTripDatesNotSet.
   ///
   /// In en, this message translates to:
-  /// **'Goals'**
-  String get goals;
+  /// **'Dates not set'**
+  String get editTripDatesNotSet;
 
-  /// No description provided for @history.
+  /// No description provided for @editTripNotSelected.
   ///
   /// In en, this message translates to:
-  /// **'History'**
-  String get history;
+  /// **'Not selected'**
+  String get editTripNotSelected;
 
-  /// No description provided for @profileAndGoal.
+  /// No description provided for @editTripDestination.
   ///
   /// In en, this message translates to:
-  /// **'PROFILE & GOAL'**
-  String get profileAndGoal;
+  /// **'DESTINATION'**
+  String get editTripDestination;
 
-  /// No description provided for @editFitnessProfile.
+  /// No description provided for @editTripBudget.
   ///
   /// In en, this message translates to:
-  /// **'Edit Fitness Profile >>'**
-  String get editFitnessProfile;
+  /// **'BUDGET'**
+  String get editTripBudget;
 
-  /// No description provided for @editFitnessGoal.
+  /// No description provided for @editTripFriends.
   ///
   /// In en, this message translates to:
-  /// **'Edit Fitness Goal >>'**
-  String get editFitnessGoal;
+  /// **'FRIENDS'**
+  String get editTripFriends;
 
-  /// No description provided for @currentWeight.
+  /// No description provided for @editTripDurations.
   ///
   /// In en, this message translates to:
-  /// **'Current Weight'**
-  String get currentWeight;
+  /// **'DURATIONS'**
+  String get editTripDurations;
 
-  /// No description provided for @currentHeight.
+  /// No description provided for @editTripEssentials.
   ///
   /// In en, this message translates to:
-  /// **'Current Height'**
-  String get currentHeight;
+  /// **'ESSENTIALS'**
+  String get editTripEssentials;
 
-  /// No description provided for @fitnessLevel.
+  /// No description provided for @editTripItemsToBePacked.
   ///
   /// In en, this message translates to:
-  /// **'Fitness Level'**
-  String get fitnessLevel;
+  /// **'Items to be packed'**
+  String get editTripItemsToBePacked;
 
-  /// No description provided for @targetDateLabel.
+  /// No description provided for @editTripChecklists.
   ///
   /// In en, this message translates to:
-  /// **'Target Date'**
-  String get targetDateLabel;
+  /// **'CHECKLISTS'**
+  String get editTripChecklists;
 
-  /// No description provided for @targetWeightLabel.
+  /// No description provided for @editTripRoutes.
   ///
   /// In en, this message translates to:
-  /// **'Target Weight'**
-  String get targetWeightLabel;
+  /// **'ROUTES'**
+  String get editTripRoutes;
 
-  /// No description provided for @noneValue.
+  /// No description provided for @editTripNoStopsAdded.
   ///
   /// In en, this message translates to:
-  /// **'None'**
-  String get noneValue;
+  /// **'No stops added'**
+  String get editTripNoStopsAdded;
 
-  /// No description provided for @notClubMember.
+  /// No description provided for @editTripUnnamedStop.
   ///
   /// In en, this message translates to:
-  /// **'Join this club first to create a challenge.'**
-  String get notClubMember;
+  /// **'Unnamed stop'**
+  String get editTripUnnamedStop;
+
+  /// No description provided for @editTripItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Item'**
+  String get editTripItem;
+
+  /// No description provided for @editTripItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get editTripItems;
+
+  /// No description provided for @editTripToBePrepared.
+  ///
+  /// In en, this message translates to:
+  /// **'to be prepared'**
+  String get editTripToBePrepared;
 }
 
 class _AppLocalizationsDelegate

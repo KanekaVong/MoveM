@@ -1,10 +1,16 @@
 import 'trip_stop_response.dart';
+import 'trip_checklist_response.dart';
+import 'trip_reminder_response.dart';
+import 'trip_budget_response.dart';
+import 'trip_packing_item_response.dart';
+import 'trip_attachment_response.dart';
 
 class TripResponse {
   final String activityId;
   final String activityName;
   final String? description;
   final String? status;
+
   final DateTime? startActivity;
   final DateTime? deadline;
 
@@ -15,17 +21,16 @@ class TripResponse {
   final String? googlePlaceId;
 
   final String? destination;
-  final String? flightNumber;
-  final String? hotelName;
-
-  final List<TripStopResponse> stops;
 
   final int? memberCount;
-  final double? totalAllocatedBudget;
-  final double? totalSpent;
-  final double? perPersonShare;
+  final double? totalBudget;
 
-  final List<dynamic> attachments;
+  final List<TripStopResponse> stops;
+  final List<TripChecklistResponse> checklists;
+  final List<TripReminderResponse> reminders;
+  final List<TripBudgetResponse> budgets;
+  final List<TripPackingItemResponse> packingItems;
+  final List<TripAttachmentResponse> attachments;
 
   TripResponse({
     required this.activityId,
@@ -40,82 +45,111 @@ class TripResponse {
     this.lng,
     this.googlePlaceId,
     this.destination,
-    this.flightNumber,
-    this.hotelName,
-    this.stops = const [],
     this.memberCount,
-    this.totalAllocatedBudget,
-    this.totalSpent,
-    this.perPersonShare,
+    this.totalBudget,
+    this.stops = const [],
+    this.checklists = const [],
+    this.reminders = const [],
+    this.budgets = const [],
+    this.packingItems = const [],
     this.attachments = const [],
   });
 
-  factory TripResponse.fromJson(Map<String, dynamic> json) {
+  factory TripResponse.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return TripResponse(
       activityId: json['activityId']?.toString() ?? '',
       activityName: json['activityName']?.toString() ?? '',
       description: json['description']?.toString(),
       status: json['status']?.toString(),
-
       startActivity: json['startActivity'] != null
-          ? DateTime.tryParse(json['startActivity'].toString())
+          ? DateTime.tryParse(
+              json['startActivity'].toString(),
+            )
           : null,
-
       deadline: json['deadline'] != null
-          ? DateTime.tryParse(json['deadline'].toString())
+          ? DateTime.tryParse(
+              json['deadline'].toString(),
+            )
           : null,
-
       locationName: json['locationName']?.toString(),
       locationAddress: json['locationAddress']?.toString(),
-
       lat: json['lat'] != null
-          ? double.tryParse(json['lat'].toString())
+          ? double.tryParse(
+              json['lat'].toString(),
+            )
           : null,
-
       lng: json['lng'] != null
-          ? double.tryParse(json['lng'].toString())
+          ? double.tryParse(
+              json['lng'].toString(),
+            )
           : null,
-
       googlePlaceId: json['googlePlaceId']?.toString(),
-
       destination: json['destination']?.toString(),
-      flightNumber: json['flightNumber']?.toString(),
-      hotelName: json['hotelName']?.toString(),
-
-      stops: json['stops'] is List
-          ? (json['stops'] as List)
-          .map(
-            (item) => TripStopResponse.fromJson(
-          Map<String, dynamic>.from(item),
-        ),
-      )
-          .toList()
-          : [],
-
       memberCount: json['memberCount'] is int
           ? json['memberCount']
-          : int.tryParse(json['memberCount']?.toString() ?? ''),
-
-      totalAllocatedBudget: json['totalAllocatedBudget'] != null
+          : int.tryParse(
+              json['memberCount']?.toString() ?? '',
+            ),
+      totalBudget: json['totalBudget'] != null
           ? double.tryParse(
-        json['totalAllocatedBudget'].toString(),
-      )
+              json['totalBudget'].toString(),
+            )
           : null,
-
-      totalSpent: json['totalSpent'] != null
-          ? double.tryParse(
-        json['totalSpent'].toString(),
-      )
-          : null,
-
-      perPersonShare: json['perPersonShare'] != null
-          ? double.tryParse(
-        json['perPersonShare'].toString(),
-      )
-          : null,
-
+      stops: json['stops'] is List
+          ? (json['stops'] as List)
+              .map(
+                (item) => TripStopResponse.fromJson(
+                  Map<String, dynamic>.from(item),
+                ),
+              )
+              .toList()
+          : [],
+      checklists: json['checklists'] is List
+          ? (json['checklists'] as List)
+              .map(
+                (item) => TripChecklistResponse.fromJson(
+                  Map<String, dynamic>.from(item),
+                ),
+              )
+              .toList()
+          : [],
+      reminders: json['reminders'] is List
+          ? (json['reminders'] as List)
+              .map(
+                (item) => TripReminderResponse.fromJson(
+                  Map<String, dynamic>.from(item),
+                ),
+              )
+              .toList()
+          : [],
+      budgets: json['budgets'] is List
+          ? (json['budgets'] as List)
+              .map(
+                (item) => TripBudgetResponse.fromJson(
+                  Map<String, dynamic>.from(item),
+                ),
+              )
+              .toList()
+          : [],
+      packingItems: json['packingItems'] is List
+          ? (json['packingItems'] as List)
+              .map(
+                (item) => TripPackingItemResponse.fromJson(
+                  Map<String, dynamic>.from(item),
+                ),
+              )
+              .toList()
+          : [],
       attachments: json['attachments'] is List
-          ? List<dynamic>.from(json['attachments'])
+          ? (json['attachments'] as List)
+              .map(
+                (item) => TripAttachmentResponse.fromJson(
+                  Map<String, dynamic>.from(item),
+                ),
+              )
+              .toList()
           : [],
     );
   }

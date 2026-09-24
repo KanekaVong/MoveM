@@ -1,51 +1,58 @@
-import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:movem/l10n/app_localizations.dart';
+
+import 'package:flutter/material.dart';
+
 import 'package:get/get.dart';
+import 'package:movem/l10n/app_localizations.dart';
 
 import '../../controllers/create_trip_controller.dart';
-import 'package:movem/features/trip/presentation/screens/Create_trip/trip_checklist_screen.dart';
 import 'package:movem/features/trip/presentation/widgets/create_trip_component.dart';
+import 'package:movem/features/trip/presentation/screens/Create_trip/create_trip_summary_screen.dart';
 
-class CreateTripPackingScreen extends StatefulWidget {
-  const CreateTripPackingScreen({
+
+class TripChecklistScreen extends StatefulWidget {
+  const TripChecklistScreen({
     super.key,
   });
 
   @override
-  State<CreateTripPackingScreen> createState() =>
-      _CreateTripPackingScreenState();
+  State<TripChecklistScreen> createState() =>
+      _TripChecklistScreenState();
 }
 
-class _CreateTripPackingScreenState
-    extends State<CreateTripPackingScreen> {
-  final CreateTripController controller = Get.find<CreateTripController>();
+class _TripChecklistScreenState
+    extends State<TripChecklistScreen> {
 
-  final TextEditingController _packingController = TextEditingController();
+  final TextEditingController _checklistController = TextEditingController();
+
+  final CreateTripController controller = Get.find<CreateTripController>();
 
   @override
   void dispose() {
-    _packingController.dispose();
+    _checklistController.dispose();
     super.dispose();
   }
 
-  // Packing
-  void _addPackingItem() {
-    final item = _packingController.text.trim();
 
-    if (item.isEmpty) return;
+  // Checklist
+  void _addChecklistItem() {
+    final item = _checklistController.text.trim();
 
-    controller.addPackingItem(item);
-    _packingController.clear();
+    if (item.isEmpty) {
+      return;
+    }
+
+    controller.addChecklistItem(item);
+    _checklistController.clear();
   }
 
-  void _removeItem(int index) {
-    controller.removePackingItem(index);
+  void _removeChecklistItem(int index) {
+    controller.removeChecklistItem(index);
   }
 
   void _continue() {
     Get.to(
-          () => const TripChecklistScreen(),
+          () => const CreateTripSummaryScreen(),
     );
   }
 
@@ -99,7 +106,7 @@ class _CreateTripPackingScreenState
 
     final imageHeight = screenHeight * 0.50;
 
-    // Move panel higher when keyboard opens
+    // Move the form higher when keyboard opens
     final formTop = keyboardOpen
         ? screenHeight * 0.15
         : screenHeight * 0.43;
@@ -111,7 +118,7 @@ class _CreateTripPackingScreenState
           : CreateTripColors.lightBackground,
       body: Stack(
         children: [
-          // bg img
+          // Background image
           Positioned(
             top: 0,
             left: 0,
@@ -135,9 +142,9 @@ class _CreateTripPackingScreenState
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Colors.black.withValues(alpha: 0.45),
+                          Colors.black.withOpacity(0.45),
                           Colors.transparent,
-                          Colors.black.withValues(alpha: 0.15),
+                          Colors.black.withOpacity(0.15),
                         ],
                       ),
                     ),
@@ -147,7 +154,7 @@ class _CreateTripPackingScreenState
             ),
           ),
 
-          // header
+          // Header
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -161,13 +168,13 @@ class _CreateTripPackingScreenState
                 children: [
                   CreateTripHeader(
                     title: l10n.createNewTrip,
-                    onBack: () => Navigator.pop(context),
+                    onBack: () => Get.back(),
                   ),
 
                   const SizedBox(height: 8),
 
-                  const CreateTripStepIndicator(
-                    activeIndex: 5,
+                  CreateTripStepIndicator(
+                    activeIndex: 6,
                   ),
 
                   const SizedBox(height: 10),
@@ -287,7 +294,7 @@ class _CreateTripPackingScreenState
             ),
           ),
 
-          // packing form panel
+          // Checklist form panel
           AnimatedPositioned(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeOut,
@@ -296,7 +303,7 @@ class _CreateTripPackingScreenState
             right: 0,
             bottom: keyboardHeight,
             child: Obx(
-                  () => _buildPackingContent(),
+                  () => _buildChecklistContent(l10n),
             ),
           ),
         ],
@@ -304,9 +311,8 @@ class _CreateTripPackingScreenState
     );
   }
 
-  Widget _buildPackingContent() {
-    final l10n = AppLocalizations.of(context)!;
-
+  // Checklist Content
+  Widget _buildChecklistContent(AppLocalizations l10n) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final textColor = isDark
@@ -315,11 +321,9 @@ class _CreateTripPackingScreenState
 
     final secondaryColor = isDark
         ? Colors.white54
-        : CreateTripColors.lightText.withValues(
-      alpha: 0.5,
-    );
+        : const Color(0xFF9CA3AF);
 
-    final packingItems = controller.currentDraft.packingItems;
+    final items = controller.currentDraft.checklistItems;
 
     return CreateTripFormPanel(
       bottomAction: CreateTripBottomButton(
@@ -329,7 +333,7 @@ class _CreateTripPackingScreenState
       children: [
         // Title
         Text(
-          l10n.tripPackingTitle,
+          l10n.tripChecklistTitle,
           style: TextStyle(
             fontFamily: CreateTripFonts.condensed,
             fontFamilyFallback: CreateTripFonts.khmerFallback,
@@ -344,7 +348,7 @@ class _CreateTripPackingScreenState
 
         // Description
         Text(
-          l10n.tripPackingDescription,
+          l10n.tripChecklistDescription,
           style: TextStyle(
             fontFamily: CreateTripFonts.condensed,
             fontFamilyFallback: CreateTripFonts.khmerFallback,
@@ -355,105 +359,21 @@ class _CreateTripPackingScreenState
 
         const SizedBox(height: 22),
 
-        // Trip Essentials title
-        Row(
-          children: [
-            Icon(
-              Icons.work_outline,
-              size: 32,
-              color: textColor,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              l10n.tripEssentials,
-              style: TextStyle(
-                fontFamily: CreateTripFonts.condensed,
-                fontFamilyFallback:
-                CreateTripFonts.khmerFallback,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: textColor,
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 18),
-
-        // Existing packing items
-        if (packingItems.isNotEmpty)
+        // Checklist items
+        if (items.isNotEmpty)
           ...List.generate(
-            packingItems.length,
+            items.length,
                 (index) {
-              final item = packingItems[index];
+              final item = items[index];
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF171E2D)
-                        : const Color(0xFFF1F3F6),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    children: [
-                      // Circle
-                      Container(
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isDark
-                                ? Colors.white54
-                                : CreateTripColors.lightText.withValues(
-                              alpha: 0.5,
-                            ),
-                            width: 1.5,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      // Item name
-                      Expanded(
-                        child: Text(
-                          item,
-                          style: TextStyle(
-                            fontFamily: CreateTripFonts.condensed,
-                            fontFamilyFallback:
-                            CreateTripFonts.khmerFallback,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: isDark
-                                ? Colors.white
-                                : CreateTripColors.lightText,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 8),
-
-                      // Remove
-                      GestureDetector(
-                        onTap: () => _removeItem(index),
-                        child: Icon(
-                          Icons.close_rounded,
-                          size: 18,
-                          color: isDark
-                              ? Colors.white54
-                              : const Color(0xFF9CA3AF),
-                        ),
-                      ),
-                    ],
-                  ),
+                child: _buildChecklistItem(
+                  item,
+                  index,
+                  isDark,
+                  textColor,
+                  secondaryColor,
                 ),
               );
             },
@@ -461,73 +381,115 @@ class _CreateTripPackingScreenState
 
         const SizedBox(height: 4),
 
-        // Add packing item
-        ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: 10,
-              sigmaY: 10,
+        // Add checklist item
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: isDark
+                ? const Color(0xFF171E2D)
+                : const Color(0xFFF1F3F6),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: TextField(
+            controller: _checklistController,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => _addChecklistItem(),
+            style: TextStyle(
+              fontFamily: CreateTripFonts.condensed,
+              fontFamilyFallback: CreateTripFonts.khmerFallback,
+              color: textColor,
+              fontSize: 14,
             ),
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0x99162341)
-                    : const Color(0x66999999),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: isDark
-                      ? const Color(0xFF0C1425)
-                      : const Color(0xFFD6D6D6),
-                ),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x73000000),
-                    blurRadius: 30,
-                    offset: Offset(4, 4),
-                  ),
-                ],
+            decoration: InputDecoration(
+              hintText: l10n.checklistItemsHint,
+              hintStyle: TextStyle(
+                fontFamily: CreateTripFonts.condensed,
+                fontFamilyFallback: CreateTripFonts.khmerFallback,
+                color: secondaryColor,
               ),
-              child: TextField(
-                controller: _packingController,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) => _addPackingItem(),
-                style: TextStyle(
-                  fontFamily: CreateTripFonts.condensed,
-                  fontFamilyFallback: CreateTripFonts.khmerFallback,
-                  color: isDark
-                      ? Colors.white
-                      : CreateTripColors.lightText,
-                  fontSize: 14,
-                ),
-                decoration: InputDecoration(
-                  hintText: l10n.packingItemsHint,
-                  hintStyle: TextStyle(
-                    fontFamily: CreateTripFonts.condensed,
-                    fontFamilyFallback: CreateTripFonts.khmerFallback,
-                    color: isDark
-                        ? Colors.white30
-                        : const Color(0xFF9CA3AF),
-                  ),
-                  filled: true,
-                  fillColor: isDark
-                      ? const Color(0xFF171E2D)
-                      : const Color(0xFFF1F3F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 17,
-                  ),
-                ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 17,
               ),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  // Checklist Item
+  Widget _buildChecklistItem(
+      String item,
+      int index,
+      bool isDark,
+      Color textColor,
+      Color secondaryColor,
+      ) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 14,
+        vertical: 12,
+      ),
+      decoration: BoxDecoration(
+        color: isDark
+            ? const Color(0xFF171E2D)
+            : const Color(0xFFF1F3F6),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          // Visual only
+          Container(
+            width: 22,
+            height: 22,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: isDark
+                    ? Colors.white54
+                    : CreateTripColors.lightText.withValues(
+                  alpha: 0.5,
+                ),
+                width: 1.5,
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          // Item name
+          Expanded(
+            child: Text(
+              item,
+              style: TextStyle(
+                fontFamily: CreateTripFonts.condensed,
+                fontFamilyFallback: CreateTripFonts.khmerFallback,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: textColor,
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 8),
+
+          // Remove
+          GestureDetector(
+            onTap: () => _removeChecklistItem(index),
+            child: Icon(
+              Icons.close_rounded,
+              size: 18,
+              color: secondaryColor,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

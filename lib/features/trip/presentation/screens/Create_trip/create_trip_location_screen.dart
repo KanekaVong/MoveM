@@ -1,22 +1,23 @@
+import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:geocoding/geocoding.dart';
 
-import 'package:movem/features/trip/presentation/models/create_trip_draft.dart';
+import '../../controllers/create_trip_controller.dart';
+import 'package:movem/l10n/app_localizations.dart';
+import 'package:movem/features/trip/data/services/google_places_service.dart';
+
+import 'package:movem/core/config/google_map_style.dart';
+import '../../widgets/create_trip_component.dart';
 import 'create_trip_duration_screen.dart';
-import '../../controllers/trip_controller.dart';
-
 
 class CreateTripLocationScreen extends StatefulWidget {
-  final CreateTripDraft draft;
-  final TripController tripController;
-
   const CreateTripLocationScreen({
     super.key,
-    required this.draft,
-    required this.tripController,
   });
 
   @override
@@ -24,23 +25,66 @@ class CreateTripLocationScreen extends StatefulWidget {
       _CreateTripLocationScreenState();
 }
 
-class _CreateTripLocationScreenState
-    extends State<CreateTripLocationScreen> {
-  late final TextEditingController _searchController;
+class _CreateTripLocationScreenState extends State<CreateTripLocationScreen> {
 
-  final Geocoding _geocoding = Geocoding();
+  final GooglePlacesService _placesService = GooglePlacesService();
+
+  final CreateTripController controller = Get.find<CreateTripController>();
+
+  late final TextEditingController _searchController;
 
   GoogleMapController? _mapController;
 
+  Timer? _autocompleteTimer;
+
   bool _hasPermission = false;
   bool _isGettingLocation = false;
+  bool _isSearching = false;
+  bool _isResolvingLocation = false;
+
+  List<GooglePlacePrediction> _suggestions = [];
 
   static const LatLng _defaultLocation = LatLng(
     11.5564,
     104.9282,
   );
 
+  LatLng _initialPosition = _defaultLocation;
   LatLng? _selectedLocation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _searchController = TextEditingController(
+      text: controller.currentDraft.locationName ?? '',
+    );
+
+    _loadExistingLocation();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLocationPermission();
+    });
+  }
+
+  void _loadExistingLocation() {
+    final draft = controller.currentDraft;
+
+    if (draft.lat != null && draft.lng != null) {
+      _selectedLocation = LatLng(
+        draft.lat!,
+        draft.lng!,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _autocompleteTimer?.cancel();
+    _searchController.dispose();
+    _mapController?.dispose();
+    super.dispose();
+  }
 
   void _showMessage(String message) {
     if (!mounted) return;
@@ -52,66 +96,59 @@ class _CreateTripLocationScreenState
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
+  Future<bool> _ensureLocationPermission() async {
+    var status = await Permission.location.status;
 
-    _searchController = TextEditingController(
-      text: widget.draft.locationName ?? '',
-    );
+    if (!status.isGranted) {
+      status = await Permission.location.request();
+    }
 
-    _loadExistingLocation();
-    _checkLocationPermission();
-  }
+    if (!status.isGranted) {
+      final l10n = AppLocalizations.of(context)!;
 
-  void _loadExistingLocation() {
-    if (widget.draft.lat != null &&
-        widget.draft.lng != null) {
-      final position = LatLng(
-        widget.draft.lat!,
-        widget.draft.lng!,
+      _showMessage(
+        l10n.tripLocationPermissionDenied,
       );
 
-      _selectedLocation = position;
+      return false;
     }
-  }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _mapController?.dispose();
-    super.dispose();
-  }
-
-  // ============================================================
-  // LOCATION PERMISSION
-  // ============================================================
-
-  Future<void> _checkLocationPermission() async {
-    final status = await Permission.location.request();
-
-    if (!mounted) return;
-
-    if (status.isGranted) {
+    if (mounted) {
       setState(() {
         _hasPermission = true;
       });
-
-      await _getCurrentLocation();
     }
+
+    return true;
   }
 
-  // ============================================================
-  // CURRENT LOCATION
-  // ============================================================
+  Future<void> _checkLocationPermission() async {
+    final granted = await _ensureLocationPermission();
 
-  Future<void> _getCurrentLocation() async {
-    final serviceEnabled =
-    await Geolocator.isLocationServiceEnabled();
+    if (!granted) return;
+
+    await _getCurrentLocation(
+      selectLocation: false,
+    );
+  }
+
+  Future<void> _getCurrentLocation({
+    required bool selectLocation,
+  }) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
     if (!serviceEnabled) {
+      _showMessage(
+        l10n.tripLocationServiceDisabled,
+      );
       return;
     }
+
+    final granted = await _ensureLocationPermission();
+
+    if (!granted) return;
 
     if (mounted) {
       setState(() {
@@ -120,8 +157,7 @@ class _CreateTripLocationScreenState
     }
 
     try {
-      final position =
-      await Geolocator.getCurrentPosition(
+      final position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.low,
         ),
@@ -132,22 +168,24 @@ class _CreateTripLocationScreenState
         position.longitude,
       );
 
-      if (!mounted) return;
+      _initialPosition = currentLatLng;
 
-      setState(() {
-        if (_selectedLocation == null) {
-          _selectedLocation = currentLatLng;
-        }
-      });
+      if (mounted) {
+        await _mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(
+            currentLatLng,
+            15.0,
+          ),
+        );
+      }
 
-      await _mapController?.animateCamera(
-        CameraUpdate.newLatLngZoom(
+      if (selectLocation) {
+        await _resolveCoordinates(
           currentLatLng,
-          15.0,
-        ),
-      );
+        );
+      }
     } catch (_) {
-      // Ignore GPS errors.
+      // GPS failure is handled  here.
     } finally {
       if (!mounted) return;
 
@@ -157,154 +195,430 @@ class _CreateTripLocationScreenState
     }
   }
 
-  // ============================================================
-  // MAP
-  // ============================================================
-
+  // map
   void _onMapCreated(
-      GoogleMapController controller,
-      ) {
+
+      GoogleMapController controller,) {
+
     _mapController = controller;
 
-    final target =
-        _selectedLocation ?? _defaultLocation;
+    controller.setMapStyle(
+      GoogleMapStyle.darkMapStyle,
+    );
 
-    _mapController?.animateCamera(
+    final target = _selectedLocation ?? _initialPosition;
+
+    controller.animateCamera(
       CameraUpdate.newLatLngZoom(
         target,
-        _selectedLocation != null ? 15.0 : 12.0,
+        _selectedLocation != null
+            ? 15.0
+            : 12.0,
       ),
     );
   }
 
   void _onMapTap(LatLng position) {
-    _selectLocation(position);
+    _resolveCoordinates(position);
   }
 
-  // ============================================================
-  // SEARCH
-  // ============================================================
+  // reverse geocode
+  Future<void> _resolveCoordinates(
+    LatLng location,
+  ) async {
+    if (_isResolvingLocation) return;
 
-  Future<void> _searchLocation() async {
-    final query = _searchController.text.trim();
-
-    if (query.isEmpty) {
-      _showMessage('Please enter a location.');
-      return;
+    if (mounted) {
+      setState(() {
+        _isResolvingLocation = true;
+      });
     }
 
-    FocusScope.of(context).unfocus();
-
     try {
-      final locations = await _geocoding.locationFromAddress(
-        query,
-      );
-
-      if (locations.isEmpty) {
-        _showMessage('Location not found.');
-        return;
-      }
-
-      final location = locations.first;
-
-      final latLng = LatLng(
+      final result = await _placesService.reverseGeocode(
         location.latitude,
         location.longitude,
       );
 
-      await _selectLocation(
-        latLng,
-        locationName: query,
+      if (!mounted) return;
+
+      setState(() {
+        _selectedLocation = LatLng(
+          result.latitude,
+          result.longitude,
+        );
+
+        _searchController.text = result.name.trim();
+        _suggestions = [];
+      });
+
+      controller.setDestination(
+        locationName: result.name.trim(),
+        locationAddress: result.address,
+        lat: result.latitude,
+        lng: result.longitude,
+        googlePlaceId: result.placeId,
       );
-    } catch (e) {
+
+      await _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng(
+            result.latitude,
+            result.longitude,
+          ),
+          14.0,
+        ),
+      );
+    } catch (_) {
+      final l10n = AppLocalizations.of(context)!;
+
       _showMessage(
-        'Could not find "$query". Please try another location.',
+        l10n.tripLocationNotFound,
+      );
+    } finally {
+      if (!mounted) return;
+
+      setState(() {
+        _isResolvingLocation = false;
+      });
+    }
+  }
+
+  // auto complete
+  void _onSearchChanged(String value) {
+    _autocompleteTimer?.cancel();
+
+    final query = value.trim();
+
+    if (query.isEmpty) {
+      _placesService.resetSession();
+
+      setState(() {
+        _suggestions = [];
+        _isSearching = false;
+      });
+
+      return;
+    }
+
+    if (query.length < 3) {
+      setState(() {
+        _suggestions = [];
+        _isSearching = false;
+      });
+
+      return;
+    }
+
+    setState(() {
+      _isSearching = true;
+    });
+
+    _autocompleteTimer = Timer(
+      const Duration(milliseconds: 400),
+      () {
+        _loadSuggestions(query);
+      },
+    );
+  }
+
+  Future<void> _loadSuggestions(
+    String query,
+  ) async {
+    try {
+      final results = await _placesService.autocomplete(
+        query,
+      );
+
+      if (!mounted) return;
+
+      // Ignore results if the user changed the text
+      if (_searchController.text.trim() != query) {
+        return;
+      }
+
+      setState(() {
+        _suggestions = results;
+        _isSearching = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _suggestions = [];
+        _isSearching = false;
+      });
+    }
+  }
+
+  // select autocomplete prediction
+  Future<void> _selectPrediction(
+    GooglePlacePrediction prediction,
+  ) async {
+    FocusScope.of(context).unfocus();
+
+    _autocompleteTimer?.cancel();
+
+    if (mounted) {
+      setState(() {
+        _suggestions = [];
+        _isSearching = false;
+      });
+    }
+
+    try {
+      final details = await _placesService.getPlaceDetails(
+        prediction.placeId,
+      );
+
+      if (!mounted) return;
+
+      final location = LatLng(
+        details.latitude,
+        details.longitude,
+      );
+
+      setState(() {
+        _selectedLocation = location;
+        _searchController.text = details.name.trim();
+      });
+
+      controller.setDestination(
+        locationName: details.name.trim(),
+        locationAddress: details.address,
+        lat: details.latitude,
+        lng: details.longitude,
+        googlePlaceId: details.placeId,
+      );
+
+      await _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          location,
+          14.0,
+        ),
+      );
+    } catch (_) {
+      final l10n = AppLocalizations.of(context)!;
+
+      _showMessage(
+        l10n.tripLocationSearchFailed,
       );
     }
   }
 
-  Future<void> _selectLocation(
-      LatLng location, {
-        String? locationName,
-      }) async {
-    setState(() {
-      _selectedLocation = location;
-
-      widget.draft.lat = location.latitude;
-      widget.draft.lng = location.longitude;
-
-      if (locationName != null &&
-          locationName.trim().isNotEmpty) {
-        widget.draft.locationName = locationName.trim();
-        widget.draft.destination = locationName.trim();
-      }
-    });
-
-    await _mapController?.animateCamera(
-      CameraUpdate.newLatLngZoom(
-        location,
-        14.0,
-      ),
-    );
-  }
-
-  // ============================================================
-  // CONTINUE
-  // ============================================================
-
+  // continue
   void _continue() {
-    final locationName =
-    widget.draft.locationName?.trim();
+    final l10n = AppLocalizations.of(context)!;
+    final draft = controller.currentDraft;
 
-    if (locationName == null ||
-        locationName.isEmpty ||
-        _selectedLocation == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Please select your destination.',
-          ),
-        ),
+    if (draft.locationName == null ||
+        draft.locationName!.trim().isEmpty ||
+        draft.lat == null ||
+        draft.lng == null) {
+      _showMessage(
+        l10n.tripLocationRequired,
       );
       return;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => CreateTripDurationScreen(
-          draft: widget.draft,
-          tripController: widget.tripController,
+    Get.to(
+          () => const CreateTripDurationScreen(),
+    );
+  }
+
+  Widget _buildMapControl({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return ClipOval(
+      child: Material(
+        color: Colors.white,
+        child: InkWell(
+          onTap: onTap,
+          child: SizedBox(
+            width: 44,
+            height: 44,
+            child: Icon(
+              icon,
+              color: Colors.black,
+              size: 20,
+            ),
+          ),
         ),
       ),
     );
   }
 
-  // ============================================================
-  // BUILD
-  // ============================================================
+  // search ui
+  Widget _buildSearchOverlay(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black38,
+            blurRadius: 20,
+            offset: Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
+          color: const Color(0xE6151D2D),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _searchController,
+                onChanged: _onSearchChanged,
+                textInputAction: TextInputAction.search,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
+                decoration: InputDecoration(
+                  hintText: l10n.tripLocationSearchHint,
+                  hintStyle: const TextStyle(
+                    color: Colors.white54,
+                    fontSize: 14,
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.search_rounded,
+                    color: Colors.white70,
+                  ),
+                  suffixIcon: _isSearching
+                      ? const Padding(
+                          padding: EdgeInsets.all(14),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : (_searchController.text.isNotEmpty
+                          ? IconButton(
+                              onPressed: () {
+                                _searchController.clear();
 
+                                setState(() {
+                                  _suggestions = [];
+                                  _isSearching = false;
+                                });
+
+                                _placesService.resetSession();
+                              },
+                              icon: const Icon(
+                                Icons.close_rounded,
+                                color: Colors.white70,
+                              ),
+                            )
+                          : null),
+                  filled: true,
+                  fillColor: const Color(0x99171E2D),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                ),
+              ),
+              if (_suggestions.isNotEmpty)
+                Container(
+                  constraints: const BoxConstraints(
+                    maxHeight: 250,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: Color(0xF2171E2D),
+                  ),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                    ),
+                    itemCount: _suggestions.length,
+                    separatorBuilder: (_, __) => Divider(
+                      height: 1,
+                      color: Colors.white.withValues(
+                        alpha: 0.08,
+                      ),
+                    ),
+                    itemBuilder: (context, index) {
+                      final prediction = _suggestions[index];
+
+                      return ListTile(
+                        onTap: () => _selectPrediction(
+                          prediction,
+                        ),
+                        leading: const Icon(
+                          Icons.location_on_outlined,
+                          color: Colors.white70,
+                          size: 21,
+                        ),
+                        title: Text(
+                          prediction.primaryText,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        subtitle: prediction.secondaryText == null
+                            ? null
+                            : Text(
+                                prediction.secondaryText!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 11,
+                                ),
+                              ),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // build
   @override
   Widget build(BuildContext context) {
-    final screenHeight =
-        MediaQuery.of(context).size.height;
+    final l10n = AppLocalizations.of(context)!;
+
+    final mediaQuery = MediaQuery.of(context);
+    final screenHeight = mediaQuery.size.height;
+    final keyboardHeight = mediaQuery.viewInsets.bottom;
+    final keyboardOpen = keyboardHeight > 0;
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final imageHeight = screenHeight * 0.50;
 
-    // Panel overlaps image by approximately 7%.
-    final panelTop = screenHeight * 0.43;
-
-    // Space available inside the panel.
-    final panelHeight =
-        screenHeight - panelTop;
+    // expand
+    final formTop = keyboardOpen
+        ? screenHeight * 0.15
+        : screenHeight * 0.43;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0B101D),
+      resizeToAvoidBottomInset: false,
+      backgroundColor: isDark
+          ? CreateTripColors.darkBackground
+          : CreateTripColors.lightBackground,
       body: Stack(
         children: [
-          // ======================================================
-          // BACKGROUND IMAGE
-          // ======================================================
+          // Background image
           Positioned(
             top: 0,
             left: 0,
@@ -322,7 +636,6 @@ class _CreateTripLocationScreenState
                     'assets/images/create_new_trip_bg.png',
                     fit: BoxFit.cover,
                   ),
-
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -341,392 +654,246 @@ class _CreateTripLocationScreenState
             ),
           ),
 
-          // ======================================================
-          // HEADER + STEP INDICATOR
-          // ======================================================
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                20,
-                14,
-                20,
-                0,
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () =>
-                            Navigator.pop(context),
-                        child: const Icon(
-                          Icons.chevron_left_rounded,
-                          color: Colors.white,
-                          size: 32,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Create New Trip',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 18),
-
-                  Row(
-                    children: [
-                      _buildStep(active: true),
-                      const SizedBox(width: 6),
-                      _buildStep(active: true),
-                      const SizedBox(width: 6),
-                      _buildStep(active: false),
-                      const SizedBox(width: 6),
-                      _buildStep(active: false),
-                      const SizedBox(width: 6),
-                      _buildStep(active: false),
-                    ],
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'LOCATION',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // ======================================================
-          // TRIP NAME
-          // OUTSIDE THE ROUNDED PANEL
-          // ======================================================
+          // Header
           Positioned(
-            top: panelTop - 250,
-            left: 24,
-            right: 24,
-            child: Text(
-              widget.draft.activityName ?? 'Your Trip',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-
-          // ======================================================
-          // FORM PANEL
-          // ======================================================
-          Positioned(
-            top: panelTop,
+            top: 0,
             left: 0,
             right: 0,
-            bottom: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  20,
+                  14,
+                  20,
+                  0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CreateTripHeader(
+                      title: l10n.createNewTrip,
+                      onBack: () => Get.back(),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    const CreateTripStepIndicator(
+                      activeIndex: 1,
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    Obx(
+                          () => Text(
+                        controller.draft.value.activityName ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: CreateTripFonts.condensed,
+                          fontFamilyFallback:
+                          CreateTripFonts.khmerFallback,
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Location panel
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
+            top: formTop,
+            left: 0,
+            right: 0,
+            bottom: keyboardHeight,
             child: Container(
-              height: panelHeight,
-              decoration: const BoxDecoration(
-                color: Color(0xFF0B101D),
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: isDark
+                    ? CreateTripColors.darkBackground
+                    : CreateTripColors.lightBackground,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),
                 ),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black45,
-                    blurRadius: 18,
-                    offset: Offset(0, -6),
+                    blurRadius: 22,
+                    offset: Offset(0, -8),
                   ),
                 ],
               ),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(
-                  24,
-                  24,
-                  24,
+                  20,
+                  22,
+                  20,
                   16,
                 ),
                 child: Column(
-                  crossAxisAlignment:
-                  CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Question
-                    const Text(
-                      'Where are you going?',
+                    Text(
+                      l10n.tripLocationTitle,
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
+                        fontFamily: CreateTripFonts.condensed,
+                        fontFamilyFallback:
+                        CreateTripFonts.khmerFallback,
+                        color: isDark
+                            ? Colors.white
+                            : CreateTripColors.lightText,
+                        fontSize: 27,
                         fontWeight: FontWeight.w900,
                         height: 1.05,
                       ),
                     ),
 
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 6),
 
-                    const Text(
-                      'Select your destination',
+                    Text(
+                      l10n.tripLocationSubtitle,
                       style: TextStyle(
-                        color: Colors.white54,
+                        fontFamily: CreateTripFonts.condensed,
+                        fontFamilyFallback:
+                        CreateTripFonts.khmerFallback,
+                        color: isDark
+                            ? Colors.white60
+                            : const Color(0xFF6B7280),
                         fontSize: 12,
                       ),
                     ),
 
-                    const SizedBox(height: 14),
-
-                    // Search
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _searchController,
-                            textInputAction: TextInputAction.search,
-                            onSubmitted: (_) => _searchLocation(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: 'Search location',
-                              hintStyle: const TextStyle(
-                                color: Colors.white30,
-                              ),
-                              prefixIcon: const Icon(
-                                Icons.search_rounded,
-                                color: Colors.white54,
-                              ),
-                              filled: true,
-                              fillColor: const Color(0xFF171E2D),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 8),
-
-                        GestureDetector(
-                          onTap: _searchLocation,
-                          child: Container(
-                            width: 46,
-                            height: 46,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.search,
-                              color: Colors.black,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
                     const SizedBox(height: 12),
 
-                    // Current Location
-                    const Text(
-                      'Current Location',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-
-                    const SizedBox(height: 7),
-
-                    // ==================================================
-                    // MAP
-                    // ==================================================
                     Expanded(
                       child: ClipRRect(
-                        borderRadius:
-                        BorderRadius.circular(
-                          18,
-                        ),
+                        borderRadius: BorderRadius.circular(20),
                         child: Stack(
                           children: [
+                            // Google Map
                             GoogleMap(
-                              initialCameraPosition: CameraPosition(
-                                target: _selectedLocation ?? _defaultLocation,
+                              initialCameraPosition:
+                              CameraPosition(
+                                target: _initialPosition,
                                 zoom: 12.0,
                               ),
-
                               onMapCreated: _onMapCreated,
-
-                              onTap: (LatLng location) {
-                                _selectLocation(location);
-                              },
-
+                              onTap: _onMapTap,
                               myLocationEnabled: _hasPermission,
-
                               myLocationButtonEnabled: false,
-
+                              zoomControlsEnabled: false,
+                              mapToolbarEnabled: false,
+                              compassEnabled: false,
                               markers: _selectedLocation == null
                                   ? {}
                                   : {
                                 Marker(
-                                  markerId: const MarkerId('selected-location'),
+                                  markerId: const MarkerId(
+                                    'selected-location',
+                                  ),
                                   position: _selectedLocation!,
                                 ),
                               },
                             ),
 
-                            // Current location button
+                            // Search on map
+                            Positioned(
+                              top: 12,
+                              left: 12,
+                              right: 12,
+                              child: _buildSearchOverlay(
+                                context,
+                                l10n,
+                              ),
+                            ),
+
+                            // Map controls
                             Positioned(
                               right: 12,
                               bottom: 12,
-                              child:
-                              GestureDetector(
-                                onTap:
-                                _getCurrentLocation,
-                                child:
-                                Container(
-                                  width: 42,
-                                  height: 42,
-                                  decoration:
-                                  const BoxDecoration(
-                                    color:
-                                    Colors.white,
-                                    shape:
-                                    BoxShape.circle,
+                              child: Column(
+                                children: [
+                                  _buildMapControl(
+                                    icon: Icons.add,
+                                    onTap: () async {
+                                      await _mapController
+                                          ?.animateCamera(
+                                        CameraUpdate.zoomIn(),
+                                      );
+                                    },
                                   ),
-                                  child:
-                                  _isGettingLocation
-                                      ? const Padding(
-                                    padding:
-                                    EdgeInsets.all(
-                                      12,
-                                    ),
+
+                                  const SizedBox(height: 8),
+
+                                  _buildMapControl(
+                                    icon: Icons.remove,
+                                    onTap: () async {
+                                      await _mapController
+                                          ?.animateCamera(
+                                        CameraUpdate.zoomOut(),
+                                      );
+                                    },
+                                  ),
+
+                                  const SizedBox(height: 10),
+
+                                  _buildMapControl(
+                                    icon: Icons.my_location,
+                                    onTap: () =>
+                                        _getCurrentLocation(
+                                          selectLocation: true,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Resolving location loading
+                            if (_isResolvingLocation)
+                              Positioned.fill(
+                                child: Container(
+                                  color:
+                                  Colors.black.withOpacity(0.15),
+                                  child: const Center(
                                     child:
                                     CircularProgressIndicator(
-                                      strokeWidth:
-                                      2,
-                                      color:
-                                      Colors.black,
+                                      color: Colors.white,
                                     ),
-                                  )
-                                      : const Icon(
-                                    Icons
-                                        .my_location,
-                                    color:
-                                    Colors.black,
-                                    size: 20,
                                   ),
                                 ),
                               ),
-                            ),
                           ],
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 8),
-
-                    // Selected location
-                    if (_selectedLocation != null)
-                      Container(
-                        width: double.infinity,
-                        padding:
-                        const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration:
-                        BoxDecoration(
-                          color:
-                          const Color(0xFF171E2D),
-                          borderRadius:
-                          BorderRadius.circular(
-                            12,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons
-                                  .location_on_outlined,
-                              color:
-                              Colors.white,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                widget.draft
-                                    .locationName ??
-                                    'Selected location',
-                                maxLines: 1,
-                                overflow:
-                                TextOverflow
-                                    .ellipsis,
-                                style:
-                                const TextStyle(
-                                  color:
-                                  Colors.white,
-                                  fontSize: 12,
-                                  fontWeight:
-                                  FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
                     const SizedBox(height: 10),
 
-                    // Continue
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: _continue,
-                        style:
-                        ElevatedButton.styleFrom(
-                          backgroundColor:
-                          Colors.white,
-                          foregroundColor:
-                          Colors.black,
-                          elevation: 0,
-                          shape:
-                          RoundedRectangleBorder(
-                            borderRadius:
-                            BorderRadius.circular(
-                              26,
-                            ),
-                          ),
-                        ),
-                        child: const Text(
-                          'CONTINUE',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight:
-                            FontWeight.w800,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ),
+                    // Continue button
+                    Obx(
+                          () {
+                        final draft = controller.draft.value;
+
+                        final hasLocation =
+                            draft.locationName != null &&
+                                draft.locationName!
+                                    .trim()
+                                    .isNotEmpty &&
+                                draft.lat != null &&
+                                draft.lng != null;
+
+                        return CreateTripBottomButton(
+                          text: l10n.continueButton,
+                          onPressed:
+                          hasLocation ? _continue : null,
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -738,19 +905,5 @@ class _CreateTripLocationScreenState
     );
   }
 
-  Widget _buildStep({
-    required bool active,
-  }) {
-    return Expanded(
-      child: Container(
-        height: 3,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: active
-              ? Colors.white
-              : Colors.white24,
-        ),
-      ),
-    );
-  }
+
 }

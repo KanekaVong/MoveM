@@ -1,223 +1,323 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:movem/features/trip/presentation/screens/Create_trip/create_trip_packing_screen.dart';
+import 'package:movem/l10n/app_localizations.dart';
 
-import 'package:movem/features/trip/presentation/models/create_trip_draft.dart';
+import '../../controllers/create_trip_controller.dart';
 import 'package:movem/features/trip/presentation/models/create_trip_stop_draft.dart';
 import 'create_trip_friends_screen.dart';
-import '../../controllers/trip_controller.dart';
+import 'create_trip_stop_map_screen.dart';
+import '../../widgets/create_trip_component.dart';
+import 'package:movem/features/friends/domain/repositories/friends_repository.dart';
+import 'package:movem/features/friends/presentation/bindings/friends_binding.dart';
 
 class CreateTripStopScreen extends StatefulWidget {
-  final CreateTripDraft draft;
-  final TripController tripController;
 
   const CreateTripStopScreen({
     super.key,
-    required this.draft,
-    required this.tripController,
   });
 
   @override
-  State<CreateTripStopScreen> createState() =>
-      _CreateTripStopScreenState();
+  State<CreateTripStopScreen> createState() => _CreateTripStopScreenState();
 }
 
-class _CreateTripStopScreenState
-    extends State<CreateTripStopScreen> {
-  void _addStop() {
-    setState(() {
-      widget.draft.stops.add(
-        CreateTripStopDraft(
-          locationName: 'New Stop',
-        ),
-      );
-    });
+class _CreateTripStopScreenState extends State<CreateTripStopScreen> {
+
+  final CreateTripController controller = Get.find<CreateTripController>();
+
+  String _formatDateRange(
+      BuildContext context,
+      DateTime start,
+      DateTime end,
+      ) {
+    final localizations = MaterialLocalizations.of(context);
+
+    if (start.year == end.year &&
+        start.month == end.month) {
+      return '${localizations.formatMediumDate(start)}'
+          ' – '
+          '${end.day} '
+          '${localizations.formatMediumDate(end).split(' ').skip(1).join(' ')}';
+    }
+
+    return '${localizations.formatMediumDate(start)}'
+        ' – '
+        '${localizations.formatMediumDate(end)}';
   }
 
+
   void _removeStop(int index) {
-    setState(() {
-      widget.draft.stops.removeAt(index);
-    });
+    controller.removeStop(index);
+  }
+
+  Future<void> _openStopMap() async {
+
+    final result = await Get.to<CreateTripStopMapResult>(
+          () => const CreateTripStopMapScreen(),
+    );
+
+    if (result == null) return;
+
+    controller.addStop(
+      result.stop,
+      insertionIndex: result.insertionIndex,
+    );
+  }
+
+  Future<void> _openExistingStopMap(CreateTripStopDraft stop,) async {
+
+    if (stop.lat == null || stop.lng == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'This stop does not have a location on the map.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    final result = await Get.to<CreateTripStopMapResult>(
+          () => CreateTripStopMapScreen(
+        existingStop: stop,
+      ),
+    );
+
+    if (result == null) return;
+
+    final index =
+    controller.currentDraft.stops.indexOf(stop);
+
+    if (index != -1) {
+      controller.updateStop(
+        index,
+        result.stop,
+      );
+    }
   }
 
   void _continue() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => CreateTripFriendsScreen(
-          draft: widget.draft,
-          tripController: widget.tripController,
-        ),
-      ),
+    if (!Get.isRegistered<FriendsRepository>()) {
+      FriendsBinding().dependencies();
+    }
+
+    Get.to(
+          () => const CreateTripPackingScreen(),
+      binding: FriendsBinding(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    final mediaQuery = MediaQuery.of(context);
+    final screenHeight = mediaQuery.size.height;
+    final keyboardHeight = mediaQuery.viewInsets.bottom;
+    final keyboardOpen = keyboardHeight > 0;
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final imageHeight = screenHeight * 0.50;
+
+    // Move form higher when keyboard opens
+    final formTop = keyboardOpen
+        ? screenHeight * 0.15
+        : screenHeight * 0.43;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0B101D),
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            _buildStepIndicator(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  20,
-                  20,
-                  32,
-                ),
-                child: Column(
-                  crossAxisAlignment:
-                  CrossAxisAlignment.start,
-                  children: [
-                    _buildTripHeader(),
-
-                    const SizedBox(height: 28),
-
-                    const Text(
-                      'Plan your stop?',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                        height: 1.1,
+      resizeToAvoidBottomInset: false,
+      backgroundColor: isDark
+          ? CreateTripColors.darkBackground
+          : CreateTripColors.lightBackground,
+      body: Stack(
+        children: [
+          // Background image
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: imageHeight,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(40),
+                bottomRight: Radius.circular(40),
+              ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    'assets/images/create_new_trip_bg.png',
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.45),
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.15),
+                        ],
                       ),
                     ),
+                  ),
+                ],
+              ),
+            ),
+          ),
 
-                    const SizedBox(height: 8),
+          // Header
+          Obx(
+                () {
+              final draft = controller.currentDraft;
 
-                    const Text(
-                      'Add Checkpoints - first stop, second stop, final destination',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 13,
-                        height: 1.4,
+              return SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    20,
+                    14,
+                    20,
+                    0,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CreateTripHeader(
+                        title: l10n.createNewTrip,
+                        onBack: () => Get.back(),
                       ),
-                    ),
 
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 8),
 
-                    // Search / map button
-                    GestureDetector(
-                      onTap: _openStopMap,
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF171E2D),
-                          borderRadius:
-                          BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Colors.white12,
-                          ),
+                      const CreateTripStepIndicator(
+                        activeIndex: 3,
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      Text(
+                        draft.activityName ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: CreateTripFonts.condensed,
+                          fontFamilyFallback:
+                          CreateTripFonts.khmerFallback,
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
                         ),
-                        child: const Row(
-                          children: [
-                            Icon(
-                              Icons.search_rounded,
-                              color: Colors.white,
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
+                      ),
+
+                      const SizedBox(height: 3),
+
+                      Text(
+                        draft.locationName ??
+                            draft.destination ??
+                            '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: CreateTripFonts.condensed,
+                          fontFamilyFallback:
+                          CreateTripFonts.khmerFallback,
+                          color: Colors.white70,
+                          fontSize: 11,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Row(
+                        children: [
+                          if (draft.budget > 0)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.18),
+                                borderRadius:
+                                BorderRadius.circular(12),
+                              ),
                               child: Text(
-                                'Search location',
+                                '\$${draft.budget.toStringAsFixed(0)}',
                                 style: TextStyle(
-                                  color: Colors.white54,
-                                  fontSize: 14,
+                                  fontFamily:
+                                  CreateTripFonts.mono,
+                                  fontFamilyFallback:
+                                  CreateTripFonts.khmerFallback,
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
-                            Icon(
-                              Icons.map_outlined,
-                              color: Colors.white54,
+
+                          if (draft.budget > 0)
+                            const SizedBox(width: 8),
+
+                          if (draft.startDate != null &&
+                              draft.endDate != null)
+                            Container(
+                              padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color:
+                                Colors.white.withOpacity(0.12),
+                                borderRadius:
+                                BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                _formatDateRange(
+                                  context,
+                                  draft.startDate!,
+                                  draft.endDate!,
+                                ),
+                                style: TextStyle(
+                                  fontFamily:
+                                  CreateTripFonts.mono,
+                                  fontFamilyFallback:
+                                  CreateTripFonts.khmerFallback,
+                                  color: Colors.white70,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
-                          ],
-                        ),
+                        ],
                       ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    if (widget.draft.stops.isEmpty)
-                      _buildEmptyStop()
-                    else
-                      _buildStops(),
-
-                    const SizedBox(height: 30),
-
-                    SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: _continue,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                            BorderRadius.circular(28),
-                          ),
-                        ),
-                        child: const Text(
-                          'CONTINUE',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _openStopMap() {
-    // Next we will connect the fullscreen Google Map here.
-    //
-    // Flow:
-    // Search location OR pin a location
-    //        ↓
-    // Select location
-    //        ↓
-    // SET STOP
-    //        ↓
-    // Return here with the selected stop
-  }
-
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        14,
-        20,
-        8,
-      ),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: const Icon(
-              Icons.chevron_left_rounded,
-              color: Colors.white,
-              size: 32,
-            ),
+              );
+            },
           ),
-          const SizedBox(width: 8),
-          const Text(
-            'Create New Trip',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
+
+          // Form panel
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
+            top: formTop,
+            left: 0,
+            right: 0,
+            bottom: keyboardHeight,
+            child: Obx(
+                  () => CreateTripFormPanel(
+                    bottomAction: CreateTripBottomButton(
+                      text: l10n.continueButton,
+                      onPressed: _continue,
+                    ),
+                children: [
+                  _buildStopContent(context, l10n),
+                ],
+              ),
             ),
           ),
         ],
@@ -225,258 +325,340 @@ class _CreateTripStopScreenState
     );
   }
 
-  Widget _buildStepIndicator() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 12,
-      ),
-      child: Row(
-        children: [
-          _buildStep(true),
-          const SizedBox(width: 6),
-          _buildStep(true),
-          const SizedBox(width: 6),
-          _buildStep(true),
-          const SizedBox(width: 6),
-          _buildStep(true),
-          const SizedBox(width: 6),
-          _buildStep(false),
-        ],
-      ),
-    );
-  }
+  Widget _buildStopContent(
+      BuildContext context,
+      AppLocalizations l10n,
+      ) {
+    final draft = controller.currentDraft;
 
-  Widget _buildStep(bool active) {
-    return Expanded(
-      child: Container(
-        height: 3,
-        decoration: BoxDecoration(
-          color: active
-              ? Colors.white
-              : Colors.white24,
-          borderRadius:
-          BorderRadius.circular(10),
-        ),
-      ),
-    );
-  }
+    final isDark =
+        Theme.of(context).brightness == Brightness.dark;
 
-  Widget _buildTripHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFF151C2A),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.draft.activityName ??
-                'Your Trip',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            widget.draft.locationName ??
-                widget.draft.destination ??
-                'Location',
-            style: const TextStyle(
-              color: Colors.white54,
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '${widget.draft.durationDays} '
-                '${widget.draft.durationDays == 1 ? 'day' : 'days'}',
-            style: const TextStyle(
-              color: Colors.white38,
-              fontSize: 11,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+    final textColor = isDark
+        ? Colors.white
+        : CreateTripColors.lightText;
 
-  Widget _buildEmptyStop() {
-    return InkWell(
-      onTap: _addStop,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Colors.white12,
-          ),
-        ),
-        child: const Row(
-          children: [
-            CircleAvatar(
-              radius: 15,
-              backgroundColor: Color(0xFF222B3D),
-              child: Icon(
-                Icons.add,
-                color: Colors.white,
-                size: 18,
-              ),
-            ),
-            SizedBox(width: 12),
-            Text(
-              'Add a stop',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+    final secondaryColor = isDark
+        ? Colors.white60
+        : const Color(0xFF6B7280);
 
-  Widget _buildStops() {
+    final cardColor = isDark
+        ? const Color(0xFF171E2D)
+        : const Color(0xFFF1F3F6);
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (int i = 0;
-        i < widget.draft.stops.length;
-        i++) ...[
-          _buildStopItem(i),
+        Text(
+          l10n.tripStopsTitle,
+          style: TextStyle(
+            fontFamily: CreateTripFonts.condensed,
+            fontFamilyFallback:
+            CreateTripFonts.khmerFallback,
+            color: textColor,
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            height: 1.05,
+          ),
+        ),
 
-          if (i !=
-              widget.draft.stops.length - 1)
-            const Padding(
-              padding: EdgeInsets.only(
-                left: 15,
-              ),
-              child: SizedBox(
-                height: 28,
-                child: VerticalDivider(
-                  color: Colors.white24,
-                  thickness: 1,
-                ),
-              ),
-            ),
-        ],
+        const SizedBox(height: 7),
 
-        const SizedBox(height: 12),
+        Text(
+          l10n.tripStopsSubtitle,
+          style: TextStyle(
+            fontFamily: CreateTripFonts.condensed,
+            fontFamilyFallback:
+            CreateTripFonts.khmerFallback,
+            color: secondaryColor,
+            fontSize: 12,
+          ),
+        ),
 
+        const SizedBox(height: 18),
+
+        // ADD STOP
         InkWell(
-          onTap: _addStop,
+          onTap: _openStopMap,
           borderRadius: BorderRadius.circular(16),
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             decoration: BoxDecoration(
-              borderRadius:
-              BorderRadius.circular(16),
+              color: cardColor,
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Colors.white12,
+                color: isDark
+                    ? Colors.white12
+                    : CreateTripColors.lightBorder,
               ),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                CircleAvatar(
-                  radius: 15,
-                  backgroundColor:
-                  Color(0xFF222B3D),
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.white,
-                    size: 18,
+                Icon(
+                  Icons.add_location_alt_outlined,
+                  color: textColor,
+                  size: 21,
+                ),
+
+                const SizedBox(width: 10),
+
+                Expanded(
+                  child: Text(
+                    l10n.tripAddStop,
+                    style: TextStyle(
+                      fontFamily:
+                      CreateTripFonts.condensed,
+                      fontFamilyFallback:
+                      CreateTripFonts.khmerFallback,
+                      color: textColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-                SizedBox(width: 12),
-                Text(
-                  'Add another stop',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
+
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: secondaryColor,
                 ),
               ],
             ),
           ),
+        ),
+
+        const SizedBox(height: 18),
+
+        if (draft.stops.isEmpty)
+          _buildStopHint(
+            context,
+            l10n,
+          )
+        else
+          _buildStops(
+            context,
+            l10n,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildStopHint(
+      BuildContext context,
+      AppLocalizations l10n,
+      ) {
+    final isDark =
+        Theme.of(context).brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.only(
+        top: 4,
+        bottom: 8,
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.map_outlined,
+            color: isDark
+                ? Colors.white38
+                : const Color(0xFF9CA3AF),
+            size: 18,
+          ),
+
+          const SizedBox(width: 10),
+
+          Text(
+            l10n.tripStopsEmpty,
+            style: TextStyle(
+              fontFamily:
+              CreateTripFonts.condensed,
+              fontFamilyFallback:
+              CreateTripFonts.khmerFallback,
+              color: isDark
+                  ? Colors.white38
+                  : const Color(0xFF9CA3AF),
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStops(
+      BuildContext context,
+      AppLocalizations l10n,
+      ) {
+
+    final stops = controller.currentDraft.stops;
+
+    return Column(
+      children: [
+        for (int i = 0; i < stops.length; i++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _buildStopItem(
+              stop: stops[i],
+              index: i,
+            ),
+          ),
+
+        _buildStopHint(
+          context,
+          l10n,
         ),
       ],
     );
   }
 
-  Widget _buildStopItem(int index) {
-    final stop = widget.draft.stops[index];
+  Widget _buildStopItem({
+    required CreateTripStopDraft stop,
+    required int index,
+  }) {
+    final isDark =
+        Theme.of(context).brightness == Brightness.dark;
+
+    final textColor = isDark
+        ? Colors.white
+        : CreateTripColors.lightText;
+
+    final secondaryColor = isDark
+        ? Colors.white54
+        : const Color(0xFF6B7280);
+
+    final circleColor = isDark
+        ? const Color(0xFF222B3D)
+        : Colors.white;
+
+    final borderColor = isDark
+        ? Colors.white12
+        : CreateTripColors.lightBorder;
 
     return Row(
       crossAxisAlignment:
-      CrossAxisAlignment.center,
+      CrossAxisAlignment.start,
       children: [
-        CircleAvatar(
-          radius: 15,
-          backgroundColor: Colors.white,
-          child: Text(
-            '${index + 1}',
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
+        Column(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: circleColor,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: borderColor,
+                ),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                '${index + 1}',
+                style: TextStyle(
+                  fontFamily:
+                  CreateTripFonts.mono,
+                  fontFamilyFallback:
+                  CreateTripFonts.khmerFallback,
+                  color: textColor,
+                  fontSize: 11,
+                  fontWeight:
+                  FontWeight.w700,
+                ),
+              ),
             ),
-          ),
+
+            if (index < controller.currentDraft.stops.length - 1)
+              Container(
+                width: 1,
+                height: 24,
+                color: borderColor,
+              ),
+          ],
         ),
+
         const SizedBox(width: 12),
+
         Expanded(
-          child: Container(
-            padding:
-            const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 12,
-            ),
-            decoration: BoxDecoration(
-              color: const Color(0xFF171E2D),
-              borderRadius:
-              BorderRadius.circular(14),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    stop.locationName ?? 'Unnamed stop',
+          child: InkWell(
+            onTap: () =>
+                _openExistingStopMap(stop),
+            borderRadius:
+            BorderRadius.circular(12),
+            child: Container(
+              padding:
+              const EdgeInsets.symmetric(
+                horizontal: 4,
+                vertical: 4,
+              ),
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    stop.locationName ??
+                        AppLocalizations.of(
+                          context,
+                        )!
+                            .tripUnnamedStop,
                     maxLines: 1,
                     overflow:
                     TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      fontFamily:
+                      CreateTripFonts
+                          .condensed,
+                      fontFamilyFallback:
+                      CreateTripFonts
+                          .khmerFallback,
+                      color: textColor,
+                      fontSize: 14,
                       fontWeight:
                       FontWeight.w600,
                     ),
                   ),
-                ),
-                PopupMenuButton<String>(
-                  icon: const Icon(
-                    Icons.menu_rounded,
-                    color: Colors.white54,
-                  ),
-                  onSelected: (value) {
-                    if (value == 'remove') {
-                      _removeStop(index);
-                    }
-                  },
-                  itemBuilder: (_) => const [
-                    PopupMenuItem(
-                      value: 'remove',
-                      child: Text('Remove'),
+
+                  if (stop.locationAddress != null &&
+                      stop.locationAddress!
+                          .isNotEmpty)
+                    Padding(
+                      padding:
+                      const EdgeInsets.only(
+                        top: 3,
+                      ),
+                      child: Text(
+                        stop.locationAddress!,
+                        maxLines: 2,
+                        overflow:
+                        TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily:
+                          CreateTripFonts
+                              .condensed,
+                          fontFamilyFallback:
+                          CreateTripFonts
+                              .khmerFallback,
+                          color:
+                          secondaryColor,
+                          fontSize: 12,
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
+          ),
+        ),
+
+        IconButton(
+          onPressed: () =>
+              _removeStop(index),
+          icon: Icon(
+            Icons.close_rounded,
+            color: secondaryColor,
+            size: 20,
           ),
         ),
       ],
