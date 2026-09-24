@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/home_controller.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class HomeHeader extends GetView<HomeController> {
   const HomeHeader({super.key});
@@ -16,41 +17,59 @@ class HomeHeader extends GetView<HomeController> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n?.greetings ?? 'Greetings',
-              style: const TextStyle(
-                color: Color(0xFFA0AAB2),
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n?.greetings ?? 'Greetings',
+                style: TextStyle(
+                  color: AppColors.textCaption,
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
-            ),
-            const SizedBox(height: 2),
-            Obx(() => Text(
-                  controller.greetingName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )),
-            const SizedBox(height: 4),
-            Obx(() => Text(
-                  controller.recentActivityMessage,
-                  style: const TextStyle(
-                    color: Color(0xFFE2E8F0),
-                    fontSize: 12,
-                  ),
-                )),
-          ],
+              SizedBox(height: 2),
+              Obx(() => Text(
+                    controller.greetingName,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.3,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  )),
+              SizedBox(height: 3),
+              Text(
+                l10n?.stayActiveToday ?? 'Stay Active Today!',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w400,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
+        SizedBox(width: 8),
         Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.notifications_none, color: Colors.white),
+              icon: Icon(Icons.notifications_none_outlined, color: AppColors.textPrimary, size: 24),
               onPressed: controller.onNotificationTap,
+              padding: const EdgeInsets.all(6),
+              constraints: const BoxConstraints(minWidth: 38, minHeight: 38),
+            ),
+            SizedBox(width: 2),
+            IconButton(
+              icon: Icon(Icons.person_add_outlined, color: AppColors.textPrimary, size: 24),
+              onPressed: controller.onAddFriendsTap,
+              padding: const EdgeInsets.all(6),
+              constraints: const BoxConstraints(minWidth: 38, minHeight: 38),
             ),
             const SizedBox(width: 8),
             GestureDetector(
@@ -60,65 +79,55 @@ class HomeHeader extends GetView<HomeController> {
                 final initial = controller.userInitial;
 
                 return Container(
-                  width: 50,
-                  height: 50,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    border: Border.all(color: const Color(0xFF334155), width: 2),
+                    borderRadius: BorderRadius.circular(14),
+                    color: const Color(0xFFE5E7EB),
+                    border: Border.all(color: const Color(0xFFD1D5DB), width: 1.5),
                   ),
-                  child: ClipOval(
-                    child: pic != null && pic.isNotEmpty
-                        ? (pic.startsWith('http')
-                            ? CachedNetworkImage(
-                                imageUrl: pic,
-                                fit: BoxFit.cover,
-                                errorWidget: (_, __, ___) => Center(
-                                  child: Text(
-                                    initial,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : Image.file(
-                                File(pic),
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Center(
-                                  child: Text(
-                                    initial,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ))
-                        : Center(
-                            child: Text(
-                              initial,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: pic != null && pic.isNotEmpty
+                      ? (pic.startsWith('http')
+                          ? CachedNetworkImage(
+                              imageUrl: pic,
+                              fit: BoxFit.cover,
+                              errorWidget: (_, __, ___) => _buildInitialAvatar(initial),
+                            )
+                          : Image.file(
+                              File(pic),
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => _buildInitialAvatar(initial),
+                            ))
+                      : _buildInitialAvatar(initial),
                 );
               }),
             ),
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildInitialAvatar(String initial) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Center(
+        child: Text(
+          initial,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
     );
   }
 }

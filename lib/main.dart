@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -18,7 +19,11 @@ import 'core/storage/local_storage.dart';
 import 'core/storage/user_manager.dart';
 
 void main() async {
-  await mainCommon(environment: Environment.dev);
+  final flavor = appFlavor;
+  final environment = (flavor == 'prod' || flavor == 'release')
+      ? Environment.release
+      : Environment.dev;
+  await mainCommon(environment: environment);
 }
 
 Future<void> mainCommon({required Environment environment}) async {
@@ -96,6 +101,23 @@ class MyApp extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       initialRoute: UserManager().isLoggedIn ? AppRoutes.main : AppRoutes.login,
       getPages: AppPages.pages,
+      builder: (context, child) {
+        return Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: (event) {
+            final focus = FocusManager.instance.primaryFocus;
+            if (focus == null || focus.context == null) return;
+            final renderObject = focus.context!.findRenderObject();
+            if (renderObject is! RenderBox) return;
+            final local = renderObject.globalToLocal(event.position);
+            final bounds = Offset.zero & renderObject.size;
+            if (!bounds.contains(local)) {
+              focus.unfocus();
+            }
+          },
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

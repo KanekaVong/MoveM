@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:movem/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:movem/shared/widgets/top_tool_bar.dart';
 
 class AddAccountVerifyOtpScreen extends StatefulWidget {
   const AddAccountVerifyOtpScreen({super.key});
@@ -36,25 +37,10 @@ class _AddAccountVerifyOtpScreenState
 
     return Scaffold(
       backgroundColor: const Color(0xFF0B132B),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0B132B),
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.white,
-            size: 18,
-          ),
-        ),
-        title: const Text(
-          'Verify account',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+      appBar: const TopToolBar(
+        title: 'Verify account',
+        backgroundColor: Color(0xFF0B132B),
+        foregroundColor: Colors.white,
       ),
       body: SafeArea(
         child: SingleChildScrollView(

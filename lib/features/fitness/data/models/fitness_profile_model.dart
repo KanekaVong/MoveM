@@ -119,15 +119,19 @@ class FitnessProfileModel {
   bool get hasGoal => fitnessGoal != null && (fitnessGoal!.targetWeight > 0 || fitnessGoal!.workoutLevel.isNotEmpty);
 
   factory FitnessProfileModel.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic>? goalJson;
+    final rawGoal = json['fitnessGoal'];
+    if (rawGoal is Map) {
+      goalJson = Map<String, dynamic>.from(rawGoal);
+    }
+
     return FitnessProfileModel(
       userId: json['userId'] ?? 0,
       height: (json['height'] as num?)?.toDouble() ?? 0.0,
       weight: (json['weight'] as num?)?.toDouble() ?? 0.0,
       bmi: (json['bmi'] as num?)?.toDouble() ?? 0.0,
-      fitnessGoal: json['fitnessGoal'] != null && json['fitnessGoal'] is Map<String, dynamic>
-          ? FitnessGoalModel.fromJson(json['fitnessGoal'])
-          : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt']) : null,
+      fitnessGoal: goalJson != null ? FitnessGoalModel.fromJson(goalJson) : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'].toString()) : null,
     );
   }
 

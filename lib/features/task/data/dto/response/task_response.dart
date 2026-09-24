@@ -65,7 +65,26 @@ class TaskResponse {
           ? (json['reminders'] as List).map((e) => ReminderResponse.fromJson(e)).toList()
           : null,
       attachments: json['attachments'] is List ? json['attachments'] as List : null,
-      collaborators: json['collaborators'] is List ? json['collaborators'] as List : (json['assignedUsers'] is List ? json['assignedUsers'] as List : null),
+      collaborators: json['collaborators'] is List
+          ? json['collaborators'] as List
+          : (json['assignedUsers'] is List
+              ? json['assignedUsers'] as List
+              : (json['members'] is List
+                  ? json['members'] as List
+                  : (json['group'] is Map && json['group']['members'] is List
+                      ? json['group']['members'] as List
+                      : null))),
     );
+  }
+
+  bool get isComplete => status == 'COMPLETE';
+
+  bool get isPastDeadline {
+    if (deadline == null || deadline!.isEmpty) return false;
+    try {
+      return DateTime.parse(deadline!).toLocal().isBefore(DateTime.now());
+    } catch (_) {
+      return false;
+    }
   }
 }

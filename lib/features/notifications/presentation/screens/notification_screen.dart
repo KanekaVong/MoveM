@@ -4,8 +4,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/notification_controller.dart';
-import '../../../../shared/widgets/glass_container.dart';
 import '../../data/dto/response/notification_response.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class NotificationScreen extends GetView<NotificationController> {
   const NotificationScreen({super.key});
@@ -15,30 +16,9 @@ class NotificationScreen extends GetView<NotificationController> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.slate900,
-      appBar: AppBar(
-        backgroundColor: AppColors.slate900,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 18),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          l10n?.notifications ?? 'Notifications',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1.0),
-          child: Container(
-            color: AppColors.slate800,
-            height: 1.0,
-          ),
-        ),
+      backgroundColor: AppColors.pageBackground,
+      appBar: TopToolBar(
+        title: l10n?.notifications ?? 'Notifications',
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -55,11 +35,10 @@ class NotificationScreen extends GetView<NotificationController> {
         }
 
         if (controller.notifications.isEmpty) {
-          return Center(
-            child: Text(
-              l10n?.noNotifications ?? 'No notifications yet',
-              style: const TextStyle(color: Colors.white70, fontSize: 16),
-            ),
+          return NoDataComponent(
+            title: l10n?.noNotifications ?? 'No notifications yet',
+            subtitle: l10n?.noNotificationsSub ??
+                'When something happens, you will see it here.',
           );
         }
 
@@ -115,12 +94,27 @@ class NotificationScreen extends GetView<NotificationController> {
 
     return GestureDetector(
       onTap: () => controller.onNotificationTap(notification),
-      child: Opacity(
-        opacity: notification.isRead ? 0.6 : 1.0,
-        child: GlassContainer(
-          borderRadius: BorderRadius.circular(12.0),
-          padding: const EdgeInsets.all(12.0),
-          child: Row(
+      child: Container(
+        padding: const EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          color: AppColors.cardSurface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: notification.isRead
+                ? AppColors.borderLight
+                : AppColors.accentBlue.withValues(alpha: 0.35),
+          ),
+          boxShadow: AppColors.isDark
+              ? const []
+              : const [
+                  BoxShadow(
+                    color: Color(0x14000000),
+                    blurRadius: 12,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+        ),
+        child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Stack(
@@ -158,7 +152,7 @@ class NotificationScreen extends GetView<NotificationController> {
                       decoration: BoxDecoration(
                         color: notification.isRead ? AppColors.slate500 : badgeColor,
                         shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.slate900, width: 1.5),
+                        border: Border.all(color: AppColors.cardSurface, width: 1.5),
                       ),
                       child: Icon(
                         typeIcon,
@@ -180,7 +174,7 @@ class NotificationScreen extends GetView<NotificationController> {
                           child: Text(
                             notification.title ?? (l10n?.notifications ?? 'Notification'),
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppColors.textPrimary,
                               fontSize: 14,
                               fontWeight: notification.isRead ? FontWeight.w500 : FontWeight.bold,
                             ),
@@ -202,8 +196,8 @@ class NotificationScreen extends GetView<NotificationController> {
                     const SizedBox(height: 4),
                     RichText(
                       text: TextSpan(
-                        style: const TextStyle(
-                          color: AppColors.textMuted,
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
                           fontSize: 12,
                           height: 1.4,
                         ),
@@ -211,7 +205,7 @@ class NotificationScreen extends GetView<NotificationController> {
                           if (notification.senderName != null && notification.senderName!.isNotEmpty)
                             TextSpan(
                               text: '${notification.senderName} ',
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                              style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
                             ),
                           TextSpan(
                             text: notification.message ?? '',
@@ -222,8 +216,8 @@ class NotificationScreen extends GetView<NotificationController> {
                     const SizedBox(height: 4),
                     Text(
                       notification.timeAgo(),
-                      style: const TextStyle(
-                        color: AppColors.textMuted,
+                      style: TextStyle(
+                        color: AppColors.textCaption,
                         fontSize: 10,
                       ),
                     ),
@@ -231,15 +225,14 @@ class NotificationScreen extends GetView<NotificationController> {
                 ),
               ),
               const SizedBox(width: 8),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
-                color: AppColors.slate500,
+                color: AppColors.textCaption,
                 size: 20,
               ),
             ],
           ),
         ),
-      ),
     );
   }
 }

@@ -29,7 +29,7 @@ class SettingsScreen extends GetView<SettingsController> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.slate900,
+      backgroundColor: AppColors.pageBackground,
       body: Stack(
         children: [
           SafeArea(
@@ -330,7 +330,7 @@ class SettingsScreen extends GetView<SettingsController> {
                         Get.back();
                         controller.confirmLogout();
                       },
-                      child: const Text('Log Out', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      child: Text('Log Out', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
@@ -346,8 +346,8 @@ class SettingsScreen extends GetView<SettingsController> {
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        color: Colors.white,
+      style: TextStyle(
+        color: AppColors.textPrimary,
         fontSize: 14,
         fontWeight: FontWeight.bold,
       ),
@@ -355,11 +355,12 @@ class SettingsScreen extends GetView<SettingsController> {
   }
 
   Widget _buildGlassGroup(List<Widget> children) {
-    return GlassContainer(
-      padding: EdgeInsets.zero,
-      borderRadius: BorderRadius.circular(16),
-      opacity: 0.07,
-      blur: 20.0,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.cardSurface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderLight),
+      ),
       child: Column(
         children: children,
       ),
@@ -430,8 +431,8 @@ class SettingsScreen extends GetView<SettingsController> {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: AppColors.textPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
                 ),
@@ -459,27 +460,27 @@ class SettingsScreen extends GetView<SettingsController> {
                           ),
                           child: trailingProfilePic == null ||
                               trailingProfilePic.isEmpty
-                              ? const Icon(
+                              ? Icon(
                             Icons.person_outline,
                             color: Colors.white54,
                             size: 17,
                           )
                               : null,
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           trailingText,
-                          style: const TextStyle(
-                            color: Colors.white60,
+                          style: TextStyle(
+                            color: AppColors.textCaption,
                             fontSize: 13,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10),
                       ],
                     ),
-                  const Icon(
+                  Icon(
                     Icons.arrow_forward_ios,
-                    color: Colors.white70,
+                    color: AppColors.textCaption,
                     size: 16,
                   ),
                 ],
@@ -704,8 +705,8 @@ class SettingsScreen extends GetView<SettingsController> {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: AppColors.textPrimary,
               fontSize: 12,
               fontWeight: FontWeight.w400,
             ),
@@ -730,7 +731,7 @@ class SettingsScreen extends GetView<SettingsController> {
     return Divider(
       height: 1,
       thickness: 1,
-      color: Colors.white.withValues(alpha: 0.06),
+      color: AppColors.borderLight,
     );
   }
 }

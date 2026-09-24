@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../controllers/fitness_club_controller.dart';
 import 'invite_people_screen.dart';
-import 'create_activity_screen.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class CreateGroupScreen extends StatefulWidget {
   const CreateGroupScreen({super.key});
@@ -11,164 +13,370 @@ class CreateGroupScreen extends StatefulWidget {
   State<CreateGroupScreen> createState() => _CreateGroupScreenState();
 }
 
-class _CreateGroupScreenState extends State<CreateGroupScreen> {
-  final TextEditingController _groupNameController = TextEditingController();
+typedef CreateClubScreen = CreateGroupScreen;
 
-  List<Map<String, dynamic>> members = [];
+class _CreateGroupScreenState extends State<CreateGroupScreen> {
+  final TextEditingController _clubNameController = TextEditingController();
+  final TextEditingController _clubDescriptionController = TextEditingController();
+  String _privacy = 'PUBLIC';
+  bool _isSubmitting = false;
+  final Set<int> _selectedMemberIds = {};
+
+  late final FitnessClubController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = Get.isRegistered<FitnessClubController>()
+        ? Get.find<FitnessClubController>()
+        : Get.put(FitnessClubController());
+  }
 
   @override
   void dispose() {
-    _groupNameController.dispose();
+    _clubNameController.dispose();
+    _clubDescriptionController.dispose();
     super.dispose();
   }
 
-  void _removeMember(int index) {
-    setState(() {
-      members.removeAt(index);
-    });
+  Future<void> _handleSubmit() async {
+    final name = _clubNameController.text.trim();
+    final l10n = AppLocalizations.of(context);
+    if (name.isEmpty) {
+      Get.snackbar(
+        l10n?.requiredField ?? 'Required',
+        l10n?.pleaseEnterClubName ?? 'Please enter a club name',
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+    final selectedPrivacy = _privacy == 'PRIVATE' ? 'PRIVATE' : 'PUBLIC';
+    final description = _clubDescriptionController.text.trim();
+
+    final createdClub = await _controller.createClub(
+      name: name,
+      description: description.isNotEmpty ? description : 'MoveM Fitness Club',
+      privacy: selectedPrivacy,
+    );
+
+    if (createdClub != null && _selectedMemberIds.isNotEmpty) {
+      for (final userId in _selectedMemberIds) {
+        await _controller.addMember(createdClub.id, userId);
+      }
+    }
+
+    if (mounted) {
+      setState(() => _isSubmitting = false);
+    }
+  }
+
+  void _showPrivacyPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.cardSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    AppLocalizations.of(context)?.selectPrivacy ?? 'Select Privacy',
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 8),
+                ListTile(
+                  leading: Icon(Icons.public, color: Colors.blueAccent),
+                  title: Text(
+                    AppLocalizations.of(context)?.publicLabel ?? 'Public',
+                    style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(AppLocalizations.of(context)?.anyoneCanJoin ?? 'Anyone can find and join this club', style: TextStyle(color: AppColors.textCaption, fontSize: 12)),
+                  trailing: _privacy == 'PUBLIC' ? Icon(Icons.check_circle, color: Colors.blueAccent) : null,
+                  onTap: () {
+                    setState(() => _privacy = 'PUBLIC');
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.lock_outline, color: Colors.amber),
+                  title: Text(
+                    AppLocalizations.of(context)?.privateLabel ?? 'Private',
+                    style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(AppLocalizations.of(context)?.requiresInvite ?? 'Requires invitation or request to join', style: TextStyle(color: AppColors.textCaption, fontSize: 12)),
+                  trailing: _privacy == 'PRIVATE' ? Icon(Icons.check_circle, color: Colors.blueAccent) : null,
+                  onTap: () {
+                    setState(() => _privacy = 'PRIVATE');
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(l10n?.createGroup ?? 'Create Group', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+      backgroundColor: AppColors.pageBackground,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
+        child: Column(
+          children: [
+            TopToolBar(title: l10n?.createClub ?? 'Create Club'),
+            Expanded(
+              child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('GROUP NAME', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _groupNameController,
-                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: const Color(0xFF0B2B6A),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+              Text(
+                l10n?.clubNameLabel ?? 'CLUB NAME',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              SizedBox(height: 8),
+
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.cardSurface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.borderLight,
+                    width: 1.2,
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                ),
+                child: TextField(
+                  controller: _clubNameController,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Colors.blueAccent),
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                    border: InputBorder.none,
+                    hintText: l10n?.clubNameHint ?? 'Enter club name',
+                    hintStyle: TextStyle(color: AppColors.textCaption, fontSize: 14),
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 20),
+
+              Text(
+                l10n?.clubDescriptionLabel ?? 'CLUB DESCRIPTION',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              SizedBox(height: 8),
+
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.cardSurface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.borderLight,
+                    width: 1.2,
+                  ),
+                ),
+                child: TextField(
+                  controller: _clubDescriptionController,
+                  maxLines: 3,
+                  maxLength: 1000,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                    border: InputBorder.none,
+                    counterStyle: TextStyle(color: AppColors.textCaption, fontSize: 11),
+                    hintText: 'Describe your club and who should join...',
+                    hintStyle: TextStyle(color: AppColors.textCaption, fontSize: 14),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+
+              Text(
+                l10n?.privacy ?? 'PRIVACY',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              SizedBox(height: 8),
+
+              GestureDetector(
+                onTap: _showPrivacyPicker,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardSurface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppColors.borderLight,
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _privacy == 'PRIVATE'
+                            ? (l10n?.privateLabel ?? 'Private')
+                            : (l10n?.publicLabel ?? 'Public'),
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: AppColors.textSecondary,
+                        size: 24,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 24),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('MEMBERS (${members.length})', style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
-                  GestureDetector(
-                    onTap: () {
-                      Get.to(() => const InvitePeopleScreen());
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: const [
-                          Icon(Icons.person_add_alt_1, color: Colors.white, size: 16),
-                          SizedBox(width: 4),
-                          Text('Invite', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
+                  Text(
+                    'MEMBERS ( ${_selectedMemberIds.length} )',
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: members.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final member = members[index];
-                    return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  GestureDetector(
+                    onTap: () async {
+                      final result = await Get.to(() => InvitePeopleScreen(initialSelectedIds: _selectedMemberIds));
+                      if (result is List<int>) {
+                        setState(() {
+                          _selectedMemberIds.clear();
+                          _selectedMemberIds.addAll(result);
+                        });
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0B2B6A),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.white.withOpacity(0.2)),
+                        color: AppColors.chipSurface,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.textPrimary.withValues(alpha: 0.12),
+                        ),
                       ),
                       child: Row(
                         children: [
-                          CircleAvatar(
-                            radius: 16,
-                            backgroundColor: Colors.white.withOpacity(0.2),
-                            child: Text(member['initial'], style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                          Icon(
+                            Icons.person_add_outlined,
+                            color: AppColors.textPrimary,
+                            size: 15,
                           ),
-                          const SizedBox(width: 16),
-                          Text(member['name'], style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
-                          const Spacer(),
-                          GestureDetector(
-                            onTap: () => _removeMember(index),
-                            child: const Icon(Icons.close, color: Colors.white70, size: 20),
+                          SizedBox(width: 6),
+                          Text(
+                            AppLocalizations.of(context)?.invite ?? 'Invite',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF0F172A),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      onPressed: () {
-                        Get.to(() => const CreateActivityScreen());
-                      },
-                      icon: const Icon(Icons.add),
-                      label: const Text('Create Activity', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0B2B6A),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: Colors.white.withOpacity(0.2)),
-                        ),
-                      ),
-                      onPressed: () {},
-                      icon: const Icon(Icons.person_remove),
-                      label: const Text('Remove Members', style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 28),
+
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.accentBlue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  onPressed: _isSubmitting ? null : _handleSubmit,
+                  child: _isSubmitting
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.add_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              l10n?.createClub ?? 'Create Club',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              ),
             ],
           ),
+        ),
+            ),
+          ],
         ),
       ),
     );

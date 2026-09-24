@@ -17,6 +17,13 @@ val localProperties = Properties().apply {
 }
 val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY") ?: ""
 
+val keystoreProperties = Properties().apply {
+    val keystorePropertiesFile = rootProject.file("key.properties")
+    if (keystorePropertiesFile.exists()) {
+        load(FileInputStream(keystorePropertiesFile))
+    }
+}
+
 android {
     namespace = "com.example.movem"
     compileSdk = 36
@@ -35,6 +42,10 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
+        ndk {
+            abiFilters.clear()
+            abiFilters.add("arm64-v8a")
+        }
     }
 
     flavorDimensions += "default"
@@ -50,16 +61,49 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            val keyAliasProp = keystoreProperties.getProperty("keyAlias")
+            val keyPasswordProp = keystoreProperties.getProperty("keyPassword")
+            val storeFileProp = keystoreProperties.getProperty("storeFile")
+            val storePasswordProp = keystoreProperties.getProperty("storePassword")
+
+            if (storeFileProp != null && rootProject.file(storeFileProp).exists()) {
+                keyAlias = keyAliasProp
+                keyPassword = keyPasswordProp
+                storeFile = rootProject.file(storeFileProp)
+                storePassword = storePasswordProp
+            } else {
+                val debugConfig = signingConfigs.getByName("debug")
+                keyAlias = debugConfig.keyAlias
+                keyPassword = debugConfig.keyPassword
+                storeFile = debugConfig.storeFile
+                storePassword = debugConfig.storePassword
+            }
+        }
+    }
+
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 
     packaging {
         jniLibs {
-            keepDebugSymbols.add("**/*.so")
             useLegacyPackaging = true
+            excludes += setOf(
+                "lib/armeabi/**",
+                "lib/armeabi-v7a/**",
+                "lib/x86/**",
+                "lib/x86_64/**",
+            )
         }
     }
 
@@ -76,4 +120,41 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+}
+
+tasks.register("cleanOldApks") {
+    doFirst {
+        val outDir = file("${project.layout.buildDirectory.get().asFile}/outputs/flutter-apk")
+        if (outDir.exists()) {
+            outDir.listFiles()?.forEach { file ->
+                if (file.isFile && (file.name.endsWith(".apk") || file.name.endsWith(".sha1"))) {
+                    file.delete()
+                }
+            }
+        }
+    }
+}
+
+tasks.register("copyReleaseApk") {
+    doLast {
+        val outDir = file("${project.layout.buildDirectory.get().asFile}/outputs/flutter-apk")
+        val prodApk = file("$outDir/app-prod-release.apk")
+        val defaultApk = file("$outDir/app-release.apk")
+        if (prodApk.exists()) {
+            prodApk.copyTo(defaultApk, overwrite = true)
+        } else {
+            val devApk = file("$outDir/app-dev-release.apk")
+            if (devApk.exists()) {
+                devApk.copyTo(defaultApk, overwrite = true)
+            }
+        }
+    }
+}
+
+tasks.matching { it.name.startsWith("assemble") }.configureEach {
+    dependsOn("cleanOldApks")
+}
+
+tasks.matching { it.name == "assembleRelease" }.configureEach {
+    finalizedBy("copyReleaseApk")
 }

@@ -159,6 +159,7 @@ class AuthController extends BaseController {
     final deviceId = await UserManager().getOrCreateDeviceId();
 
     await executeApi(
+      handleUnauthorized: false,
       apiCall: () => repository.verifyOtp(
         OtpRequest(username: username.trim(), otp: otp.trim(), deviceId: deviceId),
       ),
@@ -274,6 +275,7 @@ class AuthController extends BaseController {
     final deviceId = await UserManager().getOrCreateDeviceId();
 
     await executeApi(
+      handleUnauthorized: false,
       apiCall: () => repository.verifyEmail(
         EmailVerifyRequest(email: email.trim(), code: code.trim(), deviceId: deviceId),
       ),

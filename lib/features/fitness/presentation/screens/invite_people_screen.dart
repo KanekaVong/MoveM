@@ -5,9 +5,13 @@ import '../../../friends/data/repositories/friends_repository_impl.dart';
 import '../../../friends/data/services/friends_service.dart';
 import '../../../friends/domain/repositories/friends_repository.dart';
 import '../../../friends/presentation/controllers/friends_controller.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class InvitePeopleScreen extends StatefulWidget {
-  const InvitePeopleScreen({super.key});
+  final Set<int>? initialSelectedIds;
+  const InvitePeopleScreen({super.key, this.initialSelectedIds});
 
   @override
   State<InvitePeopleScreen> createState() => _InvitePeopleScreenState();
@@ -20,6 +24,9 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialSelectedIds != null) {
+      selectedIds.addAll(widget.initialSelectedIds!);
+    }
     if (Get.isRegistered<FriendsController>()) {
       _friendsController = Get.find<FriendsController>();
     } else {
@@ -43,29 +50,13 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leadingWidth: 80,
-        leading: TextButton(
-          onPressed: () => Get.back(),
-          child: Text(l10n?.cancel ?? 'Cancel',
-              style: const TextStyle(color: Colors.white70, fontSize: 14)),
-        ),
-        centerTitle: true,
-        title: Text(l10n?.invitePeople ?? 'Invite people',
-            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+      backgroundColor: AppColors.pageBackground,
+      appBar: TopToolBar(
+        title: l10n?.invitePeople ?? 'Invite people',
         actions: [
-          TextButton(
-            onPressed: () {
-              Get.back();
-            },
-            child: Text(l10n?.invite ?? 'Invite',
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold)),
+          TopToolBarAction(
+            icon: Icons.check_rounded,
+            onTap: () => Get.back(result: selectedIds.toList()),
           ),
         ],
       ),
@@ -82,13 +73,13 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextField(
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: AppColors.textPrimary),
                   decoration: InputDecoration(
-                    hintText: 'Search for people on strava',
-                    hintStyle: const TextStyle(color: Colors.white54),
-                    prefixIcon: const Icon(Icons.search, color: Colors.white54),
+                    hintText: 'Search for people on MoveM',
+                    hintStyle: TextStyle(color: AppColors.textCaption),
+                    prefixIcon: Icon(Icons.search, color: AppColors.textCaption),
                     filled: true,
-                    fillColor: Colors.white.withOpacity(0.1),
+                    fillColor: AppColors.textPrimary.withValues(alpha: 0.1),
                     contentPadding: const EdgeInsets.symmetric(vertical: 0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
@@ -96,21 +87,21 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 if (selectedFriends.isNotEmpty) ...[
                   Text('MEMBERS (${selectedFriends.length})',
-                      style: const TextStyle(
-                          color: Colors.white70,
+                      style: TextStyle(
+                          color: AppColors.textSecondary,
                           fontSize: 12,
                           fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   SizedBox(
                     height: 80,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: selectedFriends.length,
                       separatorBuilder: (context, index) =>
-                          const SizedBox(width: 16),
+                          SizedBox(width: 16),
                       itemBuilder: (context, index) {
                         final person = selectedFriends[index];
                         return Column(
@@ -120,13 +111,13 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                                 CircleAvatar(
                                   radius: 24,
                                   backgroundColor:
-                                      Colors.white.withOpacity(0.2),
+                                      AppColors.textPrimary.withValues(alpha: 0.2),
                                   child: Text(
                                       person.firstname.isNotEmpty
                                           ? person.firstname[0].toUpperCase()
                                           : '?',
-                                      style: const TextStyle(
-                                          color: Colors.white,
+                                      style: TextStyle(
+                                          color: AppColors.textPrimary,
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold)),
                                 ),
@@ -141,47 +132,49 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.all(2),
-                                      decoration: const BoxDecoration(
+                                      decoration: BoxDecoration(
                                         color: Colors.grey,
                                         shape: BoxShape.circle,
                                       ),
-                                      child: const Icon(Icons.close,
+                                      child: Icon(Icons.close,
                                           size: 10, color: Colors.black),
                                     ),
                                   ),
                                 )
                               ],
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Text(person.firstname,
-                                style: const TextStyle(
-                                    color: Colors.white70, fontSize: 12)),
+                                style: TextStyle(
+                                    color: AppColors.textSecondary, fontSize: 12)),
                           ],
                         );
                       },
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                 ],
-                const Text('Suggested',
+                Text('Suggested',
                     style: TextStyle(
-                        color: Colors.white70,
+                        color: AppColors.textSecondary,
                         fontSize: 14,
                         fontWeight: FontWeight.bold)),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Expanded(
                   child: _friendsController.isLoading
-                      ? const Center(
+                      ? Center(
                           child: CircularProgressIndicator(
                               color: Colors.blueAccent))
                       : allPeople.isEmpty
-                          ? const Center(
-                              child: Text('No friends found.',
-                                  style: TextStyle(color: Colors.white54)))
+                          ? NoDataComponent(
+                              title: l10n?.noFriendsFoundInvite ?? 'No friends found',
+                              subtitle: l10n?.addFriendsThenInvite ??
+                                  'Add friends first, then invite them to this club.',
+                            )
                           : ListView.separated(
                               itemCount: allPeople.length,
                               separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 12),
+                                  SizedBox(height: 12),
                               itemBuilder: (context, index) {
                                 final person = allPeople[index];
                                 final isSelected =
@@ -200,33 +193,33 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 16, vertical: 12),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF0B2B6A),
+                                      color: AppColors.chipSurface,
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
-                                          color: Colors.white.withOpacity(0.2)),
+                                          color: AppColors.textPrimary.withValues(alpha: 0.2)),
                                     ),
                                     child: Row(
                                       children: [
                                         CircleAvatar(
                                           radius: 16,
                                           backgroundColor:
-                                              Colors.white.withOpacity(0.2),
+                                              AppColors.textPrimary.withValues(alpha: 0.2),
                                           child: Text(
                                               person.firstname.isNotEmpty
                                                   ? person.firstname[0]
                                                       .toUpperCase()
                                                   : '?',
-                                              style: const TextStyle(
-                                                  color: Colors.white,
+                                              style: TextStyle(
+                                                  color: AppColors.textPrimary,
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold)),
                                         ),
-                                        const SizedBox(width: 16),
+                                        SizedBox(width: 16),
                                         Text(
                                             '${person.firstname} ${person.lastname}'
                                                 .trim(),
-                                            style: const TextStyle(
-                                                color: Colors.white,
+                                            style: TextStyle(
+                                                color: AppColors.textPrimary,
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.bold)),
                                         const Spacer(),
@@ -236,12 +229,12 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             color: isSelected
-                                                ? Colors.blueAccent
+                                                ? AppColors.accentBlue
                                                 : Colors.transparent,
                                             border: Border.all(
                                               color: isSelected
-                                                  ? Colors.blueAccent
-                                                  : Colors.white,
+                                                  ? AppColors.accentBlue
+                                                  : AppColors.borderMuted,
                                               width: 1.5,
                                             ),
                                           ),

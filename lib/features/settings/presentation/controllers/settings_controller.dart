@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/storage/user_manager.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/Constants.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../../auth/data/dto/response/user_response.dart';
@@ -41,7 +42,9 @@ class SettingsController extends BaseController {
     isDarkMode.value = isDark;
     final modeStr = isDark ? Constants.darkMode : Constants.lightMode;
     UserManager().setThemeMode(modeStr);
+    Get.changeTheme(isDark ? AppTheme.darkTheme : AppTheme.lightTheme);
     Get.changeThemeMode(isDark ? ThemeMode.dark : ThemeMode.light);
+    Get.forceAppUpdate();
   }
 
   void onProfileTap() {
@@ -61,18 +64,18 @@ class SettingsController extends BaseController {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppColors.slate800,
+            color: AppColors.cardSurface,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            border: Border.all(color: AppColors.borderLight),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Select Language / ជ្រើសរើសភាសា',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -92,9 +95,9 @@ class SettingsController extends BaseController {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () => Get.back(),
-                  child: const Text(
+                  child: Text(
                     'Cancel / បោះបង់',
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                    style: TextStyle(color: AppColors.textCaption, fontSize: 14),
                   ),
                 ),
               ),
@@ -124,10 +127,10 @@ class SettingsController extends BaseController {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.blueAccent.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
+            color: isSelected ? AppColors.blueAccent.withValues(alpha: 0.2) : AppColors.chipSurface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? AppColors.blueAccent : Colors.white.withValues(alpha: 0.1),
+              color: isSelected ? AppColors.blueAccent : AppColors.borderLight,
             ),
           ),
           child: Row(
@@ -136,7 +139,7 @@ class SettingsController extends BaseController {
               Text(
                 title,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 14,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),

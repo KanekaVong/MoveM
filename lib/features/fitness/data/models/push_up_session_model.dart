@@ -25,6 +25,8 @@ class PushUpRepData {
     this.confidence = 1.0,
   });
 
+  bool get isGoodForm => formQuality != PushUpFormQuality.shallow;
+
   String get formQualityLabel {
     switch (formQuality) {
       case PushUpFormQuality.excellent:

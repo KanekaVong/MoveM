@@ -1,9 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../../shared/widgets/custom_glass_button.dart';
 import '../../../../shared/widgets/glass_container.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../auth/data/dto/response/user_response.dart';
 import '../controllers/edit_profile_controller.dart';
 
@@ -15,36 +14,26 @@ class EditProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(EditProfileController())..init(user);
-    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0B132B),
+      appBar: TopToolBar(
+        title: 'Edit Profile',
+        backgroundColor: const Color(0xFF0B132B),
+        foregroundColor: Colors.white,
+        onBack: controller.onCancel,
+        actions: [
+          TopToolBarAction(
+            icon: Icons.check_rounded,
+            onTap: controller.onSave,
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomGlassButton(
-                    label: l10n?.cancel ?? 'Cancel',
-                    width: 90,
-                    height: 38,
-                    textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                    onPressed: controller.onCancel,
-                  ),
-                  CustomGlassButton(
-                    label: l10n?.done ?? 'Done',
-                    width: 90,
-                    height: 38,
-                    textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                    onPressed: controller.onSave,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
               Center(
                 child: Stack(
                   children: [

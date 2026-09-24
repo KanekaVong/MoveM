@@ -20,5 +20,5 @@ abstract class Constants {
   static const String keySavedAccounts = 'saved_accounts';
 
   static const defaultLanguage = 'en';
-  static const defaultTheme = systemMode;
+  static const defaultTheme = lightMode;
 }

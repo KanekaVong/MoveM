@@ -25,6 +25,17 @@ class ApiException implements Exception {
           dioError.response?.statusCode,
           dioError.response?.data,
         );
+      case DioExceptionType.unknown:
+        if (dioError.response != null && dioError.response?.data != null) {
+          return ApiException._handleError(
+            dioError.response?.statusCode,
+            dioError.response?.data,
+          );
+        }
+        if (dioError.error is FormatException) {
+          return ApiException(message: 'The server sent an unexpected response. Please try again.');
+        }
+        return ApiException(message: "Something went wrong");
       default:
         return ApiException(message: "Something went wrong");
     }
@@ -43,6 +54,8 @@ class ApiException implements Exception {
           if (decoded is Map<String, dynamic> && decoded.containsKey('message')) {
             defaultMessage = decoded['message'].toString();
             email = decoded['email']?.toString();
+          } else if (decoded is String && decoded.trim().isNotEmpty) {
+            defaultMessage = decoded.trim();
           } else {
             defaultMessage = _cleanBackendError(data);
           }

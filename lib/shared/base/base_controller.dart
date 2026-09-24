@@ -26,6 +26,7 @@ abstract class BaseController extends GetxController {
     void Function()? onLoading,
     bool showLoading = true,
     bool showErrorDialog = true,
+    bool handleUnauthorized = true,
   }) async {
     onLoading?.call();
     state.value = ViewState.loading;
@@ -46,7 +47,11 @@ abstract class BaseController extends GetxController {
           state.value = ViewState.success;
           await onSuccess(data);
         case ApiError(exception: final e):
-          _handleApiException(e, showErrorDialog: showErrorDialog);
+          _handleApiException(
+            e,
+            showErrorDialog: showErrorDialog,
+            handleUnauthorized: handleUnauthorized,
+          );
           onError?.call(e);
         case ApiLoading():
           break;
@@ -66,13 +71,14 @@ abstract class BaseController extends GetxController {
   void _handleApiException(
     ApiException exception, {
     bool showErrorDialog = true,
+    bool handleUnauthorized = true,
   }) {
     _logger.e('API error [${exception.statusCode}]: ${exception.message}');
     errorMessage.value = exception.message;
     errorStatusCode.value = exception.statusCode ?? 0;
     state.value = ViewState.error;
 
-    if (exception.statusCode == 401) {
+    if (handleUnauthorized && exception.statusCode == 401) {
       _handleUnauthorized(exception.message);
       return;
     }

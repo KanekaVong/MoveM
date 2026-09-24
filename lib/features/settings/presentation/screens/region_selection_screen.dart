@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:movem/shared/widgets/top_tool_bar.dart';
 
 class RegionSelectionScreen extends StatefulWidget {
   final String? currentRegion;
@@ -73,8 +74,6 @@ class _RegionSelectionScreenState
         });
       }
     } catch (e) {
-      debugPrint('Failed to load location data: $e');
-
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -305,27 +304,11 @@ class _RegionSelectionScreenState
       backgroundColor: isDark
           ? const Color(0xFF0F172A)
           : const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: isDark
-            ? const Color(0xFF0F172A)
-            : const Color(0xFFF8FAFC),
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: _primaryTextColor(context),
-            size: 18,
-          ),
-        ),
-        title: Text(
-          'Region',
-          style: TextStyle(
-            color: _primaryTextColor(context),
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+      appBar: TopToolBar(
+        title: 'Region',
+        backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+        foregroundColor: isDark ? Colors.white : const Color(0xFF0F172A),
+        onBack: () => Navigator.of(context).pop(),
       ),
       body: SafeArea(
         child: _isLoading

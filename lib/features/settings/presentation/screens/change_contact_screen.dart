@@ -8,6 +8,7 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import '../controllers/setting_controller.dart';
 
 import 'package:movem/features/settings/data/services/firebase_phone_service.dart';
+import 'package:movem/shared/widgets/top_tool_bar.dart';
 
 class ChangeContactScreen extends StatefulWidget {
   final ContactType type;
@@ -48,23 +49,11 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFF0B132B),
-      appBar: AppBar(
+      appBar: TopToolBar(
+        title: 'Your Profile',
         backgroundColor: const Color(0xFF0B132B),
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-        ),
-        title: const Text(
-          'Your Profile',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-          ),
-        ),
+        foregroundColor: Colors.white,
+        onBack: () => Navigator.of(context).pop(),
       ),
       body: SafeArea(
         child: Padding(
@@ -191,13 +180,10 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
                         ? _contactController.text.trim()
                         : _completePhoneNumber;
 
-                    debugPrint('Phone sent to Firebase: $value');
-
                     if (value.isEmpty) {
                       return;
                     }
 
-                    // EMAIL
                     if (widget.type == ContactType.email) {
                       final success =
                       await _settingController.requestEmailChange(value);
@@ -217,7 +203,6 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
                       return;
                     }
 
-                    // PHONE
                     if (widget.type == ContactType.phone) {
                       try {
                         final verificationId =
@@ -238,15 +223,9 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
                           },
                         );
                       } catch (e) {
-                        debugPrint(
-                          'Firebase phone verification error: $e',
-                        );
-
                         if (!mounted) {
                           return;
                         }
-
-                        // Show your existing error message here.
                       }
                     }
                   },

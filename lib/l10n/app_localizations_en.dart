@@ -500,6 +500,685 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taskDeletedSuccess => 'Task deleted successfully';
 
   @override
+  String get createClub => 'Create Club';
+
+  @override
+  String get clubNameLabel => 'CLUB NAME';
+
+  @override
+  String get clubNameHint => 'Enter club name';
+
+  @override
+  String get clubDescriptionLabel => 'CLUB DESCRIPTION';
+
+  @override
+  String get searchForClub => 'Search for Club';
+
+  @override
+  String get clubInvitations => 'Invitations';
+
+  @override
+  String get clubMembers => 'Members';
+
+  @override
+  String get clubOverview => 'Overview';
+
+  @override
+  String get exploreClubs => 'Explore Clubs';
+
+  @override
+  String get publicLabel => 'Public';
+
+  @override
+  String get privateLabel => 'Private';
+
+  @override
+  String get selectPrivacy => 'Select Privacy';
+
+  @override
+  String get requiredField => 'Required';
+
+  @override
+  String get pleaseEnterClubName => 'Please enter a club name';
+
+  @override
+  String get myFriends => 'My Friends';
+
+  @override
+  String get myRequests => 'My Requests';
+
+  @override
+  String get suggestionsTab => 'Suggestions';
+
+  @override
+  String get noFriendsYet => 'No friends yet';
+
+  @override
+  String get noFriendsYetSub => 'People you add will appear here.';
+
+  @override
+  String get noFriendRequests => 'No friend requests';
+
+  @override
+  String get noFriendRequestsSub =>
+      'When someone sends you a request, it will show up here.';
+
+  @override
+  String get noRequestsSent => 'No requests sent';
+
+  @override
+  String get noRequestsSentSub => 'Friend requests you send will appear here.';
+
+  @override
+  String get noSuggestionsFound => 'No suggestions found';
+
+  @override
+  String get noSuggestionsFoundSub =>
+      'We do not have anyone to suggest right now.';
+
+  @override
+  String get noUsersFound => 'No users found';
+
+  @override
+  String get nothingMatchesSearch => 'Nothing matches your search.';
+
+  @override
+  String get workoutChallenge => 'Workout Challenge';
+
+  @override
+  String get filterChallenges => 'Filter Challenges';
+
+  @override
+  String get allFilter => 'All';
+
+  @override
+  String get noChallengesFound => 'No challenges found';
+
+  @override
+  String get workoutHistory => 'Workout History';
+
+  @override
+  String get noWorkoutsYet => 'No workouts yet';
+
+  @override
+  String get noWorkoutsYetSub => 'Finish a run or workout to see it here.';
+
+  @override
+  String get noWorkoutSessionsYet => 'No workout sessions yet';
+
+  @override
+  String get noWorkoutSessionsYetSub =>
+      'Complete a run or push-up workout to see it here!';
+
+  @override
+  String get tryAgain => 'Try again';
+
+  @override
+  String get quickActions => 'Quick Actions';
+
+  @override
+  String get challengeAction => 'Challenge';
+
+  @override
+  String get fitnessClubAction => 'Fitness Club';
+
+  @override
+  String get historyTitle => 'History';
+
+  @override
+  String get noActivityYet => 'No activity yet';
+
+  @override
+  String get noActivityYetSub => 'Updates for this task will appear here.';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get noNotificationsSub =>
+      'When something happens, you will see it here.';
+
+  @override
+  String get endWorkout => 'End Workout?';
+
+  @override
+  String get endWorkoutConfirm => 'Your progress will be saved.';
+
+  @override
+  String get keepGoing => 'Keep Going';
+
+  @override
+  String get exitRun => 'Exit Run?';
+
+  @override
+  String get exitRunConfirm => 'Your run progress will be saved.';
+
+  @override
+  String get unfriend => 'Unfriend';
+
+  @override
+  String get newsFeed => 'News Feed';
+
+  @override
+  String get feedEmptySub =>
+      'Workouts and updates from your circle will show up here.';
+
+  @override
+  String get writeAComment => 'Write a comment';
+
+  @override
+  String get joinClub => 'Join Club';
+
+  @override
+  String get joinClubSub => 'Find an active club';
+
+  @override
+  String get createClubSub => 'Create your own community';
+
+  @override
+  String get noClubsFound => 'No clubs found';
+
+  @override
+  String get noClubsAvailable => 'No clubs yet';
+
+  @override
+  String get noClubsAvailableSub =>
+      'Create a club or look around to find friends to train with.';
+
+  @override
+  String get yourClubs => 'Your Clubs';
+
+  @override
+  String get discoverClubs => 'Discover Clubs';
+
+  @override
+  String get exploreAll => 'Explore all';
+
+  @override
+  String get beFirstClub => 'Be the first to start a club!';
+
+  @override
+  String get haventJoinedClubs => 'You haven\'t joined a club yet';
+
+  @override
+  String get haventJoinedClubsSub =>
+      'Join a club or start your own to train together.';
+
+  @override
+  String get noClubInvitations => 'No club invitations';
+
+  @override
+  String get noClubInvitationsSub =>
+      'Invites to join a club will show up here.';
+
+  @override
+  String get noJoinRequests => 'No join requests';
+
+  @override
+  String get noJoinRequestsSub =>
+      'When someone asks to join your club, you\'ll see it here.';
+
+  @override
+  String get noMembersYet => 'No members yet';
+
+  @override
+  String get inviteToGrowClub => 'Invite friends to grow this club.';
+
+  @override
+  String get noCompletedChallenges => 'No finished challenges yet';
+
+  @override
+  String get createChallenge => 'Create Challenge';
+
+  @override
+  String get pleaseEnterChallengeName => 'Please enter a challenge name.';
+
+  @override
+  String get endDateAfterStart => 'End date must be after the start date.';
+
+  @override
+  String get achievementsBadges => 'Achievements';
+
+  @override
+  String get noAchievementsFound => 'No achievements yet';
+
+  @override
+  String get noAchievementsYet => 'No achievements yet';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get noMutuals => 'No mutual friends';
+
+  @override
+  String get invitation => 'Invitation';
+
+  @override
+  String get invitationsLabel => 'INVITATIONS';
+
+  @override
+  String get noInvitations => 'No invitations';
+
+  @override
+  String get noInvitationsSub =>
+      'Task invitations you receive will show up here.';
+
+  @override
+  String get noFriendsFoundInvite => 'No friends found';
+
+  @override
+  String get addFriendsThenInvite =>
+      'Add friends first, then invite them to this club.';
+
+  @override
+  String get createButton => 'Create';
+
+  @override
+  String get success => 'Done';
+
+  @override
+  String get errorTitle => 'Oops';
+
+  @override
+  String get taskTitleEmpty => 'Please name your task.';
+
+  @override
+  String get taskCreatedSuccess => 'Task created!';
+
+  @override
+  String get taskUpdatedSuccess => 'Task updated!';
+
+  @override
+  String get labelCreatedSuccess => 'Label created!';
+
+  @override
+  String get cannotEditAfterDeadline =>
+      'This task can\'t be changed after the deadline.';
+
+  @override
+  String get noLabelsAvailable => 'No labels yet.';
+
+  @override
+  String get taskMarkedComplete => 'Nice! Task marked complete.';
+
+  @override
+  String get pleaseEnterHeight => 'Please enter your height.';
+
+  @override
+  String get pleaseEnterWeight => 'Please enter your weight.';
+
+  @override
+  String get profileUpdated => 'Profile saved.';
+
+  @override
+  String get enterHeightRange => 'Enter height in cm (50–300).';
+
+  @override
+  String get enterWeightRange => 'Enter weight in kg (20–500).';
+
+  @override
+  String get swipeToStart => 'Swipe to start';
+
+  @override
+  String get mainGoalQuestion => 'What\'s your main goal?';
+
+  @override
+  String get targetWeightQuestion => 'What\'s your target weight?';
+
+  @override
+  String get targetDateQuestion => 'What\'s your target date?';
+
+  @override
+  String get workoutLevelQuestion => 'Which workout level feels right?';
+
+  @override
+  String get fitnessAssessment => 'Fitness check';
+
+  @override
+  String get pleaseSelectMainGoal => 'Please pick a main goal.';
+
+  @override
+  String get pleaseEnterTargetWeight => 'Please enter a target weight.';
+
+  @override
+  String get pleaseSelectFutureDate => 'Please pick a future date.';
+
+  @override
+  String get pleaseSelectWorkoutLevel => 'Please pick a workout level.';
+
+  @override
+  String get locationRequired => 'We need location to track your run.';
+
+  @override
+  String get enableLocation => 'Please turn on location services.';
+
+  @override
+  String get alreadyMember => 'Already in this task.';
+
+  @override
+  String get alreadyInvited => 'Already invited.';
+
+  @override
+  String get noSoloChallenges => 'No solo challenges right now';
+
+  @override
+  String get anyoneCanJoin => 'Anyone can find and join this club';
+
+  @override
+  String get requiresInvite => 'Needs an invite to join';
+
+  @override
+  String get searchClubsHint => 'Search clubs by name...';
+
+  @override
+  String get movemClubs => 'MoveM Clubs';
+
+  @override
+  String get clubInvitationsTitle => 'Club Invitations';
+
+  @override
+  String get noClubChallenges => 'No club challenges yet';
+
+  @override
+  String get createOneToStart => 'Create one to get started.';
+
+  @override
+  String get noMembersJoined => 'No members have joined yet';
+
+  @override
+  String get endSessionBody => 'Want to stop and see your summary?';
+
+  @override
+  String get exitRunBody => 'Your run will be paused. Leave now?';
+
+  @override
+  String get kgUnit => 'kg';
+
+  @override
+  String get lbsUnit => 'lbs';
+
+  @override
+  String get join => 'Join';
+
+  @override
+  String get requestJoin => 'Request';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get submit => 'Submit';
+
+  @override
+  String get invited => 'Invited';
+
+  @override
+  String get joinedTitle => 'You\'re in!';
+
+  @override
+  String get requestSentTitle => 'Request sent';
+
+  @override
+  String get savedTitle => 'Saved';
+
+  @override
+  String get removedTitle => 'Removed';
+
+  @override
+  String clubCreatedMsg(String name) {
+    return 'Club \"$name\" is ready!';
+  }
+
+  @override
+  String challengeCreatedMsg(String name) {
+    return 'Challenge \"$name\" is ready!';
+  }
+
+  @override
+  String joinedClubMsg(String name) {
+    return 'You\'re now in $name';
+  }
+
+  @override
+  String joinRequestSentMsg(String name) {
+    return 'Your request to join $name is waiting.';
+  }
+
+  @override
+  String get failedToCreateClub => 'Couldn\'t create the club. Try again.';
+
+  @override
+  String get failedToJoinClub => 'Couldn\'t join the club. Try again.';
+
+  @override
+  String get failedToSubmitJoinRequest =>
+      'Couldn\'t send the join request. Try again.';
+
+  @override
+  String get failedToCreateChallenge =>
+      'Couldn\'t create the challenge. Try again.';
+
+  @override
+  String get failedToRemoveMember => 'Couldn\'t remove this member.';
+
+  @override
+  String get couldNotApproveRequest => 'Couldn\'t approve that request.';
+
+  @override
+  String get couldNotRejectRequest => 'Couldn\'t reject that request.';
+
+  @override
+  String get couldNotCancelRequest => 'Couldn\'t cancel that request.';
+
+  @override
+  String enterTargetInUnit(String unit) {
+    return 'Enter a target in $unit.';
+  }
+
+  @override
+  String get loadingChallenges => 'Loading challenges...';
+
+  @override
+  String membersCount(int count) {
+    return 'Members ($count)';
+  }
+
+  @override
+  String get completedChallengesLabel => 'Completed challenges';
+
+  @override
+  String get viewAllArrow => 'View all >>';
+
+  @override
+  String get heightLabel => 'Height';
+
+  @override
+  String get weightLabel => 'Weight';
+
+  @override
+  String get challengeNameTitle => 'Challenge name';
+
+  @override
+  String get datesTitle => 'Dates';
+
+  @override
+  String get targetTitle => 'Target';
+
+  @override
+  String get failedToSaveProfile => 'Couldn\'t save your profile. Try again.';
+
+  @override
+  String get failedToUpdateProfile =>
+      'Couldn\'t update your profile. Try again.';
+
+  @override
+  String get invalidHeight =>
+      'Please enter a valid height in cm (for example 170).';
+
+  @override
+  String get invalidWeight =>
+      'Please enter a valid weight in kg (for example 65).';
+
+  @override
+  String get goalSetSuccess => 'Your goal is saved!';
+
+  @override
+  String get failedToSetGoal => 'Couldn\'t set your goal. Try again.';
+
+  @override
+  String get permissionDeniedTitle => 'Permission needed';
+
+  @override
+  String get serviceDisabledTitle => 'Location is off';
+
+  @override
+  String get noTaskData => 'No task data found.';
+
+  @override
+  String get updateFailedTitle => 'Couldn\'t update';
+
+  @override
+  String get unexpectedError => 'Something went wrong. Try again.';
+
+  @override
+  String get copiedProfileLink => 'Profile link copied';
+
+  @override
+  String get unableToCancelFriendRequest =>
+      'Couldn\'t cancel that request. Try later.';
+
+  @override
+  String get failedToSendComment => 'Couldn\'t post that comment right now.';
+
+  @override
+  String get alreadyMemberTitle => 'Already a member';
+
+  @override
+  String get alreadyInvitedTitle => 'Already invited';
+
+  @override
+  String membersAdded(int count, String name) {
+    return '$count added to $name.';
+  }
+
+  @override
+  String get couldNotAddMembers => 'Couldn\'t add members. Try again.';
+
+  @override
+  String get removeMemberTitle => 'Remove member';
+
+  @override
+  String removeMemberConfirm(String name, String club) {
+    return 'Remove $name from $club?';
+  }
+
+  @override
+  String get thisMember => 'this member';
+
+  @override
+  String memberRemoved(String name, String club) {
+    return '$name was removed from $club.';
+  }
+
+  @override
+  String youJoinedChallenge(String name) {
+    return 'You\'re in $name.';
+  }
+
+  @override
+  String get failedToJoinChallenge => 'Couldn\'t join this challenge.';
+
+  @override
+  String get membersJoinedLabel => 'Members joined';
+
+  @override
+  String get addFriendsForTask =>
+      'Add friends so you can invite them to this task.';
+
+  @override
+  String get loseWeightGoal => 'Lose weight';
+
+  @override
+  String get buildMuscleGoal => 'Build muscle';
+
+  @override
+  String get keepFitGoal => 'Keep fit';
+
+  @override
+  String get noviceLevel => 'Just starting';
+
+  @override
+  String get noviceLevelSub =>
+      'Small steps, big changes. Perfect if you\'re new to fitness.';
+
+  @override
+  String get intermediateLevel => 'A little experience';
+
+  @override
+  String get intermediateLevelSub =>
+      'You know the basics. Great if you exercise now and then.';
+
+  @override
+  String get advancedLevel => 'Fitness fan';
+
+  @override
+  String get advancedLevelSub => 'Push yourself. For people who train often.';
+
+  @override
+  String get requestsLabel => 'REQUESTS';
+
+  @override
+  String youRequestedJoin(String name) {
+    return 'You asked to join $name';
+  }
+
+  @override
+  String get aClub => 'a club';
+
+  @override
+  String get noTasksYet => 'No tasks yet';
+
+  @override
+  String get createTaskToStart => 'Create a task to get started.';
+
+  @override
+  String get goals => 'Goals';
+
+  @override
+  String get history => 'History';
+
+  @override
+  String get profileAndGoal => 'PROFILE & GOAL';
+
+  @override
+  String get editFitnessProfile => 'Edit Fitness Profile >>';
+
+  @override
+  String get editFitnessGoal => 'Edit Fitness Goal >>';
+
+  @override
+  String get currentWeight => 'Current Weight';
+
+  @override
+  String get currentHeight => 'Current Height';
+
+  @override
+  String get fitnessLevel => 'Fitness Level';
+
+  @override
+  String get targetDateLabel => 'Target Date';
+
+  @override
+  String get targetWeightLabel => 'Target Weight';
+
+  @override
+  String get noneValue => 'None';
+
+  @override
+  String get notClubMember => 'Join this club first to create a challenge.';
+
+  @override
   String get createNewTrip => 'Create New Trip';
 
   @override

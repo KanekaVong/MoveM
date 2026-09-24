@@ -545,7 +545,7 @@ abstract class AppLocalizations {
   /// No description provided for @friends.
   ///
   /// In en, this message translates to:
-  /// **'FRIENDS'**
+  /// **'Friends'**
   String get friends;
 
   /// No description provided for @addFriends.
@@ -755,7 +755,7 @@ abstract class AppLocalizations {
   /// No description provided for @duration.
   ///
   /// In en, this message translates to:
-  /// **'DURATION'**
+  /// **'Duration'**
   String get duration;
 
   /// No description provided for @caloriesBurned.

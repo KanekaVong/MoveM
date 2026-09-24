@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/network/api_result.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/notification_scheduler_service.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../domain/repositories/task_repository.dart';
@@ -12,8 +13,14 @@ import '../../data/local/models/task_reminder_local.dart';
 import '../../data/local/task_local_repository.dart';
 import '../../data/services/task_service.dart';
 import '../../data/repositories/task_repository_impl.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class CreateTaskController extends BaseController {
+  AppLocalizations? get _l10n {
+    final ctx = Get.context;
+    return ctx == null ? null : AppLocalizations.of(ctx);
+  }
+
   final TaskRepository repository = TaskRepositoryImpl(TaskService());
   final TaskLocalRepository localRepository = TaskLocalRepository();
   final NotificationSchedulerService schedulerService = NotificationSchedulerService();
@@ -69,7 +76,7 @@ class CreateTaskController extends BaseController {
         availableLabels.add(data);
         selectedLabel.value = data;
         Get.back();
-        Get.snackbar('Success', 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        Get.snackbar(_l10n?.success ?? 'Done', _l10n?.labelCreatedSuccess ?? 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
       },
     );
   }
@@ -83,7 +90,7 @@ class CreateTaskController extends BaseController {
 
   Future<void> submitTask() async {
     if (titleController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.taskTitleEmpty ?? 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
@@ -103,7 +110,7 @@ class CreateTaskController extends BaseController {
     List<Map<String, dynamic>>? remindersArray;
     if (remindersEnabled.value && deadlineStr != null) {
       remindersArray = [
-        {"remindAt": deadlineStr, "type": "DUE_DATE"}
+        {"remindAt": deadlineStr, "type": "CUSTOM"}
       ];
     }
 
@@ -128,7 +135,7 @@ class CreateTaskController extends BaseController {
       apiCall: () => repository.createTask(request),
       onSuccess: (data) async {
         Get.back(result: true);
-        Get.snackbar('Success', 'Task created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        Get.snackbar(_l10n?.success ?? 'Done', _l10n?.taskCreatedSuccess ?? 'Task created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
 
         if (checklists.isNotEmpty) {
           for (var item in checklists) {
@@ -184,11 +191,11 @@ class CreateTaskController extends BaseController {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF3B82F6),
+            colorScheme: ColorScheme.light(
+              primary: AppColors.accentBlue,
               onPrimary: Colors.white,
-              surface: Color(0xFF131B2F),
-              onSurface: Colors.white,
+              surface: Colors.white,
+              onSurface: AppColors.textPrimary,
             ),
           ),
           child: child!,
@@ -209,11 +216,11 @@ class CreateTaskController extends BaseController {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF3B82F6),
+            colorScheme: ColorScheme.light(
+              primary: AppColors.accentBlue,
               onPrimary: Colors.white,
-              surface: Color(0xFF131B2F),
-              onSurface: Colors.white,
+              surface: Colors.white,
+              onSurface: AppColors.textPrimary,
             ),
           ),
           child: child!,

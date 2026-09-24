@@ -2,19 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../main_nav/presentation/controllers/main_nav_controller.dart';
 import '../../data/models/push_up_session_model.dart';
 import '../../data/models/solo_challenge_model.dart';
+import '../../data/models/workout_model.dart';
 import '../controllers/fitness_profile_controller.dart';
 import 'push_up_countdown_screen.dart';
+import 'solo_challenge_list_screen.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class PushUpSummaryScreen extends StatelessWidget {
   final PushUpSession session;
   final SoloChallengeModel challenge;
+  final FitnessWorkoutSummaryModel? summary;
 
   const PushUpSummaryScreen({
     super.key,
     required this.session,
     required this.challenge,
+    this.summary,
   });
 
   @override
@@ -26,17 +32,21 @@ class PushUpSummaryScreen extends StatelessWidget {
         ? '$totalMinutes MINS'
         : '${duration.inSeconds} SECS';
 
-    final calories = session.caloriesBurned > 0
-        ? session.caloriesBurned
-        : (challenge.calories > 0 ? challenge.calories : 120);
+    final calories = (summary != null && summary!.caloriesBurned > 0)
+        ? summary!.caloriesBurned.round()
+        : (session.caloriesBurned > 0
+            ? session.caloriesBurned
+            : (session.totalReps * 0.45).round());
 
-    final completedSets = (session.totalReps / challenge.repsPerSet).ceil();
-    final setsDisplay = '${completedSets > 0 ? completedSets.clamp(1, challenge.sets) : challenge.sets} / ${challenge.sets}';
+    final completedSets = challenge.repsPerSet > 0
+        ? (session.totalReps / challenge.repsPerSet).floor().clamp(0, challenge.sets)
+        : 0;
+    final setsDisplay = '$completedSets / ${challenge.sets}';
 
-    final isAllCompleted = session.isCompleted || session.totalReps >= (challenge.sets * challenge.repsPerSet);
+    final isAllCompleted = session.isCompleted || (challenge.sets > 0 && challenge.repsPerSet > 0 && session.totalReps >= (challenge.sets * challenge.repsPerSet));
 
     return Scaffold(
-      backgroundColor: const Color(0xFF09101F),
+      backgroundColor: AppColors.pageBackground,
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -70,8 +80,8 @@ class PushUpSummaryScreen extends StatelessWidget {
                           colors: [
                             Colors.black.withValues(alpha: 0.5),
                             Colors.transparent,
-                            const Color(0xFF09101F).withValues(alpha: 0.9),
-                            const Color(0xFF09101F),
+                            AppColors.pageBackground.withValues(alpha: 0.9),
+                            AppColors.pageBackground,
                           ],
                           stops: const [0.0, 0.4, 0.85, 1.0],
                         ),
@@ -93,16 +103,16 @@ class PushUpSummaryScreen extends StatelessWidget {
                                   height: 42,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Colors.black.withValues(alpha: 0.45),
+                                    color: AppColors.chipSurface,
                                     border: Border.all(
-                                      color: Colors.white.withValues(alpha: 0.25),
+                                      color: AppColors.textPrimary.withValues(alpha: 0.25),
                                       width: 1.5,
                                     ),
                                   ),
-                                  child: const Center(
+                                  child: Center(
                                     child: Icon(
                                       Icons.arrow_back_ios_new_rounded,
-                                      color: Colors.white,
+                                      color: AppColors.textPrimary,
                                       size: 18,
                                     ),
                                   ),
@@ -111,8 +121,8 @@ class PushUpSummaryScreen extends StatelessWidget {
                             ),
                             Text(
                               l10n?.workoutDetails ?? 'Workout Details',
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.3,
@@ -127,25 +137,21 @@ class PushUpSummaryScreen extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                // 3 Stats Metrics Row [ SET | CALORIES | DURATIONS ]
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      // SET
                       _buildMetricColumn(
                         label: 'SET',
                         value: '$setsDisplay 💪',
                       ),
 
-                      // CALORIES
                       _buildMetricColumn(
                         label: 'CALORIES',
                         value: '$calories 🔥',
                       ),
 
-                      // DURATIONS
                       _buildMetricColumn(
                         label: 'DURATIONS',
                         value: durationDisplay,
@@ -154,25 +160,24 @@ class PushUpSummaryScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 48),
+                SizedBox(height: 48),
 
-                // Challenge Section
                 Column(
                   children: [
-                    const Text(
+                    Text(
                       'CHALLENGE',
                       style: TextStyle(
-                        color: Colors.white60,
+                        color: AppColors.textCaption,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2.0,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Text(
                       challenge.name.toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 1.2,
@@ -194,13 +199,11 @@ class PushUpSummaryScreen extends StatelessWidget {
 
                 const SizedBox(height: 64),
 
-                // 4 Action Icons Row [ SHARE | REDO | FITNESS | HOME ]
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                  padding: EdgeInsets.symmetric(horizontal: 28.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      // Share Action
                       _buildCircleActionButton(
                         icon: Icons.share_outlined,
                         label: 'SHARE',
@@ -208,14 +211,13 @@ class PushUpSummaryScreen extends StatelessWidget {
                           Get.snackbar(
                             'Share Workout',
                             'Sharing "${challenge.name}" workout summary...',
-                            backgroundColor: const Color(0xFF0F1B36),
+                            backgroundColor: AppColors.textPrimary,
                             colorText: Colors.white,
                             snackPosition: SnackPosition.BOTTOM,
                           );
                         },
                       ),
 
-                      // Redo Action
                       _buildCircleActionButton(
                         icon: Icons.replay_rounded,
                         label: 'REDO',
@@ -224,16 +226,14 @@ class PushUpSummaryScreen extends StatelessWidget {
                         },
                       ),
 
-                      // Fitness / Detail Action
                       _buildCircleActionButton(
                         icon: Icons.fitness_center_rounded,
-                        label: 'FITNESS',
+                        label: 'MORE',
                         onTap: () {
-                          _goHome();
+                          Get.to(() => const SoloChallengeListScreen());
                         },
                       ),
 
-                      // Home Action
                       _buildCircleActionButton(
                         icon: Icons.home_outlined,
                         label: 'HOME',
@@ -245,7 +245,7 @@ class PushUpSummaryScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 48),
+                SizedBox(height: 48),
               ],
             ),
           ),
@@ -263,18 +263,18 @@ class PushUpSummaryScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: Colors.white60,
+          style: TextStyle(
+            color: AppColors.textCaption,
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         Text(
           value,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: AppColors.textPrimary,
             fontSize: 17,
             fontWeight: FontWeight.w900,
             letterSpacing: 0.5,
@@ -301,23 +301,23 @@ class PushUpSummaryScreen extends StatelessWidget {
               shape: BoxShape.circle,
               color: Colors.transparent,
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.35),
+                color: AppColors.textPrimary.withValues(alpha: 0.35),
                 width: 1.5,
               ),
             ),
             child: Center(
               child: Icon(
                 icon,
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 size: 22,
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(
-              color: Colors.white70,
+            style: TextStyle(
+              color: AppColors.textSecondary,
               fontSize: 10,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.0,
@@ -332,7 +332,11 @@ class PushUpSummaryScreen extends StatelessWidget {
     if (Get.isRegistered<FitnessProfileController>()) {
       final controller = Get.find<FitnessProfileController>();
       controller.fetchSoloChallenges();
+      controller.fetchStatistics();
     }
-    Get.back();
+    if (Get.isRegistered<MainNavController>()) {
+      Get.find<MainNavController>().changeTab(0);
+    }
+    Get.until((route) => route.isFirst);
   }
 }
