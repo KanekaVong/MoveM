@@ -2,8 +2,8 @@ import 'package:geolocator/geolocator.dart';
 import '../data/models/track_point.dart';
 
 class GpsFilter {
-  static const double maxAcceptableAccuracy = 20.0;
-  static const double minMovementDistance = 3.0;
+  static const double maxAcceptableAccuracy = 45.0;
+  static const double minMovementDistance = 2.0;
   static const double maxPlausibleSpeed = 8.0;
 
   static bool isValid(Position candidate, TrackPoint? lastAccepted) {
@@ -18,9 +18,11 @@ class GpsFilter {
 
     if (distance < minMovementDistance) return false;
 
-    final seconds = candidate.timestamp
+    var seconds = candidate.timestamp
         .difference(lastAccepted.timestamp).inMilliseconds / 1000.0;
-    if (seconds <= 0) return false;
+    // Some devices repeat the same GPS timestamp. Dropping those fixes
+    // freezes steps, distance, and pace after the first few samples.
+    if (seconds <= 0) seconds = 1.0;
 
     final impliedSpeed = distance / seconds;
     if (impliedSpeed > maxPlausibleSpeed) return false;

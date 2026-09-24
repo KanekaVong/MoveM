@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import '../../../../shared/widgets/glass_button.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/glass_container.dart';
 import '../controllers/setup_goal_controller.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -90,10 +90,10 @@ class SetupGoalScreen extends StatelessWidget {
 
                         Padding(
                           padding: const EdgeInsets.all(24.0),
-                          child: GlassButton(
-                            text: step == 3 ? 'Set Goal' : 'Next',
+                          child: AppButton(
+                            label: step == 3 ? 'Set Goal' : 'Next',
                             isLoading: controller.isLoading,
-                            onPressed: controller.isLoading ? () {} : controller.nextStep,
+                            onPressed: controller.nextStep,
                           ),
                         ),
                       ],

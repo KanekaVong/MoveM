@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +9,7 @@ import '../../data/dto/response/checklist_response.dart';
 import 'edit_task_screen.dart';
 import 'task_comment_screen.dart';
 import 'task_activity_feed_screen.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 
 class TaskDetailScreen extends StatelessWidget {
@@ -54,7 +54,6 @@ class TaskDetailScreen extends StatelessWidget {
                               color: AppColors.textPrimary,
                               fontSize: 26,
                               fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.italic,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -80,7 +79,6 @@ class TaskDetailScreen extends StatelessWidget {
                                       style: TextStyle(
                                         color: AppColors.textSecondary,
                                         fontSize: 12,
-                                        fontStyle: FontStyle.italic,
                                       ),
                                     ),
                                   ],
@@ -105,7 +103,6 @@ class TaskDetailScreen extends StatelessWidget {
                                         color: _getPriorityColor(task.priority),
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
-                                        fontStyle: FontStyle.italic,
                                       ),
                                     ),
                                   ],
@@ -134,7 +131,6 @@ class TaskDetailScreen extends StatelessWidget {
                               style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 12,
-                                fontStyle: FontStyle.italic,
                                 height: 1.4,
                               ),
                             ),
@@ -204,34 +200,7 @@ class TaskDetailScreen extends StatelessWidget {
     final List<Widget> sections = [];
 
     if (hasLabels) {
-      sections.add(
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'LABEL',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                Icon(
-                  Icons.keyboard_arrow_down,
-                  color: AppColors.textSecondary,
-                  size: 20,
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            _buildLabels(task),
-          ],
-        ),
-      );
+      sections.add(_buildLabels(task));
     }
 
     if (hasChecklists) {
@@ -275,7 +244,6 @@ class TaskDetailScreen extends StatelessWidget {
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 12,
-                fontStyle: FontStyle.italic,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -310,30 +278,17 @@ class TaskDetailScreen extends StatelessWidget {
 
     if (hasAttachments) {
       sections.add(
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Attachments   (${task.attachments!.length})',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(width: 6),
-                Icon(
-                  Icons.keyboard_arrow_up,
-                  color: AppColors.textPrimary,
-                  size: 18,
-                ),
-              ],
+        _CollapsibleSection(
+          title: Text(
+            'Attachments   (${task.attachments!.length})',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
             ),
-            SizedBox(height: 14),
-            _buildAttachments(task),
-          ],
+          ),
+          contentGap: 14,
+          child: _buildAttachments(task),
         ),
       );
     }
@@ -345,14 +300,27 @@ class TaskDetailScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.textPrimary.withOpacity(0.06)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (int i = 0; i < sections.length; i++) ...[
-            sections[i],
-            if (i < sections.length - 1) const SizedBox(height: 20),
+      child: _CollapsibleSection(
+        title: Text(
+          hasLabels ? 'LABEL' : 'DETAILS',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
+        ),
+        spreadHeader: true,
+        contentGap: 10,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (int i = 0; i < sections.length; i++) ...[
+              sections[i],
+              if (i < sections.length - 1) const SizedBox(height: 20),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -384,7 +352,6 @@ class TaskDetailScreen extends StatelessWidget {
               color: AppColors.textPrimary,
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              fontStyle: FontStyle.italic,
             ),
           ),
         );
@@ -414,7 +381,6 @@ class TaskDetailScreen extends StatelessWidget {
                     style: TextStyle(
                       color: isLocked ? AppColors.textSecondary : AppColors.textPrimary,
                       fontSize: 13,
-                      fontStyle: FontStyle.italic,
                     ),
                   ),
                 ),
@@ -465,7 +431,6 @@ class TaskDetailScreen extends StatelessWidget {
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 12,
-            fontStyle: FontStyle.italic,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -475,7 +440,6 @@ class TaskDetailScreen extends StatelessWidget {
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 12,
-              fontStyle: FontStyle.italic,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -528,7 +492,6 @@ class TaskDetailScreen extends StatelessWidget {
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 11,
-                    fontStyle: FontStyle.italic,
                   ),
                 ),
               ],
@@ -544,9 +507,11 @@ class TaskDetailScreen extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return Column(
-      children: task.attachments!.map((attachment) {
-        String url = '';
+    final images = <String>[];
+    final files = <Widget>[];
+
+    for (final attachment in task.attachments!) {
+      String url = '';
         String fileName = 'Attachment';
         if (attachment is Map) {
           url = attachment['url']?.toString() ?? '';
@@ -570,21 +535,11 @@ class TaskDetailScreen extends StatelessWidget {
             fileName.toLowerCase().endsWith('.gif');
 
         if (hasValidUrl && isImage) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(
-                url,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => SizedBox.shrink(),
-              ),
-            ),
-          );
+          images.add(url);
+          continue;
         }
 
-        return Container(
+        files.add(Container(
           margin: EdgeInsets.only(bottom: 8.0),
           padding: EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
           decoration: BoxDecoration(
@@ -618,8 +573,32 @@ class TaskDetailScreen extends StatelessWidget {
               ),
             ],
           ),
-        );
-      }).toList(),
+        ));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (images.isNotEmpty)
+          Padding(
+            padding: EdgeInsets.only(bottom: files.isEmpty ? 0 : 10),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (var i = 0; i < images.length; i++)
+                  _AttachmentThumbnail(
+                    url: images[i],
+                    onTap: () => Get.to(
+                      () => _AttachmentImageViewer(urls: images, initialIndex: i),
+                      transition: Transition.fadeIn,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ...files,
+      ],
     );
   }
 
@@ -627,83 +606,9 @@ class TaskDetailScreen extends StatelessWidget {
     final isCompleted = task.status == 'COMPLETE';
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-      child: GestureDetector(
-        onTap: isCompleted ? null : () => controller.markAsComplete(),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            child: Container(
-              width: double.infinity,
-              height: 48,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: isCompleted
-                      ? AppColors.textPrimary.withOpacity(0.12)
-                      : AppColors.textPrimary.withOpacity(0.35),
-                  width: 1.0,
-                ),
-                gradient: isCompleted
-                    ? null
-                    : LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          const Color(0xFF4B9D62).withOpacity(0.65),
-                          const Color(0xFF4B9D62).withOpacity(0.45),
-                          const Color(0xFF357A49).withOpacity(0.55),
-                        ],
-                      ),
-                color: isCompleted ? AppColors.chipSurface : null,
-                boxShadow: isCompleted
-                    ? null
-                    : [
-                        BoxShadow(
-                          color: const Color(0xFF4B9D62).withOpacity(0.30),
-                          blurRadius: 14,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-              ),
-              child: Stack(
-                children: [
-                  if (!isCompleted)
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: 24,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                          gradient: LinearGradient(
-                            begin: Alignment(-0.5, -1.0),
-                            end: Alignment(0.5, 1.0),
-                            colors: [
-                              AppColors.textPrimary.withOpacity(0.28),
-                              AppColors.textPrimary.withOpacity(0.0),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  Center(
-                    child: Text(
-                      isCompleted ? 'COMPLETED' : 'MARK AS COMPLETE',
-                      style: TextStyle(
-                        color: isCompleted ? AppColors.textSecondary : Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.8,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+      child: AppButton(
+        label: isCompleted ? 'Completed' : 'Mark as Complete',
+        onPressed: isCompleted ? null : () => controller.markAsComplete(),
       ),
     );
   }
@@ -748,6 +653,222 @@ class TaskDetailScreen extends StatelessWidget {
     if (p == 'NORMAL' || p == 'MEDIUM') return AppColors.taskYellowPriority;
     if (p == 'HIGH' || p == 'URGENT') return AppColors.taskRedPriority;
     return const Color(0xFF68B684);
+  }
+}
+
+class _CollapsibleSection extends StatefulWidget {
+  const _CollapsibleSection({
+    required this.title,
+    required this.child,
+    this.spreadHeader = false,
+    this.contentGap = 12,
+  });
+
+  final Widget title;
+  final Widget child;
+  final bool spreadHeader;
+  final double contentGap;
+
+  @override
+  State<_CollapsibleSection> createState() => _CollapsibleSectionState();
+}
+
+class _CollapsibleSectionState extends State<_CollapsibleSection>
+    with SingleTickerProviderStateMixin {
+  static const _duration = Duration(milliseconds: 320);
+
+  bool _expanded = true;
+
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: _duration,
+    value: 1,
+  );
+  late final Animation<double> _size = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeOutCubic,
+    reverseCurve: Curves.easeInCubic,
+  );
+  late final Animation<double> _fade = CurvedAnimation(
+    parent: _controller,
+    curve: const Interval(0.25, 1, curve: Curves.easeOut),
+    reverseCurve: const Interval(0, 0.6, curve: Curves.easeIn),
+  );
+  late final Animation<Offset> _slide = Tween<Offset>(
+    begin: const Offset(0, -0.04),
+    end: Offset.zero,
+  ).animate(_size);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    setState(() => _expanded = !_expanded);
+    _expanded ? _controller.forward() : _controller.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final arrow = AnimatedRotation(
+      turns: _expanded ? 0 : 0.5,
+      duration: _duration,
+      curve: Curves.easeOutBack,
+      child: Icon(
+        Icons.keyboard_arrow_up,
+        color: AppColors.textSecondary,
+        size: 20,
+      ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: _toggle,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              mainAxisAlignment:
+                  widget.spreadHeader ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
+              children: [
+                widget.title,
+                if (!widget.spreadHeader) const SizedBox(width: 6),
+                arrow,
+              ],
+            ),
+          ),
+        ),
+        SizeTransition(
+          sizeFactor: _size,
+          alignment: Alignment.topCenter,
+          child: FadeTransition(
+            opacity: _fade,
+            child: SlideTransition(
+              position: _slide,
+              child: Padding(
+                padding: EdgeInsets.only(top: widget.contentGap - 4),
+                child: SizedBox(width: double.infinity, child: widget.child),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AttachmentThumbnail extends StatelessWidget {
+  const _AttachmentThumbnail({required this.url, required this.onTap});
+
+  static const double size = 88;
+
+  final String url;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: size,
+          height: size,
+          color: AppColors.chipSurface,
+          child: Image.network(
+            url,
+            fit: BoxFit.cover,
+            cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).round(),
+            loadingBuilder: (context, child, progress) => progress == null
+                ? child
+                : const Center(
+                    child: SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+            errorBuilder: (_, __, ___) => Icon(
+              Icons.broken_image_outlined,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AttachmentImageViewer extends StatefulWidget {
+  const _AttachmentImageViewer({required this.urls, required this.initialIndex});
+
+  final List<String> urls;
+  final int initialIndex;
+
+  @override
+  State<_AttachmentImageViewer> createState() => _AttachmentImageViewerState();
+}
+
+class _AttachmentImageViewerState extends State<_AttachmentImageViewer> {
+  late final PageController _pageController = PageController(initialPage: widget.initialIndex);
+  late int _index = widget.initialIndex;
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          PageView.builder(
+            controller: _pageController,
+            itemCount: widget.urls.length,
+            onPageChanged: (i) => setState(() => _index = i),
+            itemBuilder: (context, i) => InteractiveViewer(
+              minScale: 1,
+              maxScale: 4,
+              child: Center(
+                child: Image.network(
+                  widget.urls[i],
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) =>
+                      const Icon(Icons.broken_image_outlined, color: Colors.white54, size: 48),
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(Icons.close_rounded, color: Colors.white),
+                  ),
+                  const Spacer(),
+                  if (widget.urls.length > 1)
+                    Text(
+                      '${_index + 1} / ${widget.urls.length}',
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                    ),
+                  const SizedBox(width: 12),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

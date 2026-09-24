@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../data/dto/response/friend_response.dart';
 import '../../data/dto/response/public_user_profile_response.dart';
 import '../controllers/public_user_profile_controller.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -355,26 +356,11 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-      child: SizedBox(
-        width: double.infinity,
-        height: 48,
-        child: ElevatedButton(
-          onPressed: !enabled
-              ? null
-              : (isIncoming ? controller.acceptIncomingRequest : controller.sendFriendRequest),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: enabled ? AppColors.accentBlue : AppColors.chipSurface,
-            disabledBackgroundColor: AppColors.chipSurface,
-            disabledForegroundColor: AppColors.textSecondary,
-            foregroundColor: Colors.white,
-            elevation: 0,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-          ),
-        ),
+      child: AppButton(
+        label: label,
+        onPressed: !enabled
+            ? null
+            : (isIncoming ? controller.acceptIncomingRequest : controller.sendFriendRequest),
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../data/models/push_up_session_model.dart';
 import '../../data/models/solo_challenge_model.dart';
 import 'push_up_summary_screen.dart';
@@ -115,7 +116,8 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
           style: const TextStyle(color: Colors.white70, fontSize: 14),
         ),
         actions: [
-          TextButton(
+          AppButton(
+            label: 'Start Next Set',
             onPressed: () {
               Navigator.pop(ctx);
               setState(() {
@@ -123,14 +125,7 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
                 _currentReps = 0;
               });
             },
-            child: const Text(
-              'Start Next Set',
-              style: TextStyle(
-                color: Color(0xFF38BDF8),
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
+            height: 46,
           ),
         ],
       ),

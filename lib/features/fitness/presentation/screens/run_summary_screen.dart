@@ -52,17 +52,19 @@ class RunSummaryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final distanceKm = (summary != null && summary!.distance > 0)
-        ? summary!.distance
-        : session.totalDistanceMeters / 1000.0;
+    final distanceKm = session.totalDistanceMeters > 1
+        ? session.totalDistanceMeters / 1000.0
+        : (summary != null && summary!.distance > 0
+            ? summary!.distance
+            : session.totalDistanceMeters / 1000.0);
 
     final distanceStr = distanceKm >= 1
         ? '${distanceKm % 1 == 0 ? distanceKm.toInt() : distanceKm.toStringAsFixed(1)}KM'
         : '${(distanceKm * 1000).toInt()}M';
 
-    final duration = (summary != null && summary!.durationSeconds > 0)
-        ? Duration(seconds: summary!.durationSeconds)
-        : session.elapsedDuration;
+    final duration = session.elapsedDurationMilliseconds > 0
+        ? session.elapsedDuration
+        : Duration(seconds: summary?.durationSeconds ?? 0);
 
     final durationText = _formatDurationText(duration);
 
@@ -70,13 +72,19 @@ class RunSummaryScreen extends StatelessWidget {
         ? PaceCalculator.paceMinPerKm(distanceKm * 1000, duration)
         : 0.0;
 
-    final steps = (summary != null && summary!.steps > 0)
-        ? summary!.steps
-        : (session.totalDistanceMeters * 1.3).toInt();
+    final profile = Get.isRegistered<FitnessProfileController>()
+        ? Get.find<FitnessProfileController>().profile.value
+        : null;
 
-    final calories = (summary != null && summary!.caloriesBurned > 0)
-        ? summary!.caloriesBurned.round()
-        : (distanceKm * 60).toInt();
+    final steps = PaceCalculator.stepsForDistance(
+      distanceKm * 1000,
+      heightCm: profile?.height ?? 0,
+    );
+
+    final calories = PaceCalculator.caloriesForRun(
+      distanceKm * 1000,
+      weightKg: profile?.weight ?? 0,
+    );
 
     final challengeTitle = challenge?.name ?? 'RUNNING SESSION';
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../shared/widgets/app_button.dart';
 import '../theme/app_colors.dart';
 
 class AppDialogs {
@@ -43,14 +44,15 @@ class AppDialogs {
         content: Text(message, textAlign: TextAlign.center),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
-          TextButton(
+          AppButton(
+            label: buttonText,
+            height: 46,
             onPressed: () {
               Get.back();
               if (onConfirm != null) {
                 onConfirm();
               }
             },
-            child: Text(buttonText),
           ),
         ],
       ),
@@ -72,21 +74,32 @@ class AppDialogs {
         content: Text(message, textAlign: TextAlign.start),
         actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
-          TextButton(
-            onPressed: () {
-              Get.back();
-              if (onCancel != null) {
-                onCancel();
-              }
-            },
-            child: Text(cancelText),
-          ),
-          TextButton(
-            onPressed: () {
-              Get.back();
-              onConfirm();
-            },
-            child: Text(confirmText),
+          Row(
+            children: [
+              Expanded(
+                child: AppButton.secondary(
+                  label: cancelText,
+                  height: 46,
+                  onPressed: () {
+                    Get.back();
+                    if (onCancel != null) {
+                      onCancel();
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: AppButton(
+                  label: confirmText,
+                  height: 46,
+                  onPressed: () {
+                    Get.back();
+                    onConfirm();
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),

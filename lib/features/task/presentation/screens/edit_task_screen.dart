@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,6 +9,7 @@ import '../controllers/edit_task_controller.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/dto/response/attachment_response.dart';
 import 'add_collaborator_screen.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 
 class EditTaskScreen extends GetView<EditTaskController> {
@@ -84,7 +84,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
             style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 12,
-              fontStyle: FontStyle.italic,
             ),
           )),
         ],
@@ -115,7 +114,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
               color: _getPriorityColor(controller.priority.value),
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
             ),
           )),
         ],
@@ -143,7 +141,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 12,
-            fontStyle: FontStyle.italic,
             height: 1.4,
           ),
           decoration: InputDecoration(
@@ -154,7 +151,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
             hintStyle: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 12,
-              fontStyle: FontStyle.italic,
             ),
           ),
         ),
@@ -224,7 +220,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
                 color: AppColors.textPrimary,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
               ),
             )),
           ),
@@ -254,7 +249,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
                     color: AppColors.textPrimary,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic,
                   ),
                 )),
               ],
@@ -288,7 +282,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
                   color: AppColors.textPrimary,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  fontStyle: FontStyle.italic,
                 ),
               ),
             ),
@@ -309,7 +302,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
                   color: AppColors.textPrimary,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  fontStyle: FontStyle.italic,
                 ),
               ),
             ),
@@ -337,14 +329,12 @@ class EditTaskScreen extends GetView<EditTaskController> {
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 13,
-                    fontStyle: FontStyle.italic,
                   ),
                   decoration: InputDecoration(
                     hintText: 'Add an item',
                     hintStyle: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 13,
-                      fontStyle: FontStyle.italic,
                     ),
                     border: InputBorder.none,
                     isDense: true,
@@ -456,7 +446,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
                       style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 11,
-                        fontStyle: FontStyle.italic,
                       ),
                     ),
                   ],
@@ -554,7 +543,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 12,
-                  fontStyle: FontStyle.italic,
                 ),
               ),
             ),
@@ -632,7 +620,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
                           style: TextStyle(
                             color: Color(0xFF68B684),
                             fontSize: 11,
-                            fontStyle: FontStyle.italic,
                           ),
                         ),
                       ],
@@ -700,7 +687,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
                           style: TextStyle(
                             color: Color(0xFF3B82F6),
                             fontSize: 11,
-                            fontStyle: FontStyle.italic,
                           ),
                         ),
                       ],
@@ -751,75 +737,9 @@ class EditTaskScreen extends GetView<EditTaskController> {
   }
 
   Widget _buildSaveButton(BuildContext context) {
-    return GestureDetector(
-      onTap: () => controller.saveChanges(),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-          child: Container(
-            width: double.infinity,
-            height: 48,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: AppColors.textPrimary.withOpacity(0.35),
-                width: 1.0,
-              ),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFF4B9D62).withOpacity(0.65),
-                  const Color(0xFF4B9D62).withOpacity(0.45),
-                  const Color(0xFF357A49).withOpacity(0.55),
-                ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF4B9D62).withOpacity(0.30),
-                  blurRadius: 14,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 24,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                      gradient: LinearGradient(
-                        begin: const Alignment(-0.5, -1.0),
-                        end: const Alignment(0.5, 1.0),
-                        colors: [
-                          AppColors.textPrimary.withOpacity(0.28),
-                          AppColors.textPrimary.withOpacity(0.0),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Center(
-                  child: Text(
-                    'SAVE CHANGES',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.8,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+    return AppButton(
+      label: 'Save Changes',
+      onPressed: () => controller.saveChanges(),
     );
   }
 

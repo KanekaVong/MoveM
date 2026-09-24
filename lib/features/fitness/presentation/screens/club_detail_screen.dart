@@ -11,6 +11,7 @@ import 'create_club_challenge_screen.dart';
 import 'invite_people_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 
 class ClubDetailScreen extends StatefulWidget {
@@ -576,7 +577,6 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
-                      fontStyle: FontStyle.italic,
                       letterSpacing: -0.2,
                     ),
                   ),
@@ -588,47 +588,16 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                       style: const TextStyle(
                         color: Color(0xFFD1D5DB),
                         fontSize: 12.5,
-                        fontStyle: FontStyle.italic,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
                   ],
                   const SizedBox(height: 14),
-                  GestureDetector(
-                    onTap: onGetStarted,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.38),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.4),
-                          width: 1,
-                        ),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Get Started',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SizedBox(width: 5),
-                          Text(
-                            '»',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  AppButton(
+                    label: 'Get Started',
+                    onPressed: onGetStarted,
+                    width: null,
+                    height: 40,
                   ),
                 ],
               ),
@@ -730,29 +699,19 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                   if (!club.isMember)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16),
-                      child: SizedBox(
-                        width: double.infinity,
+                      child: AppButton(
                         height: 44,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2563EB),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          onPressed: () {
-                            Navigator.pop(ctx);
-                            if (club.isPrivate) {
-                              _controller.requestToJoin(club);
-                            } else {
-                              _controller.joinClub(club);
-                            }
-                          },
-                          child: Text(
-                            club.isPrivate
-                                ? (AppLocalizations.of(Get.context!)?.requestJoin ?? 'Request')
-                                : (AppLocalizations.of(Get.context!)?.joinClub ?? 'Join Club'),
-                            style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-                          ),
-                        ),
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          if (club.isPrivate) {
+                            _controller.requestToJoin(club);
+                          } else {
+                            _controller.joinClub(club);
+                          }
+                        },
+                        label: club.isPrivate
+                            ? (AppLocalizations.of(Get.context!)?.requestJoin ?? 'Request')
+                            : (AppLocalizations.of(Get.context!)?.joinClub ?? 'Join Club'),
                       ),
                     ),
                   Divider(color: AppColors.borderLight),

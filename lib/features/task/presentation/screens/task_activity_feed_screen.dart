@@ -6,6 +6,7 @@ import '../../../../shared/base/base_controller.dart';
 import '../../data/dto/response/activity_feed_item_response.dart';
 import '../controllers/task_activity_feed_controller.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 
@@ -50,9 +51,11 @@ class TaskActivityFeedScreen extends StatelessWidget {
                             style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
                           ),
                           SizedBox(height: 16),
-                          TextButton(
+                          AppButton.secondary(
+                            label: l10n?.retry ?? 'Retry',
                             onPressed: controller.fetchFeed,
-                            child: Text(l10n?.retry ?? 'Retry'),
+                            width: null,
+                            height: 40,
                           ),
                         ],
                       ),

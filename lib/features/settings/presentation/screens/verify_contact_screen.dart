@@ -5,6 +5,7 @@ import '../controllers/setting_controller.dart';
 import 'dart:async';
 import 'package:movem/core/routes/app_routes.dart';
 import '../screens/ProfileScreen.dart';
+import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -211,9 +212,8 @@ class _VerifyContactScreenState extends State<VerifyContactScreen> {
 
               const Spacer(),
 
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
+              AppButton(
+                  label: 'Continue',
                   onPressed: () async {
                     final code = _codeController.text.trim();
 
@@ -287,8 +287,6 @@ class _VerifyContactScreenState extends State<VerifyContactScreen> {
                       }
                     }
                   },
-                  child: const Text('Continue'),
-                ),
               ),
             ],
           ),

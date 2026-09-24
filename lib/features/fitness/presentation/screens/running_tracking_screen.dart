@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/glass_container.dart';
+import '../../domain/pace_calculator.dart';
 import '../controllers/tracking_controller.dart';
 import '../../data/models/run_session.dart';
 import '../../data/models/solo_challenge_model.dart';
@@ -397,22 +399,11 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
                     ),
                     if (controller.gpsFailed.value) ...[
                       const SizedBox(height: 16),
-                      GestureDetector(
-                        onTap: controller.retryGpsLock,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF38BDF8),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Text(
-                            'Retry GPS',
-                            style: TextStyle(
-                              color: Color(0xFF0B1736),
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
+                      AppButton(
+                        label: 'Retry GPS',
+                        onPressed: controller.retryGpsLock,
+                        width: null,
+                        height: 40,
                       ),
                     ],
                   ],
@@ -528,7 +519,14 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
                                 ),
                               )),
                               const SizedBox(height: 12),
-                              const SizedBox(height: 38),
+                              Obx(() => Text(
+                                PaceCalculator.formatPace(controller.averagePaceMinPerKm),
+                                style: const TextStyle(
+                                  color: Color(0xFF94A3B8),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              )),
                             ],
                           ),
                         ),
@@ -731,68 +729,19 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
 
   Widget _buildEndWorkoutButton() {
     return Obx(() {
-      return GestureDetector(
-        onTap: isFinishing.value
-            ? null
-            : () async {
-                isFinishing.value = true;
-                final summary = await controller.finishRun();
-                Get.off(() => RunSummaryScreen(
-                  session: controller.session.value,
-                  summary: summary,
-                  challenge: widget.challenge,
-                ));
-              },
-        child: Container(
-          width: double.infinity,
-          height: 52,
-          decoration: BoxDecoration(
-            color: const Color(0xFF333C4D),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.2),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.25),
-                blurRadius: 8,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: isFinishing.value
-              ? const Center(
-                  child: SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  ),
-                )
-              : const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.stop_rounded,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'End',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.4,
-                      ),
-                    ),
-                  ],
-                ),
-        ),
+      return AppButton.danger(
+        label: 'End',
+        icon: Icons.stop_rounded,
+        isLoading: isFinishing.value,
+        onPressed: () async {
+          isFinishing.value = true;
+          final summary = await controller.finishRun();
+          Get.off(() => RunSummaryScreen(
+            session: controller.session.value,
+            summary: summary,
+            challenge: widget.challenge,
+          ));
+        },
       );
     });
   }
@@ -809,17 +758,28 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
             style: TextStyle(color: Colors.white70),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Get.back(),
-              child: Text(AppLocalizations.of(Get.context!)?.cancel ?? 'Cancel', style: const TextStyle(color: Colors.white60)),
-            ),
-            TextButton(
-              onPressed: () {
-                controller.pauseRun();
-                Get.back();
-                Get.back();
-              },
-              child: const Text('Exit', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold)),
+            Row(
+              children: [
+                Expanded(
+                  child: AppButton.secondary(
+                    label: AppLocalizations.of(Get.context!)?.cancel ?? 'Cancel',
+                    onPressed: () => Get.back(),
+                    height: 46,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: AppButton.danger(
+                    label: 'Exit',
+                    onPressed: () {
+                      controller.pauseRun();
+                      Get.back();
+                      Get.back();
+                    },
+                    height: 46,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

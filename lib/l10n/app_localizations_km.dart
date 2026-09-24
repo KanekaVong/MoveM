@@ -104,7 +104,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get remove => 'ដកចេញ';
 
   @override
-  String get welcomeBack => 'ស្វាគមន៍មកវិញ!';
+  String get welcomeBack => 'ស្វាគមន៍ការត្រឡប់មកវិញ!';
 
   @override
   String get emailOrPhone => 'អ៊ីមែល ឬ លេខទូរសព្ទ';
@@ -153,6 +153,71 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get forgotPasswordQuestion => 'ភ្លេចពាក្យសម្ងាត់?';
+
+  @override
+  String get welcomeBackTitle => 'ស្វាគមន៍ការត្រឡប់មកវិញ';
+
+  @override
+  String get emailPhoneHint => 'អ៊ីមែល/លេខទូរសព្ទ';
+
+  @override
+  String get usernameHint => 'ឈ្មោះគណនី';
+
+  @override
+  String get setUsernameHint => 'កំណត់ឈ្មោះគណនី';
+
+  @override
+  String get enterPasswordHint => 'បញ្ចូលពាក្យសម្ងាត់';
+
+  @override
+  String get setPasswordHint => 'កំណត់ពាក្យសម្ងាត់';
+
+  @override
+  String get retypePasswordLabel => 'វាយពាក្យសម្ងាត់ម្តងទៀត';
+
+  @override
+  String get retypePasswordHint => 'វាយពាក្យសម្ងាត់ម្តងទៀត';
+
+  @override
+  String get registerAction => 'ចុះឈ្មោះ';
+
+  @override
+  String get loginAction => 'ចូលប្រើ';
+
+  @override
+  String get noAccountSignUp => 'មិនទាន់មានគណនីមែនទេ? ចុះឈ្មោះ';
+
+  @override
+  String get haveAccountSignIn => 'មានគណនីរួចហើយមែនទេ? ចូលប្រើ';
+
+  @override
+  String get passwordsDoNotMatch => 'ពាក្យសម្ងាត់មិនដូចគ្នាទេ។';
+
+  @override
+  String get otpCodeHint => 'បញ្ចូលលេខកូដ ៦ ខ្ទង់';
+
+  @override
+  String otpSentTo(String identifier) {
+    return 'បញ្ចូលលេខកូដដែលយើងបានផ្ញើទៅ\n$identifier';
+  }
+
+  @override
+  String get verifyAction => 'ផ្ទៀងផ្ទាត់';
+
+  @override
+  String get emailHint => 'បញ្ចូលអ៊ីមែលរបស់អ្នក';
+
+  @override
+  String get newPasswordHint => 'បញ្ចូលពាក្យសម្ងាត់ថ្មី';
+
+  @override
+  String get sendOtp => 'ផ្ញើ OTP';
+
+  @override
+  String get savePasswordAction => 'រក្សាទុកពាក្យសម្ងាត់';
+
+  @override
+  String get fillAllFields => 'សូមបំពេញព័ត៌មានទាំងអស់។';
 
   @override
   String get greetings => 'សួស្ដី';
@@ -498,6 +563,381 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get taskDeletedSuccess => 'បានលុបកិច្ចការហើយ';
+
+  @override
+  String get createNewTrip => 'បង្កើតដំណើរកម្សាន្តថ្មី';
+
+  @override
+  String get tripStepName => 'ឈ្មោះ';
+
+  @override
+  String get tripStepLocation => 'ទីតាំង';
+
+  @override
+  String get tripStepDuration => 'រយៈពេល';
+
+  @override
+  String get tripStepStops => 'ចំណត';
+
+  @override
+  String get tripStepFriends => 'មិត្តភក្តិ';
+
+  @override
+  String get continueButton => 'បន្ត';
+
+  @override
+  String get tripNameLabel => 'ឈ្មោះដំណើរកម្សាន្ត';
+
+  @override
+  String get tripNameHint => 'បញ្ចូលឈ្មោះដំណើរកម្សាន្តរបស់អ្នក...';
+
+  @override
+  String get tripNameRequired => 'សូមបញ្ចូលឈ្មោះដំណើរកម្សាន្តរបស់អ្នក។';
+
+  @override
+  String get tripNameTitle => 'តើដំណើរកម្សាន្តនេះមានឈ្មោះអ្វី?';
+
+  @override
+  String get tripNameSubtitle => 'ដាក់ឈ្មោះឱ្យដំណើរផ្សងព្រេងរបស់អ្នក';
+
+  @override
+  String get tripLocationTitle => 'តើអ្នកកំពុងទៅណា?';
+
+  @override
+  String get tripLocationSubtitle =>
+      'ស្វែងរកទីកន្លែង ឬចុចលើផែនទីដើម្បីជ្រើសរើស';
+
+  @override
+  String get tripLocationSearchHint => 'ស្វែងរកទីតាំង...';
+
+  @override
+  String get tripLocationSelected => 'ទីតាំងដែលបានជ្រើសរើស';
+
+  @override
+  String get tripLocationRequired => 'សូមជ្រើសរើសគោលដៅរបស់អ្នក។';
+
+  @override
+  String get tripLocationSearchFailed =>
+      'មិនអាចស្វែងរកទីតាំងបានទេ។ សូមព្យាយាមម្តងទៀត។';
+
+  @override
+  String get tripLocationNotFound => 'រកមិនឃើញទីតាំងទេ។';
+
+  @override
+  String get tripLocationPermissionDenied =>
+      'ត្រូវការការអនុញ្ញាតទីតាំង ដើម្បីប្រើទីតាំងបច្ចុប្បន្នរបស់អ្នក។';
+
+  @override
+  String get tripLocationServiceDisabled => 'សូមបើកសេវាកម្មទីតាំង។';
+
+  @override
+  String get tripLocationSearching => 'កំពុងស្វែងរក...';
+
+  @override
+  String get tripDurationTitle => 'រយៈពេល និងថវិកា';
+
+  @override
+  String get tripDurationSubtitle =>
+      'តើត្រូវចំណាយពេលប៉ុន្មាន និងចំណាយប៉ុន្មាន?';
+
+  @override
+  String get tripDurationLabel => 'រយៈពេលដំណើរកម្សាន្ត';
+
+  @override
+  String get tripDaysLabel => 'ថ្ងៃ';
+
+  @override
+  String get tripSetupDates => 'កំណត់កាលបរិច្ឆេទ';
+
+  @override
+  String get tripDurationRequired =>
+      'សូមជ្រើសរើសកាលបរិច្ឆេទដំណើរកម្សាន្តរបស់អ្នក។';
+
+  @override
+  String get tripBudgetTitle => 'ថវិកាដំណើរកម្សាន្ត';
+
+  @override
+  String get tripBudgetSubtitle => 'កំណត់ថវិកាសម្រាប់ដំណើរផ្សងព្រេងរបស់អ្នក';
+
+  @override
+  String get tripBudgetLabel => 'ថវិកា';
+
+  @override
+  String get tripBudgetHint => '0';
+
+  @override
+  String get tripStopsTitle => 'រៀបចំចំណតរបស់អ្នក';
+
+  @override
+  String get tripStopsSubtitle => 'បន្ថែមចំណតនៅតាមផ្លូវរបស់អ្នក';
+
+  @override
+  String get tripAddStop => 'បន្ថែមចំណត';
+
+  @override
+  String get tripStopsEmpty => 'មិនទាន់មានចំណតទេ';
+
+  @override
+  String get tripUnnamedStop => 'ចំណតគ្មានឈ្មោះ';
+
+  @override
+  String get tripStepPacking => 'រៀបចំអីវ៉ាន់';
+
+  @override
+  String get tripStepChecklist => 'បញ្ជីត្រួតពិនិត្យ';
+
+  @override
+  String get tripFriendsTitle => 'អ្នកណាខ្លះនឹងមក?';
+
+  @override
+  String get tripFriendsSubtitle =>
+      'អញ្ជើញមិត្តភក្តិឱ្យចូលរួមដំណើរកម្សាន្តរបស់អ្នក';
+
+  @override
+  String get tripFriendsSearchHint => 'អញ្ជើញមិត្តភក្តិ';
+
+  @override
+  String get tripFriendsInvitedTitle => 'មិត្តភក្តិដែលបានអញ្ជើញ';
+
+  @override
+  String get tripFriendsSuggestedTitle => 'មិត្តភក្តិដែលបានណែនាំ';
+
+  @override
+  String get tripFriendsSearchResultsTitle => 'លទ្ធផលស្វែងរក';
+
+  @override
+  String get tripFriendsNoFriendsFound => 'រកមិនឃើញមិត្តភក្តិទេ';
+
+  @override
+  String get tripYourTrip => 'ដំណើរកម្សាន្តរបស់អ្នក';
+
+  @override
+  String get tripLocationFallback => 'ទីតាំង';
+
+  @override
+  String get tripDay => 'ថ្ងៃ';
+
+  @override
+  String get tripDays => 'ថ្ងៃ';
+
+  @override
+  String get tripStop => 'ចំណត';
+
+  @override
+  String get tripStops => 'ចំណត';
+
+  @override
+  String get tripPackingTitle => 'ត្រូវការជំនួយថាតើត្រូវខ្ចប់អ្វីខ្លះ?';
+
+  @override
+  String get tripPackingDescription =>
+      'ពិនិត្យមើលអ្វីដែលអ្នក និងមិត្តភក្តិរបស់អ្នកត្រូវខ្ចប់!';
+
+  @override
+  String get tripEssentials => 'សម្ភារៈចាំបាច់សម្រាប់ដំណើរ';
+
+  @override
+  String get packingItemsHint => 'បន្ថែមសម្ភារៈដែលត្រូវខ្ចប់...';
+
+  @override
+  String get tripChecklistTitle => 'បញ្ជីត្រួតពិនិត្យដំណើរ';
+
+  @override
+  String get tripChecklistDescription =>
+      'ត្រូវប្រាកដថាអ្វីៗគ្រប់យ៉ាងត្រូវបានរៀបចំរួចរាល់សម្រាប់ដំណើរកម្សាន្តរបស់អ្នក!';
+
+  @override
+  String get checklistItemsHint => 'បន្ថែមកិច្ចការត្រួតពិនិត្យ...';
+
+  @override
+  String get tripSummaryTitle => 'សង្ខេបដំណើរ';
+
+  @override
+  String get readyButton => 'រួចរាល់';
+
+  @override
+  String get yourTrip => 'ដំណើររបស់អ្នក';
+
+  @override
+  String get locationNotSelected => 'មិនទាន់ជ្រើសរើសទីតាំង';
+
+  @override
+  String get destination => 'គោលដៅ';
+
+  @override
+  String get budget => 'ថវិកា';
+
+  @override
+  String get stops => 'ចំណត';
+
+  @override
+  String get places => 'កន្លែង';
+
+  @override
+  String get essentials => 'របស់ចាំបាច់';
+
+  @override
+  String get itemsToBePacked => 'របស់ដែលត្រូវវេចខ្ចប់';
+
+  @override
+  String get routes => 'ផ្លូវធ្វើដំណើរ';
+
+  @override
+  String get noStopsAdded => 'មិនទាន់បានបន្ថែមចំណត';
+
+  @override
+  String get unnamedStop => 'ចំណតមិនទាន់មានឈ្មោះ';
+
+  @override
+  String get editTripTitle => 'កែសម្រួលការធ្វើដំណើរ';
+
+  @override
+  String get error => 'កំហុស';
+
+  @override
+  String get editTripName => 'ឈ្មោះការធ្វើដំណើរ';
+
+  @override
+  String get editTripDuration => 'រយៈពេល';
+
+  @override
+  String get editTripMembers => 'សមាជិក';
+
+  @override
+  String get editTripStops => 'ចំណត';
+
+  @override
+  String get editTripPacking => 'របស់ត្រូវយក';
+
+  @override
+  String get editTripChecklist => 'បញ្ជីត្រួតពិនិត្យ';
+
+  @override
+  String get editTripAttachments => 'ឯកសារភ្ជាប់';
+
+  @override
+  String get editTripStartDate => 'ថ្ងៃចាប់ផ្តើម';
+
+  @override
+  String get editTripEndDate => 'ថ្ងៃបញ្ចប់';
+
+  @override
+  String get editTripSaveChanges => 'រក្សាទុកការផ្លាស់ប្តូរ';
+
+  @override
+  String get editTripNameHint => 'បញ្ចូលឈ្មោះការធ្វើដំណើរ';
+
+  @override
+  String get editTripNameRequired => 'ឈ្មោះការធ្វើដំណើរមិនអាចទទេបានទេ';
+
+  @override
+  String get editTripNameUpdated => 'បានធ្វើបច្ចុប្បន្នភាពឈ្មោះការធ្វើដំណើរ';
+
+  @override
+  String get editTripUpdateSuccess => 'ជោគជ័យ';
+
+  @override
+  String get editTripUpdateFailed =>
+      'បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពការធ្វើដំណើរ';
+
+  @override
+  String get editTripAddItem => 'បន្ថែមសម្ភារៈ';
+
+  @override
+  String get editTripAddMember => 'បន្ថែមសមាជិក';
+
+  @override
+  String get editTripUploadAttachment => 'បង្ហោះឯកសារភ្ជាប់';
+
+  @override
+  String get editTripNoMembers => 'មិនទាន់មានសមាជិក';
+
+  @override
+  String get editTripNoAttachments => 'មិនទាន់មានឯកសារភ្ជាប់';
+
+  @override
+  String get editTripNoPackingItems => 'មិនទាន់មានរបស់ត្រូវយក';
+
+  @override
+  String get editTripNoChecklistItems => 'មិនទាន់មានបញ្ជីត្រួតពិនិត្យ';
+
+  @override
+  String get editTripReorderStops => 'អូសដើម្បីរៀបលំដាប់ចំណត';
+
+  @override
+  String get editTripSectionTripName => 'ឈ្មោះការធ្វើដំណើរ';
+
+  @override
+  String get editTripSectionDuration => 'រយៈពេល';
+
+  @override
+  String get editTripSectionMembers => 'សមាជិក';
+
+  @override
+  String get editTripSectionStops => 'ចំណត';
+
+  @override
+  String get editTripSectionPacking => 'របស់របរត្រូវវេចខ្ចប់';
+
+  @override
+  String get editTripSectionChecklist => 'បញ្ជីត្រួតពិនិត្យ';
+
+  @override
+  String get editTripSectionAttachments => 'ឯកសារភ្ជាប់';
+
+  @override
+  String get editTripSectionBudget => 'ថវិកា';
+
+  @override
+  String get editTripSectionRoutes => 'ផ្លូវ';
+
+  @override
+  String get editTripDetails => 'ព័ត៌មានដំណើរកម្សាន្ត';
+
+  @override
+  String get editTripDatesNotSet => 'មិនបានកំណត់កាលបរិច្ឆេទ';
+
+  @override
+  String get editTripNotSelected => 'មិនបានជ្រើសរើស';
+
+  @override
+  String get editTripDestination => 'គោលដៅ';
+
+  @override
+  String get editTripBudget => 'ថវិកា';
+
+  @override
+  String get editTripFriends => 'មិត្តភក្តិ';
+
+  @override
+  String get editTripDurations => 'រយៈពេល';
+
+  @override
+  String get editTripEssentials => 'របស់ចាំបាច់';
+
+  @override
+  String get editTripItemsToBePacked => 'របស់របរត្រូវវេចខ្ចប់';
+
+  @override
+  String get editTripChecklists => 'បញ្ជីត្រួតពិនិត្យ';
+
+  @override
+  String get editTripRoutes => 'ផ្លូវ';
+
+  @override
+  String get editTripNoStopsAdded => 'មិនទាន់មានចំណត';
+
+  @override
+  String get editTripUnnamedStop => 'ចំណតគ្មានឈ្មោះ';
+
+  @override
+  String get editTripItem => 'ធាតុ';
+
+  @override
+  String get editTripItems => 'ធាតុ';
+
+  @override
+  String get editTripToBePrepared => 'ត្រូវរៀបចំ';
 
   @override
   String get createClub => 'បង្កើតក្លឹប';
@@ -1024,382 +1464,6 @@ class AppLocalizationsKm extends AppLocalizations {
   String get serviceDisabledTitle => 'ទីតាំងបានបិទ';
 
   @override
-  String get taskDeletedSuccess => 'បានលុបភារកិច្ចដោយជោគជ័យ';
-
-  @override
-  String get createNewTrip => 'បង្កើតដំណើរកម្សាន្តថ្មី';
-
-  @override
-  String get tripStepName => 'ឈ្មោះ';
-
-  @override
-  String get tripStepLocation => 'ទីតាំង';
-
-  @override
-  String get tripStepDuration => 'រយៈពេល';
-
-  @override
-  String get tripStepStops => 'ចំណត';
-
-  @override
-  String get tripStepFriends => 'មិត្តភក្តិ';
-
-  @override
-  String get continueButton => 'បន្ត';
-
-  @override
-  String get tripNameLabel => 'ឈ្មោះដំណើរកម្សាន្ត';
-
-  @override
-  String get tripNameHint => 'បញ្ចូលឈ្មោះដំណើរកម្សាន្តរបស់អ្នក...';
-
-  @override
-  String get tripNameRequired => 'សូមបញ្ចូលឈ្មោះដំណើរកម្សាន្តរបស់អ្នក។';
-
-  @override
-  String get tripNameTitle => 'តើដំណើរកម្សាន្តនេះមានឈ្មោះអ្វី?';
-
-  @override
-  String get tripNameSubtitle => 'ដាក់ឈ្មោះឱ្យដំណើរផ្សងព្រេងរបស់អ្នក';
-
-  @override
-  String get tripLocationTitle => 'តើអ្នកកំពុងទៅណា?';
-
-  @override
-  String get tripLocationSubtitle =>
-      'ស្វែងរកទីកន្លែង ឬចុចលើផែនទីដើម្បីជ្រើសរើស';
-
-  @override
-  String get tripLocationSearchHint => 'ស្វែងរកទីតាំង...';
-
-  @override
-  String get tripLocationSelected => 'ទីតាំងដែលបានជ្រើសរើស';
-
-  @override
-  String get tripLocationRequired => 'សូមជ្រើសរើសគោលដៅរបស់អ្នក។';
-
-  @override
-  String get tripLocationSearchFailed =>
-      'មិនអាចស្វែងរកទីតាំងបានទេ។ សូមព្យាយាមម្តងទៀត។';
-
-  @override
-  String get tripLocationNotFound => 'រកមិនឃើញទីតាំងទេ។';
-
-  @override
-  String get tripLocationPermissionDenied =>
-      'ត្រូវការការអនុញ្ញាតទីតាំង ដើម្បីប្រើទីតាំងបច្ចុប្បន្នរបស់អ្នក។';
-
-  @override
-  String get tripLocationServiceDisabled => 'សូមបើកសេវាកម្មទីតាំង។';
-
-  @override
-  String get tripLocationSearching => 'កំពុងស្វែងរក...';
-
-  @override
-  String get tripDurationTitle => 'រយៈពេល និងថវិកា';
-
-  @override
-  String get tripDurationSubtitle =>
-      'តើត្រូវចំណាយពេលប៉ុន្មាន និងចំណាយប៉ុន្មាន?';
-
-  @override
-  String get tripDurationLabel => 'រយៈពេលដំណើរកម្សាន្ត';
-
-  @override
-  String get tripDaysLabel => 'ថ្ងៃ';
-
-  @override
-  String get tripSetupDates => 'កំណត់កាលបរិច្ឆេទ';
-
-  @override
-  String get tripDurationRequired =>
-      'សូមជ្រើសរើសកាលបរិច្ឆេទដំណើរកម្សាន្តរបស់អ្នក។';
-
-  @override
-  String get tripBudgetTitle => 'ថវិកាដំណើរកម្សាន្ត';
-
-  @override
-  String get tripBudgetSubtitle => 'កំណត់ថវិកាសម្រាប់ដំណើរផ្សងព្រេងរបស់អ្នក';
-
-  @override
-  String get tripBudgetLabel => 'ថវិកា';
-
-  @override
-  String get tripBudgetHint => '0';
-
-  @override
-  String get tripStopsTitle => 'រៀបចំចំណតរបស់អ្នក';
-
-  @override
-  String get tripStopsSubtitle => 'បន្ថែមចំណតនៅតាមផ្លូវរបស់អ្នក';
-
-  @override
-  String get tripAddStop => 'បន្ថែមចំណត';
-
-  @override
-  String get tripStopsEmpty => 'មិនទាន់មានចំណតទេ';
-
-  @override
-  String get tripUnnamedStop => 'ចំណតគ្មានឈ្មោះ';
-
-  @override
-  String get tripStepPacking => 'រៀបចំអីវ៉ាន់';
-
-  @override
-  String get tripStepChecklist => 'បញ្ជីត្រួតពិនិត្យ';
-
-  @override
-  String get tripFriendsTitle => 'អ្នកណាខ្លះនឹងមក?';
-
-  @override
-  String get tripFriendsSubtitle =>
-      'អញ្ជើញមិត្តភក្តិឱ្យចូលរួមដំណើរកម្សាន្តរបស់អ្នក';
-
-  @override
-  String get tripFriendsSearchHint => 'អញ្ជើញមិត្តភក្តិ';
-
-  @override
-  String get tripFriendsInvitedTitle => 'មិត្តភក្តិដែលបានអញ្ជើញ';
-
-  @override
-  String get tripFriendsSuggestedTitle => 'មិត្តភក្តិដែលបានណែនាំ';
-
-  @override
-  String get tripFriendsSearchResultsTitle => 'លទ្ធផលស្វែងរក';
-
-  @override
-  String get tripFriendsNoFriendsFound => 'រកមិនឃើញមិត្តភក្តិទេ';
-
-  @override
-  String get tripYourTrip => 'ដំណើរកម្សាន្តរបស់អ្នក';
-
-  @override
-  String get tripLocationFallback => 'ទីតាំង';
-
-  @override
-  String get tripDay => 'ថ្ងៃ';
-
-  @override
-  String get tripDays => 'ថ្ងៃ';
-
-  @override
-  String get tripStop => 'ចំណត';
-
-  @override
-  String get tripStops => 'ចំណត';
-
-  @override
-  String get tripPackingTitle => 'ត្រូវការជំនួយថាតើត្រូវខ្ចប់អ្វីខ្លះ?';
-
-  @override
-  String get tripPackingDescription =>
-      'ពិនិត្យមើលអ្វីដែលអ្នក និងមិត្តភក្តិរបស់អ្នកត្រូវខ្ចប់!';
-
-  @override
-  String get tripEssentials => 'សម្ភារៈចាំបាច់សម្រាប់ដំណើរ';
-
-  @override
-  String get packingItemsHint => 'បន្ថែមសម្ភារៈដែលត្រូវខ្ចប់...';
-
-  @override
-  String get tripChecklistTitle => 'បញ្ជីត្រួតពិនិត្យដំណើរ';
-
-  @override
-  String get tripChecklistDescription =>
-      'ត្រូវប្រាកដថាអ្វីៗគ្រប់យ៉ាងត្រូវបានរៀបចំរួចរាល់សម្រាប់ដំណើរកម្សាន្តរបស់អ្នក!';
-
-  @override
-  String get checklistItemsHint => 'បន្ថែមកិច្ចការត្រួតពិនិត្យ...';
-
-  @override
-  String get tripSummaryTitle => 'សង្ខេបដំណើរ';
-
-  @override
-  String get readyButton => 'រួចរាល់';
-
-  @override
-  String get yourTrip => 'ដំណើររបស់អ្នក';
-
-  @override
-  String get locationNotSelected => 'មិនទាន់ជ្រើសរើសទីតាំង';
-
-  @override
-  String get destination => 'គោលដៅ';
-
-  @override
-  String get budget => 'ថវិកា';
-
-  @override
-  String get stops => 'ចំណត';
-
-  @override
-  String get places => 'កន្លែង';
-
-  @override
-  String get essentials => 'របស់ចាំបាច់';
-
-  @override
-  String get itemsToBePacked => 'របស់ដែលត្រូវវេចខ្ចប់';
-
-  @override
-  String get routes => 'ផ្លូវធ្វើដំណើរ';
-
-  @override
-  String get noStopsAdded => 'មិនទាន់បានបន្ថែមចំណត';
-
-  @override
-  String get unnamedStop => 'ចំណតមិនទាន់មានឈ្មោះ';
-
-  @override
-  String get editTripTitle => 'កែសម្រួលការធ្វើដំណើរ';
-
-  @override
-  String get error => 'កំហុស';
-
-  @override
-  String get editTripName => 'ឈ្មោះការធ្វើដំណើរ';
-
-  @override
-  String get editTripDuration => 'រយៈពេល';
-
-  @override
-  String get editTripMembers => 'សមាជិក';
-
-  @override
-  String get editTripStops => 'ចំណត';
-
-  @override
-  String get editTripPacking => 'របស់ត្រូវយក';
-
-  @override
-  String get editTripChecklist => 'បញ្ជីត្រួតពិនិត្យ';
-
-  @override
-  String get editTripAttachments => 'ឯកសារភ្ជាប់';
-
-  @override
-  String get editTripStartDate => 'ថ្ងៃចាប់ផ្តើម';
-
-  @override
-  String get editTripEndDate => 'ថ្ងៃបញ្ចប់';
-
-  @override
-  String get editTripSaveChanges => 'រក្សាទុកការផ្លាស់ប្តូរ';
-
-  @override
-  String get editTripNameHint => 'បញ្ចូលឈ្មោះការធ្វើដំណើរ';
-
-  @override
-  String get editTripNameRequired => 'ឈ្មោះការធ្វើដំណើរមិនអាចទទេបានទេ';
-
-  @override
-  String get editTripNameUpdated => 'បានធ្វើបច្ចុប្បន្នភាពឈ្មោះការធ្វើដំណើរ';
-
-  @override
-  String get editTripUpdateSuccess => 'ជោគជ័យ';
-
-  @override
-  String get editTripUpdateFailed =>
-      'បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពការធ្វើដំណើរ';
-
-  @override
-  String get editTripAddItem => 'បន្ថែមសម្ភារៈ';
-
-  @override
-  String get editTripAddMember => 'បន្ថែមសមាជិក';
-
-  @override
-  String get editTripUploadAttachment => 'បង្ហោះឯកសារភ្ជាប់';
-
-  @override
-  String get editTripNoMembers => 'មិនទាន់មានសមាជិក';
-
-  @override
-  String get editTripNoAttachments => 'មិនទាន់មានឯកសារភ្ជាប់';
-
-  @override
-  String get editTripNoPackingItems => 'មិនទាន់មានរបស់ត្រូវយក';
-
-  @override
-  String get editTripNoChecklistItems => 'មិនទាន់មានបញ្ជីត្រួតពិនិត្យ';
-
-  @override
-  String get editTripReorderStops => 'អូសដើម្បីរៀបលំដាប់ចំណត';
-
-  @override
-  String get editTripSectionTripName => 'ឈ្មោះការធ្វើដំណើរ';
-
-  @override
-  String get editTripSectionDuration => 'រយៈពេល';
-
-  @override
-  String get editTripSectionMembers => 'សមាជិក';
-
-  @override
-  String get editTripSectionStops => 'ចំណត';
-
-  @override
-  String get editTripSectionPacking => 'របស់របរត្រូវវេចខ្ចប់';
-
-  @override
-  String get editTripSectionChecklist => 'បញ្ជីត្រួតពិនិត្យ';
-
-  @override
-  String get editTripSectionAttachments => 'ឯកសារភ្ជាប់';
-
-  @override
-  String get editTripSectionBudget => 'ថវិកា';
-
-  @override
-  String get editTripSectionRoutes => 'ផ្លូវ';
-
-  @override
-  String get editTripDetails => 'ព័ត៌មានដំណើរកម្សាន្ត';
-
-  @override
-  String get editTripDatesNotSet => 'មិនបានកំណត់កាលបរិច្ឆេទ';
-
-  @override
-  String get editTripNotSelected => 'មិនបានជ្រើសរើស';
-
-  @override
-  String get editTripDestination => 'គោលដៅ';
-
-  @override
-  String get editTripBudget => 'ថវិកា';
-
-  @override
-  String get editTripFriends => 'មិត្តភក្តិ';
-
-  @override
-  String get editTripDurations => 'រយៈពេល';
-
-  @override
-  String get editTripEssentials => 'របស់ចាំបាច់';
-
-  @override
-  String get editTripItemsToBePacked => 'របស់របរត្រូវវេចខ្ចប់';
-
-  @override
-  String get editTripChecklists => 'បញ្ជីត្រួតពិនិត្យ';
-
-  @override
-  String get editTripRoutes => 'ផ្លូវ';
-
-  @override
-  String get editTripNoStopsAdded => 'មិនទាន់មានចំណត';
-
-  @override
-  String get editTripUnnamedStop => 'ចំណតគ្មានឈ្មោះ';
-
-  @override
-  String get editTripItem => 'ធាតុ';
-
-  @override
-  String get editTripItems => 'ធាតុ';
-
-  @override
-  String get editTripToBePrepared => 'ត្រូវរៀបចំ';
   String get noTaskData => 'រកមិនឃើញទិន្នន័យកិច្ចការទេ។';
 
   @override

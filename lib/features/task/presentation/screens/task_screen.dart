@@ -9,6 +9,7 @@ import 'create_task_screen.dart';
 import 'task_detail_screen.dart';
 import 'task_invitation_screen.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 
 class TaskScreen extends GetView<TaskController> {
@@ -192,7 +193,6 @@ class TaskScreen extends GetView<TaskController> {
                       color: isFiltered ? Colors.white : AppColors.textCaption,
                       fontSize: 12,
                       fontWeight: isFiltered ? FontWeight.bold : FontWeight.w500,
-                      fontStyle: FontStyle.italic,
                     ),
                   ),
                 ],
@@ -289,7 +289,6 @@ class TaskScreen extends GetView<TaskController> {
                             color: AppColors.textPrimary,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic,
                           ),
                         ),
                         if (tempStatus != null || tempPriority != null)
@@ -410,32 +409,15 @@ class TaskScreen extends GetView<TaskController> {
                       }).toList(),
                     ),
                     const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3B82F6),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.pop(bottomSheetContext);
-                          controller.setFilters(
-                            status: tempStatus,
-                            priority: tempPriority,
-                          );
-                        },
-                        child: Text(
-                          'Apply Filters',
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                    AppButton(
+                      label: 'Apply Filters',
+                      onPressed: () {
+                        Navigator.pop(bottomSheetContext);
+                        controller.setFilters(
+                          status: tempStatus,
+                          priority: tempPriority,
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -1035,7 +1017,6 @@ class TaskScreen extends GetView<TaskController> {
                         color: AppColors.textPrimary,
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic,
                       ),
                     ),
                   ],
@@ -1052,51 +1033,22 @@ class TaskScreen extends GetView<TaskController> {
                 ),
                 SizedBox(height: 16),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    SizedBox(
-                      height: 32,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
+                    Expanded(
+                      child: AppButton.secondary(
+                        label: l10n?.cancel ?? 'Cancel',
                         onPressed: () =>
                             Navigator.of(dialogContext).pop(false),
-                        child: Text(
-                          l10n?.cancel ?? 'Cancel',
-                          style: TextStyle(
-                            color: AppColors.textCaption,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        height: 46,
                       ),
                     ),
-                    SizedBox(width: 8),
-                    SizedBox(
-                      height: 32,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFDC2626),
-                          padding: const EdgeInsets.symmetric(horizontal: 14),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: AppButton.danger(
+                        label: l10n?.delete ?? 'Delete',
                         onPressed: () =>
                             Navigator.of(dialogContext).pop(true),
-                        child: Text(
-                          l10n?.delete ?? 'Delete',
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        height: 46,
                       ),
                     ),
                   ],

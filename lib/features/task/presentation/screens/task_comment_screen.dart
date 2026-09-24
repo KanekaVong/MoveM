@@ -7,6 +7,7 @@ import '../../../../core/utils/app_images.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/comment_controller.dart';
 import '../../data/dto/response/comment_response.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 
@@ -206,7 +207,6 @@ class TaskCommentScreen extends StatelessWidget {
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 10,
-                              fontStyle: FontStyle.italic,
                             ),
                           ),
                         ],
@@ -302,7 +302,6 @@ class TaskCommentScreen extends StatelessWidget {
                                 style: TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 10,
-                                  fontStyle: FontStyle.italic,
                                 ),
                               ),
                             ],
@@ -473,7 +472,6 @@ class TaskCommentScreen extends StatelessWidget {
                       hintStyle: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,
-                        fontStyle: FontStyle.italic,
                       ),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -645,20 +643,27 @@ class TaskCommentScreen extends StatelessWidget {
           style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text(l10n?.cancel ?? 'Cancel', style: TextStyle(color: AppColors.textSecondary)),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Get.back();
-              controller.deleteComment(commentId);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            child: Text(l10n?.delete ?? 'Delete', style: const TextStyle(color: Colors.white)),
+          Row(
+            children: [
+              Expanded(
+                child: AppButton.secondary(
+                  label: l10n?.cancel ?? 'Cancel',
+                  onPressed: () => Get.back(),
+                  height: 46,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: AppButton.danger(
+                  label: l10n?.delete ?? 'Delete',
+                  onPressed: () {
+                    Get.back();
+                    controller.deleteComment(commentId);
+                  },
+                  height: 46,
+                ),
+              ),
+            ],
           ),
         ],
       ),

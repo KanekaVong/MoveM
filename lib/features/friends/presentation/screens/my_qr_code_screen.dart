@@ -5,6 +5,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/my_qr_code_controller.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 
 class MyQrCodeScreen extends GetView<MyQrCodeController> {
@@ -145,54 +146,19 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
       child: Row(
         children: [
           Expanded(
-            child: Obx(() {
-              final isSaving = controller.isSaving.value;
-              return ElevatedButton.icon(
-                onPressed: isSaving ? null : () => controller.downloadQr(),
-                icon: isSaving
-                    ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.textPrimary))
-                    : Icon(Icons.download, color: AppColors.textPrimary, size: 20),
-                label: Text(
-                  isSaving ? 'Saving...' : (l10n?.saveQr ?? 'Save'),
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.chipSurface,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(color: AppColors.borderLight),
-                  ),
-                  elevation: 0,
-                ),
-              );
-            }),
+            child: Obx(() => AppButton.secondary(
+                  label: l10n?.saveQr ?? 'Save',
+                  icon: Icons.download,
+                  onPressed: () => controller.downloadQr(),
+                  isLoading: controller.isSaving.value,
+                )),
           ),
           const SizedBox(width: 14),
           Expanded(
-            child: ElevatedButton.icon(
+            child: AppButton(
+              label: l10n?.shareQr ?? 'Share',
+              icon: Icons.share_outlined,
               onPressed: () => controller.shareQr(),
-              icon: const Icon(Icons.share_outlined, color: Colors.white, size: 20),
-              label: Text(
-                l10n?.shareQr ?? 'Share',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.taskBluePrimary,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 0,
-              ),
             ),
           ),
         ],

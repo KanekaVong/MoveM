@@ -211,7 +211,6 @@ class _FitnessProfileGoalScreenState extends State<FitnessProfileGoalScreen> {
                   color: Colors.white,
                   fontSize: 26,
                   fontWeight: FontWeight.w900,
-                  fontStyle: FontStyle.italic,
                   letterSpacing: 2.2,
                   shadows: [
                     Shadow(color: Colors.black54, blurRadius: 12, offset: Offset(0, 2)),

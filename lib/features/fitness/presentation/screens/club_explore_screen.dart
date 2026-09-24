@@ -5,6 +5,7 @@ import '../../data/models/fitness_club_model.dart';
 import 'club_detail_screen.dart';
 import 'create_group_screen.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -265,12 +266,9 @@ class ClubExploreScreen extends StatelessWidget {
                     onPressed: () => Get.to(() => ClubDetailScreen(club: club)),
                   )
                 else
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2563EB),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
+                  AppButton(
+                    width: null,
+                    height: 40,
                     onPressed: () {
                       if (club.isPrivate) {
                         controller.requestToJoin(club);
@@ -278,12 +276,9 @@ class ClubExploreScreen extends StatelessWidget {
                         controller.joinClub(club);
                       }
                     },
-                    child: Text(
-                      club.isPrivate
-                          ? (AppLocalizations.of(Get.context!)?.requestJoin ?? 'Request')
-                          : (AppLocalizations.of(Get.context!)?.join ?? 'Join'),
-                      style: TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
-                    ),
+                    label: club.isPrivate
+                        ? (AppLocalizations.of(Get.context!)?.requestJoin ?? 'Request')
+                        : (AppLocalizations.of(Get.context!)?.join ?? 'Join'),
                   ),
               ],
             ),

@@ -56,6 +56,34 @@
   "newPassword": "NEW PASSWORD",
   "savePasswordBtn": "Save Password",
   "forgotPasswordQuestion": "Forgot Password?",
+  "welcomeBackTitle": "WELCOME BACK",
+  "emailPhoneHint": "Email/Phone Number",
+  "usernameHint": "Username",
+  "setUsernameHint": "Set Username",
+  "enterPasswordHint": "Enter Password",
+  "setPasswordHint": "Set Password",
+  "retypePasswordLabel": "RE-TYPE PASSWORD",
+  "retypePasswordHint": "Re-Type Password",
+  "registerAction": "Register",
+  "loginAction": "Login",
+  "noAccountSignUp": "Doesn't have an account yet? Sign Up",
+  "haveAccountSignIn": "Already have an account? Sign In",
+  "passwordsDoNotMatch": "Passwords do not match.",
+  "otpCodeHint": "Enter 6-digit code",
+  "otpSentTo": "Enter the code we sent to\n{identifier}",
+  "@otpSentTo": {
+    "placeholders": {
+      "identifier": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyAction": "Verify",
+  "emailHint": "Enter your email",
+  "newPasswordHint": "Enter new password",
+  "sendOtp": "Send OTP",
+  "savePasswordAction": "Save Password",
+  "fillAllFields": "Please fill all fields.",
 
   "greetings": "Greetings",
   "stayActiveToday": "Stay Active Today!",
@@ -313,7 +341,7 @@
   "editTripUnnamedStop": "Unnamed stop",
   "editTripItem": "Item",
   "editTripItems": "Items",
-  "editTripToBePrepared": "to be prepared"
+  "editTripToBePrepared": "to be prepared",
 
   "taskDeletedSuccess": "Task deleted successfully",
   "createClub": "Create Club",

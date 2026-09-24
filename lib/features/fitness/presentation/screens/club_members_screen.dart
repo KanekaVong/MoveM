@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/storage/user_manager.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -94,13 +95,24 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
           style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(result: false),
-            child: Text(l10n?.cancel ?? 'Cancel', style: TextStyle(color: AppColors.textSecondary)),
-          ),
-          TextButton(
-            onPressed: () => Get.back(result: true),
-            child: Text(l10n?.remove ?? 'Remove', style: const TextStyle(color: Color(0xFFEF4444))),
+          Row(
+            children: [
+              Expanded(
+                child: AppButton.secondary(
+                  label: l10n?.cancel ?? 'Cancel',
+                  onPressed: () => Get.back(result: false),
+                  height: 46,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: AppButton.danger(
+                  label: l10n?.remove ?? 'Remove',
+                  onPressed: () => Get.back(result: true),
+                  height: 46,
+                ),
+              ),
+            ],
           ),
         ],
       ),

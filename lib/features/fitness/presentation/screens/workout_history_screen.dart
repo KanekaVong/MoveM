@@ -5,6 +5,7 @@ import '../../data/models/workout_model.dart';
 import '../controllers/workout_history_controller.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 
@@ -41,9 +42,11 @@ class WorkoutHistoryScreen extends StatelessWidget {
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
                   ),
                   SizedBox(height: 20),
-                  TextButton(
+                  AppButton.secondary(
+                    label: l10n?.tryAgain ?? 'Try again',
                     onPressed: controller.fetchHistory,
-                    child: Text(l10n?.tryAgain ?? 'Try again', style: TextStyle(color: Color(0xFF5B9BF6))),
+                    width: null,
+                    height: 40,
                   ),
                 ],
               ),

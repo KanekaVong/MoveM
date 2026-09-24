@@ -4,6 +4,7 @@ import '../../data/models/solo_challenge_model.dart';
 import '../../data/repositories/fitness_challenge_repository.dart';
 import '../controllers/solo_challenge_detail_controller.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/app_button.dart';
 
 class SoloFitnessDetailScreen extends StatelessWidget {
   final SoloChallengeModel challenge;
@@ -128,26 +129,6 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                                           ],
                                         ),
                                       ),
-                                      SizedBox(width: 16),
-                                      Container(
-                                        width: 44,
-                                        height: 44,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.transparent,
-                                          border: Border.all(
-                                            color: const Color(0xFF38BDF8),
-                                            width: 1.5,
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.add,
-                                            color: AppColors.textPrimary,
-                                            size: 26,
-                                          ),
-                                        ),
-                                      ),
                                     ],
                                   ),
 
@@ -185,47 +166,10 @@ class SoloFitnessDetailScreen extends StatelessWidget {
 
                                   SizedBox(height: 22),
 
-                                  GestureDetector(
-                                    onTap: () => controller.startWorkout(() => _showComingSoonModal(c, controller)),
-                                    child: Container(
-                                      width: double.infinity,
-                                      height: 52,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.accentBlue,
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: AppColors.accentBlue,
-                                          width: 1,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withValues(alpha: 0.25),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 3),
-                                          ),
-                                        ],
-                                      ),
-                                      child: const Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.play_arrow_outlined,
-                                            color: Colors.white,
-                                            size: 24,
-                                          ),
-                                          SizedBox(width: 8),
-                                          Text(
-                                            'Start',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 0.4,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                  AppButton(
+                                    label: 'Start',
+                                    icon: Icons.play_arrow_outlined,
+                                    onPressed: () => controller.startWorkout(() => _showComingSoonModal(c, controller)),
                                   ),
 
                                   const SizedBox(height: 16),
@@ -341,29 +285,10 @@ class SoloFitnessDetailScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 28),
-            SizedBox(
-              width: double.infinity,
+            AppButton(
+              label: 'Got it',
+              onPressed: () => Get.back(),
               height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.chipSurface,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    side: BorderSide(
-                      color: AppColors.textPrimary.withValues(alpha: 0.15),
-                    ),
-                  ),
-                ),
-                onPressed: () => Get.back(),
-                child: Text(
-                  'Got it',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
             ),
           ],
         ),
