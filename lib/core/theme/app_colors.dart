@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../storage/user_manager.dart';
+import '../utils/Constants.dart';
 
 class AppColors {
   AppColors._();
@@ -23,15 +26,36 @@ class AppColors {
   static const lightError = Color(0xFFE53935);
   static const lightOnError = Colors.white;
 
-  static const pageBackground = Color(0xFFF4F6F8);
-  static const cardSurface = Color(0xFFFFFFFF);
-  static const chipSurface = Color(0xFFDCE6F5);
-  static const textPrimary = Color(0xFF111827);
-  static const textSecondary = Color(0xFF6B7280);
-  static const textCaption = Color(0xFF8A94A6);
-  static const accentBlue = Color(0xFF3B6FE8);
-  static const borderLight = Color(0xFFE5E7EB);
-  static const borderMuted = Color(0xFFD1D5DB);
+  static const _lightPageBackground = Color(0xFFF4F6F8);
+  static const _lightCardSurface = Color(0xFFFFFFFF);
+  static const _lightChipSurface = Color(0xFFDCE6F5);
+  static const _lightTextPrimary = Color(0xFF111827);
+  static const _lightTextSecondary = Color(0xFF6B7280);
+  static const _lightTextCaption = Color(0xFF8A94A6);
+  static const _lightAccentBlue = Color(0xFF3B6FE8);
+  static const _lightBorderLight = Color(0xFFE5E7EB);
+  static const _lightBorderMuted = Color(0xFFD1D5DB);
+
+  static bool get isDark {
+    final saved = UserManager().themeMode;
+    if (saved == Constants.lightMode) return false;
+    if (saved == Constants.darkMode) return true;
+    try {
+      return Get.theme.brightness == Brightness.dark;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static Color get pageBackground => isDark ? slate900 : _lightPageBackground;
+  static Color get cardSurface => isDark ? slate850 : _lightCardSurface;
+  static Color get chipSurface => isDark ? slate800 : _lightChipSurface;
+  static Color get textPrimary => isDark ? const Color(0xFFE8EDF5) : _lightTextPrimary;
+  static Color get textSecondary => isDark ? slate400 : _lightTextSecondary;
+  static Color get textCaption => isDark ? slate500 : _lightTextCaption;
+  static Color get accentBlue => isDark ? const Color(0xFF5B8CFF) : _lightAccentBlue;
+  static Color get borderLight => isDark ? const Color(0x1AFFFFFF) : _lightBorderLight;
+  static Color get borderMuted => isDark ? const Color(0x33FFFFFF) : _lightBorderMuted;
 
   static const darkPrimary = Color(0xFF8AB4F8);
   static const darkOnPrimary = Color(0xFF003A75);

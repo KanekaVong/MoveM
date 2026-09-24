@@ -5,6 +5,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/my_qr_code_controller.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class MyQrCodeScreen extends GetView<MyQrCodeController> {
   const MyQrCodeScreen({super.key});
@@ -18,7 +19,7 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildAppBar(context),
+            TopToolBar(title: AppLocalizations.of(context)?.myQrCode ?? 'My QR Code'),
             const Spacer(),
             _buildQrCard(),
             const Spacer(),
@@ -26,43 +27,6 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
             const SizedBox(height: 32),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildAppBar(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: () => Get.back(),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.chipSurface,
-                border: Border.all(color: AppColors.borderLight),
-              ),
-              child: const Center(
-                child: Icon(Icons.chevron_left, color: AppColors.textPrimary, size: 26),
-              ),
-            ),
-          ),
-          Text(
-            l10n?.myQrCode ?? 'My QR Code',
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          const SizedBox(width: 40),
-        ],
       ),
     );
   }
@@ -117,7 +81,7 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
                         const SizedBox(height: 18),
                         Text(
                           '@${username.toUpperCase()}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.qrDarkNavy,
                             fontSize: 20,
                             fontWeight: FontWeight.w900,
@@ -186,11 +150,11 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
               return ElevatedButton.icon(
                 onPressed: isSaving ? null : () => controller.downloadQr(),
                 icon: isSaving
-                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.textPrimary))
-                    : const Icon(Icons.download, color: AppColors.textPrimary, size: 20),
+                    ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.textPrimary))
+                    : Icon(Icons.download, color: AppColors.textPrimary, size: 20),
                 label: Text(
                   isSaving ? 'Saving...' : (l10n?.saveQr ?? 'Save'),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
@@ -201,7 +165,7 @@ class MyQrCodeScreen extends GetView<MyQrCodeController> {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
-                    side: const BorderSide(color: AppColors.borderLight),
+                    side: BorderSide(color: AppColors.borderLight),
                   ),
                   elevation: 0,
                 ),

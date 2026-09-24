@@ -4,8 +4,12 @@ import '../controllers/fitness_club_controller.dart';
 import '../../data/models/fitness_club_model.dart';
 import 'club_detail_screen.dart';
 import 'club_explore_screen.dart';
+import 'club_invitations_screen.dart';
 import 'create_group_screen.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class HexagonClipper extends CustomClipper<Path> {
   @override
@@ -60,7 +64,15 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(),
+            TopToolBar(
+              title: AppLocalizations.of(context)?.movemClub ?? 'MoveM Club',
+              actions: [
+                TopToolBarAction(
+                  icon: Icons.mail_outline_rounded,
+                  onTap: () => Get.to(() => const ClubInvitationsScreen()),
+                ),
+              ],
+            ),
             Expanded(
               child: RefreshIndicator(
                 color: Colors.blueAccent,
@@ -89,117 +101,37 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
     );
   }
 
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: () => Get.back(),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.textPrimary.withValues(alpha: 0.12),
-                border: Border.all(
-                  color: AppColors.textPrimary.withValues(alpha: 0.15),
-                  width: 1,
-                ),
-              ),
-              child: const Icon(
-                Icons.chevron_left_rounded,
-                color: AppColors.textPrimary,
-                size: 26,
-              ),
-            ),
-          ),
-          const Text(
-            'MOVEM CLUB',
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 2.0,
-            ),
-          ),
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.textPrimary.withValues(alpha: 0.12),
-              border: Border.all(
-                color: AppColors.textPrimary.withValues(alpha: 0.15),
-                width: 1,
-              ),
-            ),
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              icon: const Icon(
-                Icons.mail_outline_rounded,
-                color: AppColors.textPrimary,
-                size: 20,
-              ),
-              onPressed: () {
-                Get.to(() => const ClubExploreScreen());
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSearchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E283D).withValues(alpha: 0.8),
+        color: AppColors.isDark ? const Color(0xFF1E283D) : const Color(0xFF3E4A5C),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.textPrimary.withValues(alpha: 0.08),
-          width: 1,
-        ),
       ),
       child: TextField(
         controller: _searchController,
-        onChanged: (val) => _controller.searchClubs(val),
-        style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+        onChanged: (_) => setState(() {}),
+        style: const TextStyle(color: Colors.white, fontSize: 14),
         decoration: InputDecoration(
-          hintText: 'Search for Club',
+          hintText: AppLocalizations.of(context)?.searchForClub ?? 'Search for Club',
           hintStyle: TextStyle(
-            color: AppColors.textPrimary.withValues(alpha: 0.45),
+            color: Colors.white.withValues(alpha: 0.55),
             fontSize: 14,
             fontWeight: FontWeight.w400,
           ),
           prefixIcon: Icon(
             Icons.search_rounded,
-            color: AppColors.textPrimary.withValues(alpha: 0.5),
+            color: Colors.white.withValues(alpha: 0.6),
             size: 22,
           ),
-          suffixIcon: Obx(() {
-            if (_controller.isSearching.value) {
-              return const Padding(
-                padding: EdgeInsets.all(12.0),
-                child: SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blueAccent),
-                ),
-              );
-            }
-            if (_searchController.text.isNotEmpty) {
-              return IconButton(
-                icon: const Icon(Icons.clear, color: AppColors.textCaption, size: 18),
-                onPressed: () {
-                  _searchController.clear();
-                  _controller.searchClubs('');
-                },
-              );
-            }
-            return const SizedBox.shrink();
-          }),
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: Icon(Icons.clear, color: AppColors.textCaption, size: 18),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() {});
+                  },
+                )
+              : null,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
@@ -208,6 +140,7 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
   }
 
   Widget _buildActionCards() {
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Expanded(
@@ -221,7 +154,7 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
                 color: AppColors.cardSurface,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: const Color(0xFF1E2E4A),
+                  color: AppColors.borderLight,
                   width: 1.2,
                 ),
               ),
@@ -231,32 +164,28 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
                   Container(
                     width: 44,
                     height: 44,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF192C54),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF1B2436),
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppColors.textPrimary.withValues(alpha: 0.1),
-                        width: 1,
-                      ),
                     ),
-                    child: const Icon(
+                      child: Icon(
                       Icons.login_rounded,
-                      color: AppColors.textPrimary,
+                      color: Colors.white,
                       size: 20,
                     ),
                   ),
-                  const SizedBox(height: 18),
-                  const Text(
-                    'Join Club',
+                  SizedBox(height: 18),
+                  Text(
+                    l10n?.joinClub ?? 'Join Club',
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
-                    'Find an active club',
+                    l10n?.joinClubSub ?? 'Find an active club',
                     style: TextStyle(
                       color: AppColors.textPrimary.withValues(alpha: 0.6),
                       fontSize: 12,
@@ -267,7 +196,7 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
             ),
           ),
         ),
-        const SizedBox(width: 14),
+        SizedBox(width: 14),
         Expanded(
           child: GestureDetector(
             onTap: () {
@@ -279,7 +208,7 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
                 color: AppColors.cardSurface,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: const Color(0xFF1E2E4A),
+                  color: AppColors.borderLight,
                   width: 1.2,
                 ),
               ),
@@ -289,32 +218,28 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
                   Container(
                     width: 44,
                     height: 44,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF192C54),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF1B2436),
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppColors.textPrimary.withValues(alpha: 0.1),
-                        width: 1,
-                      ),
                     ),
-                    child: const Icon(
+                      child: Icon(
                       Icons.add_rounded,
-                      color: AppColors.textPrimary,
+                      color: Colors.white,
                       size: 22,
                     ),
                   ),
-                  const SizedBox(height: 18),
-                  const Text(
-                    'Create Club',
+                  SizedBox(height: 18),
+                  Text(
+                    l10n?.createClub ?? 'Create Club',
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
-                    'Create Your Own Community',
+                    l10n?.createClubSub ?? 'Create Your Own Community',
                     style: TextStyle(
                       color: AppColors.textPrimary.withValues(alpha: 0.6),
                       fontSize: 12,
@@ -332,90 +257,34 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
   }
 
   Widget _buildClubListSection() {
+    final l10n = AppLocalizations.of(context);
     return Obx(() {
-      if (_controller.isSearching.value) {
-        return const Center(
-          child: Padding(
-            padding: EdgeInsets.all(32.0),
-            child: CircularProgressIndicator(color: Colors.blueAccent),
-          ),
-        );
-      }
-
-      // If user typed in search bar
-      if (_searchController.text.trim().isNotEmpty) {
-        final results = _controller.searchResults;
-        if (results.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Text(
-                'No clubs found for "${_searchController.text}"',
-                style: TextStyle(color: AppColors.textPrimary.withValues(alpha: 0.6)),
-              ),
-            ),
-          );
-        }
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Search Results (${results.length})',
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 14),
-            ...results.map((c) => Padding(
-              padding: const EdgeInsets.only(bottom: 14.0),
-              child: _buildMoveMClubCard(c),
-            )),
-          ],
-        );
-      }
-
-      // Default: Display user's joined clubs first, or public clubs
       final myClubs = _controller.myClubs;
-      final publicClubs = _controller.publicClubs;
+      final query = _searchController.text.trim().toLowerCase();
+      final displayClubs = query.isEmpty
+          ? myClubs.toList()
+          : myClubs
+              .where((club) => club.name.toLowerCase().contains(query))
+              .toList();
 
-      if (_controller.isLoadingMyClubs.value && myClubs.isEmpty && publicClubs.isEmpty) {
-        return const Center(
+      if (_controller.isLoadingMyClubs.value && myClubs.isEmpty) {
+        return Center(
           child: Padding(
             padding: EdgeInsets.all(32.0),
             child: CircularProgressIndicator(color: Colors.blueAccent),
           ),
         );
       }
-
-      final displayClubs = myClubs.isNotEmpty ? myClubs : publicClubs;
 
       if (displayClubs.isEmpty) {
-        return Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(
-            color: AppColors.cardSurface,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFF1E2E4A)),
-          ),
-          child: Column(
-            children: [
-              const Icon(Icons.group_off_rounded, color: AppColors.textCaption, size: 48),
-              const SizedBox(height: 14),
-              const Text(
-                'No clubs available yet',
-                style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Create your own club or explore public clubs to connect with fellow athletes.',
-                style: TextStyle(color: AppColors.textPrimary.withValues(alpha: 0.6), fontSize: 12),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+        return NoDataComponent(
+          title: query.isNotEmpty
+              ? (l10n?.noClubsFound ?? 'No clubs found')
+              : (l10n?.haventJoinedClubs ?? "You haven't joined a club yet"),
+          subtitle: query.isNotEmpty
+              ? (l10n?.nothingMatchesSearch ?? 'Nothing matches "$query".')
+              : (l10n?.haventJoinedClubsSub ??
+                  'Join a club or start your own to train together.'),
         );
       }
 
@@ -426,8 +295,8 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                myClubs.isNotEmpty ? 'My Clubs' : 'Discover Clubs',
-                style: const TextStyle(
+                l10n?.yourClubs ?? 'Your Clubs',
+                style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -439,7 +308,7 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
                   Get.to(() => const ClubExploreScreen());
                 },
                 child: Text(
-                  'Explore all »',
+                  l10n?.exploreAll ?? 'Explore all »',
                   style: TextStyle(
                     color: AppColors.textPrimary.withValues(alpha: 0.65),
                     fontSize: 13,
@@ -472,7 +341,7 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
           color: AppColors.cardSurface,
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: const Color(0xFF1E2E4A),
+            color: AppColors.borderLight,
             width: 1.2,
           ),
         ),
@@ -547,7 +416,7 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
                       alignment: Alignment.center,
                       child: Text(
                         club.name.isNotEmpty ? club.name[0].toUpperCase() : 'M',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Color(0xFF64748B),
                           fontSize: 24,
                           fontWeight: FontWeight.w900,
@@ -556,14 +425,14 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 14),
+                  SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           club.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -571,7 +440,7 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 6),
+                        SizedBox(height: 6),
                         Row(
                           children: [
                             Text(
@@ -582,7 +451,7 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            const SizedBox(width: 5),
+                            SizedBox(width: 5),
                             Icon(
                               Icons.group_outlined,
                               color: AppColors.textPrimary.withValues(alpha: 0.7),
@@ -593,7 +462,7 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
                       ],
                     ),
                   ),
-                  const Icon(
+                  Icon(
                     Icons.keyboard_double_arrow_right_rounded,
                     color: AppColors.textSecondary,
                     size: 24,

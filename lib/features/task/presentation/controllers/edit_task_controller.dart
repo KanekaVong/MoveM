@@ -18,11 +18,16 @@ import '../../data/local/models/task_reminder_local.dart';
 import '../../data/local/task_local_repository.dart';
 import '../../data/services/task_service.dart';
 import '../../data/repositories/task_repository_impl.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../groups/domain/repositories/group_repository.dart';
 import '../../../groups/data/repositories/group_repository_impl.dart';
 import '../../../groups/data/services/group_service.dart';
 
 class EditTaskController extends BaseController {
+  AppLocalizations? get _l10n {
+    final ctx = Get.context;
+    return ctx == null ? null : AppLocalizations.of(ctx);
+  }
   final TaskRepository repository = TaskRepositoryImpl(TaskService());
   final GroupRepository groupRepository = GroupRepositoryImpl(groupService: GroupService());
   final TaskLocalRepository localRepository = TaskLocalRepository();
@@ -65,8 +70,8 @@ class EditTaskController extends BaseController {
       if (initialTask.isComplete || initialTask.isPastDeadline) {
         Get.back();
         Get.snackbar(
-          'Locked',
-          'This task cannot be edited after the deadline.',
+          _l10n?.errorTitle ?? 'Locked',
+          _l10n?.cannotEditAfterDeadline ?? 'This task cannot be edited after the deadline.',
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );
@@ -75,7 +80,7 @@ class EditTaskController extends BaseController {
       _populateInitialData();
     } else {
       Get.back();
-      Get.snackbar('Error', 'No task data provided', backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.noTaskData ?? 'No task data provided', backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
 
@@ -171,7 +176,7 @@ class EditTaskController extends BaseController {
         availableLabels.add(data);
         selectedLabel.value = data;
         Get.back();
-        Get.snackbar('Success', 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        Get.snackbar(_l10n?.success ?? 'Done', _l10n?.labelCreatedSuccess ?? 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
       },
     );
   }
@@ -254,12 +259,12 @@ class EditTaskController extends BaseController {
 
   Future<void> saveChanges() async {
     if (initialTask.isComplete || initialTask.isPastDeadline) {
-      Get.snackbar('Cannot Edit', 'This task cannot be modified after the deadline.', backgroundColor: Colors.orange, colorText: Colors.white);
+      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.cannotEditAfterDeadline ?? 'This task cannot be modified after the deadline.', backgroundColor: Colors.orange, colorText: Colors.white);
       return;
     }
 
     if (titleController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.taskTitleEmpty ?? 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
@@ -269,11 +274,8 @@ class EditTaskController extends BaseController {
       if (pickedAttachments.isNotEmpty) {
         for (int i = 0; i < pickedAttachments.length; i++) {
           final file = pickedAttachments[i];
-          _logger.i('Uploading task attachment (${i + 1}/${pickedAttachments.length}): ${file.name} to ${initialTask.activityId}');
           final uploadResult = await repository.uploadTaskAttachment(initialTask.activityId, file.path);
-          if (uploadResult is ApiSuccess<AttachmentResponse>) {
-            _logger.i('Successfully uploaded and attached: ${uploadResult.data.id} (${uploadResult.data.originalFileName})');
-          } else if (uploadResult is ApiError) {
+          if (uploadResult is ApiError) {
             _logger.e('Failed to upload task attachment: ${uploadResult.exception?.message}');
           }
         }
@@ -281,7 +283,6 @@ class EditTaskController extends BaseController {
 
       if (attachmentsToDelete.isNotEmpty) {
         for (final attId in attachmentsToDelete) {
-          _logger.i('Deleting removed attachment $attId from task ${initialTask.activityId}');
           await repository.deleteAttachment(attId);
         }
       }
@@ -337,16 +338,16 @@ class EditTaskController extends BaseController {
       if (updateResult is ApiSuccess<TaskResponse>) {
         final data = updateResult.data;
         Get.back(result: true);
-        Get.snackbar('Success', 'Task updated successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        Get.snackbar(_l10n?.success ?? 'Done', _l10n?.taskUpdatedSuccess ?? 'Task updated successfully!', backgroundColor: Colors.green, colorText: Colors.white);
         _processBackgroundUpdates(data.activityId, activityName, description);
       } else if (updateResult is ApiError<TaskResponse>) {
         _logger.e('Update task failed: ${updateResult.exception.message}');
-        Get.snackbar('Update Failed', updateResult.exception.message, backgroundColor: Colors.red, colorText: Colors.white);
+        Get.snackbar(_l10n?.updateFailedTitle ?? 'Update Failed', updateResult.exception.message, backgroundColor: Colors.red, colorText: Colors.white);
       }
     } catch (e, stack) {
       AppDialogs.hideLoading();
       _logger.e('Unexpected error during saveChanges: $e', error: e, stackTrace: stack);
-      Get.snackbar('Error', 'An unexpected error occurred: $e', backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.unexpectedError ?? 'Something went wrong. Try again.', backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
 
@@ -412,7 +413,7 @@ class EditTaskController extends BaseController {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
+            colorScheme: ColorScheme.light(
               primary: AppColors.accentBlue,
               onPrimary: Colors.white,
               surface: Colors.white,
@@ -437,7 +438,7 @@ class EditTaskController extends BaseController {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
+            colorScheme: ColorScheme.light(
               primary: AppColors.accentBlue,
               onPrimary: Colors.white,
               surface: Colors.white,

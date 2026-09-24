@@ -6,6 +6,7 @@ import 'package:movem/features/settings/presentation/controllers/setting_control
 import 'package:movem/features/settings/presentation/screens/settings_forgot_password_screen.dart';
 
 import 'package:movem/features/settings/data/services/setting_service.dart';
+import 'package:movem/shared/widgets/top_tool_bar.dart';
 import 'package:movem/features/settings/data/repositories/setting_repository_impl.dart';
 import 'package:movem/core/storage/user_manager.dart';
 
@@ -124,25 +125,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0F172A),
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.white,
-            size: 18,
-          ),
-        ),
-        title: const Text(
-          'Settings',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+      appBar: const TopToolBar(
+        title: 'Settings',
+        backgroundColor: Color(0xFF0F172A),
+        foregroundColor: Colors.white,
       ),
       body: SafeArea(
         child: SingleChildScrollView(

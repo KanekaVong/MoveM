@@ -26,6 +26,7 @@ class QrScanController extends BaseController {
   final RxString scanStatus = ''.obs;
   bool _isProcessingFrame = false;
   bool _pauseScanning = false;
+  bool _isClosed = false;
   Timer? _liveScanTimer;
 
   @override
@@ -36,20 +37,47 @@ class QrScanController extends BaseController {
 
   @override
   void onClose() {
-    _liveScanTimer?.cancel();
-    cameraController?.dispose();
+    _isClosed = true;
+    _pauseScanning = true;
+    _stopLiveScan();
+    final controller = cameraController;
+    cameraController = null;
+    isCameraInitialized.value = false;
+    unawaited(_disposeCamera(controller));
     super.onClose();
+  }
+
+  Future<void> _disposeCamera(CameraController? controller) async {
+    var waited = 0;
+    while (_isProcessingFrame && waited < 30) {
+      await Future.delayed(const Duration(milliseconds: 50));
+      waited++;
+    }
+    if (controller == null) return;
+    try {
+      await controller.dispose();
+    } catch (_) {}
+  }
+
+  bool get _canUseCamera {
+    final controller = cameraController;
+    return !_isClosed &&
+        controller != null &&
+        controller.value.isInitialized &&
+        !controller.value.isTakingPicture;
   }
 
   Future<void> _initCamera() async {
     try {
       final status = await Permission.camera.request();
+      if (_isClosed) return;
       if (!status.isGranted) {
         scanStatus.value = 'Camera permission required';
         return;
       }
 
       final cameras = await availableCameras();
+      if (_isClosed) return;
       if (cameras.isEmpty) {
         scanStatus.value = 'No camera found';
         return;
@@ -60,24 +88,33 @@ class QrScanController extends BaseController {
         orElse: () => cameras.first,
       );
 
-      cameraController = CameraController(
+      final controller = CameraController(
         backCamera,
         ResolutionPreset.medium,
         enableAudio: false,
       );
+      cameraController = controller;
 
-      await cameraController!.initialize();
+      await controller.initialize();
+      if (_isClosed) {
+        cameraController = null;
+        await _disposeCamera(controller);
+        return;
+      }
       isCameraInitialized.value = true;
       _startLiveScan();
     } catch (e, stack) {
+      if (_isClosed) return;
       log('camera init failed: $e', name: 'QR-SCAN', error: e, stackTrace: stack);
       scanStatus.value = 'Unable to initialize camera';
     }
   }
 
   void _startLiveScan() {
+    if (_isClosed || _pauseScanning) return;
     _liveScanTimer?.cancel();
     _liveScanTimer = Timer.periodic(const Duration(milliseconds: 1400), (_) {
+      if (_isClosed || _pauseScanning) return;
       _captureAndDecode();
     });
   }
@@ -88,7 +125,7 @@ class QrScanController extends BaseController {
   }
 
   Future<void> toggleTorch() async {
-    if (cameraController == null || !cameraController!.value.isInitialized) return;
+    if (!_canUseCamera) return;
 
     try {
       if (isTorchOn.value) {
@@ -140,7 +177,7 @@ class QrScanController extends BaseController {
       log('gallery scan failed: $e', name: 'QR-SCAN', error: e, stackTrace: stack);
       Get.snackbar('Error', 'Unable to scan QR from gallery');
     } finally {
-      if (!isProcessing.value) {
+      if (!_isClosed && !isProcessing.value) {
         _pauseScanning = false;
         _startLiveScan();
         log('live scan resumed after gallery scan', name: 'QR-SCAN');
@@ -149,7 +186,7 @@ class QrScanController extends BaseController {
   }
 
   Future<void> _captureAndDecode() async {
-    if (isProcessing.value || _isProcessingFrame || _pauseScanning) return;
+    if (_isClosed || isProcessing.value || _isProcessingFrame || _pauseScanning) return;
     final controller = cameraController;
     if (controller == null || !controller.value.isInitialized || controller.value.isTakingPicture) {
       return;
@@ -157,16 +194,27 @@ class QrScanController extends BaseController {
 
     _isProcessingFrame = true;
     try {
+      if (_isClosed || cameraController != controller) return;
       final shot = await controller.takePicture();
+      if (_isClosed) {
+        try {
+          await File(shot.path).delete();
+        } catch (_) {}
+        return;
+      }
       final payload = await _decodeQrFromFile(File(shot.path), verbose: false);
       try {
         await File(shot.path).delete();
       } catch (_) {}
+      if (_isClosed) return;
       if (payload != null && payload.isNotEmpty) {
         log('live camera QR payload=$payload', name: 'QR-SCAN');
         await handleQrPayload(payload);
       }
     } catch (e, stack) {
+      if (_isClosed) return;
+      final message = e.toString();
+      if (message.contains('disposed')) return;
       log('live camera capture decode failed: $e', name: 'QR-SCAN', error: e, stackTrace: stack);
     } finally {
       _isProcessingFrame = false;
@@ -223,18 +271,22 @@ class QrScanController extends BaseController {
 
   Future<void> handleQrPayload(String rawContent) async {
     log('handleQrPayload raw=$rawContent isProcessing=${isProcessing.value}', name: 'QR-SCAN');
-    if (isProcessing.value) {
+    if (_isClosed || isProcessing.value) {
       log('handleQrPayload skipped already processing', name: 'QR-SCAN');
       return;
     }
     isProcessing.value = true;
+    _pauseScanning = true;
     _stopLiveScan();
 
     final userId = _extractUserId(rawContent);
     log('extracted userId=$userId from raw=$rawContent', name: 'QR-SCAN');
     if (userId == null || userId.isEmpty) {
       isProcessing.value = false;
-      _startLiveScan();
+      if (!_isClosed) {
+        _pauseScanning = false;
+        _startLiveScan();
+      }
       Get.snackbar('Invalid QR', 'No valid user found in QR code');
       return;
     }
@@ -262,8 +314,10 @@ class QrScanController extends BaseController {
       onError: (e) async {
         log('user fetch failed status=${e.statusCode} message=${e.message}', name: 'QR-SCAN');
         isProcessing.value = false;
-        _pauseScanning = false;
-        _startLiveScan();
+        if (!_isClosed) {
+          _pauseScanning = false;
+          _startLiveScan();
+        }
       },
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../controllers/home_controller.dart';
 import '../widgets/home_header.dart';
 import '../widgets/home_hero_banner.dart';
@@ -12,12 +13,12 @@ class HomeScreen extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F6F8),
+      backgroundColor: AppColors.pageBackground,
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: controller.fetchDashboard,
-          color: const Color(0xFF3B82F6),
-          backgroundColor: Colors.white,
+          color: AppColors.accentBlue,
+          backgroundColor: AppColors.cardSurface,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(
               parent: BouncingScrollPhysics(),

@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/add_collaborator_controller.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
   const AddCollaboratorScreen({super.key});
@@ -18,7 +20,15 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildAppBar(context),
+            TopToolBar(
+              title: AppLocalizations.of(context)?.addCollaborator ?? 'Add Collaborator',
+              actions: [
+                TopToolBarAction(
+                  icon: Icons.check_rounded,
+                  onTap: () => controller.inviteSelected(),
+                ),
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
               child: _buildSearchBar(context),
@@ -27,7 +37,7 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
               child: Text(
                 l10n?.suggested ?? 'Suggested',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -37,7 +47,7 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
             Expanded(
               child: Obx(() {
                 if (controller.isLoading) {
-                  return const Center(
+                  return Center(
                     child: CircularProgressIndicator(color: Color(0xFF4B9D62)),
                   );
                 }
@@ -50,15 +60,9 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
                 }
 
                 if (users.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No friends found',
-                      style: TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 14,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
+                  return NoDataComponent(
+                    title: l10n?.noFriendsFoundInvite ?? 'No friends found',
+                    subtitle: l10n?.addFriendsForTask ?? 'Add friends so you can invite them to this task.',
                   );
                 }
 
@@ -89,7 +93,7 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
                               color: isSelected ? AppColors.cardSurface : AppColors.cardSurface,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: isSelected ? const Color(0xFF4B9D62) : AppColors.textPrimary.withOpacity(0.06),
+                                color: isSelected ? Color(0xFF4B9D62) : AppColors.textPrimary.withOpacity(0.06),
                                 width: 1,
                               ),
                             ),
@@ -107,23 +111,23 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
                                   )
                                 else
                                   _buildAvatarPlaceholder(initial),
-                                const SizedBox(width: 14),
+                                SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         name,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           color: AppColors.textPrimary,
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      const SizedBox(height: 2),
+                                      SizedBox(height: 2),
                                       Text(
                                         username,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           color: AppColors.textSecondary,
                                           fontSize: 12,
                                           fontStyle: FontStyle.italic,
@@ -188,12 +192,12 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
                                       shape: BoxShape.circle,
                                       color: isSelected ? const Color(0xFF4B9D62) : Colors.transparent,
                                       border: Border.all(
-                                        color: isSelected ? const Color(0xFF4B9D62) : AppColors.textCaption,
+                                        color: isSelected ? Color(0xFF4B9D62) : AppColors.textCaption,
                                         width: 1.5,
                                       ),
                                     ),
                                     child: isSelected
-                                        ? const Icon(Icons.check, size: 14, color: AppColors.textPrimary)
+                                        ? Icon(Icons.check, size: 14, color: AppColors.textPrimary)
                                         : null,
                                   ),
                               ],
@@ -218,65 +222,11 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
       backgroundColor: AppColors.cardSurface,
       child: Text(
         initial,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.bold,
           fontSize: 15,
         ),
-      ),
-    );
-  }
-
-  Widget _buildAppBar(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: () => Get.back(),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.textPrimary.withOpacity(0.08),
-                border: Border.all(color: AppColors.textPrimary.withOpacity(0.15), width: 1),
-              ),
-              child: const Center(
-                child: Icon(Icons.chevron_left, color: AppColors.textPrimary, size: 22),
-              ),
-            ),
-          ),
-          Text(
-            l10n?.addCollaborator ?? 'Add Collaborator',
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          GestureDetector(
-            onTap: () => controller.inviteSelected(),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFF4B9D62),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                l10n?.invite ?? 'Invite',
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -292,12 +242,12 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
       ),
       child: TextField(
         controller: controller.searchController,
-        style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+        style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
         onChanged: controller.onSearchChanged,
         decoration: InputDecoration(
-          icon: const Icon(Icons.search, color: AppColors.textSecondary, size: 20),
+          icon: Icon(Icons.search, color: AppColors.textSecondary, size: 20),
           hintText: l10n?.searchCollaboratorsHint ?? 'Search for Collaborator',
-          hintStyle: const TextStyle(
+          hintStyle: TextStyle(
             color: AppColors.textSecondary,
             fontSize: 14,
           ),
@@ -335,14 +285,14 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
                     backgroundColor: AppColors.cardSurface,
                     child: Text(
                       query.isNotEmpty ? query[0].toUpperCase() : '?',
-                      style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  const SizedBox(width: 14),
+                  SizedBox(width: 14),
                   Expanded(
                     child: Text(
                       'Invite "$query"',
-                      style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
                     ),
                   ),
                   if (isMember)

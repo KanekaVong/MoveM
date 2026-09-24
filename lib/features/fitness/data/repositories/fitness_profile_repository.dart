@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/network/api_result.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/api_exceptions.dart';
+import '../../../../core/network/fitness_endpoints.dart';
 import '../models/fitness_profile_model.dart';
 import '../models/fitness_statistics_model.dart';
 import '../models/solo_challenge_model.dart';
@@ -10,13 +11,54 @@ import '../models/setup_goal_request.dart';
 class FitnessProfileRepository {
   final DioClient _dioClient = DioClient();
 
-  Future<ApiResult<FitnessProfileModel>> getProfile() async {
+  Map<String, dynamic>? _asJsonMap(dynamic data) {
+    if (data is Map<String, dynamic>) return data;
+    if (data is Map) return Map<String, dynamic>.from(data);
+    return null;
+  }
+
+  FitnessProfileModel _profileFromResponse(
+    dynamic data, {
+    required double height,
+    required double weight,
+  }) {
+    final map = _asJsonMap(data);
+    if (map != null) {
+      final parsed = FitnessProfileModel.fromJson(map);
+      return FitnessProfileModel(
+        userId: parsed.userId,
+        height: parsed.height > 0 ? parsed.height : height,
+        weight: parsed.weight > 0 ? parsed.weight : weight,
+        bmi: parsed.bmi,
+        fitnessGoal: parsed.fitnessGoal,
+        updatedAt: parsed.updatedAt,
+      );
+    }
+    return FitnessProfileModel(
+      userId: 0,
+      height: height,
+      weight: weight,
+      bmi: 0,
+    );
+  }
+
+  Future<ApiResult<FitnessProfileModel?>> getProfile() async {
     try {
-      final response = await _dioClient.dio.get('fitness/profile');
-      if (response.data != null) {
-        return ApiSuccess(FitnessProfileModel.fromJson(response.data));
+      final response = await _dioClient.dio.get(
+        FitnessEndpoints.profile,
+        options: Options(
+          validateStatus: (status) =>
+              status != null && (status < 400 || status == 404),
+        ),
+      );
+      if (response.statusCode == 404) {
+        return const ApiSuccess(null);
       }
-      return ApiError(ApiException(message: 'Profile not found'));
+      final map = _asJsonMap(response.data);
+      if (map != null) {
+        return ApiSuccess(FitnessProfileModel.fromJson(map));
+      }
+      return const ApiSuccess(null);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -29,17 +71,19 @@ class FitnessProfileRepository {
   Future<ApiResult<FitnessProfileModel>> createProfile(double height, double weight) async {
     try {
       final response = await _dioClient.dio.post(
-        'fitness/profile',
+        FitnessEndpoints.profile,
         data: {
           'height': height,
           'weight': weight,
         },
       );
-      if (response.data != null) {
-        return ApiSuccess(FitnessProfileModel.fromJson(response.data));
-      }
-      return ApiError(ApiException(message: 'Creation failed'));
+      return ApiSuccess(
+        _profileFromResponse(response.data, height: height, weight: weight),
+      );
     } on DioException catch (e) {
+      if (e.response?.statusCode == 409) {
+        return updateProfile(height, weight);
+      }
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
       return ApiError(e);
@@ -51,16 +95,15 @@ class FitnessProfileRepository {
   Future<ApiResult<FitnessProfileModel>> updateProfile(double height, double weight) async {
     try {
       final response = await _dioClient.dio.put(
-        'fitness/profile',
+        FitnessEndpoints.profile,
         data: {
           'height': height,
           'weight': weight,
         },
       );
-      if (response.data != null) {
-        return ApiSuccess(FitnessProfileModel.fromJson(response.data));
-      }
-      return ApiError(ApiException(message: 'Update failed'));
+      return ApiSuccess(
+        _profileFromResponse(response.data, height: height, weight: weight),
+      );
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {

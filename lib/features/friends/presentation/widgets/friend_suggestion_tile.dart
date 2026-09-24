@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class FriendSuggestionTile extends StatelessWidget {
   final String imageUrl;
@@ -8,6 +9,7 @@ class FriendSuggestionTile extends StatelessWidget {
   final String username;
   final VoidCallback onAdd;
   final VoidCallback? onCancel;
+  final VoidCallback? onUnfriend;
   final String? friendStatus;
 
   const FriendSuggestionTile({
@@ -17,11 +19,13 @@ class FriendSuggestionTile extends StatelessWidget {
     required this.username,
     required this.onAdd,
     this.onCancel,
+    this.onUnfriend,
     this.friendStatus,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'U';
 
     return Padding(
@@ -40,19 +44,19 @@ class FriendSuggestionTile extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   name,
-                  style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14),
+                  style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   username,
-                  style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 10),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -70,24 +74,44 @@ class FriendSuggestionTile extends StatelessWidget {
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Icon(Icons.close, color: AppColors.redError, size: 14),
                     SizedBox(width: 4),
-                    Text('Cancel', style: TextStyle(color: AppColors.redError, fontSize: 12, fontWeight: FontWeight.bold)),
+                    Text(l10n?.cancel ?? 'Cancel', style: TextStyle(color: AppColors.redError, fontSize: 12, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
             )
           else if (friendStatus == 'ACCEPTED' || friendStatus == 'FRIEND')
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppColors.chipSurface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.borderMuted),
-              ),
-              child: const Text('Friends', style: TextStyle(color: AppColors.emeraldLight, fontSize: 12, fontWeight: FontWeight.bold)),
-            )
+            onUnfriend != null
+                ? GestureDetector(
+                    onTap: onUnfriend,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: AppColors.chipSurface,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppColors.borderMuted),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.person_remove_alt_1, color: AppColors.redError, size: 14),
+                          SizedBox(width: 4),
+                          Text(l10n?.unfriend ?? 'Unfriend', style: TextStyle(color: AppColors.redError, fontSize: 12, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  )
+                : Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.chipSurface,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColors.borderMuted),
+                    ),
+                    child: Text(l10n?.friends ?? 'Friends', style: TextStyle(color: AppColors.emeraldLight, fontSize: 12, fontWeight: FontWeight.bold)),
+                  )
           else
             GestureDetector(
               onTap: onAdd,
@@ -100,10 +124,10 @@ class FriendSuggestionTile extends StatelessWidget {
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Icon(Icons.person_add_alt_1, color: AppColors.blueAccent, size: 14),
                     SizedBox(width: 4),
-                    Text('Add Friends', style: TextStyle(color: AppColors.blueAccent, fontSize: 12, fontWeight: FontWeight.bold)),
+                    Text(l10n?.addFriends ?? 'Add Friends', style: TextStyle(color: AppColors.blueAccent, fontSize: 12, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -119,7 +143,7 @@ class FriendSuggestionTile extends StatelessWidget {
       backgroundColor: AppColors.chipSurface,
       child: Text(
         initial,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.bold,
           fontSize: 14,

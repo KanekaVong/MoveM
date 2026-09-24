@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/fitness_profile_controller.dart';
+import 'fitness_onboarding_screen.dart';
 import 'setup_goal_screen.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/app_images.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class FitnessProfileGoalScreen extends StatefulWidget {
   const FitnessProfileGoalScreen({super.key});
@@ -13,9 +16,6 @@ class FitnessProfileGoalScreen extends StatefulWidget {
 
 class _FitnessProfileGoalScreenState extends State<FitnessProfileGoalScreen> {
   late final FitnessProfileController controller;
-  final _heightController = TextEditingController();
-  final _weightController = TextEditingController();
-  bool _synced = false;
 
   @override
   void initState() {
@@ -23,229 +23,201 @@ class _FitnessProfileGoalScreenState extends State<FitnessProfileGoalScreen> {
     controller = Get.isRegistered<FitnessProfileController>()
         ? Get.find<FitnessProfileController>()
         : Get.put(FitnessProfileController());
-    _syncFromProfile();
-  }
-
-  void _syncFromProfile() {
-    final profile = controller.profile.value;
-    if (profile == null) return;
-    _heightController.text = profile.height > 0 ? _formatNumber(profile.height) : '';
-    _weightController.text = profile.weight > 0 ? _formatNumber(profile.weight) : '';
-    _synced = true;
   }
 
   String _formatNumber(double value) {
+    if (value <= 0) return '0';
     return value % 1 == 0 ? value.toInt().toString() : value.toStringAsFixed(1);
   }
 
-  @override
-  void dispose() {
-    _heightController.dispose();
-    _weightController.dispose();
-    super.dispose();
+  Future<void> _editProfile() async {
+    await Get.to(
+      () => FitnessOnboardingScreen(controller: controller, isEditing: true),
+    );
+    await controller.fetchProfile();
   }
 
-  Future<void> _saveBody() async {
-    final height = double.tryParse(_heightController.text.trim()) ?? 0;
-    final weight = double.tryParse(_weightController.text.trim()) ?? 0;
-    if (height < 50 || height > 300) {
-      Get.snackbar('Height', 'Enter height in cm (50–300).');
-      return;
-    }
-    if (weight < 20 || weight > 500) {
-      Get.snackbar('Weight', 'Enter weight in kg (20–500).');
-      return;
-    }
-
-    final ok = await controller.saveBodyMetrics(height, weight);
-    if (ok) {
-      Get.snackbar('Saved', 'Fitness profile updated.', backgroundColor: const Color(0xFF166534), colorText: Colors.white);
+  Future<void> _editGoal() async {
+    final res = await Get.to(() => const SetupGoalScreen());
+    if (res == true) {
+      await controller.fetchProfile();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
-      appBar: AppBar(
-        backgroundColor: AppColors.pageBackground,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
-          onPressed: () => Get.back(),
-        ),
-        centerTitle: true,
-        title: const Text(
-          'Profile',
-          style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ),
       body: Obx(() {
         final profile = controller.profile.value;
-        if (!_synced && profile != null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              setState(_syncFromProfile);
-            }
-          });
-        }
-
         final goal = profile?.fitnessGoal;
-        final bmi = profile?.bmi ?? 0;
+        final weight = _formatNumber(profile?.weight ?? 0);
+        final height = _formatNumber(profile?.height ?? 0);
+        final hasLevel = goal != null && goal.workoutLevel.isNotEmpty;
+        final level = hasLevel ? goal.formattedWorkoutLevel : (l10n?.noneValue ?? 'None');
+        final targetDate = (goal == null || goal.targetTimeline.isEmpty)
+            ? '0'
+            : goal.formattedTargetDate;
+        final targetWeight = (goal == null || goal.targetWeight <= 0)
+            ? '0'
+            : _formatNumber(goal.targetWeight);
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildBmiCard(bmi),
-              const SizedBox(height: 22),
-              const Text(
-                'Body metrics',
-                style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'Height and weight are used for calories and BMI.',
-                style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12.5),
-              ),
-              const SizedBox(height: 14),
-              Row(
-                children: [
-                  Expanded(
-                    child: _metricField(
-                      label: 'Height',
-                      suffix: 'CM',
-                      controller: _heightController,
-                      icon: Icons.height_rounded,
+        return Column(
+          children: [
+            _buildHero(l10n?.profileAndGoal ?? 'PROFILE & GOAL'),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 22, 20, 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _sectionLink(
+                      l10n?.editFitnessProfile ?? 'Edit Fitness Profile >>',
+                      _editProfile,
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _metricField(
-                      label: 'Weight',
-                      suffix: 'KG',
-                      controller: _weightController,
-                      icon: Icons.monitor_weight_outlined,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: controller.isLoading ? null : _saveBody,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B82F6),
-                    disabledBackgroundColor: AppColors.chipSurface,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    elevation: 0,
-                  ),
-                  child: controller.isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.textPrimary),
-                        )
-                      : const Text(
-                          'Save profile',
-                          style: TextStyle(color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w700),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _statCard(
+                            icon: Icons.accessibility_new_rounded,
+                            title: l10n?.currentWeight ?? 'Current Weight',
+                            value: '$weight ${l10n?.kgUnit ?? 'KG'}'.toUpperCase(),
+                            height: 148,
+                          ),
                         ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _statCard(
+                            icon: Icons.accessibility_new_rounded,
+                            title: l10n?.currentHeight ?? 'Current Height',
+                            value: '$height CM',
+                            height: 148,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 26),
+                    _sectionLink(
+                      l10n?.editFitnessGoal ?? 'Edit Fitness Goal >>',
+                      _editGoal,
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 268,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _statCard(
+                              icon: Icons.directions_run_rounded,
+                              title: l10n?.fitnessLevel ?? 'Fitness Level',
+                              value: level,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: _statCard(
+                                    icon: Icons.gps_fixed_rounded,
+                                    title: l10n?.targetDateLabel ?? 'Target Date',
+                                    value: targetDate,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Expanded(
+                                  child: _statCard(
+                                    icon: Icons.accessibility_new_rounded,
+                                    title: l10n?.targetWeightLabel ?? 'Target Weight',
+                                    value: targetWeight,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 28),
-              Row(
-                children: [
-                  const Expanded(
-                    child: Text(
-                      'Fitness goal',
-                      style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.w800),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      final res = await Get.to(() => const SetupGoalScreen());
-                      if (res == true) {
-                        await controller.fetchProfile();
-                        if (mounted) setState(_syncFromProfile);
-                      }
-                    },
-                    child: const Text(
-                      'Edit',
-                      style: TextStyle(color: Color(0xFF5B9BF6), fontSize: 14, fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-              _goalRow('Goal', _goalLabel(goal?.goalType)),
-              const SizedBox(height: 10),
-              _goalRow('Level', goal?.formattedWorkoutLevel.isNotEmpty == true ? goal!.formattedWorkoutLevel : 'Not set'),
-              const SizedBox(height: 10),
-              _goalRow(
-                'Target weight',
-                (goal?.targetWeight ?? 0) > 0 ? '${_formatNumber(goal!.targetWeight)} KG' : 'Not set',
-              ),
-              const SizedBox(height: 10),
-              _goalRow(
-                'Target date',
-                goal?.formattedTargetDate.isNotEmpty == true ? goal!.formattedTargetDate : 'Not set',
-              ),
-            ],
-          ),
+            ),
+          ],
         );
       }),
     );
   }
 
-  Widget _buildBmiCard(double bmi) {
-    final label = _bmiLabel(bmi);
-    return Container(
+  Widget _buildHero(String title) {
+    return SizedBox(
+      height: 250,
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFF1E2E4A), width: 1.2),
-      ),
-      child: Row(
+      child: Stack(
+        fit: StackFit.expand,
         children: [
-          Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF3B82F6), width: 3),
+          Image.asset(
+            AppImages.runningActivity,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => Image.asset(
+              AppImages.workoutDetailsHero,
+              fit: BoxFit.cover,
             ),
-            child: Center(
-              child: Text(
-                bmi > 0 ? bmi.toStringAsFixed(1) : '--',
-                style: const TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.w800),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withValues(alpha: 0.18),
+                  Colors.black.withValues(alpha: 0.55),
+                ],
               ),
             ),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'BMI',
-                  style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 1),
+          SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: GestureDetector(
+                  onTap: () => Get.back(),
+                  child: Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withValues(alpha: 0.22),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
+                    ),
+                    child: const Icon(Icons.chevron_left, color: Colors.white, size: 26),
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  label,
-                  style: const TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.w800),
+              ),
+            ),
+          ),
+          Align(
+            alignment: const Alignment(0, -0.08),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                title.toUpperCase(),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w900,
+                  fontStyle: FontStyle.italic,
+                  letterSpacing: 2.2,
+                  shadows: [
+                    Shadow(color: Colors.black54, blurRadius: 12, offset: Offset(0, 2)),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Based on your current height and weight',
-                  style: TextStyle(color: Color(0xFF64748B), fontSize: 12),
-                ),
-              ],
+              ),
             ),
           ),
         ],
@@ -253,87 +225,60 @@ class _FitnessProfileGoalScreenState extends State<FitnessProfileGoalScreen> {
     );
   }
 
-  Widget _metricField({
-    required String label,
-    required String suffix,
-    required TextEditingController controller,
+  Widget _sectionLink(String label, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Text(
+        label,
+        style: TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  Widget _statCard({
     required IconData icon,
+    required String title,
+    required String value,
+    double? height,
   }) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+      height: height,
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(18, 18, 16, 16),
       decoration: BoxDecoration(
         color: AppColors.cardSurface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFF1E2E4A)),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.borderLight),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(icon, color: const Color(0xFF5B9BF6), size: 18),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.w600),
-              ),
-            ],
+          Icon(icon, color: const Color(0xFF5B9BF6), size: 28),
+          const Spacer(),
+          Text(
+            title,
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+            ),
           ),
-          TextField(
-            controller: controller,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.w800),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              isDense: true,
-              suffixText: suffix,
-              suffixStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 12, fontWeight: FontWeight.w700),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 13.5,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
       ),
     );
-  }
-
-  Widget _goalRow(String label, String value) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF1E2E4A)),
-      ),
-      child: Row(
-        children: [
-          Text(
-            label,
-            style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13, fontWeight: FontWeight.w600),
-          ),
-          const Spacer(),
-          Text(
-            value,
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 13.5, fontWeight: FontWeight.w700),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _bmiLabel(double bmi) {
-    if (bmi <= 0) return 'Not set';
-    if (bmi < 18.5) return 'Underweight';
-    if (bmi < 25) return 'Healthy';
-    if (bmi < 30) return 'Overweight';
-    return 'Obese';
-  }
-
-  String _goalLabel(String? type) {
-    if (type == null || type.isEmpty) return 'Not set';
-    return type
-        .replaceAll('_', ' ')
-        .split(' ')
-        .map((w) => w.isEmpty ? w : '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}')
-        .join(' ');
   }
 }

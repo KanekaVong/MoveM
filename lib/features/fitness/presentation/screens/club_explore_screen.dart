@@ -5,48 +5,43 @@ import '../../data/models/fitness_club_model.dart';
 import 'club_detail_screen.dart';
 import 'create_group_screen.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ClubExploreScreen extends StatelessWidget {
   const ClubExploreScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(FitnessClubController());
+    final controller = Get.isRegistered<FitnessClubController>()
+        ? Get.find<FitnessClubController>()
+        : Get.put(FitnessClubController());
+
+    final l10n = AppLocalizations.of(context);
 
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         backgroundColor: AppColors.pageBackground,
-        appBar: AppBar(
-          backgroundColor: AppColors.pageBackground,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
-            onPressed: () => Get.back(),
-          ),
-          title: const Text(
-            'MoveM Clubs',
-            style: TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
+        appBar: TopToolBar(
+          title: l10n?.movemClubs ?? 'MoveM Clubs',
           actions: [
-            IconButton(
-              icon: const Icon(Icons.add_circle_outline, color: Colors.blueAccent, size: 26),
-              tooltip: 'Create Club',
-              onPressed: () {
-                Get.to(() => const CreateGroupScreen());
-              },
+            TopToolBarAction(
+              icon: Icons.add_circle_outline,
+              iconSize: 22,
+              onTap: () => Get.to(() => const CreateGroupScreen()),
             ),
           ],
-          bottom: const TabBar(
+          bottom: TabBar(
             indicatorColor: Colors.blueAccent,
             indicatorWeight: 3,
             labelColor: Colors.blueAccent,
             unselectedLabelColor: AppColors.textCaption,
             labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             tabs: [
-              Tab(text: 'Discover Clubs'),
-              Tab(text: 'My Clubs'),
+              Tab(text: l10n?.discoverClubs ?? 'Discover Clubs'),
+              Tab(text: l10n?.yourClubs ?? 'My Clubs'),
             ],
           ),
         ),
@@ -56,11 +51,11 @@ class ClubExploreScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: TextField(
                 onChanged: (val) => controller.searchClubs(val),
-                style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
                 decoration: InputDecoration(
-                  hintText: 'Search clubs by name...',
-                  hintStyle: const TextStyle(color: AppColors.textCaption, fontSize: 14),
-                  prefixIcon: const Icon(Icons.search, color: AppColors.textCaption),
+                  hintText: l10n?.searchClubsHint ?? 'Search clubs by name...',
+                  hintStyle: TextStyle(color: AppColors.textCaption, fontSize: 14),
+                  prefixIcon: Icon(Icons.search, color: AppColors.textCaption),
                   filled: true,
                   fillColor: AppColors.chipSurface,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -94,9 +89,10 @@ class ClubExploreScreen extends StatelessWidget {
   }
 
   Widget _buildDiscoverTab(FitnessClubController controller) {
+    final l10n = AppLocalizations.of(Get.context!);
     return Obx(() {
       if (controller.isSearching.value) {
-        return const Center(child: CircularProgressIndicator(color: Colors.blueAccent));
+        return Center(child: CircularProgressIndicator(color: Colors.blueAccent));
       }
 
       final list = controller.searchResults.isNotEmpty
@@ -104,32 +100,15 @@ class ClubExploreScreen extends StatelessWidget {
           : controller.publicClubs;
 
       if (controller.isLoadingPublicClubs.value && list.isEmpty) {
-        return const Center(child: CircularProgressIndicator(color: Colors.blueAccent));
+        return Center(child: CircularProgressIndicator(color: Colors.blueAccent));
       }
 
       if (list.isEmpty) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.groups_outlined, color: AppColors.textCaption, size: 64),
-              const SizedBox(height: 16),
-              const Text('No clubs found', style: TextStyle(color: AppColors.textSecondary, fontSize: 16)),
-              const SizedBox(height: 8),
-              const Text('Be the first to create a fitness community!', style: TextStyle(color: AppColors.textCaption, fontSize: 12)),
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2563EB),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                onPressed: () => Get.to(() => const CreateGroupScreen()),
-                icon: const Icon(Icons.add, color: AppColors.textPrimary),
-                label: const Text('Create Club', style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
+        return NoDataComponent(
+          title: l10n?.noClubsFound ?? 'No clubs found',
+          subtitle: l10n?.beFirstClub ?? 'Be the first to create a fitness community!',
+          actionLabel: l10n?.createClub ?? 'Create Club',
+          onAction: () => Get.to(() => const CreateGroupScreen()),
         );
       }
 
@@ -151,33 +130,19 @@ class ClubExploreScreen extends StatelessWidget {
   }
 
   Widget _buildMyClubsTab(FitnessClubController controller) {
+    final l10n = AppLocalizations.of(Get.context!);
     return Obx(() {
       if (controller.isLoadingMyClubs.value && controller.myClubs.isEmpty) {
-        return const Center(child: CircularProgressIndicator(color: Colors.blueAccent));
+        return Center(child: CircularProgressIndicator(color: Colors.blueAccent));
       }
 
       if (controller.myClubs.isEmpty) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.fitness_center, color: AppColors.textCaption, size: 64),
-              const SizedBox(height: 16),
-              const Text("You haven't joined any clubs yet", style: TextStyle(color: AppColors.textSecondary, fontSize: 16)),
-              const SizedBox(height: 8),
-              const Text('Join a club or start your own to workout together!', style: TextStyle(color: AppColors.textCaption, fontSize: 12)),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2563EB),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                onPressed: () => Get.to(() => const CreateGroupScreen()),
-                child: const Text('Create Your Club', style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
+        return NoDataComponent(
+          title: l10n?.haventJoinedClubs ?? "You haven't joined any clubs yet",
+          subtitle: l10n?.haventJoinedClubsSub ??
+              'Join a club or start your own to workout together!',
+          actionLabel: l10n?.createClub ?? 'Create Your Club',
+          onAction: () => Get.to(() => const CreateGroupScreen()),
         );
       }
 
@@ -188,7 +153,7 @@ class ClubExploreScreen extends StatelessWidget {
         child: ListView.separated(
           padding: const EdgeInsets.all(16),
           itemCount: controller.myClubs.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          separatorBuilder: (_, __) => SizedBox(height: 12),
           itemBuilder: (context, index) {
             final club = controller.myClubs[index];
             return _buildClubCard(club, controller, isMyClub: true);
@@ -227,11 +192,11 @@ class ClubExploreScreen extends StatelessWidget {
                   child: Center(
                     child: Text(
                       club.name.isNotEmpty ? club.name[0].toUpperCase() : 'C',
-                      style: const TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
-                const SizedBox(width: 14),
+                SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,7 +206,7 @@ class ClubExploreScreen extends StatelessWidget {
                           Flexible(
                             child: Text(
                               club.name,
-                              style: const TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
+                              style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -264,28 +229,28 @@ class ClubExploreScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         club.description.isNotEmpty ? club.description : 'Move together, reach goals faster.',
-                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                        style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Row(
                         children: [
-                          const Icon(Icons.people_outline, color: Colors.blueAccent, size: 14),
-                          const SizedBox(width: 4),
-                          Text('${club.memberCount} members', style: const TextStyle(color: AppColors.textCaption, fontSize: 11)),
+                          Icon(Icons.people_outline, color: Colors.blueAccent, size: 14),
+                          SizedBox(width: 4),
+                          Text('${club.memberCount} members', style: TextStyle(color: AppColors.textCaption, fontSize: 11)),
                           if (club.isOwner) ...[
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                               decoration: BoxDecoration(
                                 color: Colors.purple.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              child: const Text('OWNER', style: TextStyle(color: Colors.purpleAccent, fontSize: 9, fontWeight: FontWeight.bold)),
+                              child: Text('OWNER', style: TextStyle(color: Colors.purpleAccent, fontSize: 9, fontWeight: FontWeight.bold)),
                             ),
                           ],
                         ],
@@ -293,10 +258,10 @@ class ClubExploreScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 if (isMyClub || club.isMember)
                   IconButton(
-                    icon: const Icon(Icons.arrow_forward_ios, color: AppColors.textCaption, size: 16),
+                    icon: Icon(Icons.arrow_forward_ios, color: AppColors.textCaption, size: 16),
                     onPressed: () => Get.to(() => ClubDetailScreen(club: club)),
                   )
                 else
@@ -314,8 +279,10 @@ class ClubExploreScreen extends StatelessWidget {
                       }
                     },
                     child: Text(
-                      club.isPrivate ? 'Request' : 'Join',
-                      style: const TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
+                      club.isPrivate
+                          ? (AppLocalizations.of(Get.context!)?.requestJoin ?? 'Request')
+                          : (AppLocalizations.of(Get.context!)?.join ?? 'Join'),
+                      style: TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
                     ),
                   ),
               ],

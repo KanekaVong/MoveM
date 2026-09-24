@@ -7,16 +7,35 @@ import '../models/fitness_club_model.dart';
 class FitnessClubRepository {
   final DioClient _dioClient = DioClient();
 
+  dynamic _payload(dynamic data) {
+    if (data is Map && data['data'] != null) return data['data'];
+    if (data is Map && data['content'] != null) return data['content'];
+    return data;
+  }
+
+  Map<String, dynamic>? _asMap(dynamic data) {
+    final raw = _payload(data);
+    if (raw is Map<String, dynamic>) return raw;
+    if (raw is Map) return Map<String, dynamic>.from(raw);
+    return null;
+  }
+
+  List<Map<String, dynamic>> _asMapList(dynamic data) {
+    final raw = _payload(data);
+    if (raw is! List) return const [];
+    return raw
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item))
+        .toList();
+  }
+
   Future<ApiResult<List<FitnessClubModel>>> getMyClubs() async {
     try {
       final response = await _dioClient.dio.get('fitness/clubs/my');
-      if (response.data != null && response.data is List) {
-        final list = (response.data as List)
-            .map((item) => FitnessClubModel.fromJson(item))
-            .toList();
-        return ApiSuccess(list);
-      }
-      return ApiSuccess([]);
+      final list = _asMapList(response.data)
+          .map(FitnessClubModel.fromJson)
+          .toList();
+      return ApiSuccess(list);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -29,13 +48,10 @@ class FitnessClubRepository {
   Future<ApiResult<List<FitnessClubModel>>> getPublicClubs() async {
     try {
       final response = await _dioClient.dio.get('fitness/clubs/public');
-      if (response.data != null && response.data is List) {
-        final list = (response.data as List)
-            .map((item) => FitnessClubModel.fromJson(item))
-            .toList();
-        return ApiSuccess(list);
-      }
-      return ApiSuccess([]);
+      final list = _asMapList(response.data)
+          .map(FitnessClubModel.fromJson)
+          .toList();
+      return ApiSuccess(list);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -51,13 +67,10 @@ class FitnessClubRepository {
         'fitness/clubs/search',
         queryParameters: {'query': query},
       );
-      if (response.data != null && response.data is List) {
-        final list = (response.data as List)
-            .map((item) => FitnessClubModel.fromJson(item))
-            .toList();
-        return ApiSuccess(list);
-      }
-      return ApiSuccess([]);
+      final list = _asMapList(response.data)
+          .map(FitnessClubModel.fromJson)
+          .toList();
+      return ApiSuccess(list);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -70,8 +83,9 @@ class FitnessClubRepository {
   Future<ApiResult<FitnessClubModel>> getClub(int clubId) async {
     try {
       final response = await _dioClient.dio.get('fitness/clubs/$clubId');
-      if (response.data != null) {
-        return ApiSuccess(FitnessClubModel.fromJson(response.data));
+      final map = _asMap(response.data);
+      if (map != null) {
+        return ApiSuccess(FitnessClubModel.fromJson(map));
       }
       return ApiError(ApiException(message: 'Club not found'));
     } on DioException catch (e) {
@@ -89,8 +103,9 @@ class FitnessClubRepository {
         'fitness/clubs',
         data: request.toJson(),
       );
-      if (response.data != null) {
-        return ApiSuccess(FitnessClubModel.fromJson(response.data));
+      final map = _asMap(response.data);
+      if (map != null) {
+        return ApiSuccess(FitnessClubModel.fromJson(map));
       }
       return ApiError(ApiException(message: 'Failed to create club'));
     } on DioException catch (e) {
@@ -108,8 +123,9 @@ class FitnessClubRepository {
         'fitness/clubs/$clubId',
         data: request.toJson(),
       );
-      if (response.data != null) {
-        return ApiSuccess(FitnessClubModel.fromJson(response.data));
+      final map = _asMap(response.data);
+      if (map != null) {
+        return ApiSuccess(FitnessClubModel.fromJson(map));
       }
       return ApiError(ApiException(message: 'Failed to update club'));
     } on DioException catch (e) {
@@ -137,8 +153,16 @@ class FitnessClubRepository {
   Future<ApiResult<FitnessClubMemberModel>> joinClub(int clubId) async {
     try {
       final response = await _dioClient.dio.post('fitness/clubs/$clubId/join');
-      if (response.data != null) {
-        return ApiSuccess(FitnessClubMemberModel.fromJson(response.data));
+      final map = _asMap(response.data);
+      if (map != null) {
+        return ApiSuccess(FitnessClubMemberModel.fromJson(map));
+      }
+      if ((response.statusCode ?? 0) >= 200 && (response.statusCode ?? 0) < 300) {
+        return ApiSuccess(FitnessClubMemberModel(
+          clubId: clubId,
+          userId: 0,
+          role: 'MEMBER',
+        ));
       }
       return ApiError(ApiException(message: 'Failed to join club'));
     } on DioException catch (e) {
@@ -153,8 +177,9 @@ class FitnessClubRepository {
   Future<ApiResult<ClubJoinRequestModel>> requestToJoin(int clubId) async {
     try {
       final response = await _dioClient.dio.post('fitness/clubs/$clubId/join-request');
-      if (response.data != null) {
-        return ApiSuccess(ClubJoinRequestModel.fromJson(response.data));
+      final map = _asMap(response.data);
+      if (map != null) {
+        return ApiSuccess(ClubJoinRequestModel.fromJson(map));
       }
       return ApiError(ApiException(message: 'Failed to submit join request'));
     } on DioException catch (e) {
@@ -169,13 +194,10 @@ class FitnessClubRepository {
   Future<ApiResult<List<FitnessClubMemberModel>>> getClubMembers(int clubId) async {
     try {
       final response = await _dioClient.dio.get('fitness/clubs/$clubId/members');
-      if (response.data != null && response.data is List) {
-        final list = (response.data as List)
-            .map((item) => FitnessClubMemberModel.fromJson(item))
-            .toList();
-        return ApiSuccess(list);
-      }
-      return ApiSuccess([]);
+      final list = _asMapList(response.data)
+          .map(FitnessClubMemberModel.fromJson)
+          .toList();
+      return ApiSuccess(list);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -189,10 +211,11 @@ class FitnessClubRepository {
     try {
       final response = await _dioClient.dio.post(
         'fitness/clubs/$clubId/members',
-        data: {'userId': userId, 'role': role},
+        data: {'userId': userId},
       );
-      if (response.data != null) {
-        return ApiSuccess(FitnessClubMemberModel.fromJson(response.data));
+      final map = _asMap(response.data);
+      if (map != null) {
+        return ApiSuccess(FitnessClubMemberModel.fromJson(map));
       }
       return ApiError(ApiException(message: 'Failed to add member'));
     } on DioException catch (e) {
@@ -220,13 +243,10 @@ class FitnessClubRepository {
   Future<ApiResult<List<ClubJoinRequestModel>>> getPendingRequests(int clubId) async {
     try {
       final response = await _dioClient.dio.get('fitness/clubs/$clubId/join-requests');
-      if (response.data != null && response.data is List) {
-        final list = (response.data as List)
-            .map((item) => ClubJoinRequestModel.fromJson(item))
-            .toList();
-        return ApiSuccess(list);
-      }
-      return ApiSuccess([]);
+      final list = _asMapList(response.data)
+          .map(ClubJoinRequestModel.fromJson)
+          .toList();
+      return ApiSuccess(list);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -241,8 +261,9 @@ class FitnessClubRepository {
   Future<ApiResult<ClubJoinRequestModel>> approveRequest(int clubId, int requestId) async {
     try {
       final response = await _dioClient.dio.post('fitness/clubs/$clubId/join-requests/$requestId/approve');
-      if (response.data != null) {
-        return ApiSuccess(ClubJoinRequestModel.fromJson(response.data));
+      final map = _asMap(response.data);
+      if (map != null) {
+        return ApiSuccess(ClubJoinRequestModel.fromJson(map));
       }
       return ApiError(ApiException(message: 'Failed to approve request'));
     } on DioException catch (e) {
@@ -257,8 +278,9 @@ class FitnessClubRepository {
   Future<ApiResult<ClubJoinRequestModel>> rejectRequest(int clubId, int requestId) async {
     try {
       final response = await _dioClient.dio.post('fitness/clubs/$clubId/join-requests/$requestId/reject');
-      if (response.data != null) {
-        return ApiSuccess(ClubJoinRequestModel.fromJson(response.data));
+      final map = _asMap(response.data);
+      if (map != null) {
+        return ApiSuccess(ClubJoinRequestModel.fromJson(map));
       }
       return ApiError(ApiException(message: 'Failed to reject request'));
     } on DioException catch (e) {
@@ -273,13 +295,10 @@ class FitnessClubRepository {
   Future<ApiResult<List<ClubJoinRequestModel>>> getMyRequests() async {
     try {
       final response = await _dioClient.dio.get('fitness/clubs/join-requests/my');
-      if (response.data != null && response.data is List) {
-        final list = (response.data as List)
-            .map((item) => ClubJoinRequestModel.fromJson(item))
-            .toList();
-        return ApiSuccess(list);
-      }
-      return ApiSuccess([]);
+      final list = _asMapList(response.data)
+          .map(ClubJoinRequestModel.fromJson)
+          .toList();
+      return ApiSuccess(list);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {

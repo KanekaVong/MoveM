@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:movem/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:movem/features/auth/presentation/bindings/auth_binding.dart';
 import 'package:movem/features/settings/presentation/screens/add_account_register_screen.dart';
+import 'package:movem/shared/widgets/top_tool_bar.dart';
 
 class AddAccountScreen extends StatefulWidget {
   const AddAccountScreen({super.key});
@@ -50,25 +51,10 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0B132B),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0B132B),
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.white,
-            size: 18,
-          ),
-        ),
-        title: const Text(
-          'Setting',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+      appBar: const TopToolBar(
+        title: 'Setting',
+        backgroundColor: Color(0xFF0B132B),
+        foregroundColor: Colors.white,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -299,6 +285,7 @@ class CustomMuiTextField extends StatelessWidget {
       maxLength: maxLength,
       keyboardType: keyboardType,
       validator: validator,
+      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       style: const TextStyle(color: Colors.white, fontSize: 15),
       decoration: decoration,
     );

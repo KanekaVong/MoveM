@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:logger/logger.dart';
 import '../../../../core/network/api_result.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../../domain/repositories/friends_repository.dart';
@@ -11,7 +10,6 @@ import '../dto/response/public_user_profile_response.dart';
 
 class FriendsRepositoryImpl implements FriendsRepository {
   final FriendsService friendsService;
-  final _logger = Logger();
 
   FriendsRepositoryImpl({required this.friendsService});
 
@@ -58,6 +56,16 @@ class FriendsRepositoryImpl implements FriendsRepository {
     return null;
   }
 
+  List<Map<String, dynamic>> _asList(dynamic data) {
+    dynamic raw = data;
+    if (raw is Map && raw['data'] is List) raw = raw['data'];
+    if (raw is! List) return const [];
+    return raw
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item))
+        .toList();
+  }
+
   @override
   Future<ApiResult<PublicUserProfileResponse>> getUserById(String userId) async {
     try {
@@ -68,10 +76,8 @@ class FriendsRepositoryImpl implements FriendsRepository {
       }
       return ApiSuccess(PublicUserProfileResponse.fromJson(map));
     } on DioException catch (e) {
-      _logger.e('getUserById Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('getUserById Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }
@@ -80,15 +86,11 @@ class FriendsRepositoryImpl implements FriendsRepository {
   Future<ApiResult<List<FriendResponse>>> getFriends() async {
     try {
       final response = await friendsService.getFriends();
-
-      final List<dynamic> data = response.data;
-      final friends = data.map((e) => FriendResponse.fromJson(e)).toList();
+      final friends = _asList(response.data).map(FriendResponse.fromJson).toList();
       return ApiSuccess(friends);
     } on DioException catch (e) {
-      _logger.e('getFriends Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('getFriends Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }
@@ -102,10 +104,8 @@ class FriendsRepositoryImpl implements FriendsRepository {
       final friends = data.map((e) => FriendResponse.fromJson(e)).toList();
       return ApiSuccess(friends);
     } on DioException catch (e) {
-      _logger.e('searchFriends Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('searchFriends Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }
@@ -119,10 +119,8 @@ class FriendsRepositoryImpl implements FriendsRepository {
       final suggestions = data.map((e) => FriendResponse.fromJson(e)).toList();
       return ApiSuccess(suggestions);
     } on DioException catch (e) {
-      _logger.e('getSuggestions Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('getSuggestions Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }
@@ -133,10 +131,8 @@ class FriendsRepositoryImpl implements FriendsRepository {
       final response = await friendsService.deleteFriend(friendId);
       return ApiSuccess(_parseSuccessMessage(response.data));
     } on DioException catch (e) {
-      _logger.e('deleteFriend Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('deleteFriend Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }
@@ -145,15 +141,11 @@ class FriendsRepositoryImpl implements FriendsRepository {
   Future<ApiResult<List<FriendRequestResponse>>> getIncomingRequests() async {
     try {
       final response = await friendsService.getIncomingRequests();
-
-      final List<dynamic> data = response.data;
-      final requests = data.map((e) => FriendRequestResponse.fromJson(e)).toList();
+      final requests = _asList(response.data).map(FriendRequestResponse.fromJson).toList();
       return ApiSuccess(requests);
     } on DioException catch (e) {
-      _logger.e('getIncomingRequests Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('getIncomingRequests Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }
@@ -162,15 +154,11 @@ class FriendsRepositoryImpl implements FriendsRepository {
   Future<ApiResult<List<FriendRequestResponse>>> getOutgoingRequests() async {
     try {
       final response = await friendsService.getOutgoingRequests();
-
-      final List<dynamic> data = response.data;
-      final requests = data.map((e) => FriendRequestResponse.fromJson(e)).toList();
+      final requests = _asList(response.data).map(FriendRequestResponse.fromJson).toList();
       return ApiSuccess(requests);
     } on DioException catch (e) {
-      _logger.e('getOutgoingRequests Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('getOutgoingRequests Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }

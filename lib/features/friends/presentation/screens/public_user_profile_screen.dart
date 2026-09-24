@@ -5,6 +5,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../../data/dto/response/friend_response.dart';
 import '../../data/dto/response/public_user_profile_response.dart';
 import '../controllers/public_user_profile_controller.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
   const PublicUserProfileScreen({super.key});
@@ -13,23 +16,7 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
-      appBar: AppBar(
-        backgroundColor: AppColors.pageBackground,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary, size: 20),
-          onPressed: () => Get.back(),
-        ),
-        centerTitle: true,
-        title: const Text(
-          'Profile',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      appBar: TopToolBar(title: AppLocalizations.of(context)?.profileTitle ?? 'Profile'),
       body: SafeArea(
         child: Obx(() {
           final user = controller.profile.value;
@@ -98,26 +85,26 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             user.displayName,
-            style: const TextStyle(
+            style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 26,
               fontWeight: FontWeight.w800,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             '@${user.username}',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textMuted,
               fontSize: 14,
             ),
           ),
           if (bio.isNotEmpty) ...[
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
@@ -126,7 +113,7 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
               ),
               child: Text(
                 bio,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
@@ -159,21 +146,21 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
               ),
             ],
           ),
-          const SizedBox(height: 18),
+          SizedBox(height: 18),
           Row(
             children: [
-              const Icon(Icons.people_alt_outlined, color: AppColors.textPrimary, size: 20),
-              const SizedBox(width: 8),
+              Icon(Icons.people_alt_outlined, color: AppColors.textPrimary, size: 20),
+              SizedBox(width: 8),
               Text(
                 '${user.friendsCount}',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(width: 6),
-              const Text(
+              SizedBox(width: 6),
+              Text(
                 'Friends',
                 style: TextStyle(
                   color: AppColors.blueAccent,
@@ -182,7 +169,7 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
                 ),
               ),
               const Spacer(),
-              const Icon(Icons.chevron_right, color: AppColors.textCaption, size: 22),
+              Icon(Icons.chevron_right, color: AppColors.textCaption, size: 22),
             ],
           ),
         ],
@@ -200,20 +187,20 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
       child: Column(
         children: [
           Icon(icon, color: iconColor, size: 26),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w800,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textMuted,
               fontSize: 11,
             ),
@@ -233,7 +220,7 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
 
   Widget _buildAchievementsCard(PublicUserProfileResponse user) {
     return _sectionCard(
-      title: const Text.rich(
+      title: Text.rich(
         TextSpan(
           text: 'Recent ',
           style: TextStyle(color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w700),
@@ -246,28 +233,23 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
         ),
       ),
       child: user.recentAchievements.isEmpty
-          ? const Padding(
-              padding: EdgeInsets.symmetric(vertical: 18),
-              child: Center(
-                child: Text(
-                  'No Achievements Yet',
-                  style: TextStyle(color: AppColors.textMuted, fontSize: 13),
-                ),
-              ),
+          ? NoDataComponent(
+              compact: true,
+              title: AppLocalizations.of(Get.context!)?.noAchievementsYet ?? 'No Achievements Yet',
             )
           : SizedBox(
               height: 72,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: user.recentAchievements.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                separatorBuilder: (_, __) => SizedBox(width: 12),
                 itemBuilder: (context, index) {
                   final item = user.recentAchievements[index];
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.emoji_events, color: Color(0xFFEAB308), size: 28),
-                      const SizedBox(height: 6),
+                      Icon(Icons.emoji_events, color: Color(0xFFEAB308), size: 28),
+                      SizedBox(height: 6),
                       SizedBox(
                         width: 72,
                         child: Text(
@@ -275,7 +257,7 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(color: AppColors.textPrimary, fontSize: 11),
+                          style: TextStyle(color: AppColors.textPrimary, fontSize: 11),
                         ),
                       ),
                     ],
@@ -288,7 +270,7 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
 
   Widget _buildMutualFriendsCard(PublicUserProfileResponse user) {
     return _sectionCard(
-      title: const Text.rich(
+      title: Text.rich(
         TextSpan(
           text: 'Mutual ',
           style: TextStyle(color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w700),
@@ -301,14 +283,9 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
         ),
       ),
       child: user.mutualFriends.isEmpty
-          ? const Padding(
-              padding: EdgeInsets.symmetric(vertical: 18),
-              child: Center(
-                child: Text(
-                  'No Mutuals',
-                  style: TextStyle(color: AppColors.textMuted, fontSize: 13),
-                ),
-              ),
+          ? NoDataComponent(
+              compact: true,
+              title: AppLocalizations.of(Get.context!)?.noMutuals ?? 'No Mutuals',
             )
           : SizedBox(
               height: 56,
@@ -367,8 +344,14 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
   Widget _buildActionButton(PublicUserProfileResponse user) {
     final isPending = user.isRequestPending;
     final isFriend = user.isFriend;
-    final label = isFriend ? 'Friends' : (isPending ? 'Request Sent' : 'Add Friend');
-    final enabled = !isPending && !isFriend;
+    final isIncoming = controller.isIncomingRequest;
+    final l10n = AppLocalizations.of(Get.context!);
+    final label = isFriend
+        ? (l10n?.friends ?? 'Friends')
+        : (isIncoming
+            ? (l10n?.accept ?? 'Accept')
+            : (isPending ? 'Request Sent' : (l10n?.addFriend ?? 'Add Friend')));
+    final enabled = !isFriend && (isIncoming || !isPending);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
@@ -376,7 +359,9 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
         width: double.infinity,
         height: 48,
         child: ElevatedButton(
-          onPressed: enabled ? controller.sendFriendRequest : null,
+          onPressed: !enabled
+              ? null
+              : (isIncoming ? controller.acceptIncomingRequest : controller.sendFriendRequest),
           style: ElevatedButton.styleFrom(
             backgroundColor: enabled ? AppColors.accentBlue : AppColors.chipSurface,
             disabledBackgroundColor: AppColors.chipSurface,
@@ -387,7 +372,7 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
           ),
           child: Text(
             label,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
           ),
         ),
       ),
@@ -400,7 +385,7 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
       alignment: Alignment.center,
       child: Text(
         initial,
-        style: const TextStyle(color: AppColors.accentBlue, fontSize: 36, fontWeight: FontWeight.bold),
+        style: TextStyle(color: AppColors.accentBlue, fontSize: 36, fontWeight: FontWeight.bold),
       ),
     );
   }

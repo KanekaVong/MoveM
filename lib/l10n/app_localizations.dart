@@ -1069,6 +1069,1278 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Task deleted successfully'**
   String get taskDeletedSuccess;
+
+  /// No description provided for @createClub.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Club'**
+  String get createClub;
+
+  /// No description provided for @clubNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CLUB NAME'**
+  String get clubNameLabel;
+
+  /// No description provided for @clubNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter club name'**
+  String get clubNameHint;
+
+  /// No description provided for @clubDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CLUB DESCRIPTION'**
+  String get clubDescriptionLabel;
+
+  /// No description provided for @searchForClub.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for Club'**
+  String get searchForClub;
+
+  /// No description provided for @clubInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitations'**
+  String get clubInvitations;
+
+  /// No description provided for @clubMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get clubMembers;
+
+  /// No description provided for @clubOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get clubOverview;
+
+  /// No description provided for @exploreClubs.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore Clubs'**
+  String get exploreClubs;
+
+  /// No description provided for @publicLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Public'**
+  String get publicLabel;
+
+  /// No description provided for @privateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get privateLabel;
+
+  /// No description provided for @selectPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Privacy'**
+  String get selectPrivacy;
+
+  /// No description provided for @requiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get requiredField;
+
+  /// No description provided for @pleaseEnterClubName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a club name'**
+  String get pleaseEnterClubName;
+
+  /// No description provided for @myFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'My Friends'**
+  String get myFriends;
+
+  /// No description provided for @myRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'My Requests'**
+  String get myRequests;
+
+  /// No description provided for @suggestionsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions'**
+  String get suggestionsTab;
+
+  /// No description provided for @noFriendsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No friends yet'**
+  String get noFriendsYet;
+
+  /// No description provided for @noFriendsYetSub.
+  ///
+  /// In en, this message translates to:
+  /// **'People you add will appear here.'**
+  String get noFriendsYetSub;
+
+  /// No description provided for @noFriendRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No friend requests'**
+  String get noFriendRequests;
+
+  /// No description provided for @noFriendRequestsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone sends you a request, it will show up here.'**
+  String get noFriendRequestsSub;
+
+  /// No description provided for @noRequestsSent.
+  ///
+  /// In en, this message translates to:
+  /// **'No requests sent'**
+  String get noRequestsSent;
+
+  /// No description provided for @noRequestsSentSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend requests you send will appear here.'**
+  String get noRequestsSentSub;
+
+  /// No description provided for @noSuggestionsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No suggestions found'**
+  String get noSuggestionsFound;
+
+  /// No description provided for @noSuggestionsFoundSub.
+  ///
+  /// In en, this message translates to:
+  /// **'We do not have anyone to suggest right now.'**
+  String get noSuggestionsFoundSub;
+
+  /// No description provided for @noUsersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found'**
+  String get noUsersFound;
+
+  /// No description provided for @nothingMatchesSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing matches your search.'**
+  String get nothingMatchesSearch;
+
+  /// No description provided for @workoutChallenge.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Challenge'**
+  String get workoutChallenge;
+
+  /// No description provided for @filterChallenges.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Challenges'**
+  String get filterChallenges;
+
+  /// No description provided for @allFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allFilter;
+
+  /// No description provided for @noChallengesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No challenges found'**
+  String get noChallengesFound;
+
+  /// No description provided for @workoutHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout History'**
+  String get workoutHistory;
+
+  /// No description provided for @noWorkoutsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No workouts yet'**
+  String get noWorkoutsYet;
+
+  /// No description provided for @noWorkoutsYetSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish a run or workout to see it here.'**
+  String get noWorkoutsYetSub;
+
+  /// No description provided for @noWorkoutSessionsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No workout sessions yet'**
+  String get noWorkoutSessionsYet;
+
+  /// No description provided for @noWorkoutSessionsYetSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete a run or push-up workout to see it here!'**
+  String get noWorkoutSessionsYetSub;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgain;
+
+  /// No description provided for @quickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Actions'**
+  String get quickActions;
+
+  /// No description provided for @challengeAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenge'**
+  String get challengeAction;
+
+  /// No description provided for @fitnessClubAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness Club'**
+  String get fitnessClubAction;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get historyTitle;
+
+  /// No description provided for @noActivityYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No activity yet'**
+  String get noActivityYet;
+
+  /// No description provided for @noActivityYetSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates for this task will appear here.'**
+  String get noActivityYetSub;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @noNotificationsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'When something happens, you will see it here.'**
+  String get noNotificationsSub;
+
+  /// No description provided for @endWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'End Workout?'**
+  String get endWorkout;
+
+  /// No description provided for @endWorkoutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Your progress will be saved.'**
+  String get endWorkoutConfirm;
+
+  /// No description provided for @keepGoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Going'**
+  String get keepGoing;
+
+  /// No description provided for @exitRun.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Run?'**
+  String get exitRun;
+
+  /// No description provided for @exitRunConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Your run progress will be saved.'**
+  String get exitRunConfirm;
+
+  /// No description provided for @unfriend.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfriend'**
+  String get unfriend;
+
+  /// No description provided for @newsFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'News Feed'**
+  String get newsFeed;
+
+  /// No description provided for @feedEmptySub.
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts and updates from your circle will show up here.'**
+  String get feedEmptySub;
+
+  /// No description provided for @writeAComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a comment'**
+  String get writeAComment;
+
+  /// No description provided for @joinClub.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Club'**
+  String get joinClub;
+
+  /// No description provided for @joinClubSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Find an active club'**
+  String get joinClubSub;
+
+  /// No description provided for @createClubSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your own community'**
+  String get createClubSub;
+
+  /// No description provided for @noClubsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No clubs found'**
+  String get noClubsFound;
+
+  /// No description provided for @noClubsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No clubs yet'**
+  String get noClubsAvailable;
+
+  /// No description provided for @noClubsAvailableSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a club or look around to find friends to train with.'**
+  String get noClubsAvailableSub;
+
+  /// No description provided for @yourClubs.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Clubs'**
+  String get yourClubs;
+
+  /// No description provided for @discoverClubs.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover Clubs'**
+  String get discoverClubs;
+
+  /// No description provided for @exploreAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore all'**
+  String get exploreAll;
+
+  /// No description provided for @beFirstClub.
+  ///
+  /// In en, this message translates to:
+  /// **'Be the first to start a club!'**
+  String get beFirstClub;
+
+  /// No description provided for @haventJoinedClubs.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t joined a club yet'**
+  String get haventJoinedClubs;
+
+  /// No description provided for @haventJoinedClubsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Join a club or start your own to train together.'**
+  String get haventJoinedClubsSub;
+
+  /// No description provided for @noClubInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'No club invitations'**
+  String get noClubInvitations;
+
+  /// No description provided for @noClubInvitationsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Invites to join a club will show up here.'**
+  String get noClubInvitationsSub;
+
+  /// No description provided for @noJoinRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No join requests'**
+  String get noJoinRequests;
+
+  /// No description provided for @noJoinRequestsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone asks to join your club, you\'ll see it here.'**
+  String get noJoinRequestsSub;
+
+  /// No description provided for @noMembersYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No members yet'**
+  String get noMembersYet;
+
+  /// No description provided for @inviteToGrowClub.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite friends to grow this club.'**
+  String get inviteToGrowClub;
+
+  /// No description provided for @noCompletedChallenges.
+  ///
+  /// In en, this message translates to:
+  /// **'No finished challenges yet'**
+  String get noCompletedChallenges;
+
+  /// No description provided for @createChallenge.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Challenge'**
+  String get createChallenge;
+
+  /// No description provided for @pleaseEnterChallengeName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a challenge name.'**
+  String get pleaseEnterChallengeName;
+
+  /// No description provided for @endDateAfterStart.
+  ///
+  /// In en, this message translates to:
+  /// **'End date must be after the start date.'**
+  String get endDateAfterStart;
+
+  /// No description provided for @achievementsBadges.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievements'**
+  String get achievementsBadges;
+
+  /// No description provided for @noAchievementsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No achievements yet'**
+  String get noAchievementsFound;
+
+  /// No description provided for @noAchievementsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No achievements yet'**
+  String get noAchievementsYet;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTitle;
+
+  /// No description provided for @noMutuals.
+  ///
+  /// In en, this message translates to:
+  /// **'No mutual friends'**
+  String get noMutuals;
+
+  /// No description provided for @invitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation'**
+  String get invitation;
+
+  /// No description provided for @invitationsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'INVITATIONS'**
+  String get invitationsLabel;
+
+  /// No description provided for @noInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'No invitations'**
+  String get noInvitations;
+
+  /// No description provided for @noInvitationsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Task invitations you receive will show up here.'**
+  String get noInvitationsSub;
+
+  /// No description provided for @noFriendsFoundInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'No friends found'**
+  String get noFriendsFoundInvite;
+
+  /// No description provided for @addFriendsThenInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Add friends first, then invite them to this club.'**
+  String get addFriendsThenInvite;
+
+  /// No description provided for @createButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get createButton;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get success;
+
+  /// No description provided for @errorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Oops'**
+  String get errorTitle;
+
+  /// No description provided for @taskTitleEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please name your task.'**
+  String get taskTitleEmpty;
+
+  /// No description provided for @taskCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Task created!'**
+  String get taskCreatedSuccess;
+
+  /// No description provided for @taskUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Task updated!'**
+  String get taskUpdatedSuccess;
+
+  /// No description provided for @labelCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Label created!'**
+  String get labelCreatedSuccess;
+
+  /// No description provided for @cannotEditAfterDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'This task can\'t be changed after the deadline.'**
+  String get cannotEditAfterDeadline;
+
+  /// No description provided for @noLabelsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No labels yet.'**
+  String get noLabelsAvailable;
+
+  /// No description provided for @taskMarkedComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Nice! Task marked complete.'**
+  String get taskMarkedComplete;
+
+  /// No description provided for @pleaseEnterHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your height.'**
+  String get pleaseEnterHeight;
+
+  /// No description provided for @pleaseEnterWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your weight.'**
+  String get pleaseEnterWeight;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile saved.'**
+  String get profileUpdated;
+
+  /// No description provided for @enterHeightRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter height in cm (50–300).'**
+  String get enterHeightRange;
+
+  /// No description provided for @enterWeightRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter weight in kg (20–500).'**
+  String get enterWeightRange;
+
+  /// No description provided for @swipeToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to start'**
+  String get swipeToStart;
+
+  /// No description provided for @mainGoalQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s your main goal?'**
+  String get mainGoalQuestion;
+
+  /// No description provided for @targetWeightQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s your target weight?'**
+  String get targetWeightQuestion;
+
+  /// No description provided for @targetDateQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s your target date?'**
+  String get targetDateQuestion;
+
+  /// No description provided for @workoutLevelQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Which workout level feels right?'**
+  String get workoutLevelQuestion;
+
+  /// No description provided for @fitnessAssessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness check'**
+  String get fitnessAssessment;
+
+  /// No description provided for @pleaseSelectMainGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Please pick a main goal.'**
+  String get pleaseSelectMainGoal;
+
+  /// No description provided for @pleaseEnterTargetWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a target weight.'**
+  String get pleaseEnterTargetWeight;
+
+  /// No description provided for @pleaseSelectFutureDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Please pick a future date.'**
+  String get pleaseSelectFutureDate;
+
+  /// No description provided for @pleaseSelectWorkoutLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Please pick a workout level.'**
+  String get pleaseSelectWorkoutLevel;
+
+  /// No description provided for @locationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'We need location to track your run.'**
+  String get locationRequired;
+
+  /// No description provided for @enableLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Please turn on location services.'**
+  String get enableLocation;
+
+  /// No description provided for @alreadyMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Already in this task.'**
+  String get alreadyMember;
+
+  /// No description provided for @alreadyInvited.
+  ///
+  /// In en, this message translates to:
+  /// **'Already invited.'**
+  String get alreadyInvited;
+
+  /// No description provided for @noSoloChallenges.
+  ///
+  /// In en, this message translates to:
+  /// **'No solo challenges right now'**
+  String get noSoloChallenges;
+
+  /// No description provided for @anyoneCanJoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone can find and join this club'**
+  String get anyoneCanJoin;
+
+  /// No description provided for @requiresInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs an invite to join'**
+  String get requiresInvite;
+
+  /// No description provided for @searchClubsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search clubs by name...'**
+  String get searchClubsHint;
+
+  /// No description provided for @movemClubs.
+  ///
+  /// In en, this message translates to:
+  /// **'MoveM Clubs'**
+  String get movemClubs;
+
+  /// No description provided for @clubInvitationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Club Invitations'**
+  String get clubInvitationsTitle;
+
+  /// No description provided for @noClubChallenges.
+  ///
+  /// In en, this message translates to:
+  /// **'No club challenges yet'**
+  String get noClubChallenges;
+
+  /// No description provided for @createOneToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Create one to get started.'**
+  String get createOneToStart;
+
+  /// No description provided for @noMembersJoined.
+  ///
+  /// In en, this message translates to:
+  /// **'No members have joined yet'**
+  String get noMembersJoined;
+
+  /// No description provided for @endSessionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Want to stop and see your summary?'**
+  String get endSessionBody;
+
+  /// No description provided for @exitRunBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your run will be paused. Leave now?'**
+  String get exitRunBody;
+
+  /// No description provided for @kgUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'kg'**
+  String get kgUnit;
+
+  /// No description provided for @lbsUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'lbs'**
+  String get lbsUnit;
+
+  /// No description provided for @join.
+  ///
+  /// In en, this message translates to:
+  /// **'Join'**
+  String get join;
+
+  /// No description provided for @requestJoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Request'**
+  String get requestJoin;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
+
+  /// No description provided for @invited.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited'**
+  String get invited;
+
+  /// No description provided for @joinedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re in!'**
+  String get joinedTitle;
+
+  /// No description provided for @requestSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request sent'**
+  String get requestSentTitle;
+
+  /// No description provided for @savedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get savedTitle;
+
+  /// No description provided for @removedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed'**
+  String get removedTitle;
+
+  /// No description provided for @clubCreatedMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Club \"{name}\" is ready!'**
+  String clubCreatedMsg(String name);
+
+  /// No description provided for @challengeCreatedMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenge \"{name}\" is ready!'**
+  String challengeCreatedMsg(String name);
+
+  /// No description provided for @joinedClubMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re now in {name}'**
+  String joinedClubMsg(String name);
+
+  /// No description provided for @joinRequestSentMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request to join {name} is waiting.'**
+  String joinRequestSentMsg(String name);
+
+  /// No description provided for @failedToCreateClub.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create the club. Try again.'**
+  String get failedToCreateClub;
+
+  /// No description provided for @failedToJoinClub.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t join the club. Try again.'**
+  String get failedToJoinClub;
+
+  /// No description provided for @failedToSubmitJoinRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send the join request. Try again.'**
+  String get failedToSubmitJoinRequest;
+
+  /// No description provided for @failedToCreateChallenge.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create the challenge. Try again.'**
+  String get failedToCreateChallenge;
+
+  /// No description provided for @failedToRemoveMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t remove this member.'**
+  String get failedToRemoveMember;
+
+  /// No description provided for @couldNotApproveRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t approve that request.'**
+  String get couldNotApproveRequest;
+
+  /// No description provided for @couldNotRejectRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reject that request.'**
+  String get couldNotRejectRequest;
+
+  /// No description provided for @couldNotCancelRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t cancel that request.'**
+  String get couldNotCancelRequest;
+
+  /// No description provided for @enterTargetInUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a target in {unit}.'**
+  String enterTargetInUnit(String unit);
+
+  /// No description provided for @loadingChallenges.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading challenges...'**
+  String get loadingChallenges;
+
+  /// No description provided for @membersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Members ({count})'**
+  String membersCount(int count);
+
+  /// No description provided for @completedChallengesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed challenges'**
+  String get completedChallengesLabel;
+
+  /// No description provided for @viewAllArrow.
+  ///
+  /// In en, this message translates to:
+  /// **'View all >>'**
+  String get viewAllArrow;
+
+  /// No description provided for @heightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Height'**
+  String get heightLabel;
+
+  /// No description provided for @weightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weightLabel;
+
+  /// No description provided for @challengeNameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenge name'**
+  String get challengeNameTitle;
+
+  /// No description provided for @datesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates'**
+  String get datesTitle;
+
+  /// No description provided for @targetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get targetTitle;
+
+  /// No description provided for @failedToSaveProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save your profile. Try again.'**
+  String get failedToSaveProfile;
+
+  /// No description provided for @failedToUpdateProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t update your profile. Try again.'**
+  String get failedToUpdateProfile;
+
+  /// No description provided for @invalidHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid height in cm (for example 170).'**
+  String get invalidHeight;
+
+  /// No description provided for @invalidWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid weight in kg (for example 65).'**
+  String get invalidWeight;
+
+  /// No description provided for @goalSetSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your goal is saved!'**
+  String get goalSetSuccess;
+
+  /// No description provided for @failedToSetGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t set your goal. Try again.'**
+  String get failedToSetGoal;
+
+  /// No description provided for @permissionDeniedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission needed'**
+  String get permissionDeniedTitle;
+
+  /// No description provided for @serviceDisabledTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is off'**
+  String get serviceDisabledTitle;
+
+  /// No description provided for @noTaskData.
+  ///
+  /// In en, this message translates to:
+  /// **'No task data found.'**
+  String get noTaskData;
+
+  /// No description provided for @updateFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t update'**
+  String get updateFailedTitle;
+
+  /// No description provided for @unexpectedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Try again.'**
+  String get unexpectedError;
+
+  /// No description provided for @copiedProfileLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile link copied'**
+  String get copiedProfileLink;
+
+  /// No description provided for @unableToCancelFriendRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t cancel that request. Try later.'**
+  String get unableToCancelFriendRequest;
+
+  /// No description provided for @failedToSendComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t post that comment right now.'**
+  String get failedToSendComment;
+
+  /// No description provided for @alreadyMemberTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Already a member'**
+  String get alreadyMemberTitle;
+
+  /// No description provided for @alreadyInvitedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Already invited'**
+  String get alreadyInvitedTitle;
+
+  /// No description provided for @membersAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} added to {name}.'**
+  String membersAdded(int count, String name);
+
+  /// No description provided for @couldNotAddMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t add members. Try again.'**
+  String get couldNotAddMembers;
+
+  /// No description provided for @removeMemberTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove member'**
+  String get removeMemberTitle;
+
+  /// No description provided for @removeMemberConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from {club}?'**
+  String removeMemberConfirm(String name, String club);
+
+  /// No description provided for @thisMember.
+  ///
+  /// In en, this message translates to:
+  /// **'this member'**
+  String get thisMember;
+
+  /// No description provided for @memberRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} was removed from {club}.'**
+  String memberRemoved(String name, String club);
+
+  /// No description provided for @youJoinedChallenge.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re in {name}.'**
+  String youJoinedChallenge(String name);
+
+  /// No description provided for @failedToJoinChallenge.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t join this challenge.'**
+  String get failedToJoinChallenge;
+
+  /// No description provided for @membersJoinedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Members joined'**
+  String get membersJoinedLabel;
+
+  /// No description provided for @addFriendsForTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Add friends so you can invite them to this task.'**
+  String get addFriendsForTask;
+
+  /// No description provided for @loseWeightGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose weight'**
+  String get loseWeightGoal;
+
+  /// No description provided for @buildMuscleGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Build muscle'**
+  String get buildMuscleGoal;
+
+  /// No description provided for @keepFitGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep fit'**
+  String get keepFitGoal;
+
+  /// No description provided for @noviceLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Just starting'**
+  String get noviceLevel;
+
+  /// No description provided for @noviceLevelSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Small steps, big changes. Perfect if you\'re new to fitness.'**
+  String get noviceLevelSub;
+
+  /// No description provided for @intermediateLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'A little experience'**
+  String get intermediateLevel;
+
+  /// No description provided for @intermediateLevelSub.
+  ///
+  /// In en, this message translates to:
+  /// **'You know the basics. Great if you exercise now and then.'**
+  String get intermediateLevelSub;
+
+  /// No description provided for @advancedLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness fan'**
+  String get advancedLevel;
+
+  /// No description provided for @advancedLevelSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Push yourself. For people who train often.'**
+  String get advancedLevelSub;
+
+  /// No description provided for @requestsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'REQUESTS'**
+  String get requestsLabel;
+
+  /// No description provided for @youRequestedJoin.
+  ///
+  /// In en, this message translates to:
+  /// **'You asked to join {name}'**
+  String youRequestedJoin(String name);
+
+  /// No description provided for @aClub.
+  ///
+  /// In en, this message translates to:
+  /// **'a club'**
+  String get aClub;
+
+  /// No description provided for @noTasksYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks yet'**
+  String get noTasksYet;
+
+  /// No description provided for @createTaskToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a task to get started.'**
+  String get createTaskToStart;
+
+  /// No description provided for @goals.
+  ///
+  /// In en, this message translates to:
+  /// **'Goals'**
+  String get goals;
+
+  /// No description provided for @history.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get history;
+
+  /// No description provided for @profileAndGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'PROFILE & GOAL'**
+  String get profileAndGoal;
+
+  /// No description provided for @editFitnessProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Fitness Profile >>'**
+  String get editFitnessProfile;
+
+  /// No description provided for @editFitnessGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Fitness Goal >>'**
+  String get editFitnessGoal;
+
+  /// No description provided for @currentWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Weight'**
+  String get currentWeight;
+
+  /// No description provided for @currentHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Height'**
+  String get currentHeight;
+
+  /// No description provided for @fitnessLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness Level'**
+  String get fitnessLevel;
+
+  /// No description provided for @targetDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Date'**
+  String get targetDateLabel;
+
+  /// No description provided for @targetWeightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Weight'**
+  String get targetWeightLabel;
+
+  /// No description provided for @noneValue.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get noneValue;
+
+  /// No description provided for @notClubMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Join this club first to create a challenge.'**
+  String get notClubMember;
 }
 
 class _AppLocalizationsDelegate

@@ -4,9 +4,14 @@ import 'package:share_plus/share_plus.dart';
 import '../controllers/fitness_club_controller.dart';
 import '../../data/models/fitness_club_model.dart';
 import '../../data/models/group_challenge_model.dart';
+import 'club_challenge_detail_screen.dart';
+import 'club_members_screen.dart';
+import 'club_overview_screen.dart';
+import 'create_club_challenge_screen.dart';
 import 'invite_people_screen.dart';
-import 'running_tracking_screen.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/no_data_component.dart';
 
 class ClubDetailScreen extends StatefulWidget {
   final FitnessClubModel club;
@@ -44,7 +49,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
               _buildHeroHeader(currentClub),
               _buildClubIdentity(currentClub),
               const SizedBox(height: 28),
-              _buildCustomizeChallengeAction(context, currentClub),
+              _buildCustomizeChallengeSection(currentClub),
               const SizedBox(height: 24),
               _buildFeaturedChallengesSection(currentClub),
               const SizedBox(height: 48),
@@ -107,7 +112,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => _showClubInfoModal(context, club),
+                  onTap: () => Get.to(() => ClubOverviewScreen(club: club)),
                   child: Container(
                     width: 38,
                     height: 38,
@@ -194,7 +199,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
               ),
             ),
           ),
-          const SizedBox(width: 14),
+          SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,35 +208,38 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                 Row(
                   children: [
                     Flexible(
-                      child: Text(
+                      child: GestureDetector(
+                        onTap: () => _showClubInfoModal(context, club),
+                        child: Text(
                         club.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                           letterSpacing: -0.2,
                         ),
                       ),
+                      ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     GestureDetector(
-                      onTap: () => _showClubInfoModal(context, club),
+                      onTap: () => Get.to(() => ClubMembersScreen(club: club)),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             '${club.memberCount}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const SizedBox(width: 3),
-                          const Icon(
-                            Icons.people_outline,
+                          SizedBox(width: 3),
+                          Icon(
+                            club.isPrivate ? Icons.lock_outline : Icons.people_outline,
                             color: AppColors.textPrimary,
                             size: 17,
                           ),
@@ -240,13 +248,11 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Row(
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        Get.to(() => const InvitePeopleScreen());
-                      },
+                      onTap: () => _inviteMembers(club),
                       child: Container(
                         width: 32,
                         height: 32,
@@ -258,14 +264,14 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                             width: 1,
                           ),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.person_add_alt_outlined,
                           color: AppColors.textPrimary,
                           size: 16,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                     GestureDetector(
                       onTap: () {
                         final shareText = club.joinToken.isNotEmpty
@@ -284,7 +290,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                             width: 1,
                           ),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.file_upload_outlined,
                           color: AppColors.textPrimary,
                           size: 16,
@@ -301,22 +307,120 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     );
   }
 
-  Widget _buildCustomizeChallengeAction(BuildContext context, FitnessClubModel club) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: GestureDetector(
-        onTap: () => _showAddChallengeSheet(context, club),
-        behavior: HitTestBehavior.opaque,
-        child: const Text(
-          'Customize Your Own Challenge +',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.2,
+  Future<void> _inviteMembers(FitnessClubModel club) async {
+    final existingIds = _controller.clubMembers.map((m) => m.userId).toSet();
+    final result = await Get.to(
+      () => InvitePeopleScreen(initialSelectedIds: existingIds),
+    );
+    if (result is! List<int>) return;
+
+    final newIds = result.where((id) => !existingIds.contains(id)).toList();
+    if (newIds.isEmpty) return;
+
+    var added = 0;
+    for (final userId in newIds) {
+      if (await _controller.addMember(club.id, userId)) added++;
+    }
+
+    await _controller.loadClubDetails(club.id);
+
+    final l10n = AppLocalizations.of(Get.context!);
+    Get.snackbar(
+      added > 0 ? (l10n?.invited ?? 'Invited') : (l10n?.errorTitle ?? 'Error'),
+      added > 0
+          ? (l10n?.membersAdded(added, club.name) ?? '$added added to ${club.name}.')
+          : (l10n?.couldNotAddMembers ?? 'Could not add members. Please try again.'),
+      backgroundColor: added > 0 ? const Color(0xFF48A45B) : const Color(0xFFEF4444),
+      colorText: Colors.white,
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  String _prettyWorkout(String type) {
+    if (type.isEmpty) return 'Workout';
+    return type
+        .replaceAll('_', ' ')
+        .split(' ')
+        .map((w) => w.isEmpty ? w : '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}')
+        .join(' ');
+  }
+
+  String _formatCardDate(DateTime? value) {
+    if (value == null) return '';
+    final day = value.day.toString().padLeft(2, '0');
+    final month = value.month.toString().padLeft(2, '0');
+    return '$day / $month / ${value.year}';
+  }
+
+  String _formatCardDateRange(DateTime? start, DateTime? end) {
+    if (start == null) return '';
+    String part(DateTime value) {
+      final day = value.day.toString().padLeft(2, '0');
+      final month = value.month.toString().padLeft(2, '0');
+      return '$day / $month';
+    }
+
+    if (end == null) return part(start);
+    return '${part(start)} - ${part(end)}';
+  }
+
+  String _formatCardTime(DateTime value) {
+    final period = value.hour >= 12 ? 'PM' : 'AM';
+    final hour = value.hour % 12 == 0 ? 12 : value.hour % 12;
+    return '$hour:${value.minute.toString().padLeft(2, '0')}$period';
+  }
+
+  String _formatCardTimeRange(DateTime? start, DateTime? end) {
+    if (start == null) return '';
+    if (end == null) return _formatCardTime(start);
+    return '${_formatCardTime(start)} - ${_formatCardTime(end)}';
+  }
+
+  Widget _buildCustomizeChallengeSection(FitnessClubModel club) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: GestureDetector(
+            onTap: () => _openCreateChallenge(club),
+            behavior: HitTestBehavior.opaque,
+            child: Text(
+              'Customize Your Own Challenge +',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.2,
+              ),
+            ),
           ),
         ),
-      ),
+        const SizedBox(height: 16),
+        Obx(() {
+          final challenges = _controller.customClubChallenges;
+          if (challenges.isEmpty) return const SizedBox.shrink();
+          return ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: challenges.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 14),
+            itemBuilder: (context, index) {
+              final c = challenges[index];
+              return _buildChallengeCard(
+                title: c.name,
+                lines: [
+                  _formatCardDate(c.startAt ?? c.endAt),
+                  _formatCardTimeRange(c.startAt, c.endAt),
+                  _prettyWorkout(c.workoutType),
+                ],
+                onGetStarted: () => _handleChallengeTap(c),
+              );
+            },
+          );
+        }),
+      ],
     );
   }
 
@@ -324,7 +428,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Text(
             'Featured Challenges',
@@ -338,45 +442,75 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
         ),
         const SizedBox(height: 16),
         Obx(() {
-          final challenges = _controller.clubChallenges;
-          if (challenges.isNotEmpty) {
+          final l10n = AppLocalizations.of(Get.context!);
+          final recommended = _controller.recommendedClubChallenges;
+          final catalog = _controller.catalogChallenges;
+
+          if (_controller.isLoadingClubDetails.value &&
+              recommended.isEmpty &&
+              catalog.isEmpty) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Text(
+                l10n?.loadingChallenges ?? 'Loading challenges...',
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              ),
+            );
+          }
+
+          if (recommended.isNotEmpty) {
             return ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: challenges.length,
+              itemCount: recommended.length,
               separatorBuilder: (_, __) => const SizedBox(height: 14),
               itemBuilder: (context, index) {
-                final c = challenges[index];
+                final c = recommended[index];
                 return _buildChallengeCard(
                   title: c.name,
-                  subtitle: '${c.targetValue.toInt()} ${c.targetUnit} • ${c.workoutType.capitalizeFirst}',
+                  lines: [
+                    _formatCardDateRange(c.startAt, c.endAt),
+                    c.description.isNotEmpty
+                        ? c.description
+                        : _prettyWorkout(c.workoutType),
+                  ],
                   onGetStarted: () => _handleChallengeTap(c),
                 );
               },
             );
           }
 
-          return Column(
-            children: [
-              _buildChallengeCard(
-                title: '100KM In August',
-                subtitle: 'Intermediate Level',
-                onGetStarted: () => Get.to(() => const RunningTrackingScreen()),
+          if (catalog.isEmpty) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              child: NoDataComponent(
+                compact: true,
+                title: l10n?.noClubChallenges ?? 'No featured challenges yet',
+                subtitle: l10n?.createOneToStart ?? 'Check back soon for recommended challenges.',
               ),
-              const SizedBox(height: 14),
-              _buildChallengeCard(
-                title: '50KM Sprint Month',
-                subtitle: 'Intermediate Level',
-                onGetStarted: () => Get.to(() => const RunningTrackingScreen()),
-              ),
-              const SizedBox(height: 14),
-              _buildChallengeCard(
-                title: '1000 Push-ups Club',
-                subtitle: 'Advanced Level',
-                onGetStarted: () => Get.to(() => const RunningTrackingScreen()),
-              ),
-            ],
+            );
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: catalog.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 14),
+            itemBuilder: (context, index) {
+              final c = catalog[index];
+              return _buildChallengeCard(
+                title: c.name,
+                lines: [
+                  '${c.targetValue.toInt()} ${c.targetUnit}',
+                  c.description.isNotEmpty
+                      ? c.description
+                      : _prettyWorkout(c.workoutType),
+                ],
+                onGetStarted: () => _startCatalogChallenge(club, c),
+              );
+            },
           );
         }),
       ],
@@ -385,12 +519,12 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
 
   Widget _buildChallengeCard({
     required String title,
-    required String subtitle,
+    required List<String> lines,
     required VoidCallback onGetStarted,
   }) {
+    final meta = lines.where((line) => line.trim().isNotEmpty).toList();
     return Container(
       height: 156,
-      margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
@@ -446,17 +580,19 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                       letterSpacing: -0.2,
                     ),
                   ),
-                  const SizedBox(height: 3),
-                  Text(
-                    subtitle,
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(
-                      color: Color(0xFFD1D5DB),
-                      fontSize: 12.5,
-                      fontStyle: FontStyle.italic,
-                      fontWeight: FontWeight.w400,
+                  for (final line in meta) ...[
+                    const SizedBox(height: 3),
+                    Text(
+                      line,
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(
+                        color: Color(0xFFD1D5DB),
+                        fontSize: 12.5,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
-                  ),
+                  ],
                   const SizedBox(height: 14),
                   GestureDetector(
                     onTap: onGetStarted,
@@ -503,12 +639,21 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     );
   }
 
-  void _handleChallengeTap(GroupFitnessChallengeModel challenge) {
-    if (challenge.workoutType.toUpperCase() == 'RUNNING') {
-      Get.to(() => const RunningTrackingScreen());
-    } else {
-      Get.to(() => const RunningTrackingScreen());
+  Future<void> _startCatalogChallenge(
+    FitnessClubModel club,
+    GroupChallengeCatalogModel catalog,
+  ) async {
+    final created = await _controller.startCatalogChallenge(
+      clubId: club.id,
+      catalog: catalog,
+    );
+    if (created != null) {
+      _handleChallengeTap(created);
     }
+  }
+
+  void _handleChallengeTap(GroupFitnessChallengeModel challenge) {
+    Get.to(() => ClubChallengeDetailScreen(challenge: challenge));
   }
 
   void _showClubInfoModal(BuildContext context, FitnessClubModel club) {
@@ -541,14 +686,14 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: Text(
                           club.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -574,12 +719,12 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Text(
                     club.description.isNotEmpty
                         ? club.description
                         : 'Stay active, motivate each other, and complete challenges together.',
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4),
+                    style: TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4),
                   ),
                   const SizedBox(height: 16),
                   if (!club.isMember)
@@ -602,31 +747,30 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                             }
                           },
                           child: Text(
-                            club.isPrivate ? 'Request to Join' : 'Join Club',
-                            style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+                            club.isPrivate
+                                ? (AppLocalizations.of(Get.context!)?.requestJoin ?? 'Request')
+                                : (AppLocalizations.of(Get.context!)?.joinClub ?? 'Join Club'),
+                            style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
                     ),
-                  const Divider(color: AppColors.borderLight),
-                  const SizedBox(height: 8),
+                  Divider(color: AppColors.borderLight),
+                  SizedBox(height: 8),
                   Text(
-                    'Members (${club.memberCount})',
-                    style: const TextStyle(
+                    AppLocalizations.of(Get.context!)?.membersCount(club.memberCount) ?? 'Members (${club.memberCount})',
+                    style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   Obx(() {
                     if (_controller.clubMembers.isEmpty) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Text(
-                          'No members found',
-                          style: TextStyle(color: AppColors.textCaption, fontSize: 13),
-                        ),
+                      return NoDataComponent(
+                        compact: true,
+                        title: AppLocalizations.of(Get.context!)?.noMembersJoined ?? 'No members found',
                       );
                     }
 
@@ -634,7 +778,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: _controller.clubMembers.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 8),
+                      separatorBuilder: (_, __) => SizedBox(height: 8),
                       itemBuilder: (context, index) {
                         final member = _controller.clubMembers[index];
                         return Container(
@@ -652,14 +796,14 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                                   member.userName != null && member.userName!.isNotEmpty
                                       ? member.userName![0].toUpperCase()
                                       : 'M',
-                                  style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+                                  style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   member.userName ?? 'Member #${member.userId}',
-                                  style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600, fontSize: 13),
+                                  style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600, fontSize: 13),
                                 ),
                               ),
                               Container(
@@ -694,158 +838,11 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     );
   }
 
-  void _showAddChallengeSheet(BuildContext context, FitnessClubModel club) {
-    final titleController = TextEditingController();
-    final targetController = TextEditingController(text: '5000');
-    String selectedType = 'RUNNING';
-    String targetUnit = 'Steps';
-    bool isSubmitting = false;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.cardSurface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Padding(
-              padding: EdgeInsets.fromLTRB(
-                20,
-                20,
-                20,
-                MediaQuery.of(context).viewInsets.bottom + 20,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Customize Your Challenge',
-                        style: TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close, color: AppColors.textSecondary),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: titleController,
-                    style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
-                    decoration: InputDecoration(
-                      labelText: 'Challenge Title',
-                      labelStyle: const TextStyle(color: AppColors.textSecondary),
-                      hintText: 'e.g. 100KM In August',
-                      hintStyle: const TextStyle(color: AppColors.textCaption),
-                      filled: true,
-                      fillColor: AppColors.chipSurface,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: selectedType,
-                          dropdownColor: AppColors.chipSurface,
-                          style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
-                          decoration: InputDecoration(
-                            labelText: 'Type',
-                            labelStyle: const TextStyle(color: AppColors.textSecondary),
-                            filled: true,
-                            fillColor: AppColors.chipSurface,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          items: const [
-                            DropdownMenuItem(value: 'RUNNING', child: Text('Running')),
-                            DropdownMenuItem(value: 'PUSH_UP', child: Text('Push Up')),
-                            DropdownMenuItem(value: 'CYCLING', child: Text('Cycling')),
-                          ],
-                          onChanged: (val) {
-                            if (val != null) {
-                              setModalState(() {
-                                selectedType = val;
-                                targetUnit = val == 'PUSH_UP' ? 'Reps' : 'Steps';
-                              });
-                            }
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextField(
-                          controller: targetController,
-                          keyboardType: TextInputType.number,
-                          style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
-                          decoration: InputDecoration(
-                            labelText: 'Target ($targetUnit)',
-                            labelStyle: const TextStyle(color: AppColors.textSecondary),
-                            filled: true,
-                            fillColor: AppColors.chipSurface,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      onPressed: isSubmitting
-                          ? null
-                          : () async {
-                              final title = titleController.text.trim();
-                              final targetVal = int.tryParse(targetController.text.trim()) ?? 0;
-                              if (title.isEmpty) {
-                                Get.snackbar('Error', 'Please enter a title');
-                                return;
-                              }
-                              setModalState(() => isSubmitting = true);
-                              await _controller.createClubChallenge(
-                                clubId: club.id,
-                                name: title,
-                                type: selectedType,
-                                targetValue: targetVal,
-                                targetUnit: targetUnit,
-                                description: 'MoveM Club Challenge for ${club.name}',
-                              );
-                              if (context.mounted) {
-                                Navigator.pop(context);
-                              }
-                            },
-                      child: isSubmitting
-                          ? const CircularProgressIndicator(color: AppColors.textPrimary, strokeWidth: 2)
-                          : const Text(
-                              'Add Challenge',
-                              style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-                            ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
+  Future<void> _openCreateChallenge(FitnessClubModel club) async {
+    final created = await Get.to(() => CreateClubChallengeScreen(club: club));
+    if (created == true) {
+      await _controller.loadClubDetails(club.id);
+    }
   }
 }
 

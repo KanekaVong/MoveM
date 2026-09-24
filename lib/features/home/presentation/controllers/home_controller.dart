@@ -7,7 +7,7 @@ import '../../../../shared/base/base_controller.dart';
 import '../../../auth/data/dto/response/user_response.dart';
 import '../../../fitness/data/models/workout_model.dart';
 import '../../../fitness/data/repositories/fitness_workout_repository.dart';
-import '../../../fitness/presentation/screens/club_explore_screen.dart';
+import '../../../fitness/presentation/screens/fitness_club_screen.dart';
 import '../../../fitness/presentation/screens/solo_challenge_list_screen.dart';
 import '../../../friends/presentation/bindings/friends_binding.dart';
 import '../../../friends/presentation/screens/add_friends_screen.dart';
@@ -230,12 +230,6 @@ class HomeController extends BaseController {
   }
 
   void onFitnessClubTap() {
-    Get.to(() => const ClubExploreScreen());
-  }
-
-  void onLogWorkoutTap() {
-    if (Get.isRegistered<MainNavController>()) {
-      Get.find<MainNavController>().changeTab(2);
-    }
+    Get.to(() => const FitnessClubScreen());
   }
 }

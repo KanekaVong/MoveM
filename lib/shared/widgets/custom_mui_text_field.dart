@@ -30,7 +30,6 @@ class CustomMuiTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Standard MUI Input Decoration matching your design
     final decoration = InputDecoration(
       labelText: label,
       labelStyle: const TextStyle(
@@ -47,7 +46,7 @@ class CustomMuiTextField extends StatelessWidget {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -85,11 +84,11 @@ class CustomMuiTextField extends StatelessWidget {
       maxLength: maxLength,
       keyboardType: keyboardType,
       validator: validator,
+      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       style: const TextStyle(color: Colors.white, fontSize: 15),
       decoration: decoration,
     );
 
-    // If remaining count is needed (e.g., Bio field)
     if (maxLength != null && showRemainingCount && controller != null) {
       return Stack(
         alignment: Alignment.centerRight,

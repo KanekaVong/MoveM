@@ -10,6 +10,7 @@ import '../../data/dto/response/checklist_response.dart';
 import 'edit_task_screen.dart';
 import 'task_comment_screen.dart';
 import 'task_activity_feed_screen.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class TaskDetailScreen extends StatelessWidget {
   final String activityId;
@@ -26,7 +27,7 @@ class TaskDetailScreen extends StatelessWidget {
       body: SafeArea(
         child: Obx(() {
               if (controller.isLoading && controller.task.value == null) {
-                return const Center(
+                return Center(
                   child: CircularProgressIndicator(color: AppColors.taskBluePrimary),
                 );
               }
@@ -34,7 +35,7 @@ class TaskDetailScreen extends StatelessWidget {
               final task = controller.task.value;
               if (task == null) {
                 return Center(
-                  child: Text(l10n?.noNotifications ?? 'Task not found', style: const TextStyle(color: AppColors.textPrimary)),
+                  child: Text(l10n?.noNotifications ?? 'Task not found', style: TextStyle(color: AppColors.textPrimary)),
                 );
               }
 
@@ -43,13 +44,13 @@ class TaskDetailScreen extends StatelessWidget {
                   _buildTopBar(controller, task),
                   Expanded(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             task.activityName,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 26,
                               fontWeight: FontWeight.bold,
@@ -64,7 +65,7 @@ class TaskDetailScreen extends StatelessWidget {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
+                                    Text(
                                       'DEADLINES',
                                       style: TextStyle(
                                         color: AppColors.textPrimary,
@@ -73,10 +74,10 @@ class TaskDetailScreen extends StatelessWidget {
                                         letterSpacing: 0.5,
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
+                                    SizedBox(height: 4),
                                     Text(
                                       _formatDate(task.deadline),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         color: AppColors.textSecondary,
                                         fontSize: 12,
                                         fontStyle: FontStyle.italic,
@@ -88,8 +89,8 @@ class TaskDetailScreen extends StatelessWidget {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
-                                      'PRIORITY',
+                                    Text(
+                                      l10n?.priorityLabel ?? 'PRIORITY',
                                       style: TextStyle(
                                         color: AppColors.textPrimary,
                                         fontSize: 13,
@@ -112,14 +113,14 @@ class TaskDetailScreen extends StatelessWidget {
                             ],
                           ),
                           if (task.description != null && task.description!.trim().isNotEmpty) ...[
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             Container(
                               height: 0.5,
                               color: AppColors.textPrimary.withOpacity(0.12),
                             ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'DESCRIPTION',
+                            SizedBox(height: 12),
+                            Text(
+                              l10n?.descriptionLabel ?? 'DESCRIPTION',
                               style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 13,
@@ -127,10 +128,10 @@ class TaskDetailScreen extends StatelessWidget {
                                 letterSpacing: 0.5,
                               ),
                             ),
-                            const SizedBox(height: 6),
+                            SizedBox(height: 6),
                             Text(
                               task.description!.trim(),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 12,
                                 fontStyle: FontStyle.italic,
@@ -155,76 +156,36 @@ class TaskDetailScreen extends StatelessWidget {
 
   Widget _buildTopBar(TaskDetailController controller, TaskResponse task) {
     final isLocked = task.isComplete || task.isPastDeadline;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _buildCircleButton(
-            icon: Icons.chevron_left,
-            iconSize: 22,
-            onTap: () => Get.back(),
-          ),
-          Row(
-            children: [
-              _buildCircleButton(
-                icon: Icons.chat_bubble_outline,
-                iconSize: 18,
-                onTap: () {
-                  Get.to(() => TaskCommentScreen(
-                    activityId: task.activityId,
-                    taskTitle: task.activityName,
-                  ));
-                },
-              ),
-              const SizedBox(width: 10),
-              _buildCircleButton(
-                icon: Icons.access_time,
-                iconSize: 18,
-                onTap: () {
-                  Get.to(() => TaskActivityFeedScreen(activityId: task.activityId));
-                },
-              ),
-              if (!isLocked) ...[
-                const SizedBox(width: 10),
-                _buildCircleButton(
-                  icon: Icons.edit_outlined,
-                  iconSize: 18,
-                  onTap: () {
-                    Get.to(() => const EditTaskScreen(), arguments: task)?.then((value) {
-                      if (value == true) {
-                        controller.fetchTaskDetail(showLoading: false);
-                      }
-                    });
-                  },
-                ),
-              ],
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCircleButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    double iconSize = 18,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 38,
-        height: 38,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: const Color(0x33000000),
-          border: Border.all(color: AppColors.textPrimary.withOpacity(0.24), width: 1),
+    return TopToolBar(
+      title: task.activityName,
+      actions: [
+        TopToolBarAction(
+          icon: Icons.chat_bubble_outline,
+          onTap: () {
+            Get.to(() => TaskCommentScreen(
+              activityId: task.activityId,
+              taskTitle: task.activityName,
+            ));
+          },
         ),
-        child: Center(
-          child: Icon(icon, color: AppColors.textPrimary, size: iconSize),
+        TopToolBarAction(
+          icon: Icons.access_time,
+          onTap: () {
+            Get.to(() => TaskActivityFeedScreen(activityId: task.activityId));
+          },
         ),
-      ),
+        if (!isLocked)
+          TopToolBarAction(
+            icon: Icons.edit_outlined,
+            onTap: () {
+              Get.to(() => const EditTaskScreen(), arguments: task)?.then((value) {
+                if (value == true) {
+                  controller.fetchTaskDetail(showLoading: false);
+                }
+              });
+            },
+          ),
+      ],
     );
   }
 
@@ -237,7 +198,7 @@ class TaskDetailScreen extends StatelessWidget {
     final hasAttachments = task.attachments != null && task.attachments!.isNotEmpty;
 
     if (!hasLabels && !hasChecklists && !hasRepeat && !hasReminders && !hasCollaborators && !hasAttachments) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
 
     final List<Widget> sections = [];
@@ -249,7 +210,7 @@ class TaskDetailScreen extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text(
                   'LABEL',
                   style: TextStyle(
@@ -266,7 +227,7 @@ class TaskDetailScreen extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             _buildLabels(task),
           ],
         ),
@@ -278,7 +239,7 @@ class TaskDetailScreen extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'CHECKLISTS',
               style: TextStyle(
                 color: AppColors.textPrimary,
@@ -287,7 +248,7 @@ class TaskDetailScreen extends StatelessWidget {
                 letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _buildChecklists(task, controller),
           ],
         ),
@@ -299,7 +260,7 @@ class TaskDetailScreen extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'REPEAT',
               style: TextStyle(
                 color: AppColors.textPrimary,
@@ -308,10 +269,10 @@ class TaskDetailScreen extends StatelessWidget {
                 letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             Text(
               task.recurringType ?? 'RECURRING',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 12,
                 fontStyle: FontStyle.italic,
@@ -329,7 +290,7 @@ class TaskDetailScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               'Your Next Reminder',
               style: TextStyle(
                 color: AppColors.textPrimary,
@@ -356,21 +317,21 @@ class TaskDetailScreen extends StatelessWidget {
               children: [
                 Text(
                   'Attachments   (${task.attachments!.length})',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(width: 6),
-                const Icon(
+                SizedBox(width: 6),
+                Icon(
                   Icons.keyboard_arrow_up,
                   color: AppColors.textPrimary,
                   size: 18,
                 ),
               ],
             ),
-            const SizedBox(height: 14),
+            SizedBox(height: 14),
             _buildAttachments(task),
           ],
         ),
@@ -378,7 +339,7 @@ class TaskDetailScreen extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.all(20.0),
+      padding: EdgeInsets.all(20.0),
       decoration: BoxDecoration(
         color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(24),
@@ -409,17 +370,17 @@ class TaskDetailScreen extends StatelessWidget {
         try {
           color = Color(int.parse(label.color.replaceFirst('#', '0xFF')));
         } catch (_) {
-          color = const Color(0xFF68B684);
+          color = Color(0xFF68B684);
         }
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
             label.name,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -444,7 +405,7 @@ class TaskDetailScreen extends StatelessWidget {
         return GestureDetector(
           onTap: isLocked ? null : () => controller.toggleChecklistItem(item.id, item.completed),
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 12.0),
+            padding: EdgeInsets.only(bottom: 12.0),
             child: Row(
               children: [
                 Expanded(
@@ -462,7 +423,7 @@ class TaskDetailScreen extends StatelessWidget {
                   height: 20,
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: item.completed ? const Color(0xFF68B684) : AppColors.textSecondary,
+                      color: item.completed ? Color(0xFF68B684) : AppColors.textSecondary,
                       width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(3),
@@ -482,7 +443,7 @@ class TaskDetailScreen extends StatelessWidget {
 
   Widget _buildReminderDateView(TaskResponse task) {
     if (task.reminders == null || task.reminders!.isEmpty) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
 
     final rem = task.reminders!.first;
@@ -501,7 +462,7 @@ class TaskDetailScreen extends StatelessWidget {
       children: [
         Text(
           dayMonth,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 12,
             fontStyle: FontStyle.italic,
@@ -511,7 +472,7 @@ class TaskDetailScreen extends StatelessWidget {
         if (year.isNotEmpty)
           Text(
             year,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 12,
               fontStyle: FontStyle.italic,
@@ -525,7 +486,7 @@ class TaskDetailScreen extends StatelessWidget {
   Widget _buildCollaboratorsSection(TaskResponse task) {
     final taskCollaborators = task.collaborators ?? [];
     if (taskCollaborators.isEmpty) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
 
     return Column(
@@ -533,7 +494,7 @@ class TaskDetailScreen extends StatelessWidget {
       children: [
         Text(
           'Collaborators   (${taskCollaborators.length})',
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -554,17 +515,17 @@ class TaskDetailScreen extends StatelessWidget {
                   backgroundColor: AppColors.cardSurface,
                   child: Text(
                     initial,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
                     ),
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 11,
                     fontStyle: FontStyle.italic,
@@ -617,15 +578,15 @@ class TaskDetailScreen extends StatelessWidget {
                 url,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                errorBuilder: (_, __, ___) => SizedBox.shrink(),
               ),
             ),
           );
         }
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 8.0),
-          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+          margin: EdgeInsets.only(bottom: 8.0),
+          padding: EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
           decoration: BoxDecoration(
             color: AppColors.chipSurface,
             borderRadius: BorderRadius.circular(14),
@@ -640,15 +601,15 @@ class TaskDetailScreen extends StatelessWidget {
                   color: AppColors.cardSurface,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.attach_file, color: AppColors.textSecondary, size: 20),
+                child: Icon(Icons.attach_file, color: AppColors.textSecondary, size: 20),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Text(
                   fileName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -715,10 +676,10 @@ class TaskDetailScreen extends StatelessWidget {
                       height: 24,
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                           gradient: LinearGradient(
-                            begin: const Alignment(-0.5, -1.0),
-                            end: const Alignment(0.5, 1.0),
+                            begin: Alignment(-0.5, -1.0),
+                            end: Alignment(0.5, 1.0),
                             colors: [
                               AppColors.textPrimary.withOpacity(0.28),
                               AppColors.textPrimary.withOpacity(0.0),

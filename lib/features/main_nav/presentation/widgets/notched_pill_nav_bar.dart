@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class NotchedPillNavBar extends StatefulWidget {
   final int currentIndex;
@@ -11,10 +12,6 @@ class NotchedPillNavBar extends StatefulWidget {
     required this.onTap,
     required this.icons,
   });
-
-  static const _barColor = Color(0xFFE5E8ED);
-  static const _chipColor = Color(0xFFEEF0F4);
-  static const _iconColor = Color(0xFF111827);
 
   static const double barHeight = 56;
   static const double chipRadius = 26;
@@ -80,6 +77,10 @@ class _NotchedPillNavBarState extends State<NotchedPillNavBar>
 
   @override
   Widget build(BuildContext context) {
+    final barColor = AppColors.isDark ? const Color(0xFF1B2438) : const Color(0xFFE5E8ED);
+    final chipColor = AppColors.isDark ? const Color(0xFF2A354C) : const Color(0xFFEEF0F4);
+    final iconColor = AppColors.textPrimary;
+
     return SizedBox(
       height: NotchedPillNavBar.totalHeight,
       child: LayoutBuilder(
@@ -101,8 +102,8 @@ class _NotchedPillNavBarState extends State<NotchedPillNavBar>
                     painter: _NotchedPillPainter(
                       animatedIndex: animatedIndex,
                       itemCount: widget.icons.length,
-                      barColor: NotchedPillNavBar._barColor,
-                      chipColor: NotchedPillNavBar._chipColor,
+                      barColor: barColor,
+                      chipColor: chipColor,
                       chipRadius: NotchedPillNavBar.chipRadius,
                       notchExtra: NotchedPillNavBar.notchExtra,
                       barHeight: NotchedPillNavBar.barHeight,
@@ -120,6 +121,7 @@ class _NotchedPillNavBarState extends State<NotchedPillNavBar>
                       hitSize: index == _toIndex
                           ? NotchedPillNavBar.chipRadius * 2
                           : 48,
+                      iconColor: iconColor,
                       onTap: () => widget.onTap(index),
                     ),
                 ],
@@ -137,6 +139,7 @@ class _NavIconButton extends StatelessWidget {
   final bool selected;
   final Offset center;
   final double hitSize;
+  final Color iconColor;
   final VoidCallback onTap;
 
   const _NavIconButton({
@@ -144,6 +147,7 @@ class _NavIconButton extends StatelessWidget {
     required this.selected,
     required this.center,
     required this.hitSize,
+    required this.iconColor,
     required this.onTap,
   });
 
@@ -161,7 +165,7 @@ class _NavIconButton extends StatelessWidget {
           child: Icon(
             icon,
             size: selected ? 24 : 26,
-            color: NotchedPillNavBar._iconColor,
+            color: iconColor,
           ),
         ),
       ),
@@ -221,6 +225,8 @@ class _NotchedPillPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _NotchedPillPainter oldDelegate) {
     return oldDelegate.animatedIndex != animatedIndex ||
-        oldDelegate.itemCount != itemCount;
+        oldDelegate.itemCount != itemCount ||
+        oldDelegate.barColor != barColor ||
+        oldDelegate.chipColor != chipColor;
   }
 }

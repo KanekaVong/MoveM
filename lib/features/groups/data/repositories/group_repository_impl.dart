@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:logger/logger.dart';
 import '../../../../core/network/api_result.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../../domain/repositories/group_repository.dart';
@@ -11,7 +10,6 @@ import '../dto/response/pending_invite_response.dart';
 
 class GroupRepositoryImpl implements GroupRepository {
   final GroupService groupService;
-  final _logger = Logger();
 
   GroupRepositoryImpl({required this.groupService});
 
@@ -23,10 +21,8 @@ class GroupRepositoryImpl implements GroupRepository {
       final members = list.map((e) => GroupMemberResponse.fromJson(e as Map<String, dynamic>)).toList();
       return ApiSuccess(members);
     } on DioException catch (e) {
-      _logger.e('getMembers Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('getMembers Unknown Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }
@@ -41,10 +37,8 @@ class GroupRepositoryImpl implements GroupRepository {
       final invite = GroupInviteResponse.fromJson(data);
       return ApiSuccess(invite);
     } on DioException catch (e) {
-      _logger.e('inviteMember Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('inviteMember Unknown Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }
@@ -55,10 +49,8 @@ class GroupRepositoryImpl implements GroupRepository {
       await groupService.removeMember(activityId, memberId);
       return const ApiSuccess(null);
     } on DioException catch (e) {
-      _logger.e('removeMember Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('removeMember Unknown Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }
@@ -71,10 +63,8 @@ class GroupRepositoryImpl implements GroupRepository {
       final users = list.map((e) => GroupSearchUserResponse.fromJson(e as Map<String, dynamic>)).toList();
       return ApiSuccess(users);
     } on DioException catch (e) {
-      _logger.e('searchUsers Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('searchUsers Unknown Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }
@@ -87,10 +77,8 @@ class GroupRepositoryImpl implements GroupRepository {
       final invites = list.map((e) => PendingInviteResponse.fromJson(e as Map<String, dynamic>)).toList();
       return ApiSuccess(invites);
     } on DioException catch (e) {
-      _logger.e('getPendingInvites Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('getPendingInvites Unknown Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }
@@ -106,10 +94,8 @@ class GroupRepositoryImpl implements GroupRepository {
           .toList();
       return ApiSuccess(invites);
     } on DioException catch (e) {
-      _logger.e('getMyInvitations Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('getMyInvitations Unknown Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }
@@ -123,10 +109,8 @@ class GroupRepositoryImpl implements GroupRepository {
           : <String, dynamic>{};
       return ApiSuccess(GroupInviteResponse.fromJson(data));
     } on DioException catch (e) {
-      _logger.e('acceptInvite Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('acceptInvite Unknown Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }
@@ -140,10 +124,8 @@ class GroupRepositoryImpl implements GroupRepository {
           : <String, dynamic>{};
       return ApiSuccess(GroupInviteResponse.fromJson(data));
     } on DioException catch (e) {
-      _logger.e('rejectInvite Error: ${e.response?.data ?? e.message}');
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
-      _logger.e('rejectInvite Unknown Error: $e');
       return ApiError(ApiException(message: e.toString()));
     }
   }

@@ -6,6 +6,7 @@ import '../controllers/tracking_controller.dart';
 import '../../data/models/run_session.dart';
 import '../../data/models/solo_challenge_model.dart';
 import 'run_summary_screen.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class RunningTrackingScreen extends StatefulWidget {
   final SoloChallengeModel? challenge;
@@ -175,6 +176,14 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
           children: [
           Obx(() {
             final route = controller.route;
+            final startLatLng = controller.initialPosition.value;
+
+            if (startLatLng == null) {
+              return const ColoredBox(
+                color: Color(0xFF0A1329),
+                child: SizedBox.expand(),
+              );
+            }
 
             final polylines = <Polyline>{};
             final circles = <Circle>{};
@@ -253,8 +262,8 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
               },
               child: GoogleMap(
                 initialCameraPosition: CameraPosition(
-                  target: controller.initialPosition.value ?? const LatLng(11.5564, 104.9282),
-                  zoom: 16.0,
+                  target: startLatLng,
+                  zoom: 16.5,
                 ),
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false,
@@ -361,6 +370,56 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
           ),
 
           Obx(() {
+            if (controller.isAcquiringGps.value || controller.gpsFailed.value) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (controller.isAcquiringGps.value)
+                      const CircularProgressIndicator(color: Color(0xFF38BDF8)),
+                    if (controller.isAcquiringGps.value) const SizedBox(height: 18),
+                    Text(
+                      controller.gpsFailed.value
+                          ? 'Waiting for GPS'
+                          : 'Getting your location',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      controller.gpsFailed.value
+                          ? 'Move outdoors and try again'
+                          : 'Run starts after GPS lock',
+                      style: const TextStyle(color: Colors.white70, fontSize: 13),
+                    ),
+                    if (controller.gpsFailed.value) ...[
+                      const SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: controller.retryGpsLock,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF38BDF8),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Text(
+                            'Retry GPS',
+                            style: TextStyle(
+                              color: Color(0xFF0B1736),
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            }
+
             if (!controller.isCountingDown.value) return const SizedBox.shrink();
 
             return Center(
@@ -744,7 +803,7 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
         AlertDialog(
           backgroundColor: const Color(0xFF0F1B36),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          title: const Text('Exit Run?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          title: Text(AppLocalizations.of(Get.context!)?.exitRun ?? 'Exit Run?', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           content: const Text(
             'Your active running challenge will be paused. Do you want to leave?',
             style: TextStyle(color: Colors.white70),
@@ -752,7 +811,7 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
           actions: [
             TextButton(
               onPressed: () => Get.back(),
-              child: const Text('Cancel', style: TextStyle(color: Colors.white60)),
+              child: Text(AppLocalizations.of(Get.context!)?.cancel ?? 'Cancel', style: const TextStyle(color: Colors.white60)),
             ),
             TextButton(
               onPressed: () {

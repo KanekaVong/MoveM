@@ -12,6 +12,7 @@ import 'solo_challenge_list_screen.dart';
 import 'workout_history_screen.dart';
 import '../controllers/workout_history_controller.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/no_data_component.dart';
 
 class FitnessDashboardScreen extends StatelessWidget {
   final FitnessProfileController controller;
@@ -43,20 +44,20 @@ class FitnessDashboardScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildTopCard(),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 _buildCaloriesCard(),
-                const SizedBox(height: 22),
+                SizedBox(height: 22),
 
                 _buildQuickAction(),
-                const SizedBox(height: 26),
+                SizedBox(height: 26),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       l10n?.soloChallenges ?? 'Solo Challenges',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -77,21 +78,16 @@ class FitnessDashboardScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
 
                 Obx(() {
                   if (controller.isLoadingChallenges.value && controller.soloChallenges.isEmpty) {
-                    return const Center(child: CircularProgressIndicator(color: Colors.blueAccent));
+                    return Center(child: CircularProgressIndicator(color: Colors.blueAccent));
                   }
                   if (controller.soloChallenges.isEmpty) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text(
-                          'No solo challenges available',
-                          style: TextStyle(color: AppColors.textSecondary),
-                        ),
-                      ),
+                    return NoDataComponent(
+                      compact: true,
+                      title: l10n?.noSoloChallenges ?? 'No solo challenges available',
                     );
                   }
                   return Column(
@@ -129,7 +125,7 @@ class FitnessDashboardScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   "Today's Workout",
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -137,8 +133,8 @@ class FitnessDashboardScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 28),
-                const Text(
+                SizedBox(height: 28),
+                Text(
                   "Small step, big changes",
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -146,7 +142,7 @@ class FitnessDashboardScreen extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   "Start tracking your Fitness Journey with us now",
                   style: TextStyle(
@@ -197,11 +193,11 @@ class FitnessDashboardScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Calories Burned',
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Obx(() {
                     final stats = controller.statistics.value;
                     final calories = stats != null && stats.caloriesToday > 0
@@ -214,13 +210,13 @@ class FitnessDashboardScreen extends StatelessWidget {
                         children: [
                           TextSpan(
                             text: '$calories ',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 26,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const TextSpan(
+                          TextSpan(
                             text: 'kcal',
                             style: TextStyle(
                               color: AppColors.textSecondary,
@@ -240,7 +236,7 @@ class FitnessDashboardScreen extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(color: const Color(0xFF1E356D), width: 1),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.bar_chart_rounded,
                   color: AppColors.textPrimary,
                   size: 20,
@@ -278,7 +274,7 @@ class FitnessDashboardScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(2),
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           day,
           style: TextStyle(
@@ -292,141 +288,94 @@ class FitnessDashboardScreen extends StatelessWidget {
   }
 
   Widget _buildQuickAction() {
+    final l10n = AppLocalizations.of(Get.context!);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Quick Action',
+        Text(
+          l10n?.quickActions ?? 'Quick Action',
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 14),
+        SizedBox(height: 14),
         Row(
           children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  Get.to(() => const FitnessClubScreen());
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 22),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardSurface,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: const Color(0xFF1E2E4A),
-                      width: 1.2,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CustomPaint(
-                        size: const Size(26, 26),
-                        painter: const FitnessClubShieldPainter(color: Color(0xFF5B9BF6)),
-                      ),
-                      const SizedBox(width: 10),
-                      const Flexible(
-                        child: Text(
-                          'Fitness Club',
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            _quickActionCard(
+              label: l10n?.fitnessClubAction ?? 'Fitness Club',
+              onTap: () => Get.to(() => const FitnessClubScreen()),
+              icon: CustomPaint(
+                size: const Size(26, 26),
+                painter: const FitnessClubShieldPainter(color: Color(0xFF5B9BF6)),
               ),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: GestureDetector(
-                onTap: () async {
-                  await Get.to(() => const FitnessProfileGoalScreen());
-                  controller.fetchProfile();
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 22),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardSurface,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: const Color(0xFF1E2E4A),
-                      width: 1.2,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CustomPaint(
-                        size: const Size(26, 26),
-                        painter: const GoalsBurstPainter(color: Color(0xFF5B9BF6)),
-                      ),
-                      const SizedBox(width: 10),
-                      const Flexible(
-                        child: Text(
-                          'Goals',
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            SizedBox(width: 10),
+            _quickActionCard(
+              label: l10n?.goals ?? 'Goals',
+              onTap: () async {
+                await Get.to(() => const FitnessProfileGoalScreen());
+                controller.fetchProfile();
+              },
+              icon: CustomPaint(
+                size: const Size(26, 26),
+                painter: const GoalsBurstPainter(color: Color(0xFF5B9BF6)),
               ),
+            ),
+            SizedBox(width: 10),
+            _quickActionCard(
+              label: l10n?.history ?? 'History',
+              onTap: () {
+                if (Get.isRegistered<WorkoutHistoryController>()) {
+                  Get.delete<WorkoutHistoryController>(force: true);
+                }
+                Get.to(() => const WorkoutHistoryScreen());
+              },
+              icon: Icon(Icons.history, color: Color(0xFF5B9BF6), size: 26),
             ),
           ],
         ),
-        const SizedBox(height: 14),
-        GestureDetector(
-          onTap: () {
-            if (Get.isRegistered<WorkoutHistoryController>()) {
-              Get.delete<WorkoutHistoryController>(force: true);
-            }
-            Get.to(() => const WorkoutHistoryScreen());
-          },
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 22),
-            decoration: BoxDecoration(
-              color: AppColors.cardSurface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: const Color(0xFF1E2E4A),
-                width: 1.2,
-              ),
-            ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.history, color: Color(0xFF5B9BF6), size: 26),
-                SizedBox(width: 10),
-                Text(
-                  'History',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
+      ],
+    );
+  }
+
+  Widget _quickActionCard({
+    required String label,
+    required VoidCallback onTap,
+    required Widget icon,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 96,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+          decoration: BoxDecoration(
+            color: AppColors.cardSurface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.borderLight, width: 1.2),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              icon,
+              SizedBox(height: 8),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

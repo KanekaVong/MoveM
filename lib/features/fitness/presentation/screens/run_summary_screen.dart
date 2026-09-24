@@ -108,11 +108,11 @@ class RunSummaryScreen extends StatelessWidget {
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.3),
                               blurRadius: 8,
-                              offset: const Offset(0, 2),
+                              offset: Offset(0, 2),
                             ),
                           ],
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Icon(
                             Icons.arrow_back_ios_new_rounded,
                             color: AppColors.textPrimary,
@@ -122,7 +122,7 @@ class RunSummaryScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Text(
+                  Text(
                     'Workout Details',
                     style: TextStyle(
                       color: AppColors.textPrimary,
@@ -141,7 +141,7 @@ class RunSummaryScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Column(
                     children: [
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       SizedBox(
                         width: double.infinity,
@@ -151,7 +151,7 @@ class RunSummaryScreen extends StatelessWidget {
                           child: Center(
                             child: Text(
                               distanceStr,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 44,
                                 fontWeight: FontWeight.w900,
@@ -211,7 +211,7 @@ class RunSummaryScreen extends StatelessWidget {
                       RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 1.2,
@@ -220,7 +220,7 @@ class RunSummaryScreen extends StatelessWidget {
                           children: [
                             TextSpan(
                               text: 'CHALLENGE: ${challengeTitle.toUpperCase()} ',
-                              style: const TextStyle(color: AppColors.textPrimary),
+                              style: TextStyle(color: AppColors.textPrimary),
                             ),
                             const TextSpan(
                               text: 'COMPLETED 🔥',
@@ -298,17 +298,17 @@ class RunSummaryScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             color: Color(0xFF8E9BAE),
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 20,
             fontWeight: FontWeight.w900,
@@ -348,10 +348,10 @@ class RunSummaryScreen extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 9.5,
               fontWeight: FontWeight.bold,
@@ -393,19 +393,19 @@ class RoutePolygonPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final glowPaint = Paint()
-      ..color = const Color(0xFFFFA000).withValues(alpha: 0.3)
+      ..color = Color(0xFFFFA000).withValues(alpha: 0.3)
       ..strokeWidth = 6.0
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
       ..style = PaintingStyle.stroke
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 4.0);
 
     final nodePaint = Paint()
-      ..color = const Color(0xFFFFB300)
+      ..color = Color(0xFFFFB300)
       ..style = PaintingStyle.fill;
 
     final redNodePaint = Paint()
-      ..color = const Color(0xFFFF5252)
+      ..color = Color(0xFFFF5252)
       ..style = PaintingStyle.fill;
 
     final nodeOutlinePaint = Paint()

@@ -11,6 +11,8 @@ import '../bindings/friends_binding.dart';
 import '../widgets/friend_request_tile.dart';
 import '../widgets/friend_suggestion_tile.dart';
 import '../controllers/friends_controller.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class AddFriendsScreen extends GetView<FriendsController> {
   const AddFriendsScreen({super.key});
@@ -25,18 +27,25 @@ class AddFriendsScreen extends GetView<FriendsController> {
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+        child: Column(
+          children: [
+            TopToolBar(title: l10n?.addFriends ?? 'Add Friends'),
+            Expanded(
+              child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(context),
+              Text(
+                'Find And Connect With Friends To Stay Active Together',
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+              ),
               const SizedBox(height: 24),
               _buildSearchBar(context),
               const SizedBox(height: 24),
               _buildActionCards(context),
               const SizedBox(height: 32),
-              _buildSectionHeader(l10n?.friendRequests ?? 'Friend Requests', 0),
+              _buildSectionHeader(l10n?.friendRequests ?? 'Friend Requests', 1),
               const SizedBox(height: 16),
               Obx(() => _buildRequestsList()),
               const SizedBox(height: 32),
@@ -44,47 +53,20 @@ class AddFriendsScreen extends GetView<FriendsController> {
                     controller.searchQuery.value.trim().isNotEmpty
                         ? (l10n?.searchResults ?? 'Search Results')
                         : (l10n?.friendSuggestions ?? 'Friend Suggestions'),
-                    1,
+                    3,
                   )),
               const SizedBox(height: 16),
               Obx(() => _buildSuggestionsList()),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               _buildShareProfile(context),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary, size: 20),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              l10n?.addFriends ?? 'Add Friends',
-              style: const TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ],
         ),
-        const SizedBox(height: 4),
-        const Padding(
-          padding: EdgeInsets.only(left: 28.0),
-          child: Text(
-            'Find And Connect With Friends To Stay Active Together',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -97,7 +79,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
         border: Border.all(color: AppColors.borderLight),
       ),
       child: TextField(
-        style: const TextStyle(color: AppColors.textPrimary, fontSize: 12),
+        style: TextStyle(color: AppColors.textPrimary, fontSize: 12),
         onChanged: (value) => controller.searchFriends(value),
         decoration: InputDecoration(
           hintText: l10n?.search ?? 'Search For People On MoveM',
@@ -124,7 +106,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
             ),
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Expanded(
           child: GestureDetector(
             onTap: () => Get.to(() => const InviteFriendScreen()),
@@ -157,35 +139,36 @@ class AddFriendsScreen extends GetView<FriendsController> {
             ),
             child: Icon(icon, color: AppColors.blueAccent, size: 24),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14)),
-                const SizedBox(height: 2),
-                Text(subtitle, style: const TextStyle(color: AppColors.textMuted, fontSize: 12), overflow: TextOverflow.ellipsis),
+                Text(title, style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14)),
+                SizedBox(height: 2),
+                Text(subtitle, style: TextStyle(color: AppColors.textMuted, fontSize: 12), overflow: TextOverflow.ellipsis),
               ],
             ),
           ),
-          const Icon(Icons.arrow_forward_ios, color: AppColors.textCaption, size: 12),
+          Icon(Icons.arrow_forward_ios, color: AppColors.textCaption, size: 12),
         ],
       ),
     );
   }
 
   Widget _buildSectionHeader(String title, int tabIndex) {
+    final l10n = AppLocalizations.of(Get.context!);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title, style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.bold)),
+        Text(title, style: TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.bold)),
         GestureDetector(
           onTap: () {
             Get.to(() => FriendsTabScreen(initialIndex: tabIndex));
           },
           child: Row(
             children: [
-              const Text('View All', style: TextStyle(color: AppColors.blueAccent, fontSize: 12, fontWeight: FontWeight.bold)),
+              Text(l10n?.viewAll ?? 'View All', style: TextStyle(color: AppColors.blueAccent, fontSize: 12, fontWeight: FontWeight.bold)),
               const SizedBox(width: 4),
               const Icon(Icons.arrow_forward_ios, color: AppColors.blueAccent, size: 10),
             ],
@@ -205,15 +188,9 @@ class AddFriendsScreen extends GetView<FriendsController> {
 
   Widget _buildRequestsList() {
     if (controller.incomingRequests.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(24),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColors.cardSurface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.borderLight),
-        ),
-        child: const Center(child: Text('No friend requests.', style: TextStyle(color: AppColors.textMuted))),
+      return NoDataComponent(
+        compact: true,
+        title: AppLocalizations.of(Get.context!)?.noFriendRequests ?? 'No friend requests',
       );
     }
 
@@ -240,7 +217,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
                 onAccept: () => controller.acceptRequest(req.requestId),
                 onReject: () => controller.rejectRequest(req.requestId),
               ),
-              if (!isLast) const Divider(color: AppColors.borderLight),
+              if (!isLast) Divider(color: AppColors.borderLight),
             ],
           );
         }).toList(),
@@ -253,20 +230,14 @@ class AddFriendsScreen extends GetView<FriendsController> {
     final list = isSearching ? controller.searchResults : controller.suggestedFriends;
 
     if (list.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(24),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: AppColors.cardSurface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.borderLight),
-        ),
-        child: Center(
-          child: Text(
-            isSearching ? 'No users found matching your search.' : 'No suggestions found.',
-            style: const TextStyle(color: AppColors.textMuted),
-          ),
-        ),
+      return NoDataComponent(
+        compact: true,
+        title: isSearching
+            ? (AppLocalizations.of(Get.context!)?.noUsersFound ?? 'No users found')
+            : (AppLocalizations.of(Get.context!)?.noSuggestionsFound ?? 'No suggestions found'),
+        subtitle: isSearching
+            ? (AppLocalizations.of(Get.context!)?.nothingMatchesSearch ?? 'Nothing matches your search.')
+            : null,
       );
     }
 
@@ -295,7 +266,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
                 onAdd: () => controller.sendRequest(user.username),
                 onCancel: () => controller.cancelRequest(user.username),
               ),
-              if (!isLast) const Divider(color: AppColors.borderLight),
+              if (!isLast) Divider(color: AppColors.borderLight),
             ],
           );
         }).toList(),
@@ -308,8 +279,8 @@ class AddFriendsScreen extends GetView<FriendsController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n?.shareYourProfile ?? 'Share Your Profile', style: const TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 16),
+        Text(l10n?.shareYourProfile ?? 'Share Your Profile', style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
+        SizedBox(height: 16),
         Obx(() {
           final profileName = controller.profileName;
           final username = controller.profileUsername;
@@ -336,27 +307,27 @@ class AddFriendsScreen extends GetView<FriendsController> {
                             fit: BoxFit.cover,
                             placeholder: (_, __) => CircleAvatar(
                               backgroundColor: AppColors.chipSurface,
-                              child: Text(initial, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
+                              child: Text(initial, style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
                             ),
                             errorWidget: (_, __, ___) => CircleAvatar(
                               backgroundColor: AppColors.chipSurface,
-                              child: Text(initial, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
+                              child: Text(initial, style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
                             ),
                           )
                         : CircleAvatar(
                             backgroundColor: AppColors.chipSurface,
-                            child: Text(initial, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
+                            child: Text(initial, style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
                           ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         profileName,
-                        style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14),
+                        style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
@@ -398,8 +369,8 @@ class AddFriendsScreen extends GetView<FriendsController> {
             ),
             child: Icon(icon, color: AppColors.blueAccent, size: 20),
           ),
-          const SizedBox(height: 4),
-          Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 8)),
+          SizedBox(height: 4),
+          Text(label, style: TextStyle(color: AppColors.textSecondary, fontSize: 8)),
         ],
       ),
     );

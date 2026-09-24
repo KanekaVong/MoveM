@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../groups/data/dto/response/group_invite_response.dart';
 import '../controllers/task_invitation_controller.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class TaskInvitationScreen extends StatelessWidget {
   const TaskInvitationScreen({super.key});
@@ -12,56 +15,21 @@ class TaskInvitationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(TaskInvitationController());
 
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            TopToolBar(title: l10n?.invitation ?? 'Invitation'),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
-              child: SizedBox(
-                height: 42,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: GestureDetector(
-                        onTap: () => Get.back(),
-                        child: Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.chipSurface,
-                            border: Border.all(color: AppColors.borderLight),
-                          ),
-                          child: const Center(
-                            child: Icon(Icons.chevron_left, color: AppColors.textPrimary, size: 24),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Text(
-                      'INVITATION',
-                      style: TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const Padding(
               padding: EdgeInsets.fromLTRB(20, 8, 20, 12),
               child: Row(
                 children: [
                   Text(
-                    'INVITATIONS',
+                    l10n?.invitationsLabel ?? 'INVITATIONS',
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 13,
@@ -77,7 +45,7 @@ class TaskInvitationScreen extends StatelessWidget {
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value && controller.invitations.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: CircularProgressIndicator(color: AppColors.taskBluePrimary),
                   );
                 }
@@ -91,12 +59,12 @@ class TaskInvitationScreen extends StatelessWidget {
                           Text(
                             controller.errorMessage.value,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(color: AppColors.textSecondary),
+                            style: TextStyle(color: AppColors.textSecondary),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           TextButton(
                             onPressed: controller.fetchInvitations,
-                            child: const Text('Retry'),
+                            child: Text('Retry'),
                           ),
                         ],
                       ),
@@ -104,11 +72,10 @@ class TaskInvitationScreen extends StatelessWidget {
                   );
                 }
                 if (controller.invitations.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No invitations',
-                      style: TextStyle(color: AppColors.textCaption, fontSize: 15),
-                    ),
+                  return NoDataComponent(
+                    title: l10n?.noInvitations ?? 'No invitations',
+                    subtitle: l10n?.noInvitationsSub ??
+                        'Task invitations you receive will appear here.',
                   );
                 }
                 return RefreshIndicator(
@@ -184,20 +151,20 @@ class _InvitationCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Text.rich(
               TextSpan(
                 children: [
                   TextSpan(
                     text: name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
                     ),
                   ),
-                  const TextSpan(
+                  TextSpan(
                     text: ' has invited you collaborate in ',
                     style: TextStyle(
                       color: AppColors.textSecondary,
@@ -206,7 +173,7 @@ class _InvitationCard extends StatelessWidget {
                   ),
                   TextSpan(
                     text: taskName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -228,7 +195,7 @@ class _InvitationCard extends StatelessWidget {
               icon: Icons.close,
               onTap: onReject,
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             _circleAction(
               icon: Icons.check,
               onTap: onAccept,
@@ -246,7 +213,7 @@ class _InvitationCard extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         name[0].toUpperCase(),
-        style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+        style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
       ),
     );
   }

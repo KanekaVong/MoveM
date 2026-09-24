@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../core/network/api_result.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/base/base_controller.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../friends/data/dto/response/friend_response.dart';
 import '../../../friends/data/repositories/friends_repository_impl.dart';
 import '../../../friends/data/services/friends_service.dart';
@@ -15,6 +16,10 @@ import '../../../groups/data/dto/response/group_search_user_response.dart';
 import '../../../groups/data/dto/response/pending_invite_response.dart';
 
 class AddCollaboratorController extends BaseController {
+  AppLocalizations? get _l10n {
+    final ctx = Get.context;
+    return ctx == null ? null : AppLocalizations.of(ctx);
+  }
   final FriendsRepository friendsRepository = FriendsRepositoryImpl(friendsService: FriendsService());
   final GroupRepository groupRepository = GroupRepositoryImpl(groupService: GroupService());
   final searchController = TextEditingController();
@@ -198,11 +203,11 @@ class AddCollaboratorController extends BaseController {
     final clean = name.replaceAll('@', '').trim();
     if (clean.isEmpty) return;
     if (isCustomAlreadyMember(clean)) {
-      Get.snackbar('Already a Member', '$clean is already a member.', backgroundColor: AppColors.emerald, colorText: Colors.white);
+      Get.snackbar(_l10n?.alreadyMemberTitle ?? 'Already a Member', _l10n?.alreadyMember ?? '$clean is already a member.', backgroundColor: AppColors.emerald, colorText: Colors.white);
       return;
     }
     if (isCustomAlreadyInvited(clean)) {
-      Get.snackbar('Already Invited', '$clean already has a pending invitation.', backgroundColor: AppColors.amber, colorText: Colors.white);
+      Get.snackbar(_l10n?.alreadyInvitedTitle ?? 'Already Invited', _l10n?.alreadyInvited ?? '$clean already has a pending invitation.', backgroundColor: AppColors.amber, colorText: Colors.white);
       return;
     }
     Get.back(result: [

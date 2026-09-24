@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/home_controller.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class HomeHeader extends GetView<HomeController> {
   const HomeHeader({super.key});
@@ -22,17 +23,17 @@ class HomeHeader extends GetView<HomeController> {
             children: [
               Text(
                 l10n?.greetings ?? 'Greetings',
-                style: const TextStyle(
-                  color: Color(0xFF8A94A6),
+                style: TextStyle(
+                  color: AppColors.textCaption,
                   fontSize: 13.5,
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              const SizedBox(height: 2),
+              SizedBox(height: 2),
               Obx(() => Text(
                     controller.greetingName,
-                    style: const TextStyle(
-                      color: Color(0xFF111827),
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.3,
@@ -40,11 +41,11 @@ class HomeHeader extends GetView<HomeController> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   )),
-              const SizedBox(height: 3),
+              SizedBox(height: 3),
               Text(
-                controller.recentActivityMessage,
-                style: const TextStyle(
-                  color: Color(0xFF6B7280),
+                l10n?.stayActiveToday ?? 'Stay Active Today!',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
                   fontSize: 13.5,
                   fontWeight: FontWeight.w400,
                 ),
@@ -54,18 +55,18 @@ class HomeHeader extends GetView<HomeController> {
             ],
           ),
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.notifications_none_outlined, color: Color(0xFF111827), size: 24),
+              icon: Icon(Icons.notifications_none_outlined, color: AppColors.textPrimary, size: 24),
               onPressed: controller.onNotificationTap,
               padding: const EdgeInsets.all(6),
               constraints: const BoxConstraints(minWidth: 38, minHeight: 38),
             ),
-            const SizedBox(width: 2),
+            SizedBox(width: 2),
             IconButton(
-              icon: const Icon(Icons.person_add_outlined, color: Color(0xFF111827), size: 24),
+              icon: Icon(Icons.person_add_outlined, color: AppColors.textPrimary, size: 24),
               onPressed: controller.onAddFriendsTap,
               padding: const EdgeInsets.all(6),
               constraints: const BoxConstraints(minWidth: 38, minHeight: 38),

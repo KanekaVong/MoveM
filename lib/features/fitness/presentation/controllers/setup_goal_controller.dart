@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../shared/base/base_controller.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/models/setup_goal_request.dart';
 import '../../data/repositories/fitness_profile_repository.dart';
 import 'fitness_profile_controller.dart';
 
 class SetupGoalController extends BaseController {
+  AppLocalizations? get _l10n {
+    final ctx = Get.context;
+    return ctx == null ? null : AppLocalizations.of(ctx);
+  }
+
   final FitnessProfileRepository _repository = FitnessProfileRepository();
   final PageController pageController = PageController();
 
@@ -72,15 +78,15 @@ class SetupGoalController extends BaseController {
 
   void nextStep() {
     if (currentStep.value == 0 && selectedGoalType.value.isEmpty) {
-      Get.snackbar('Required', 'Please select a main goal');
+      Get.snackbar(_l10n?.requiredField ?? 'Required', _l10n?.pleaseSelectMainGoal ?? 'Please select a main goal');
       return;
     }
     if (currentStep.value == 1 && targetWeight.value <= 0) {
-      Get.snackbar('Required', 'Please enter a valid target weight');
+      Get.snackbar(_l10n?.requiredField ?? 'Required', _l10n?.pleaseEnterTargetWeight ?? 'Please enter a valid target weight');
       return;
     }
     if (currentStep.value == 2 && targetDate.value.isBefore(DateTime.now())) {
-      Get.snackbar('Required', 'Please select a future target date');
+      Get.snackbar(_l10n?.requiredField ?? 'Required', _l10n?.pleaseSelectFutureDate ?? 'Please select a future target date');
       return;
     }
 
@@ -93,7 +99,7 @@ class SetupGoalController extends BaseController {
       );
     } else {
       if (selectedWorkoutLevel.value.isEmpty) {
-        Get.snackbar('Required', 'Please select a preferred workout level');
+        Get.snackbar(_l10n?.requiredField ?? 'Required', _l10n?.pleaseSelectWorkoutLevel ?? 'Please select a preferred workout level');
         return;
       }
       _submitGoal();
@@ -139,8 +145,8 @@ class SetupGoalController extends BaseController {
         }
         Get.back(result: true);
         Get.snackbar(
-          'Success',
-          'Goal successfully set!',
+          _l10n?.success ?? 'Done',
+          _l10n?.goalSetSuccess ?? 'Goal successfully set!',
           backgroundColor: const Color(0xFF48A45B),
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,
@@ -149,8 +155,8 @@ class SetupGoalController extends BaseController {
       },
       onError: (e) {
         Get.snackbar(
-          'Error',
-          'Failed to set goal. Please try again.',
+          _l10n?.errorTitle ?? 'Error',
+          _l10n?.failedToSetGoal ?? 'Failed to set goal. Please try again.',
           backgroundColor: const Color(0xFFEF4444),
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,

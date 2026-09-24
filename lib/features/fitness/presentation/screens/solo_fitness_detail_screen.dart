@@ -77,7 +77,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                                 width: isRunning ? double.infinity : null,
                                 height: isRunning ? 330 : null,
                                 fit: isRunning ? BoxFit.cover : BoxFit.contain,
-                                errorBuilder: (_, __, ___) => const Center(
+                                errorBuilder: (_, __, ___) => Center(
                                   child: Icon(Icons.fitness_center, color: Colors.grey, size: 80),
                                 ),
                               ),
@@ -87,7 +87,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                           Expanded(
                             child: Container(
                               width: double.infinity,
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 color: AppColors.pageBackground,
                               ),
                               padding: EdgeInsets.fromLTRB(
@@ -108,7 +108,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                                           children: [
                                             Text(
                                               formattedTitle,
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 color: AppColors.textPrimary,
                                                 fontSize: 22,
                                                 fontWeight: FontWeight.w800,
@@ -116,10 +116,10 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                                                 height: 1.25,
                                               ),
                                             ),
-                                            const SizedBox(height: 12),
+                                            SizedBox(height: 12),
                                             Text(
                                               formattedDesc,
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 color: AppColors.textSecondary,
                                                 fontSize: 12.5,
                                                 height: 1.45,
@@ -128,7 +128,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                                           ],
                                         ),
                                       ),
-                                      const SizedBox(width: 16),
+                                      SizedBox(width: 16),
                                       Container(
                                         width: 44,
                                         height: 44,
@@ -140,7 +140,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                                             width: 1.5,
                                           ),
                                         ),
-                                        child: const Center(
+                                        child: Center(
                                           child: Icon(
                                             Icons.add,
                                             color: AppColors.textPrimary,
@@ -151,12 +151,12 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                                     ],
                                   ),
 
-                                  const SizedBox(height: 28),
+                                  SizedBox(height: 28),
 
                                   if (controller.isFetchingMore.value || controller.moreChallenges.isNotEmpty) ...[
                                     Row(
                                       children: [
-                                        const Text(
+                                        Text(
                                           'More Activity',
                                           style: TextStyle(
                                             color: AppColors.textPrimary,
@@ -178,12 +178,12 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                                         ],
                                       ],
                                     ),
-                                    const SizedBox(height: 16),
+                                    SizedBox(height: 16),
                                     ..._buildMoreActivities(controller),
-                                    const SizedBox(height: 8),
+                                    SizedBox(height: 8),
                                   ],
 
-                                  const SizedBox(height: 22),
+                                  SizedBox(height: 22),
 
                                   GestureDetector(
                                     onTap: () => controller.startWorkout(() => _showComingSoonModal(c, controller)),
@@ -263,7 +263,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Icon(
                         Icons.arrow_back_ios_new_rounded,
                         color: AppColors.textPrimary,
@@ -286,7 +286,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
     Get.bottomSheet(
       Container(
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.cardSurface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
@@ -313,34 +313,34 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                   width: 1.5,
                 ),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.schedule_rounded,
                 color: Color(0xFF38BDF8),
                 size: 32,
               ),
             ),
-            const SizedBox(height: 18),
+            SizedBox(height: 18),
             Text(
               '$workoutTitle Tracking Coming Soon',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.2,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               'Tracking for $workoutTitle is currently in active development and will be available in an upcoming update.',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 14,
                 height: 1.5,
               ),
             ),
-            const SizedBox(height: 28),
+            SizedBox(height: 28),
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -355,7 +355,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () => Get.back(),
-                child: const Text(
+                child: Text(
                   'Got it',
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -451,12 +451,12 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                       width: 80,
                       height: 72,
                       color: AppColors.borderLight,
-                      child: const Icon(Icons.fitness_center, color: AppColors.textCaption),
+                      child: Icon(Icons.fitness_center, color: AppColors.textCaption),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -464,17 +464,17 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     if (subtitle != null && subtitle.isNotEmpty) ...[
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         subtitle,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12.5,
                         ),

@@ -2,19 +2,22 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class HomeQuickActions extends GetView<HomeController> {
   const HomeQuickActions({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Quick Actions',
+        Text(
+          l10n?.quickActions ?? 'Quick Actions',
           style: TextStyle(
-            color: Color(0xFF111827),
+            color: AppColors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.2,
@@ -28,7 +31,7 @@ class HomeQuickActions extends GetView<HomeController> {
                 size: Size(26, 26),
                 painter: ChallengeIconPainter(),
               ),
-              label: 'Challenge',
+              label: l10n?.challengeAction ?? 'Challenge',
               onTap: controller.onChallengeTap,
             ),
             const SizedBox(width: 10),
@@ -38,7 +41,7 @@ class HomeQuickActions extends GetView<HomeController> {
                 color: Color(0xFF3B6FE8),
                 size: 28,
               ),
-              label: 'Tasks',
+              label: l10n?.task ?? 'Tasks',
               onTap: controller.onAddTaskTap,
             ),
             const SizedBox(width: 10),
@@ -51,7 +54,7 @@ class HomeQuickActions extends GetView<HomeController> {
                   size: 28,
                 ),
               ),
-              label: 'Trips',
+              label: l10n?.trip ?? 'Trips',
               onTap: controller.onPlanTripsTap,
             ),
             const SizedBox(width: 10),
@@ -60,7 +63,7 @@ class HomeQuickActions extends GetView<HomeController> {
                 size: Size(26, 26),
                 painter: FitnessClubIconPainter(),
               ),
-              label: 'Fitness Club',
+              label: l10n?.fitnessClubAction ?? 'Fitness Club',
               onTap: controller.onFitnessClubTap,
             ),
           ],
@@ -89,7 +92,7 @@ class _QuickActionCard extends StatelessWidget {
         child: Container(
           height: 86,
           decoration: BoxDecoration(
-            color: const Color(0xFFDCE6F5),
+            color: AppColors.chipSurface,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -99,11 +102,11 @@ class _QuickActionCard extends StatelessWidget {
                 height: 28,
                 child: Center(child: icon),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 label,
-                style: const TextStyle(
-                  color: Color(0xFF1F3A8A),
+                style: TextStyle(
+                  color: AppColors.accentBlue,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                 ),

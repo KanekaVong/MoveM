@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 import '../../data/models/workout_model.dart';
 import '../controllers/workout_history_controller.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class WorkoutHistoryScreen extends StatelessWidget {
   const WorkoutHistoryScreen({super.key});
@@ -11,29 +14,14 @@ class WorkoutHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(WorkoutHistoryController());
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
-      appBar: AppBar(
-        backgroundColor: AppColors.pageBackground,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
-          onPressed: () => Get.back(),
-        ),
-        centerTitle: true,
-        title: const Text(
-          'Workout History',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      appBar: TopToolBar(title: l10n?.workoutHistory ?? 'Workout History'),
       body: Obx(() {
         if (controller.isLoading.value && controller.items.isEmpty) {
-          return const Center(
+          return Center(
             child: CircularProgressIndicator(color: Color(0xFF3B82F6)),
           );
         }
@@ -45,17 +33,17 @@ class WorkoutHistoryScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.history, color: AppColors.textCaption, size: 56),
-                  const SizedBox(height: 16),
+                  Icon(Icons.history, color: AppColors.textCaption, size: 56),
+                  SizedBox(height: 16),
                   Text(
                     controller.errorMessage.value,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                    style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                   TextButton(
                     onPressed: controller.fetchHistory,
-                    child: const Text('Try again', style: TextStyle(color: Color(0xFF5B9BF6))),
+                    child: Text(l10n?.tryAgain ?? 'Try again', style: TextStyle(color: Color(0xFF5B9BF6))),
                   ),
                 ],
               ),
@@ -64,23 +52,9 @@ class WorkoutHistoryScreen extends StatelessWidget {
         }
 
         if (controller.items.isEmpty) {
-          return const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.history, color: AppColors.textCaption, size: 56),
-                SizedBox(height: 16),
-                Text(
-                  'No workouts yet',
-                  style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.w700),
-                ),
-                SizedBox(height: 6),
-                Text(
-                  'Finish a run or workout to see it here.',
-                  style: TextStyle(color: AppColors.textCaption, fontSize: 13),
-                ),
-              ],
-            ),
+          return NoDataComponent(
+            title: l10n?.noWorkoutsYet ?? 'No workouts yet',
+            subtitle: l10n?.noWorkoutsYetSub ?? 'Finish a run or workout to see it here.',
           );
         }
 
@@ -135,14 +109,14 @@ class _WorkoutHistoryCard extends StatelessWidget {
                 ),
                 child: Icon(icon, color: accent, size: 22),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       type,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
@@ -198,10 +172,10 @@ class _WorkoutHistoryCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, color: AppColors.textSecondary, size: 15),
-        const SizedBox(width: 6),
+        SizedBox(width: 6),
         Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 12.5,
             fontWeight: FontWeight.w600,

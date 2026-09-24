@@ -30,7 +30,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get task => 'កិច្ចការ';
 
   @override
-  String get fitness => 'សុខភាព';
+  String get fitness => 'ហាត់ប្រាណ';
 
   @override
   String get trip => 'ដំណើរកម្សាន្ត';
@@ -104,7 +104,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get remove => 'ដកចេញ';
 
   @override
-  String get welcomeBack => 'ស្វាគមន៍ការត្រឡប់មកវិញ!';
+  String get welcomeBack => 'ស្វាគមន៍មកវិញ!';
 
   @override
   String get emailOrPhone => 'អ៊ីមែល ឬ លេខទូរសព្ទ';
@@ -113,10 +113,10 @@ class AppLocalizationsKm extends AppLocalizations {
   String get username => 'ឈ្មោះគណនី';
 
   @override
-  String get firstName => 'គោត្តនាម';
+  String get firstName => 'នាម';
 
   @override
-  String get lastName => 'នាម';
+  String get lastName => 'នាមត្រកូល';
 
   @override
   String get confirmPassword => 'បញ្ជាក់ពាក្យសម្ងាត់';
@@ -134,7 +134,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get verifyOtpTitle => 'ផ្ទៀងផ្ទាត់លេខកូដ';
 
   @override
-  String get otpCodeLabel => 'លេខកូដ OTP (៦ខ្ទង់)';
+  String get otpCodeLabel => 'លេខកូដ ៦ ខ្ទង់';
 
   @override
   String get resendCode => 'ផ្ញើលេខកូដម្ដងទៀត';
@@ -158,19 +158,19 @@ class AppLocalizationsKm extends AppLocalizations {
   String get greetings => 'សួស្ដី';
 
   @override
-  String get stayActiveToday => 'រក្សាសកម្មភាពរាល់ថ្ងៃ!';
+  String get stayActiveToday => 'សូមរក្សាភាពសកម្មថ្ងៃនេះ!';
 
   @override
   String get todayProgress => 'វឌ្ឍនភាពថ្ងៃនេះ';
 
   @override
-  String get ongoingTasks => 'កិច្ចការកំពុងបន្ត';
+  String get ongoingTasks => 'កិច្ចការកំពុងធ្វើ';
 
   @override
-  String get upcoming => 'ការងារបន្ទាប់';
+  String get upcoming => 'កិច្ចការបន្ទាប់';
 
   @override
-  String get reminders => 'ការរំលឹកទុកជាមុន';
+  String get reminders => 'ការរំលឹក';
 
   @override
   String get weeklyStats => 'ស្ថិតិប្រចាំសប្ដាហ៍';
@@ -188,7 +188,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get taskDetails => 'ព័ត៌មានលម្អិតកិច្ចការ';
 
   @override
-  String get addCollaborator => 'បន្ថែមអ្នកសហការ';
+  String get addCollaborator => 'អញ្ជើញមិត្ត';
 
   @override
   String get taskTitleLabel => 'ឈ្មោះកិច្ចការ';
@@ -212,13 +212,13 @@ class AppLocalizationsKm extends AppLocalizations {
   String get labelsLabel => 'ស្លាកសម្គាល់';
 
   @override
-  String get collaboratorsLabel => 'អ្នកចូលរួមសហការ';
+  String get collaboratorsLabel => 'មិត្តចូលរួម';
 
   @override
-  String get checklistLabel => 'បញ្ជីផ្ទៀងផ្ទាត់ការងារ';
+  String get checklistLabel => 'បញ្ជីការងារ';
 
   @override
-  String get addChecklistItem => 'បន្ថែមចំណុចការងារ';
+  String get addChecklistItem => 'បន្ថែមចំណុច';
 
   @override
   String get completedTasks => 'កិច្ចការបានបញ្ចប់';
@@ -227,7 +227,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get suggested => 'បានណែនាំ';
 
   @override
-  String get inviteCollaborators => 'អញ្ជើញអ្នកសហការ';
+  String get inviteCollaborators => 'អញ្ជើញមិត្តចូលរួម';
 
   @override
   String get searchCollaboratorsHint => 'ស្វែងរកមិត្តភក្តិតាមឈ្មោះ...';
@@ -287,16 +287,16 @@ class AppLocalizationsKm extends AppLocalizations {
   String get movemClub => 'ក្លឹប MoveM';
 
   @override
-  String get soloChallenges => 'ការប្រកួតប្រជែងទោល';
+  String get soloChallenges => 'ហាត់តែឯង';
 
   @override
-  String get groupActivity => 'សកម្មភាពជាក្រុម';
+  String get groupActivity => 'ហាត់ជាក្រុម';
 
   @override
   String get yourGoal => 'គោលដៅរបស់អ្នក';
 
   @override
-  String get liveTracking => 'តាមដានការរត់ផ្ទាល់';
+  String get liveTracking => 'កំពុងរត់';
 
   @override
   String get runSummary => 'សង្ខេបការរត់';
@@ -308,7 +308,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get runDetails => 'ព័ត៌មានលម្អិតការរត់';
 
   @override
-  String get pushUpWorkout => 'ការហ្វឹកហាត់អាវ៉ង់';
+  String get pushUpWorkout => 'ហាត់ឡើងចុះ';
 
   @override
   String get workoutDetails => 'ព័ត៌មានលម្អិតការហាត់';
@@ -317,10 +317,10 @@ class AppLocalizationsKm extends AppLocalizations {
   String get createActivity => 'បង្កើតសកម្មភាព';
 
   @override
-  String get createGroup => 'បង្កើតក្រុមហាត់';
+  String get createGroup => 'បង្កើតក្រុម';
 
   @override
-  String get invitePeople => 'អញ្ជើញមនុស្សចូលរួម';
+  String get invitePeople => 'អញ្ជើញមិត្ត';
 
   @override
   String get setupGoal => 'កំណត់គោលដៅ';
@@ -350,10 +350,10 @@ class AppLocalizationsKm extends AppLocalizations {
   String get repsLabel => 'ចំនួនដង';
 
   @override
-  String get tapToCount => 'ចុចលើអេក្រង់ដើម្បីរាប់ចំនួនដង';
+  String get tapToCount => 'ប៉ះអេក្រង់ដើម្បីរាប់';
 
   @override
-  String get greatJobWorkout => 'អស្ចារ្យណាស់! អ្នកបានបញ្ចប់ការហាត់ថ្ងៃនេះ';
+  String get greatJobWorkout => 'អស្ចារ្យ! អ្នកហាត់រួចហើយ';
 
   @override
   String get tripsMap => 'ផែនទីដំណើរកម្សាន្ត';
@@ -490,12 +490,681 @@ class AppLocalizationsKm extends AppLocalizations {
   String get edited => 'បានកែប្រែ';
 
   @override
-  String get deleteTask => 'លុបភារកិច្ច';
+  String get deleteTask => 'លុបកិច្ចការ';
 
   @override
   String get deleteTaskConfirm =>
-      'តើអ្នកពិតជាចង់លុបភារកិច្ចនេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។';
+      'តើអ្នកចង់លុបកិច្ចការនេះមែនទេ? មិនអាចត្រឡប់វិញបានទេ។';
 
   @override
-  String get taskDeletedSuccess => 'បានលុបភារកិច្ចដោយជោគជ័យ';
+  String get taskDeletedSuccess => 'បានលុបកិច្ចការហើយ';
+
+  @override
+  String get createClub => 'បង្កើតក្លឹប';
+
+  @override
+  String get clubNameLabel => 'ឈ្មោះក្លឹប';
+
+  @override
+  String get clubNameHint => 'បញ្ចូលឈ្មោះក្លឹប';
+
+  @override
+  String get clubDescriptionLabel => 'ការពិពណ៌នាក្លឹប';
+
+  @override
+  String get searchForClub => 'ស្វែងរកក្លឹប';
+
+  @override
+  String get clubInvitations => 'ការអញ្ជើញ';
+
+  @override
+  String get clubMembers => 'សមាជិក';
+
+  @override
+  String get clubOverview => 'ទិដ្ឋភាពទូទៅ';
+
+  @override
+  String get exploreClubs => 'រកមើលក្លឹប';
+
+  @override
+  String get publicLabel => 'សាធារណៈ';
+
+  @override
+  String get privateLabel => 'ឯកជន';
+
+  @override
+  String get selectPrivacy => 'ជ្រើសរើសភាពឯកជន';
+
+  @override
+  String get requiredField => 'សូមបំពេញ';
+
+  @override
+  String get pleaseEnterClubName => 'សូមបញ្ចូលឈ្មោះក្លឹប';
+
+  @override
+  String get myFriends => 'មិត្តភក្តិខ្ញុំ';
+
+  @override
+  String get myRequests => 'សំណើរបស់ខ្ញុំ';
+
+  @override
+  String get suggestionsTab => 'ការណែនាំ';
+
+  @override
+  String get noFriendsYet => 'មិនទាន់មានមិត្តភក្តិនៅឡើយទេ';
+
+  @override
+  String get noFriendsYetSub => 'មនុស្សដែលអ្នកបន្ថែមនឹងបង្ហាញនៅទីនេះ។';
+
+  @override
+  String get noFriendRequests => 'មិនមានសំណើមិត្តភក្តិទេ';
+
+  @override
+  String get noFriendRequestsSub =>
+      'ពេលមានគេផ្ញើសំណើមកអ្នក វានឹងបង្ហាញនៅទីនេះ។';
+
+  @override
+  String get noRequestsSent => 'មិនទាន់បានផ្ញើសំណើទេ';
+
+  @override
+  String get noRequestsSentSub => 'សំណើមិត្តភក្តិដែលអ្នកផ្ញើនឹងបង្ហាញនៅទីនេះ។';
+
+  @override
+  String get noSuggestionsFound => 'រកមិនឃើញការណែនាំទេ';
+
+  @override
+  String get noSuggestionsFoundSub =>
+      'បច្ចុប្បន្នមិនមាននរណាម្នាក់ដើម្បីណែនាំទេ។';
+
+  @override
+  String get noUsersFound => 'រកមិនឃើញមិត្តទេ';
+
+  @override
+  String get nothingMatchesSearch => 'គ្មានអ្វីត្រូវនឹងការស្វែងរករបស់អ្នកទេ។';
+
+  @override
+  String get workoutChallenge => 'ការហាត់ប្រកួត';
+
+  @override
+  String get filterChallenges => 'ជ្រើសប្រភេទ';
+
+  @override
+  String get allFilter => 'ទាំងអស់';
+
+  @override
+  String get noChallengesFound => 'រកមិនឃើញការប្រកួតទេ';
+
+  @override
+  String get workoutHistory => 'ប្រវត្តិការហាត់';
+
+  @override
+  String get noWorkoutsYet => 'មិនទាន់មានការហាត់នៅឡើយទេ';
+
+  @override
+  String get noWorkoutsYetSub => 'បញ្ចប់ការរត់ ឬការហាត់ដើម្បីមើលនៅទីនេះ។';
+
+  @override
+  String get noWorkoutSessionsYet => 'មិនទាន់មានវគ្គហាត់នៅឡើយទេ';
+
+  @override
+  String get noWorkoutSessionsYetSub =>
+      'បញ្ចប់ការរត់ ឬការហាត់អាវ៉ង់ដើម្បីមើលនៅទីនេះ!';
+
+  @override
+  String get tryAgain => 'ព្យាយាមម្តងទៀត';
+
+  @override
+  String get quickActions => 'សកម្មភាពរហ័ស';
+
+  @override
+  String get challengeAction => 'ហាត់ប្រកួត';
+
+  @override
+  String get fitnessClubAction => 'ក្លឹបហាត់ប្រាណ';
+
+  @override
+  String get historyTitle => 'ប្រវត្តិ';
+
+  @override
+  String get noActivityYet => 'មិនទាន់មានសកម្មភាពនៅឡើយទេ';
+
+  @override
+  String get noActivityYetSub => 'បច្ចុប្បន្នភាពនៃកិច្ចការនេះនឹងបង្ហាញនៅទីនេះ។';
+
+  @override
+  String get retry => 'ព្យាយាមម្តងទៀត';
+
+  @override
+  String get noNotificationsSub => 'ពេលមានអ្វីកើតឡើង អ្នកនឹងឃើញនៅទីនេះ។';
+
+  @override
+  String get endWorkout => 'បញ្ចប់ការហាត់?';
+
+  @override
+  String get endWorkoutConfirm => 'វឌ្ឍនភាពរបស់អ្នកនឹងត្រូវបានរក្សាទុក។';
+
+  @override
+  String get keepGoing => 'បន្តហាត់';
+
+  @override
+  String get exitRun => 'ចាកចេញពីការរត់?';
+
+  @override
+  String get exitRunConfirm => 'វឌ្ឍនភាពការរត់របស់អ្នកនឹងត្រូវបានរក្សាទុក។';
+
+  @override
+  String get unfriend => 'លែងជាមិត្ត';
+
+  @override
+  String get newsFeed => 'ព័ត៌មានថ្មី';
+
+  @override
+  String get feedEmptySub => 'ការហាត់ និងសកម្មភាពរបស់មិត្តនឹងបង្ហាញនៅទីនេះ។';
+
+  @override
+  String get writeAComment => 'សរសេរមតិ';
+
+  @override
+  String get joinClub => 'ចូលក្លឹប';
+
+  @override
+  String get joinClubSub => 'រកក្លឹបកំពុងសកម្ម';
+
+  @override
+  String get createClubSub => 'បង្កើតសហគមន៍ផ្ទាល់ខ្លួន';
+
+  @override
+  String get noClubsFound => 'រកមិនឃើញក្លឹបទេ';
+
+  @override
+  String get noClubsAvailable => 'មិនទាន់មានក្លឹបទេ';
+
+  @override
+  String get noClubsAvailableSub =>
+      'បង្កើតក្លឹប ឬរកមើលក្លឹបដើម្បីហាត់ជាមួយមិត្ត។';
+
+  @override
+  String get yourClubs => 'ក្លឹបរបស់អ្នក';
+
+  @override
+  String get discoverClubs => 'រកមើលក្លឹប';
+
+  @override
+  String get exploreAll => 'មើលទាំងអស់';
+
+  @override
+  String get beFirstClub => 'ក្លាយជាអ្នកបង្កើតក្លឹបដំបូង!';
+
+  @override
+  String get haventJoinedClubs => 'អ្នកមិនទាន់ចូលក្លឹបទេ';
+
+  @override
+  String get haventJoinedClubsSub =>
+      'ចូលក្លឹប ឬបង្កើតក្លឹបថ្មី ដើម្បីហាត់ជាមួយគ្នា។';
+
+  @override
+  String get noClubInvitations => 'មិនមានការអញ្ជើញក្លឹបទេ';
+
+  @override
+  String get noClubInvitationsSub =>
+      'ពេលមានគេអញ្ជើញអ្នកចូលក្លឹប នឹងបង្ហាញនៅទីនេះ។';
+
+  @override
+  String get noJoinRequests => 'មិនមានសំណើចូលក្លឹបទេ';
+
+  @override
+  String get noJoinRequestsSub =>
+      'ពេលមានគេសុំចូលក្លឹបរបស់អ្នក នឹងបង្ហាញនៅទីនេះ។';
+
+  @override
+  String get noMembersYet => 'មិនទាន់មានសមាជិកទេ';
+
+  @override
+  String get inviteToGrowClub => 'អញ្ជើញមិត្តដើម្បីពង្រីកក្លឹបនេះ។';
+
+  @override
+  String get noCompletedChallenges => 'មិនទាន់មានការហាត់បានបញ្ចប់ទេ';
+
+  @override
+  String get createChallenge => 'បង្កើតការហាត់';
+
+  @override
+  String get pleaseEnterChallengeName => 'សូមដាក់ឈ្មោះការហាត់។';
+
+  @override
+  String get endDateAfterStart => 'ថ្ងៃបញ្ចប់ត្រូវនៅក្រោយថ្ងៃចាប់ផ្ដើម។';
+
+  @override
+  String get achievementsBadges => 'សមិទ្ធផល';
+
+  @override
+  String get noAchievementsFound => 'មិនទាន់មានសមិទ្ធផលទេ';
+
+  @override
+  String get noAchievementsYet => 'មិនទាន់មានសមិទ្ធផលទេ';
+
+  @override
+  String get profileTitle => 'ប្រវត្តិរូប';
+
+  @override
+  String get noMutuals => 'មិនមានមិត្តរួមទេ';
+
+  @override
+  String get invitation => 'ការអញ្ជើញ';
+
+  @override
+  String get invitationsLabel => 'ការអញ្ជើញ';
+
+  @override
+  String get noInvitations => 'មិនមានការអញ្ជើញទេ';
+
+  @override
+  String get noInvitationsSub => 'ការអញ្ជើញកិច្ចការនឹងបង្ហាញនៅទីនេះ។';
+
+  @override
+  String get noFriendsFoundInvite => 'រកមិនឃើញមិត្តទេ';
+
+  @override
+  String get addFriendsThenInvite => 'បន្ថែមមិត្តសិន រួចអញ្ជើញពួកគេចូលក្លឹប។';
+
+  @override
+  String get createButton => 'បង្កើត';
+
+  @override
+  String get success => 'រួចរាល់';
+
+  @override
+  String get errorTitle => 'អូ៎';
+
+  @override
+  String get taskTitleEmpty => 'សូមដាក់ឈ្មោះកិច្ចការ។';
+
+  @override
+  String get taskCreatedSuccess => 'បានបង្កើតកិច្ចការហើយ!';
+
+  @override
+  String get taskUpdatedSuccess => 'បានកែកិច្ចការហើយ!';
+
+  @override
+  String get labelCreatedSuccess => 'បានបង្កើតស្លាកហើយ!';
+
+  @override
+  String get cannotEditAfterDeadline =>
+      'កិច្ចការនេះមិនអាចកែបានទៀតទេ បន្ទាប់ពីផុតកំណត់។';
+
+  @override
+  String get noLabelsAvailable => 'មិនទាន់មានស្លាកទេ។';
+
+  @override
+  String get taskMarkedComplete => 'ល្អណាស់! កិច្ចការបានបញ្ចប់។';
+
+  @override
+  String get pleaseEnterHeight => 'សូមបញ្ចូលកម្ពស់។';
+
+  @override
+  String get pleaseEnterWeight => 'សូមបញ្ចូលទម្ងន់។';
+
+  @override
+  String get profileUpdated => 'បានរក្សាទុកប្រវត្តិរូបហើយ។';
+
+  @override
+  String get enterHeightRange => 'បញ្ចូលកម្ពស់ជា cm (៥០–៣០០)។';
+
+  @override
+  String get enterWeightRange => 'បញ្ចូលទម្ងន់ជា kg (២០–៥០០)។';
+
+  @override
+  String get swipeToStart => 'អូសដើម្បីចាប់ផ្ដើម';
+
+  @override
+  String get mainGoalQuestion => 'គោលដៅចម្បងរបស់អ្នកគឺអ្វី?';
+
+  @override
+  String get targetWeightQuestion => 'ទម្ងន់គោលដៅរបស់អ្នកគឺប៉ុន្មាន?';
+
+  @override
+  String get targetDateQuestion => 'ចង់សម្រេចឲ្យបាននៅថ្ងៃណា?';
+
+  @override
+  String get workoutLevelQuestion => 'កម្រិតហាត់មួយណាល្មមសម្រាប់អ្នក?';
+
+  @override
+  String get fitnessAssessment => 'ពិនិត្យសុខភាព';
+
+  @override
+  String get pleaseSelectMainGoal => 'សូមជ្រើសគោលដៅចម្បង។';
+
+  @override
+  String get pleaseEnterTargetWeight => 'សូមបញ្ចូលទម្ងន់គោលដៅ។';
+
+  @override
+  String get pleaseSelectFutureDate => 'សូមជ្រើសថ្ងៃនៅខាងមុខ។';
+
+  @override
+  String get pleaseSelectWorkoutLevel => 'សូមជ្រើសកម្រិតហាត់។';
+
+  @override
+  String get locationRequired => 'ត្រូវការទីតាំងដើម្បីតាមដានការរត់។';
+
+  @override
+  String get enableLocation => 'សូមបើកសេវាទីតាំង។';
+
+  @override
+  String get alreadyMember => 'មិត្តនេះនៅក្នុងកិច្ចការរួចហើយ។';
+
+  @override
+  String get alreadyInvited => 'បានអញ្ជើញរួចហើយ។';
+
+  @override
+  String get noSoloChallenges => 'មិនទាន់មានការហាត់តែឯងទេ';
+
+  @override
+  String get anyoneCanJoin => 'អ្នកណាក៏អាចរកឃើញ និងចូលក្លឹបនេះបាន';
+
+  @override
+  String get requiresInvite => 'ត្រូវការការអញ្ជើញដើម្បីចូល';
+
+  @override
+  String get searchClubsHint => 'ស្វែងរកក្លឹបតាមឈ្មោះ...';
+
+  @override
+  String get movemClubs => 'ក្លឹប MoveM';
+
+  @override
+  String get clubInvitationsTitle => 'ការអញ្ជើញក្លឹប';
+
+  @override
+  String get noClubChallenges => 'មិនទាន់មានការហាត់ក្នុងក្លឹបទេ';
+
+  @override
+  String get createOneToStart => 'បង្កើតមួយដើម្បីចាប់ផ្ដើម។';
+
+  @override
+  String get noMembersJoined => 'មិនទាន់មានសមាជិកចូលរួមទេ';
+
+  @override
+  String get endSessionBody => 'ចង់ឈប់ ហើយមើលសង្ខេបទេ?';
+
+  @override
+  String get exitRunBody => 'ការរត់នឹងត្រូវផ្អាក។ ចង់ចេញឥឡូវទេ?';
+
+  @override
+  String get kgUnit => 'kg';
+
+  @override
+  String get lbsUnit => 'lbs';
+
+  @override
+  String get join => 'ចូល';
+
+  @override
+  String get requestJoin => 'សុំចូល';
+
+  @override
+  String get next => 'បន្ត';
+
+  @override
+  String get submit => 'បញ្ជូន';
+
+  @override
+  String get invited => 'បានអញ្ជើញ';
+
+  @override
+  String get joinedTitle => 'ចូលហើយ!';
+
+  @override
+  String get requestSentTitle => 'បានផ្ញើសំណើ';
+
+  @override
+  String get savedTitle => 'បានរក្សាទុក';
+
+  @override
+  String get removedTitle => 'បានដកចេញ';
+
+  @override
+  String clubCreatedMsg(String name) {
+    return 'ក្លឹប \"$name\" រួចរាល់ហើយ!';
+  }
+
+  @override
+  String challengeCreatedMsg(String name) {
+    return 'ការហាត់ \"$name\" រួចរាល់ហើយ!';
+  }
+
+  @override
+  String joinedClubMsg(String name) {
+    return 'អ្នកនៅក្នុង $name ហើយ';
+  }
+
+  @override
+  String joinRequestSentMsg(String name) {
+    return 'សំណើចូល $name កំពុងរង់ចាំ។';
+  }
+
+  @override
+  String get failedToCreateClub => 'បង្កើតក្លឹបមិនបានទេ។ សាកម្តងទៀត។';
+
+  @override
+  String get failedToJoinClub => 'ចូលក្លឹបមិនបានទេ។ សាកម្តងទៀត។';
+
+  @override
+  String get failedToSubmitJoinRequest => 'ផ្ញើសំណើចូលមិនបានទេ។ សាកម្តងទៀត។';
+
+  @override
+  String get failedToCreateChallenge => 'បង្កើតការហាត់មិនបានទេ។ សាកម្តងទៀត។';
+
+  @override
+  String get failedToRemoveMember => 'ដកសមាជិកនេះមិនបានទេ។';
+
+  @override
+  String get couldNotApproveRequest => 'យល់ព្រមសំណើនេះមិនបានទេ។';
+
+  @override
+  String get couldNotRejectRequest => 'បដិសេធសំណើនេះមិនបានទេ។';
+
+  @override
+  String get couldNotCancelRequest => 'បោះបង់សំណើនេះមិនបានទេ។';
+
+  @override
+  String enterTargetInUnit(String unit) {
+    return 'សូមបញ្ចូលគោលដៅជា $unit។';
+  }
+
+  @override
+  String get loadingChallenges => 'កំពុងផ្ទុកការហាត់...';
+
+  @override
+  String membersCount(int count) {
+    return 'សមាជិក ($count)';
+  }
+
+  @override
+  String get completedChallengesLabel => 'ការហាត់បានបញ្ចប់';
+
+  @override
+  String get viewAllArrow => 'មើលទាំងអស់ >>';
+
+  @override
+  String get heightLabel => 'កម្ពស់';
+
+  @override
+  String get weightLabel => 'ទម្ងន់';
+
+  @override
+  String get challengeNameTitle => 'ឈ្មោះការហាត់';
+
+  @override
+  String get datesTitle => 'កាលបរិច្ឆេទ';
+
+  @override
+  String get targetTitle => 'គោលដៅ';
+
+  @override
+  String get failedToSaveProfile => 'រក្សាទុកប្រវត្តិរូបមិនបានទេ។ សាកម្តងទៀត។';
+
+  @override
+  String get failedToUpdateProfile => 'កែប្រវត្តិរូបមិនបានទេ។ សាកម្តងទៀត។';
+
+  @override
+  String get invalidHeight => 'សូមបញ្ចូលកម្ពស់ត្រឹមត្រូវជា cm (ឧ. ១៧០)។';
+
+  @override
+  String get invalidWeight => 'សូមបញ្ចូលទម្ងន់ត្រឹមត្រូវជា kg (ឧ. ៦៥)។';
+
+  @override
+  String get goalSetSuccess => 'បានរក្សាទុកគោលដៅហើយ!';
+
+  @override
+  String get failedToSetGoal => 'កំណត់គោលដៅមិនបានទេ។ សាកម្តងទៀត។';
+
+  @override
+  String get permissionDeniedTitle => 'ត្រូវការការអនុញ្ញាត';
+
+  @override
+  String get serviceDisabledTitle => 'ទីតាំងបានបិទ';
+
+  @override
+  String get noTaskData => 'រកមិនឃើញទិន្នន័យកិច្ចការទេ។';
+
+  @override
+  String get updateFailedTitle => 'កែមិនបាន';
+
+  @override
+  String get unexpectedError => 'មានអ្វីមួយខុស។ សាកម្តងទៀត។';
+
+  @override
+  String get copiedProfileLink => 'បានចម្លងតំណប្រវត្តិរូប';
+
+  @override
+  String get unableToCancelFriendRequest => 'បោះបង់សំណើមិនបានទេ។ សាកពេលក្រោយ។';
+
+  @override
+  String get failedToSendComment => 'ផ្ញើមតិមិនបានទេឥឡូវនេះ។';
+
+  @override
+  String get alreadyMemberTitle => 'ជាសមាជិករួចហើយ';
+
+  @override
+  String get alreadyInvitedTitle => 'បានអញ្ជើញរួចហើយ';
+
+  @override
+  String membersAdded(int count, String name) {
+    return 'បានបន្ថែម $count នាក់ទៅ $name។';
+  }
+
+  @override
+  String get couldNotAddMembers => 'បន្ថែមសមាជិកមិនបានទេ។ សាកម្តងទៀត។';
+
+  @override
+  String get removeMemberTitle => 'ដកសមាជិក';
+
+  @override
+  String removeMemberConfirm(String name, String club) {
+    return 'ដក $name ចេញពី $club?';
+  }
+
+  @override
+  String get thisMember => 'សមាជិកនេះ';
+
+  @override
+  String memberRemoved(String name, String club) {
+    return 'បានដក $name ចេញពី $club។';
+  }
+
+  @override
+  String youJoinedChallenge(String name) {
+    return 'អ្នកនៅក្នុង $name ហើយ។';
+  }
+
+  @override
+  String get failedToJoinChallenge => 'ចូលការហាត់នេះមិនបានទេ។';
+
+  @override
+  String get membersJoinedLabel => 'សមាជិកបានចូលរួម';
+
+  @override
+  String get addFriendsForTask =>
+      'បន្ថែមមិត្តសិន រួចអញ្ជើញពួកគេចូលកិច្ចការនេះ។';
+
+  @override
+  String get loseWeightGoal => 'សម្រកទម្ងន់';
+
+  @override
+  String get buildMuscleGoal => 'បង្កើនសាច់ដុំ';
+
+  @override
+  String get keepFitGoal => 'រក្សាសុខភាព';
+
+  @override
+  String get noviceLevel => 'ទើបចាប់ផ្ដើម';
+
+  @override
+  String get noviceLevelSub =>
+      'ជំហានតូចៗ ប៉ុន្តែផ្លាស់ប្ដូរធំ។ ល្អសម្រាប់អ្នកថ្មី។';
+
+  @override
+  String get intermediateLevel => 'មានបទពិសោធខ្លះ';
+
+  @override
+  String get intermediateLevelSub =>
+      'អ្នកស្គាល់មូលដ្ឋាន។ ល្អប្រសិនហាត់ម្តងម្កាល។';
+
+  @override
+  String get advancedLevel => 'អ្នកចូលចិត្តហាត់';
+
+  @override
+  String get advancedLevelSub => 'រុញខ្លួនអ្នក។ សម្រាប់អ្នកហាត់ញឹកញាប់។';
+
+  @override
+  String get requestsLabel => 'សំណើ';
+
+  @override
+  String youRequestedJoin(String name) {
+    return 'អ្នកបានសុំចូល $name';
+  }
+
+  @override
+  String get aClub => 'ក្លឹបមួយ';
+
+  @override
+  String get noTasksYet => 'មិនទាន់មានកិច្ចការទេ';
+
+  @override
+  String get createTaskToStart => 'បង្កើតកិច្ចការមួយដើម្បីចាប់ផ្ដើម។';
+
+  @override
+  String get goals => 'គោលដៅ';
+
+  @override
+  String get history => 'ប្រវត្តិ';
+
+  @override
+  String get profileAndGoal => 'ប្រវត្តិរូប និងគោលដៅ';
+
+  @override
+  String get editFitnessProfile => 'កែប្រវត្តិរូបហាត់ >>';
+
+  @override
+  String get editFitnessGoal => 'កែគោលដៅហាត់ >>';
+
+  @override
+  String get currentWeight => 'ទម្ងន់បច្ចុប្បន្ន';
+
+  @override
+  String get currentHeight => 'កម្ពស់បច្ចុប្បន្ន';
+
+  @override
+  String get fitnessLevel => 'កម្រិតហាត់';
+
+  @override
+  String get targetDateLabel => 'ថ្ងៃគោលដៅ';
+
+  @override
+  String get targetWeightLabel => 'ទម្ងន់គោលដៅ';
+
+  @override
+  String get noneValue => 'មិនទាន់មាន';
+
+  @override
+  String get notClubMember => 'ចូលក្លឹបនេះសិន ទើបបង្កើតការហាត់បាន។';
 }

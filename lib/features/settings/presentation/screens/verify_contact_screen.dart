@@ -5,6 +5,7 @@ import '../controllers/setting_controller.dart';
 import 'dart:async';
 import 'package:movem/core/routes/app_routes.dart';
 import '../screens/ProfileScreen.dart';
+import 'package:movem/shared/widgets/top_tool_bar.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:movem/features/settings/data/services/firebase_phone_service.dart';
@@ -84,23 +85,11 @@ class _VerifyContactScreenState extends State<VerifyContactScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFF0B132B),
-      appBar: AppBar(
+      appBar: TopToolBar(
+        title: 'Your Profile',
         backgroundColor: const Color(0xFF0B132B),
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-        ),
-        title: const Text(
-          'Your Profile',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-          ),
-        ),
+        foregroundColor: Colors.white,
+        onBack: () => Navigator.of(context).pop(),
       ),
       body: SafeArea(
         child: Padding(

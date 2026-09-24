@@ -42,6 +42,10 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
+        ndk {
+            abiFilters.clear()
+            abiFilters.add("arm64-v8a")
+        }
     }
 
     flavorDimensions += "default"
@@ -82,13 +86,24 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 
     packaging {
         jniLibs {
-            keepDebugSymbols.add("**/*.so")
             useLegacyPackaging = true
+            excludes += setOf(
+                "lib/armeabi/**",
+                "lib/armeabi-v7a/**",
+                "lib/x86/**",
+                "lib/x86_64/**",
+            )
         }
     }
 

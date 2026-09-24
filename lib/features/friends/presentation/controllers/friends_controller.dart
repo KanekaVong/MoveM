@@ -7,8 +7,14 @@ import '../../../auth/data/dto/response/user_response.dart';
 import '../../domain/repositories/friends_repository.dart';
 import '../../data/dto/response/friend_response.dart';
 import '../../data/dto/response/friend_request_response.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class FriendsController extends BaseController {
+  AppLocalizations? get _l10n {
+    final ctx = Get.context;
+    return ctx == null ? null : AppLocalizations.of(ctx);
+  }
+
   final FriendsRepository repository;
 
   FriendsController({required this.repository});
@@ -48,7 +54,7 @@ class FriendsController extends BaseController {
   void copyProfileLink() {
     final link = 'https://movem.app/user/@$profileUsername';
     Clipboard.setData(ClipboardData(text: link));
-    Get.snackbar('Copied', 'Profile link copied to clipboard', backgroundColor: const Color(0xFF48A45B), colorText: Colors.white);
+    Get.snackbar(_l10n?.copied ?? 'Copied', _l10n?.copiedProfileLink ?? 'Profile link copied to clipboard', backgroundColor: const Color(0xFF48A45B), colorText: Colors.white);
   }
 
   void loadInitialData() {
@@ -209,7 +215,7 @@ class FriendsController extends BaseController {
         },
       );
     } catch (e) {
-      Get.snackbar('Error', 'Unable to cancel request. Please try again later.');
+      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.unableToCancelFriendRequest ?? 'Unable to cancel request. Please try again later.');
     }
   }
 

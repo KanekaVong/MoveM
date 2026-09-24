@@ -9,10 +9,9 @@ import 'package:movem/features/settings/data/dto/request/update_profile_picture_
 import 'package:movem/features/auth/data/dto/response/user_response.dart';
 import 'package:movem/features/settings/data/dto/request/update_profile_request.dart';
 
-import 'package:movem/shared/widgets/custom_glass_button.dart';
-import '../controllers/setting_controller.dart';
-
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:movem/shared/widgets/top_tool_bar.dart';
+import '../controllers/setting_controller.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -411,36 +410,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0B132B),
+      appBar: TopToolBar(
+        title: 'Edit Profile',
+        backgroundColor: const Color(0xFF0B132B),
+        foregroundColor: Colors.white,
+        onBack: () => Navigator.of(context).pop(),
+        actions: [
+          TopToolBarAction(
+            icon: Icons.check_rounded,
+            onTap: _saveProfile,
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
           child: Column(
             children: [
-              // Top Bar
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomGlassButton(
-                    label: 'Cancel',
-                    width: 90,
-                    height: 38,
-                    textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                  CustomGlassButton(
-                    label: 'Done',
-                    width: 90,
-                    height: 38,
-                    textStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    onPressed: _saveProfile,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
               // Dynamic Profile Avatar
               Center(
                 child: Stack(

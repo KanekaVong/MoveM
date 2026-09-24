@@ -7,6 +7,7 @@ import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../data/models/solo_challenge_model.dart';
 import '../controllers/squat_detector_controller.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../widgets/camera_pose_painter.dart';
 
 class SquatDetectionScreen extends StatelessWidget {
@@ -274,8 +275,7 @@ class SquatDetectionScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 14),
-                    if (controller.isPaused.value)
-                      GestureDetector(
+                    GestureDetector(
                         onTap: () => controller.finishWorkout(),
                         child: Container(
                           width: double.infinity,
@@ -312,7 +312,7 @@ class SquatDetectionScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                      ),
+                    ),
                   ],
                 ),
               ),
@@ -419,7 +419,7 @@ class SquatDetectionScreen extends StatelessWidget {
       AlertDialog(
         backgroundColor: const Color(0xFF0F172A),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Exit Squats Workout?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context)?.endWorkout ?? 'Exit Squats Workout?', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         content: const Text(
           'Your progress for this workout will be ended.',
           style: TextStyle(color: Colors.white70),
@@ -427,7 +427,7 @@ class SquatDetectionScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Continue Workout', style: TextStyle(color: Color(0xFF38BDF8))),
+            child: Text(AppLocalizations.of(context)?.keepGoing ?? 'Continue Workout', style: const TextStyle(color: Color(0xFF38BDF8))),
           ),
           TextButton(
             onPressed: () {

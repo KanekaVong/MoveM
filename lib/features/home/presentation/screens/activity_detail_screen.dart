@@ -8,6 +8,8 @@ import '../../../task/data/dto/response/comment_response.dart';
 import '../../domain/models/home_feed_item.dart';
 import '../controllers/activity_detail_controller.dart';
 import '../widgets/gps_route_painter.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ActivityDetailScreen extends GetView<ActivityDetailController> {
   const ActivityDetailScreen({super.key});
@@ -19,7 +21,11 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(),
+            const TopToolBar(
+              title: 'MoveM',
+              backgroundColor: Color(0xFF070F20),
+              foregroundColor: Colors.white,
+            ),
             Expanded(
               child: Obx(() {
                 final item = controller.item.value;
@@ -55,33 +61,6 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
             _buildCommentBar(),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 4, 16, 8),
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: () => Get.back(),
-            icon: const Icon(Icons.chevron_left, color: Colors.white, size: 28),
-          ),
-          const Expanded(
-            child: Text(
-              'MOVEM',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 3.2,
-              ),
-            ),
-          ),
-          const SizedBox(width: 48),
-        ],
       ),
     );
   }
@@ -351,11 +330,11 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
                 style: const TextStyle(color: Colors.white, fontSize: 14),
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => controller.sendComment(),
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   isCollapsed: true,
                   border: InputBorder.none,
-                  hintText: 'Write a Comment',
-                  hintStyle: TextStyle(color: Color(0xFF64748B), fontSize: 14),
+                  hintText: AppLocalizations.of(Get.context!)?.writeAComment ?? 'Write a Comment',
+                  hintStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 14),
                 ),
               ),
             ),

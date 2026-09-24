@@ -3,6 +3,9 @@ import 'package:get/get.dart';
 import '../controllers/fitness_achievement_controller.dart';
 import '../../data/models/achievement_model.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class FitnessAchievementsScreen extends StatelessWidget {
   const FitnessAchievementsScreen({super.key});
@@ -13,22 +16,10 @@ class FitnessAchievementsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
-      appBar: AppBar(
-        backgroundColor: AppColors.pageBackground,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
-          onPressed: () => Get.back(),
-        ),
-        title: const Text(
-          'Achievements & Badges',
-          style: TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
+      appBar: TopToolBar(title: AppLocalizations.of(context)?.achievementsBadges ?? 'Achievements & Badges'),
       body: Obx(() {
         if (controller.isLoadingAchievements.value && controller.achievements.isEmpty) {
-          return const Center(child: CircularProgressIndicator(color: Colors.blueAccent));
+          return Center(child: CircularProgressIndicator(color: Colors.blueAccent));
         }
 
         final earnedCount = controller.earnedCount;
@@ -41,7 +32,7 @@ class FitnessAchievementsScreen extends StatelessWidget {
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [AppColors.chipSurface, AppColors.cardSurface],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -58,18 +49,18 @@ class FitnessAchievementsScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.amberAccent.withValues(alpha: 0.5), width: 2),
                     ),
-                    child: const Icon(Icons.emoji_events, color: Colors.amber, size: 36),
+                    child: Icon(Icons.emoji_events, color: Colors.amber, size: 36),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           '$earnedCount of $totalCount Unlocked',
-                          style: const TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 6),
+                        SizedBox(height: 6),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(4),
                           child: LinearProgressIndicator(
@@ -79,10 +70,10 @@ class FitnessAchievementsScreen extends StatelessWidget {
                             minHeight: 6,
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        SizedBox(height: 6),
                         Text(
                           '${(percent * 100).toInt()}% completed • Keep pushing!',
-                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                          style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
                         ),
                       ],
                     ),
@@ -97,7 +88,7 @@ class FitnessAchievementsScreen extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: controller.categories.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                separatorBuilder: (_, __) => SizedBox(width: 8),
                 itemBuilder: (context, index) {
                   final cat = controller.categories[index];
                   final isSelected = controller.selectedCategory.value == cat;
@@ -121,7 +112,7 @@ class FitnessAchievementsScreen extends StatelessWidget {
                 },
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             Expanded(
               child: RefreshIndicator(
@@ -131,25 +122,12 @@ class FitnessAchievementsScreen extends StatelessWidget {
                 child: controller.filteredAchievements.isEmpty
                     ? ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
-                        children: const [
-                          SizedBox(height: 80),
-                          Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.emoji_events_outlined, color: AppColors.textCaption, size: 56),
-                                SizedBox(height: 16),
-                                Text(
-                                  'No achievements found',
-                                  style: TextStyle(color: AppColors.textSecondary, fontSize: 16, fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 6),
-                                Text(
-                                  'Complete workouts and challenges to unlock badges!',
-                                  style: TextStyle(color: AppColors.textCaption, fontSize: 12),
-                                ),
-                              ],
-                            ),
+                        children: [
+                          const SizedBox(height: 80),
+                          NoDataComponent(
+                            title: AppLocalizations.of(context)?.noAchievementsFound ?? 'No achievements found',
+                            subtitle: AppLocalizations.of(context)?.noAchievementsYet ??
+                                'Complete workouts and challenges to unlock badges!',
                           ),
                         ],
                       )
@@ -199,7 +177,7 @@ class FitnessAchievementsScreen extends StatelessWidget {
               size: 26,
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,7 +201,7 @@ class FitnessAchievementsScreen extends StatelessWidget {
                           color: Colors.amber.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
                             Icon(Icons.check, color: Colors.amber, size: 12),
                             SizedBox(width: 4),
@@ -233,12 +211,12 @@ class FitnessAchievementsScreen extends StatelessWidget {
                       ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   achievement.description,
-                  style: const TextStyle(color: AppColors.textCaption, fontSize: 12),
+                  style: TextStyle(color: AppColors.textCaption, fontSize: 12),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Row(
                   children: [
                     Expanded(
@@ -254,7 +232,7 @@ class FitnessAchievementsScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Text(
                       '${achievement.progressPercentage.toInt()}%',
                       style: TextStyle(

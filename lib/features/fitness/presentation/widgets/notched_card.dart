@@ -7,10 +7,10 @@ class NotchedCard extends StatelessWidget {
   final VoidCallback? onActionTap;
   final IconData actionIcon;
   final Color actionIconColor;
-  final Color actionButtonBg;
+  final Color? actionButtonBg;
   final Color actionButtonBorderColor;
   final double actionButtonSize;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final Color? borderColor;
   final double borderWidth;
   final double cornerRadius;
@@ -23,10 +23,10 @@ class NotchedCard extends StatelessWidget {
     this.onActionTap,
     this.actionIcon = Icons.play_arrow_rounded,
     this.actionIconColor = Colors.white,
-    this.actionButtonBg = AppColors.accentBlue,
+    this.actionButtonBg,
     this.actionButtonBorderColor = const Color(0xFF38BDF8),
     this.actionButtonSize = 36.0,
-    this.backgroundColor = AppColors.cardSurface,
+    this.backgroundColor,
     this.borderColor,
     this.borderWidth = 1.0,
     this.cornerRadius = 20.0,
@@ -43,7 +43,7 @@ class NotchedCard extends StatelessWidget {
           onTap: onTap,
           child: CustomPaint(
             painter: _NotchedCardPainter(
-              backgroundColor: backgroundColor,
+              backgroundColor: backgroundColor ?? AppColors.cardSurface,
               borderColor: borderColor,
               borderWidth: borderWidth,
               cornerRadius: cornerRadius,
@@ -72,7 +72,7 @@ class NotchedCard extends StatelessWidget {
               height: actionButtonSize,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: actionButtonBg,
+                color: actionButtonBg ?? AppColors.accentBlue,
                 border: Border.all(
                   color: actionButtonBorderColor,
                   width: 1.5,

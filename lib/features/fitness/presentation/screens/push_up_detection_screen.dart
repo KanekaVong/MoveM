@@ -7,6 +7,7 @@ import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../data/models/solo_challenge_model.dart';
 import '../controllers/push_up_detector_controller.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../widgets/camera_pose_painter.dart';
 
 class PushUpDetectionScreen extends StatelessWidget {
@@ -413,8 +414,7 @@ class PushUpDetectionScreen extends StatelessWidget {
                             ),
 
                             const SizedBox(height: 14),
-                            if (controller.isPaused.value)
-                              GestureDetector(
+                            GestureDetector(
                                 onTap: () => controller.finishWorkout(),
                                 child: Container(
                                   width: double.infinity,
@@ -451,7 +451,7 @@ class PushUpDetectionScreen extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -511,7 +511,7 @@ class PushUpDetectionScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           side: const BorderSide(color: Color(0xFF38BDF8), width: 1.2),
         ),
-        title: const Text('End Workout?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context)?.endWorkout ?? 'End Workout?', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         content: const Text(
           'Would you like to stop this session and see your summary?',
           style: TextStyle(color: Colors.white70),
@@ -519,7 +519,7 @@ class PushUpDetectionScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Continue', style: TextStyle(color: Colors.white60)),
+            child: Text(AppLocalizations.of(context)?.keepGoing ?? 'Continue', style: const TextStyle(color: Colors.white60)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),

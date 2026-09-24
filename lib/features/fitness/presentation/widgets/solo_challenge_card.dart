@@ -68,7 +68,7 @@ class SoloChallengeCard extends StatelessWidget {
                           color: AppColors.chipSurface,
                           borderRadius: BorderRadius.circular(18),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.fitness_center,
                           color: AppColors.textCaption,
                           size: 36,
@@ -76,7 +76,7 @@ class SoloChallengeCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,7 +84,7 @@ class SoloChallengeCard extends StatelessWidget {
                       children: [
                         Text(
                           challenge.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -93,7 +93,7 @@ class SoloChallengeCard extends StatelessWidget {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 6),
+                        SizedBox(height: 6),
                         Text(
                           _getDescription(),
                           style: TextStyle(
@@ -111,12 +111,12 @@ class SoloChallengeCard extends StatelessWidget {
                 ],
               ),
               if (showProgress && challenge.progress > 0) ...[
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: Container(
                     height: 6,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: AppColors.chipSurface,
                     ),
                     child: FractionallySizedBox(

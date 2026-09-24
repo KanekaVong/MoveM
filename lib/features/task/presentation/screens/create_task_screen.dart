@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/create_task_controller.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class CreateTaskScreen extends GetView<CreateTaskController> {
   const CreateTaskScreen({super.key});
@@ -17,7 +18,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildAppBar(context),
+            TopToolBar(title: l10n?.createTask ?? 'Create Task'),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 24.0),
@@ -36,7 +37,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                       controller.descriptionController,
                       maxLines: 3,
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
                     _buildPropertiesCard(context),
                   ],
                 ),
@@ -60,9 +61,9 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
               ),
               elevation: 0,
             ),
-            child: const Text(
-              'Create',
-              style: TextStyle(
+            child: Text(
+              l10n?.createButton ?? 'Create',
+              style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.5,
@@ -71,41 +72,6 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20.0, 16.0, 20.0, 16.0),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => Get.back(),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.textPrimary.withValues(alpha: 0.08),
-                border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.15)),
-              ),
-              child: const Center(
-                child: Icon(Icons.chevron_left, color: AppColors.textPrimary, size: 22),
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          const Text(
-            'Create Task',
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -121,29 +87,29 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 13,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         TextField(
           controller: textController,
           maxLines: maxLines,
-          style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(
+            hintStyle: TextStyle(
               color: AppColors.textCaption,
               fontSize: 14,
               fontStyle: FontStyle.italic,
             ),
-            enabledBorder: const UnderlineInputBorder(
+            enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: AppColors.borderLight),
             ),
-            focusedBorder: const UnderlineInputBorder(
+            focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: AppColors.textPrimary),
             ),
             contentPadding: const EdgeInsets.symmetric(vertical: 8),
@@ -173,12 +139,12 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
               Icons.calendar_today_outlined,
             )),
           ),
-          const SizedBox(height: 28),
+          SizedBox(height: 28),
           GestureDetector(
             onTap: () => controller.addChecklistItem(),
             child: Row(
               children: [
-                const Text(
+                Text(
                   'CHECKLIST',
                   style: TextStyle(
                     color: AppColors.textPrimary,
@@ -187,14 +153,14 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                     letterSpacing: 0.5,
                   ),
                 ),
-                const SizedBox(width: 4),
-                const Icon(Icons.add, color: AppColors.textPrimary, size: 16),
+                SizedBox(width: 4),
+                Icon(Icons.add, color: AppColors.textPrimary, size: 16),
               ],
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Container(height: 1, color: AppColors.borderLight),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Obx(() => Column(
             children: controller.checklistControllers.asMap().entries.map((entry) {
               final index = entry.key;
@@ -203,13 +169,13 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: Row(
                   children: [
-                    const Icon(Icons.check_box_outline_blank, color: AppColors.textCaption, size: 20),
-                    const SizedBox(width: 12),
+                    Icon(Icons.check_box_outline_blank, color: AppColors.textCaption, size: 20),
+                    SizedBox(width: 12),
                     Expanded(
                       child: TextField(
                         controller: textController,
-                        style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
-                        decoration: const InputDecoration(
+                        style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                        decoration: InputDecoration(
                           hintText: 'Add an item',
                           hintStyle: TextStyle(color: AppColors.textCaption, fontSize: 14),
                           border: InputBorder.none,
@@ -220,7 +186,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                     ),
                     GestureDetector(
                       onTap: () => controller.removeChecklistItem(index),
-                      child: const Icon(Icons.close, color: AppColors.textCaption, size: 18),
+                      child: Icon(Icons.close, color: AppColors.textCaption, size: 18),
                     ),
                   ],
                 ),
@@ -229,22 +195,22 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
           )),
           const SizedBox(height: 16),
           _buildRepeatDropdown(),
-          const SizedBox(height: 28),
+          SizedBox(height: 28),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(child: _buildPriorityDropdown()),
-              const SizedBox(width: 24),
+              SizedBox(width: 24),
               Expanded(child: _buildLabelDropdown()),
             ],
           ),
-          const SizedBox(height: 28),
+          SizedBox(height: 28),
           GestureDetector(
             onTap: () => controller.toggleReminders(),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Get upcoming reminders about your Tasks',
                     style: TextStyle(
@@ -254,7 +220,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Obx(() => Container(
                   width: 20,
                   height: 20,
@@ -270,7 +236,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: controller.remindersEnabled.value
-                      ? const Icon(Icons.check, size: 14, color: AppColors.textPrimary)
+                      ? Icon(Icons.check, size: 14, color: AppColors.textPrimary)
                       : null,
                 )),
               ],
@@ -287,20 +253,20 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 13,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textCaption,
                 fontSize: 13,
                 fontStyle: FontStyle.italic,
@@ -309,7 +275,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
             Icon(icon, color: AppColors.textPrimary, size: 20),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Container(height: 1, color: AppColors.borderLight),
       ],
     );
@@ -322,7 +288,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
       color: AppColors.cardSurface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.borderLight),
+        side: BorderSide(color: AppColors.borderLight),
       ),
       itemBuilder: (context) => ['Daily', 'Weekly', 'Monthly', 'Yearly']
           .map((choice) => PopupMenuItem<String>(
@@ -330,8 +296,8 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(choice, style: const TextStyle(color: AppColors.textPrimary, fontSize: 14)),
-                    const SizedBox(height: 8),
+                    Text(choice, style: TextStyle(color: AppColors.textPrimary, fontSize: 14)),
+                    SizedBox(height: 8),
                     Container(height: 1, color: AppColors.borderLight),
                   ],
                 ),
@@ -340,7 +306,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'REPEAT',
             style: TextStyle(
               color: AppColors.textPrimary,
@@ -349,22 +315,22 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
               letterSpacing: 0.5,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Obx(() => Text(
                 controller.repeatFrequency.value ?? '',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textCaption,
                   fontSize: 13,
                   fontStyle: FontStyle.italic,
                 ),
               )),
-              const Icon(Icons.keyboard_arrow_down, color: AppColors.textPrimary, size: 20),
+              Icon(Icons.keyboard_arrow_down, color: AppColors.textPrimary, size: 20),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Container(height: 1, color: AppColors.borderLight),
         ],
       ),
@@ -378,19 +344,19 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
       color: AppColors.cardSurface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.borderLight),
+        side: BorderSide(color: AppColors.borderLight),
       ),
       itemBuilder: (context) => ['URGENT', 'HIGH', 'NORMAL', 'LOW']
           .map((choice) => PopupMenuItem<String>(
                 value: choice,
-                child: Text(choice, style: const TextStyle(color: AppColors.textPrimary)),
+                child: Text(choice, style: TextStyle(color: AppColors.textPrimary)),
               ))
           .toList(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
+            children: [
               Text(
                 'PRIORITY',
                 style: TextStyle(
@@ -403,7 +369,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
               Icon(Icons.keyboard_arrow_down, color: AppColors.textPrimary, size: 16),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Obx(() {
             Color pillColor = AppColors.textCaption;
             if (controller.priority.value == 'LOW') pillColor = const Color(0xFF22C55E);
@@ -446,7 +412,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
       color: AppColors.cardSurface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: AppColors.borderLight),
+        side: BorderSide(color: AppColors.borderLight),
       ),
       itemBuilder: (context) {
         List<PopupMenuEntry<dynamic>> items = controller.availableLabels.map((l) {
@@ -462,7 +428,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(l.name, style: const TextStyle(color: AppColors.textPrimary, fontSize: 12)),
+                  Text(l.name, style: TextStyle(color: AppColors.textPrimary, fontSize: 12)),
                   Container(
                     width: 16,
                     height: 16,
@@ -487,7 +453,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                 color: AppColors.borderLight,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   'Create Label',
                   style: TextStyle(color: AppColors.textPrimary, fontSize: 12),
@@ -503,7 +469,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
+            children: [
               Text(
                 'LABEL',
                 style: TextStyle(
@@ -516,7 +482,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
               Icon(Icons.add, color: AppColors.textPrimary, size: 16),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Obx(() {
             if (controller.selectedLabel.value == null) {
               return Container(
@@ -525,7 +491,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                   color: AppColors.chipSurface,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
+                child: Text(
                   'Select Label',
                   style: TextStyle(
                     color: AppColors.textCaption,
@@ -547,7 +513,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
               ),
               child: Text(
                 l.name,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
@@ -561,6 +527,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
   }
 
   void _showCreateLabelDialog() {
+    final l10n = AppLocalizations.of(Get.context!);
     final nameController = TextEditingController();
     final RxString selectedColor = '#3B82F6'.obs;
 
@@ -587,20 +554,20 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Create Label',
+              Text(
+                l10n?.labelsLabel ?? 'Create Label',
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 24),
-              const Text(
+              SizedBox(height: 24),
+              Text(
                 'NAME',
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               TextField(
                 controller: nameController,
-                style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
-                decoration: const InputDecoration(
+                style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                decoration: InputDecoration(
                   hintText: 'Enter label name',
                   hintStyle: TextStyle(color: AppColors.textCaption, fontSize: 14),
                   enabledBorder: UnderlineInputBorder(
@@ -612,12 +579,12 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                   isDense: true,
                 ),
               ),
-              const SizedBox(height: 24),
-              const Text(
+              SizedBox(height: 24),
+              Text(
                 'COLOR',
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Wrap(
                 spacing: 12,
                 runSpacing: 12,
@@ -640,21 +607,21 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
                     onPressed: () => Get.back(),
-                    child: const Text('Cancel', style: TextStyle(color: AppColors.textCaption)),
+                    child: Text(l10n?.cancel ?? 'Cancel', style: TextStyle(color: AppColors.textCaption)),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   ElevatedButton(
                     onPressed: () {
                       if (nameController.text.trim().isEmpty) {
                         Get.snackbar(
-                          'Error',
-                          'Label name cannot be empty',
+                          l10n?.errorTitle ?? 'Error',
+                          l10n?.requiredField ?? 'Required',
                           backgroundColor: Colors.red,
                           colorText: Colors.white,
                         );
@@ -666,7 +633,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                       backgroundColor: const Color(0xFF3B82F6),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
-                    child: const Text('Create', style: TextStyle(color: AppColors.textPrimary)),
+                    child: Text(l10n?.createButton ?? 'Create', style: TextStyle(color: AppColors.textPrimary)),
                   ),
                 ],
               ),

@@ -101,6 +101,23 @@ class MyApp extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       initialRoute: UserManager().isLoggedIn ? AppRoutes.main : AppRoutes.login,
       getPages: AppPages.pages,
+      builder: (context, child) {
+        return Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: (event) {
+            final focus = FocusManager.instance.primaryFocus;
+            if (focus == null || focus.context == null) return;
+            final renderObject = focus.context!.findRenderObject();
+            if (renderObject is! RenderBox) return;
+            final local = renderObject.globalToLocal(event.position);
+            final bounds = Offset.zero & renderObject.size;
+            if (!bounds.contains(local)) {
+              focus.unfocus();
+            }
+          },
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

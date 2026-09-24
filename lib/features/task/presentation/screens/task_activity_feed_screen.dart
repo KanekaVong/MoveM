@@ -5,6 +5,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../data/dto/response/activity_feed_item_response.dart';
 import '../controllers/task_activity_feed_controller.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class TaskActivityFeedScreen extends StatelessWidget {
   final String activityId;
@@ -18,16 +21,18 @@ class TaskActivityFeedScreen extends StatelessWidget {
       tag: activityId,
     );
 
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
       body: SafeArea(
         child: Column(
           children: [
-            _buildTopBar(),
+            TopToolBar(title: l10n?.historyTitle ?? 'History'),
             Expanded(
               child: Obx(() {
                 if (controller.isLoading && controller.items.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: CircularProgressIndicator(color: AppColors.taskBluePrimary),
                   );
                 }
@@ -42,12 +47,12 @@ class TaskActivityFeedScreen extends StatelessWidget {
                           Text(
                             controller.errorMessage.value,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                            style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           TextButton(
                             onPressed: controller.fetchFeed,
-                            child: const Text('Retry'),
+                            child: Text(l10n?.retry ?? 'Retry'),
                           ),
                         ],
                       ),
@@ -56,17 +61,15 @@ class TaskActivityFeedScreen extends StatelessWidget {
                 }
 
                 if (controller.items.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No activity yet',
-                      style: TextStyle(color: AppColors.textCaption, fontSize: 15),
-                    ),
+                  return NoDataComponent(
+                    title: l10n?.noActivityYet ?? 'No activity yet',
+                    subtitle: l10n?.noActivityYetSub ?? 'Updates for this task will appear here.',
                   );
                 }
 
                 return RefreshIndicator(
                   color: AppColors.taskBluePrimary,
-                  backgroundColor: Colors.white,
+                  backgroundColor: AppColors.cardSurface,
                   onRefresh: controller.refreshFeed,
                   child: ListView.separated(
                     controller: controller.scrollController,
@@ -102,46 +105,6 @@ class TaskActivityFeedScreen extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildTopBar() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
-      child: SizedBox(
-        height: 42,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: GestureDetector(
-                onTap: () => Get.back(),
-                child: Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.chipSurface,
-                    border: Border.all(color: AppColors.borderLight),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.chevron_left, color: AppColors.textPrimary, size: 24),
-                  ),
-                ),
-              ),
-            ),
-            const Text(
-              'History',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _ActivityFeedRow extends StatelessWidget {
@@ -162,7 +125,7 @@ class _ActivityFeedRow extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: item.displayName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -171,7 +134,7 @@ class _ActivityFeedRow extends StatelessWidget {
                   if (item.message.trim().isNotEmpty)
                     TextSpan(
                       text: ' ${item.message.trim()}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
@@ -181,10 +144,10 @@ class _ActivityFeedRow extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Text(
             _formatTimestamp(item.createdAt),
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textCaption,
               fontSize: 11,
               fontWeight: FontWeight.w500,

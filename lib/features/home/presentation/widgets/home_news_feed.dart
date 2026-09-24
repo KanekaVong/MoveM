@@ -3,42 +3,51 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/config/app_config.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../domain/models/home_feed_item.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/activity_detail_controller.dart';
 import '../screens/activity_detail_screen.dart';
 import 'gps_route_painter.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class HomeNewsFeed extends GetView<HomeController> {
   const HomeNewsFeed({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Obx(() {
       final items = controller.feedItems;
       if (items.isEmpty) {
-        return const SizedBox.shrink();
+        return NoDataComponent(
+          compact: true,
+          title: l10n?.noActivityYet ?? 'No activity yet',
+          subtitle: l10n?.feedEmptySub ??
+              'Workouts and updates from your circle will show up here.',
+        );
       }
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'NewsFeed',
+          Text(
+            l10n?.newsFeed ?? 'News Feed',
             style: TextStyle(
-              color: Color(0xFF111827),
+              color: AppColors.textPrimary,
               fontSize: 18,
               fontWeight: FontWeight.w700,
               letterSpacing: -0.2,
             ),
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: items.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            separatorBuilder: (_, __) => SizedBox(height: 16),
             itemBuilder: (context, index) => _buildFeedCard(items[index]),
           ),
         ],
@@ -51,7 +60,7 @@ class HomeNewsFeed extends GetView<HomeController> {
       onTap: () => _openActivityDetail(item),
       child: Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F5F8),
+        color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(18),
       ),
       padding: const EdgeInsets.all(14),
@@ -68,12 +77,12 @@ class HomeNewsFeed extends GetView<HomeController> {
                     Row(
                       children: [
                         _buildUserAvatar(item),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             item.userName,
-                            style: const TextStyle(
-                              color: Color(0xFF111827),
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
@@ -83,37 +92,37 @@ class HomeNewsFeed extends GetView<HomeController> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Text(
                       item.title,
-                      style: const TextStyle(
-                        color: Color(0xFF111827),
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
                         fontSize: 14.5,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     if (item.caption != null && item.caption!.isNotEmpty) ...[
-                      const SizedBox(height: 3),
+                      SizedBox(height: 3),
                       Text(
                         item.caption!,
-                        style: const TextStyle(
-                          color: Color(0xFF94A3B8),
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
                           fontSize: 13,
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     _buildPrimaryStats(item),
                     if (item.steps != null) ...[
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       _buildStatRow(
-                        icon: const SizedBox(
+                        icon: SizedBox(
                           width: 17,
                           height: 17,
                           child: CustomPaint(
-                            painter: SneakerIconPainter(color: Color(0xFF111827)),
+                            painter: SneakerIconPainter(color: AppColors.textPrimary),
                           ),
                         ),
                         text: item.steps!,
@@ -149,7 +158,7 @@ class HomeNewsFeed extends GetView<HomeController> {
     if (item.duration != null) {
       stats.add(
         _buildStatRow(
-          icon: const Icon(Icons.timer_outlined, color: Color(0xFF111827), size: 16),
+          icon: Icon(Icons.timer_outlined, color: AppColors.textPrimary, size: 16),
           text: item.duration!,
         ),
       );
@@ -231,11 +240,11 @@ class HomeNewsFeed extends GetView<HomeController> {
       mainAxisSize: MainAxisSize.min,
       children: [
         icon,
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Text(
           text,
-          style: const TextStyle(
-            color: Color(0xFF111827),
+          style: TextStyle(
+            color: AppColors.textPrimary,
             fontSize: 12.5,
             fontWeight: FontWeight.w600,
           ),

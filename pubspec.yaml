@@ -76,4 +76,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icons/
+    - assets/icons/empty_folder.png
     - assets/images/

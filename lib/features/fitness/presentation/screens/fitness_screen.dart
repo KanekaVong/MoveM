@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../controllers/fitness_profile_controller.dart';
 import 'fitness_dashboard_screen.dart';
 import 'fitness_onboarding_screen.dart';
@@ -135,7 +136,7 @@ class _FitnessWelcomeScreenState extends State<FitnessWelcomeScreen> {
                             children: [
                               Center(
                                 child: Text(
-                                  'Swipe to start',
+                                  AppLocalizations.of(context)?.swipeToStart ?? 'Swipe to start',
                                   style: TextStyle(
                                     color: Colors.black.withValues(alpha: 0.35),
                                     fontWeight: FontWeight.bold,

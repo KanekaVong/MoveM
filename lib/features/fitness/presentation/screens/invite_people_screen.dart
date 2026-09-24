@@ -6,6 +6,8 @@ import '../../../friends/data/services/friends_service.dart';
 import '../../../friends/domain/repositories/friends_repository.dart';
 import '../../../friends/presentation/controllers/friends_controller.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class InvitePeopleScreen extends StatefulWidget {
   final Set<int>? initialSelectedIds;
@@ -49,28 +51,12 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leadingWidth: 80,
-        leading: TextButton(
-          onPressed: () => Get.back(),
-          child: Text(l10n?.cancel ?? 'Cancel',
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
-        ),
-        centerTitle: true,
-        title: Text(l10n?.invitePeople ?? 'Invite people',
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
+      appBar: TopToolBar(
+        title: l10n?.invitePeople ?? 'Invite people',
         actions: [
-          TextButton(
-            onPressed: () {
-              Get.back(result: selectedIds.toList());
-            },
-            child: Text(l10n?.invite ?? 'Invite',
-                style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold)),
+          TopToolBarAction(
+            icon: Icons.check_rounded,
+            onTap: () => Get.back(result: selectedIds.toList()),
           ),
         ],
       ),
@@ -87,11 +73,11 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextField(
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style: TextStyle(color: AppColors.textPrimary),
                   decoration: InputDecoration(
                     hintText: 'Search for people on MoveM',
-                    hintStyle: const TextStyle(color: AppColors.textCaption),
-                    prefixIcon: const Icon(Icons.search, color: AppColors.textCaption),
+                    hintStyle: TextStyle(color: AppColors.textCaption),
+                    prefixIcon: Icon(Icons.search, color: AppColors.textCaption),
                     filled: true,
                     fillColor: AppColors.textPrimary.withValues(alpha: 0.1),
                     contentPadding: const EdgeInsets.symmetric(vertical: 0),
@@ -101,21 +87,21 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 if (selectedFriends.isNotEmpty) ...[
                   Text('MEMBERS (${selectedFriends.length})',
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,
                           fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   SizedBox(
                     height: 80,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: selectedFriends.length,
                       separatorBuilder: (context, index) =>
-                          const SizedBox(width: 16),
+                          SizedBox(width: 16),
                       itemBuilder: (context, index) {
                         final person = selectedFriends[index];
                         return Column(
@@ -130,7 +116,7 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                                       person.firstname.isNotEmpty
                                           ? person.firstname[0].toUpperCase()
                                           : '?',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           color: AppColors.textPrimary,
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold)),
@@ -146,47 +132,49 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.all(2),
-                                      decoration: const BoxDecoration(
+                                      decoration: BoxDecoration(
                                         color: Colors.grey,
                                         shape: BoxShape.circle,
                                       ),
-                                      child: const Icon(Icons.close,
+                                      child: Icon(Icons.close,
                                           size: 10, color: Colors.black),
                                     ),
                                   ),
                                 )
                               ],
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Text(person.firstname,
-                                style: const TextStyle(
+                                style: TextStyle(
                                     color: AppColors.textSecondary, fontSize: 12)),
                           ],
                         );
                       },
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                 ],
-                const Text('Suggested',
+                Text('Suggested',
                     style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,
                         fontWeight: FontWeight.bold)),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Expanded(
                   child: _friendsController.isLoading
-                      ? const Center(
+                      ? Center(
                           child: CircularProgressIndicator(
                               color: Colors.blueAccent))
                       : allPeople.isEmpty
-                          ? const Center(
-                              child: Text('No friends found.',
-                                  style: TextStyle(color: AppColors.textCaption)))
+                          ? NoDataComponent(
+                              title: l10n?.noFriendsFoundInvite ?? 'No friends found',
+                              subtitle: l10n?.addFriendsThenInvite ??
+                                  'Add friends first, then invite them to this club.',
+                            )
                           : ListView.separated(
                               itemCount: allPeople.length,
                               separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 12),
+                                  SizedBox(height: 12),
                               itemBuilder: (context, index) {
                                 final person = allPeople[index];
                                 final isSelected =
@@ -221,16 +209,16 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                                                   ? person.firstname[0]
                                                       .toUpperCase()
                                                   : '?',
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                   color: AppColors.textPrimary,
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold)),
                                         ),
-                                        const SizedBox(width: 16),
+                                        SizedBox(width: 16),
                                         Text(
                                             '${person.firstname} ${person.lastname}'
                                                 .trim(),
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                                 color: AppColors.textPrimary,
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.bold)),

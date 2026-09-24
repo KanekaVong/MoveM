@@ -9,6 +9,7 @@ import 'create_task_screen.dart';
 import 'task_detail_screen.dart';
 import 'task_invitation_screen.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/no_data_component.dart';
 
 class TaskScreen extends GetView<TaskController> {
   const TaskScreen({super.key});
@@ -36,7 +37,7 @@ class TaskScreen extends GetView<TaskController> {
                   fit: BoxFit.cover,
                 ),
                 Container(
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -67,7 +68,7 @@ class TaskScreen extends GetView<TaskController> {
                           AppColors.pageBackground.withValues(alpha: 0.7),
                           AppColors.pageBackground,
                         ],
-                        stops: const [0.0, 0.4, 0.85],
+                        stops: [0.0, 0.4, 0.85],
                       ),
                     ),
                     child: Padding(
@@ -75,8 +76,8 @@ class TaskScreen extends GetView<TaskController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 16),
-                          const Text(
+                          SizedBox(height: 16),
+                          Text(
                             'PROGRESS',
                             style: TextStyle(
                               color: AppColors.textPrimary,
@@ -85,9 +86,9 @@ class TaskScreen extends GetView<TaskController> {
                               letterSpacing: 1.0,
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           Obx(() => _buildProgressCard(context)),
-                          const SizedBox(height: 24),
+                          SizedBox(height: 24),
                         ],
                       ),
                     ),
@@ -111,7 +112,7 @@ class TaskScreen extends GetView<TaskController> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Text(
+                          Text(
                             'ALL TASKS',
                             style: TextStyle(
                               color: AppColors.textPrimary,
@@ -148,7 +149,7 @@ class TaskScreen extends GetView<TaskController> {
                   color: Colors.black.withValues(alpha: 0.28),
                   border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
                 ),
-                child: const Icon(Icons.mail_outline, color: Colors.white, size: 20),
+                child: Icon(Icons.mail_outline, color: Colors.white, size: 20),
               ),
             ),
           ),
@@ -166,7 +167,7 @@ class TaskScreen extends GetView<TaskController> {
           color: isFiltered ? AppColors.chipSurface : AppColors.cardSurface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isFiltered ? const Color(0xFF3B82F6) : AppColors.chipSurface,
+            color: isFiltered ? Color(0xFF3B82F6) : AppColors.chipSurface,
             width: 1.2,
           ),
         ),
@@ -181,10 +182,10 @@ class TaskScreen extends GetView<TaskController> {
                 children: [
                   Icon(
                     Icons.filter_list_rounded,
-                    color: isFiltered ? const Color(0xFF60A5FA) : AppColors.textCaption,
+                    color: isFiltered ? Color(0xFF60A5FA) : AppColors.textCaption,
                     size: 16,
                   ),
-                  const SizedBox(width: 6),
+                  SizedBox(width: 6),
                   Text(
                     isFiltered ? controller.filterSummary : 'Filter',
                     style: TextStyle(
@@ -198,7 +199,7 @@ class TaskScreen extends GetView<TaskController> {
               ),
             ),
             if (isFiltered) ...[
-              const SizedBox(width: 6),
+              SizedBox(width: 6),
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () {
@@ -206,11 +207,11 @@ class TaskScreen extends GetView<TaskController> {
                 },
                 child: Container(
                   padding: const EdgeInsets.all(3),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: Color(0xFF2563EB),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.close,
                     color: AppColors.textPrimary,
                     size: 10,
@@ -278,11 +279,11 @@ class TaskScreen extends GetView<TaskController> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Filter Tasks',
                           style: TextStyle(
                             color: AppColors.textPrimary,
@@ -299,7 +300,7 @@ class TaskScreen extends GetView<TaskController> {
                                 tempPriority = null;
                               });
                             },
-                            child: const Text(
+                            child: Text(
                               'Reset',
                               style: TextStyle(
                                 color: Color(0xFF3B82F6),
@@ -310,8 +311,8 @@ class TaskScreen extends GetView<TaskController> {
                           ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    const Text(
+                    SizedBox(height: 20),
+                    Text(
                       'STATUS',
                       style: TextStyle(
                         color: AppColors.textCaption,
@@ -320,7 +321,7 @@ class TaskScreen extends GetView<TaskController> {
                         letterSpacing: 1.0,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -359,8 +360,8 @@ class TaskScreen extends GetView<TaskController> {
                         );
                       }).toList(),
                     ),
-                    const SizedBox(height: 20),
-                    const Text(
+                    SizedBox(height: 20),
+                    Text(
                       'PRIORITY',
                       style: TextStyle(
                         color: AppColors.textCaption,
@@ -369,7 +370,7 @@ class TaskScreen extends GetView<TaskController> {
                         letterSpacing: 1.0,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -426,7 +427,7 @@ class TaskScreen extends GetView<TaskController> {
                             priority: tempPriority,
                           );
                         },
-                        child: const Text(
+                        child: Text(
                           'Apply Filters',
                           style: TextStyle(
                             color: AppColors.textPrimary,
@@ -504,7 +505,7 @@ class TaskScreen extends GetView<TaskController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
+          Text(
             'COMPLETED TASKS',
             style: TextStyle(
               color: AppColors.textPrimary,
@@ -524,7 +525,7 @@ class TaskScreen extends GetView<TaskController> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
@@ -536,7 +537,7 @@ class TaskScreen extends GetView<TaskController> {
               children: [
                 Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Text(
                       'CREATE TASK',
                       style: TextStyle(
@@ -554,8 +555,8 @@ class TaskScreen extends GetView<TaskController> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                const Text(
+                SizedBox(height: 4),
+                Text(
                   'Let your brain relax, put it here.',
                   style: TextStyle(
                     color: AppColors.textCaption,
@@ -611,14 +612,14 @@ class TaskScreen extends GetView<TaskController> {
             children: [
               Text(
                 '$completed',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 34,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 2),
-              const Text(
+              SizedBox(height: 2),
+              Text(
                 'COMPLETED',
                 style: TextStyle(
                   color: AppColors.textCaption,
@@ -650,7 +651,7 @@ class TaskScreen extends GetView<TaskController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
+        Text(
           'Upcoming Tasks',
           style: TextStyle(
             color: AppColors.textPrimary,
@@ -658,20 +659,20 @@ class TaskScreen extends GetView<TaskController> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         if (upcoming.isNotEmpty) ...[
           for (int i = 0; i < upcoming.length && i < 2; i++) ...[
             _buildUpcomingItem(upcoming[i]),
-            if (i < upcoming.length - 1 && i < 1) const SizedBox(height: 4),
+            if (i < upcoming.length - 1 && i < 1) SizedBox(height: 4),
           ],
         ] else ...[
-          const Text(
+          Text(
             'No upcoming tasks',
             style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
         ],
-        const SizedBox(height: 16),
-        const Text(
+        SizedBox(height: 16),
+        Text(
           'On-Going Tasks',
           style: TextStyle(
             color: AppColors.textPrimary,
@@ -679,11 +680,11 @@ class TaskScreen extends GetView<TaskController> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         if (ongoing.isNotEmpty) ...[
           _buildOngoingItem(ongoing.first),
         ] else ...[
-          const Text(
+          Text(
             'No ongoing tasks',
             style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
@@ -721,7 +722,7 @@ class TaskScreen extends GetView<TaskController> {
         children: [
           TextSpan(
             text: '${task.activityName} ',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -748,7 +749,7 @@ class TaskScreen extends GetView<TaskController> {
         children: [
           TextSpan(
             text: '$title ',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -799,7 +800,7 @@ class TaskScreen extends GetView<TaskController> {
             children: [
               TextSpan(
                 text: '${task.activityName} ',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -807,7 +808,7 @@ class TaskScreen extends GetView<TaskController> {
               ),
               TextSpan(
                 text: dueText,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Color(0xFF4ADE80),
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -816,7 +817,7 @@ class TaskScreen extends GetView<TaskController> {
             ],
           ),
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         ClipRRect(
           borderRadius: BorderRadius.circular(2),
           child: Container(
@@ -848,7 +849,7 @@ class TaskScreen extends GetView<TaskController> {
             children: [
               TextSpan(
                 text: '$title ',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -856,7 +857,7 @@ class TaskScreen extends GetView<TaskController> {
               ),
               TextSpan(
                 text: due,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Color(0xFF4ADE80),
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -865,7 +866,7 @@ class TaskScreen extends GetView<TaskController> {
             ],
           ),
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         ClipRRect(
           borderRadius: BorderRadius.circular(2),
           child: Container(
@@ -892,7 +893,7 @@ class TaskScreen extends GetView<TaskController> {
           color: AppColors.pageBackground,
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
-            children: const [
+            children: [
               SizedBox(height: 80),
               Center(
                 child: CircularProgressIndicator(color: Color(0xFF3B82F6)),
@@ -905,19 +906,14 @@ class TaskScreen extends GetView<TaskController> {
       if (controller.tasks.isEmpty) {
         return Container(
           color: AppColors.pageBackground,
-          child: const SingleChildScrollView(
+          child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
             padding: EdgeInsets.fromLTRB(20.0, 0, 20.0, 120.0),
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 40),
-                child: Text(
-                  'Empty',
-                  style: TextStyle(
-                      color: AppColors.textCaption,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold),
-                ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 48),
+              child: NoDataComponent(
+                title: AppLocalizations.of(Get.context!)?.noTasksYet ?? 'No tasks yet',
+                subtitle: AppLocalizations.of(Get.context!)?.createTaskToStart ?? 'Create a task to get started.',
               ),
             ),
           ),
@@ -1026,16 +1022,16 @@ class TaskScreen extends GetView<TaskController> {
                         color: const Color(0xFFFEE2E2),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.delete_outline_rounded,
                         color: Color(0xFFEF4444),
                         size: 18,
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Text(
                       l10n?.deleteTask ?? 'Delete Task',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -1044,17 +1040,17 @@ class TaskScreen extends GetView<TaskController> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Text(
                   l10n?.deleteTaskConfirm ??
                       'Are you sure you want to delete this task? This action cannot be undone.',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textCaption,
                     fontSize: 12,
                     height: 1.35,
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -1071,7 +1067,7 @@ class TaskScreen extends GetView<TaskController> {
                             Navigator.of(dialogContext).pop(false),
                         child: Text(
                           l10n?.cancel ?? 'Cancel',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textCaption,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -1079,7 +1075,7 @@ class TaskScreen extends GetView<TaskController> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     SizedBox(
                       height: 32,
                       child: ElevatedButton(
@@ -1095,7 +1091,7 @@ class TaskScreen extends GetView<TaskController> {
                             Navigator.of(dialogContext).pop(true),
                         child: Text(
                           l10n?.delete ?? 'Delete',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
@@ -1215,7 +1211,7 @@ class TaskScreen extends GetView<TaskController> {
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1256,11 +1252,11 @@ class TaskScreen extends GetView<TaskController> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            SizedBox(width: 10),
                             Expanded(
                               child: Text(
                                 'Dateline : $formattedDate',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
@@ -1274,7 +1270,7 @@ class TaskScreen extends GetView<TaskController> {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Container(
                     width: 42,
                     height: 42,
@@ -1286,7 +1282,7 @@ class TaskScreen extends GetView<TaskController> {
                         width: 1.2,
                       ),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.assignment_outlined,
                       color: Color(0xFF3B82F6),
                       size: 24,
@@ -1294,7 +1290,7 @@ class TaskScreen extends GetView<TaskController> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(3),
                 child: Container(
@@ -1310,14 +1306,14 @@ class TaskScreen extends GetView<TaskController> {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     'Progression : $progressionPercent%',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,

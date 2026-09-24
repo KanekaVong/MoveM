@@ -17,6 +17,8 @@ import 'package:movem/features/settings/data/services/setting_service.dart';
 import 'package:movem/features/settings/data/repositories/setting_repository_impl.dart';
 
 import 'package:movem/features/settings/presentation/screens/region_selection_screen.dart';
+import 'package:movem/shared/widgets/no_data_component.dart';
+import 'package:movem/shared/widgets/top_tool_bar.dart';
 
 
 class ProfileScreen extends StatelessWidget {
@@ -197,42 +199,17 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
+      appBar: const TopToolBar(
+        title: 'Your Profile',
+        backgroundColor: Color(0xFF0F172A),
+        foregroundColor: Colors.white,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  InkWell(
-                    onTap: () => Get.back(),
-                    borderRadius: BorderRadius.circular(30),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 4.0),
-                      child: Row(
-                        children: const [
-                          Icon(
-                            Icons.arrow_back_ios,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            'Your Profile',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
               _buildProfileSection(context, user),
               const SizedBox(height: 32),
               _buildPersonalInformation(context, user),
@@ -874,15 +851,10 @@ class ProfileScreen extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         SettingsCard(
-          padding: const EdgeInsets.symmetric(vertical: 40),
-          child: const Center(
-            child: Text(
-              'No Achievements Yet',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-            ),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: const NoDataComponent(
+            compact: true,
+            title: 'No Achievements Yet',
           ),
         ),
       ],

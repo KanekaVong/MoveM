@@ -7,8 +7,10 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../controllers/edit_task_controller.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/dto/response/attachment_response.dart';
 import 'add_collaborator_screen.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class EditTaskScreen extends GetView<EditTaskController> {
   const EditTaskScreen({super.key});
@@ -16,13 +18,14 @@ class EditTaskScreen extends GetView<EditTaskController> {
   @override
   Widget build(BuildContext context) {
     Get.put(EditTaskController());
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
       body: SafeArea(
         child: Column(
           children: [
-            _buildAppBar(context),
+            TopToolBar(title: l10n?.editTask ?? 'Edit Task'),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
@@ -30,15 +33,15 @@ class EditTaskScreen extends GetView<EditTaskController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildDeadlinesSection(context),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Container(height: 0.5, color: AppColors.textPrimary.withOpacity(0.12)),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     _buildPrioritySection(context),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Container(height: 0.5, color: AppColors.textPrimary.withOpacity(0.12)),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     _buildDescriptionSection(context),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Container(height: 0.5, color: AppColors.textPrimary.withOpacity(0.12)),
                     const SizedBox(height: 20),
                     _buildPropertiesCard(context),
@@ -59,42 +62,6 @@ class EditTaskScreen extends GetView<EditTaskController> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: () => Get.back(),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0x33000000),
-                border: Border.all(color: AppColors.textPrimary.withOpacity(0.24), width: 1),
-              ),
-              child: const Center(
-                child: Icon(Icons.chevron_left, color: AppColors.textPrimary, size: 22),
-              ),
-            ),
-          ),
-          const Text(
-            'Edit Task',
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          const SizedBox(width: 38), // Balance row
-        ],
-      ),
-    );
-  }
-
   Widget _buildDeadlinesSection(BuildContext context) {
     return GestureDetector(
       onTap: () => controller.pickDeadlineDate(context),
@@ -102,7 +69,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'DEADLINES',
             style: TextStyle(
               color: AppColors.textPrimary,
@@ -111,10 +78,10 @@ class EditTaskScreen extends GetView<EditTaskController> {
               letterSpacing: 0.5,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Obx(() => Text(
             controller.formattedDeadlineDate,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 12,
               fontStyle: FontStyle.italic,
@@ -132,7 +99,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'PRIORITY',
             style: TextStyle(
               color: AppColors.textPrimary,
@@ -160,7 +127,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'DESCRIPTION',
           style: TextStyle(
             color: AppColors.textPrimary,
@@ -169,17 +136,17 @@ class EditTaskScreen extends GetView<EditTaskController> {
             letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         TextField(
           controller: controller.descriptionController,
           maxLines: null,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 12,
             fontStyle: FontStyle.italic,
             height: 1.4,
           ),
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             border: InputBorder.none,
             isDense: true,
             contentPadding: EdgeInsets.zero,
@@ -206,7 +173,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'LABEL',
             style: TextStyle(
               color: AppColors.textPrimary,
@@ -215,12 +182,12 @@ class EditTaskScreen extends GetView<EditTaskController> {
               letterSpacing: 0.5,
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _buildLabels(context),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           Row(
             children: [
-              const Text(
+              Text(
                 'CHECKLIST',
                 style: TextStyle(
                   color: AppColors.textPrimary,
@@ -229,17 +196,17 @@ class EditTaskScreen extends GetView<EditTaskController> {
                   letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(width: 6),
+              SizedBox(width: 6),
               GestureDetector(
                 onTap: () => controller.addChecklistItem(),
-                child: const Icon(Icons.add, color: AppColors.textPrimary, size: 16),
+                child: Icon(Icons.add, color: AppColors.textPrimary, size: 16),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _buildChecklistItems(),
-          const SizedBox(height: 20),
-          const Text(
+          SizedBox(height: 20),
+          Text(
             'REPEAT',
             style: TextStyle(
               color: AppColors.textPrimary,
@@ -248,12 +215,12 @@ class EditTaskScreen extends GetView<EditTaskController> {
               letterSpacing: 0.5,
             ),
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           GestureDetector(
             onTap: () => controller.cycleRepeat(),
             child: Obx(() => Text(
               controller.repeatFrequency.value?.toUpperCase() ?? (controller.isRecurring.value ? 'DAILY' : 'DAILY'),
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -261,14 +228,14 @@ class EditTaskScreen extends GetView<EditTaskController> {
               ),
             )),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           GestureDetector(
             onTap: () => controller.pickDeadlineDate(context),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  children: const [
+                  children: [
                     Text(
                       'Your Next Reminder',
                       style: TextStyle(
@@ -283,7 +250,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                 ),
                 Obx(() => Text(
                   controller.formattedReminderDate,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -317,7 +284,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                 selected != null && selected.name.toLowerCase().contains('homework')
                     ? selected.name
                     : 'Scool Homework',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -338,7 +305,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                 selected != null && !selected.name.toLowerCase().contains('homework')
                     ? selected.name
                     : 'Final Assignment',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -367,12 +334,12 @@ class EditTaskScreen extends GetView<EditTaskController> {
               Expanded(
                 child: TextField(
                   controller: textController,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 13,
                     fontStyle: FontStyle.italic,
                   ),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Add an item',
                     hintStyle: TextStyle(
                       color: AppColors.textSecondary,
@@ -395,22 +362,22 @@ class EditTaskScreen extends GetView<EditTaskController> {
                   height: 20,
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: isCompleted ? const Color(0xFF68B684) : AppColors.textSecondary,
+                      color: isCompleted ? Color(0xFF68B684) : AppColors.textSecondary,
                       width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(3),
                     color: isCompleted ? const Color(0xFF68B684).withOpacity(0.2) : Colors.transparent,
                   ),
                   child: isCompleted
-                      ? const Icon(Icons.check, size: 14, color: Color(0xFF68B684))
+                      ? Icon(Icons.check, size: 14, color: Color(0xFF68B684))
                       : null,
                 ),
               ),
               if (controller.checklists.length > 1) ...[
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 GestureDetector(
                   onTap: () => controller.removeChecklistItem(index),
-                  child: const Icon(Icons.close, color: AppColors.textCaption, size: 14),
+                  child: Icon(Icons.close, color: AppColors.textCaption, size: 14),
                 ),
               ],
             ],
@@ -426,7 +393,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
       children: [
         Obx(() => Text(
           'Collaborators   (${controller.collaborators.length})',
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -461,7 +428,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                             backgroundColor: AppColors.cardSurface,
                             child: Text(
                               initial,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -476,17 +443,17 @@ class EditTaskScreen extends GetView<EditTaskController> {
                         backgroundColor: AppColors.cardSurface,
                         child: Text(
                           initial,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
                         ),
                       ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 11,
                         fontStyle: FontStyle.italic,
@@ -507,7 +474,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                         shape: BoxShape.circle,
                         border: Border.all(color: AppColors.pageBackground, width: 1.5),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Icon(Icons.close, size: 10, color: AppColors.textPrimary),
                       ),
                     ),
@@ -545,7 +512,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text(
                   'ADD COLLABORATORS',
                   style: TextStyle(
@@ -572,15 +539,15 @@ class EditTaskScreen extends GetView<EditTaskController> {
         children: [
           Text(
             'Attachments   ($totalCount)',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 13,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           if (totalCount == 0)
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 4.0),
               child: Text(
                 'No attachments added',
@@ -634,17 +601,17 @@ class EditTaskScreen extends GetView<EditTaskController> {
                               width: 44,
                               height: 44,
                               color: AppColors.chipSurface,
-                              child: const Icon(Icons.image, color: AppColors.borderMuted, size: 20),
+                              child: Icon(Icons.image, color: AppColors.borderMuted, size: 20),
                             ),
                           )
                         : Container(
                             width: 44,
                             height: 44,
                             color: AppColors.chipSurface,
-                            child: const Icon(Icons.attach_file, color: AppColors.borderMuted, size: 20),
+                            child: Icon(Icons.attach_file, color: AppColors.borderMuted, size: 20),
                           ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -653,14 +620,14 @@ class EditTaskScreen extends GetView<EditTaskController> {
                           fileName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: 2),
-                        const Text(
+                        SizedBox(height: 2),
+                        Text(
                           'Uploaded',
                           style: TextStyle(
                             color: Color(0xFF68B684),
@@ -675,7 +642,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                     onTap: () => controller.removeExistingAttachment(index),
                     child: Container(
                       padding: const EdgeInsets.all(6),
-                      child: const Icon(Icons.close, color: AppColors.textCaption, size: 18),
+                      child: Icon(Icons.close, color: AppColors.textCaption, size: 18),
                     ),
                   ),
                 ],
@@ -708,11 +675,11 @@ class EditTaskScreen extends GetView<EditTaskController> {
                         width: 44,
                         height: 44,
                         color: AppColors.chipSurface,
-                        child: const Icon(Icons.image, color: AppColors.borderMuted, size: 20),
+                        child: Icon(Icons.image, color: AppColors.borderMuted, size: 20),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -721,14 +688,14 @@ class EditTaskScreen extends GetView<EditTaskController> {
                           fileName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: 2),
-                        const Text(
+                        SizedBox(height: 2),
+                        Text(
                           'Ready to upload on save',
                           style: TextStyle(
                             color: Color(0xFF3B82F6),
@@ -743,14 +710,14 @@ class EditTaskScreen extends GetView<EditTaskController> {
                     onTap: () => controller.removePickedAttachment(index),
                     child: Container(
                       padding: const EdgeInsets.all(6),
-                      child: const Icon(Icons.close, color: AppColors.textCaption, size: 18),
+                      child: Icon(Icons.close, color: AppColors.textCaption, size: 18),
                     ),
                   ),
                 ],
               ),
             );
           }),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           GestureDetector(
             onTap: () => _showImageSourcePicker(context),
             child: Container(
@@ -763,7 +730,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   Text(
                     'ADD ATTACHMENTS',
                     style: TextStyle(
@@ -837,7 +804,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                     ),
                   ),
                 ),
-                const Center(
+                Center(
                   child: Text(
                     'SAVE CHANGES',
                     style: TextStyle(
@@ -870,22 +837,22 @@ class EditTaskScreen extends GetView<EditTaskController> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Upload Photo',
                   style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 ListTile(
-                  leading: const Icon(Icons.photo_library, color: Color(0xFF3B82F6)),
-                  title: const Text('Choose from Gallery', style: TextStyle(color: AppColors.textPrimary)),
+                  leading: Icon(Icons.photo_library, color: Color(0xFF3B82F6)),
+                  title: Text('Choose from Gallery', style: TextStyle(color: AppColors.textPrimary)),
                   onTap: () {
                     Get.back();
                     controller.pickAttachment(ImageSource.gallery);
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.camera_alt, color: Color(0xFF68B684)),
-                  title: const Text('Take a Photo', style: TextStyle(color: AppColors.textPrimary)),
+                  leading: Icon(Icons.camera_alt, color: Color(0xFF68B684)),
+                  title: Text('Take a Photo', style: TextStyle(color: AppColors.textPrimary)),
                   onTap: () {
                     Get.back();
                     controller.pickAttachment(ImageSource.camera);
@@ -904,8 +871,9 @@ class EditTaskScreen extends GetView<EditTaskController> {
       await controller.loadLabels();
     }
     if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context);
     if (controller.availableLabels.isEmpty) {
-      Get.snackbar('Labels', 'No labels available.', backgroundColor: AppColors.textPrimary, colorText: Colors.white);
+      Get.snackbar(l10n?.labelsLabel ?? 'Labels', l10n?.noLabelsAvailable ?? 'No labels available.', backgroundColor: AppColors.textPrimary, colorText: Colors.white);
       return;
     }
     showModalBottomSheet(
@@ -921,8 +889,8 @@ class EditTaskScreen extends GetView<EditTaskController> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Select Label', style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
+                Text('Select Label', style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
+                SizedBox(height: 16),
                 Wrap(
                   spacing: 10,
                   runSpacing: 10,
@@ -940,7 +908,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                         ),
                         child: Text(
                           l.name,
-                          style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+                          style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
                         ),
                       ),
                     );

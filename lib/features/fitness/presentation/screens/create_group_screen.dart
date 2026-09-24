@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import '../controllers/fitness_club_controller.dart';
 import 'invite_people_screen.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
 
 class CreateGroupScreen extends StatefulWidget {
   const CreateGroupScreen({super.key});
@@ -16,7 +18,7 @@ typedef CreateClubScreen = CreateGroupScreen;
 class _CreateGroupScreenState extends State<CreateGroupScreen> {
   final TextEditingController _clubNameController = TextEditingController();
   final TextEditingController _clubDescriptionController = TextEditingController();
-  String _privacy = 'Privacy';
+  String _privacy = 'PUBLIC';
   bool _isSubmitting = false;
   final Set<int> _selectedMemberIds = {};
 
@@ -39,10 +41,11 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
   Future<void> _handleSubmit() async {
     final name = _clubNameController.text.trim();
+    final l10n = AppLocalizations.of(context);
     if (name.isEmpty) {
       Get.snackbar(
-        'Required',
-        'Please enter a club name',
+        l10n?.requiredField ?? 'Required',
+        l10n?.pleaseEnterClubName ?? 'Please enter a club name',
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
@@ -51,7 +54,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     }
 
     setState(() => _isSubmitting = true);
-    final selectedPrivacy = _privacy == 'Privacy' ? 'PUBLIC' : _privacy.toUpperCase();
+    final selectedPrivacy = _privacy == 'PRIVATE' ? 'PRIVATE' : 'PUBLIC';
     final description = _clubDescriptionController.text.trim();
 
     final createdClub = await _controller.createClub(
@@ -86,10 +89,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Text(
-                    'Select Privacy',
+                    AppLocalizations.of(context)?.selectPrivacy ?? 'Select Privacy',
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 18,
@@ -97,24 +100,30 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 ListTile(
-                  leading: const Icon(Icons.public, color: Colors.blueAccent),
-                  title: const Text('Public', style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
-                  subtitle: const Text('Anyone can find and join this club', style: TextStyle(color: AppColors.textCaption, fontSize: 12)),
-                  trailing: _privacy == 'Public' ? const Icon(Icons.check_circle, color: Colors.blueAccent) : null,
+                  leading: Icon(Icons.public, color: Colors.blueAccent),
+                  title: Text(
+                    AppLocalizations.of(context)?.publicLabel ?? 'Public',
+                    style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(AppLocalizations.of(context)?.anyoneCanJoin ?? 'Anyone can find and join this club', style: TextStyle(color: AppColors.textCaption, fontSize: 12)),
+                  trailing: _privacy == 'PUBLIC' ? Icon(Icons.check_circle, color: Colors.blueAccent) : null,
                   onTap: () {
-                    setState(() => _privacy = 'Public');
+                    setState(() => _privacy = 'PUBLIC');
                     Navigator.pop(context);
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.lock_outline, color: Colors.amber),
-                  title: const Text('Private', style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
-                  subtitle: const Text('Requires invitation or request to join', style: TextStyle(color: AppColors.textCaption, fontSize: 12)),
-                  trailing: _privacy == 'Private' ? const Icon(Icons.check_circle, color: Colors.blueAccent) : null,
+                  leading: Icon(Icons.lock_outline, color: Colors.amber),
+                  title: Text(
+                    AppLocalizations.of(context)?.privateLabel ?? 'Private',
+                    style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(AppLocalizations.of(context)?.requiresInvite ?? 'Requires invitation or request to join', style: TextStyle(color: AppColors.textCaption, fontSize: 12)),
+                  trailing: _privacy == 'PRIVATE' ? Icon(Icons.check_circle, color: Colors.blueAccent) : null,
                   onTap: () {
-                    setState(() => _privacy = 'Private');
+                    setState(() => _privacy = 'PRIVATE');
                     Navigator.pop(context);
                   },
                 ),
@@ -128,57 +137,21 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: Column(
+          children: [
+            TopToolBar(title: l10n?.createClub ?? 'Create Club'),
+            Expanded(
+              child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () => Get.back(),
-                      child: Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.chipSurface.withValues(alpha: 0.5),
-                          border: Border.all(
-                            color: AppColors.textPrimary.withValues(alpha: 0.15),
-                            width: 1.2,
-                          ),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.arrow_back_ios_new_rounded,
-                            color: AppColors.textPrimary,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Text(
-                    'Create Club',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 36),
-
-              const Text(
-                'CLUB NAME',
+              Text(
+                l10n?.clubNameLabel ?? 'CLUB NAME',
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 12,
@@ -186,7 +159,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
 
               Container(
                 decoration: BoxDecoration(
@@ -199,23 +172,23 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 ),
                 child: TextField(
                   controller: _clubNameController,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 16),
                     border: InputBorder.none,
-                    hintText: 'Enter club name',
+                    hintText: l10n?.clubNameHint ?? 'Enter club name',
                     hintStyle: TextStyle(color: AppColors.textCaption, fontSize: 14),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
-              const Text(
-                'CLUB DESCRIPTION',
+              Text(
+                l10n?.clubDescriptionLabel ?? 'CLUB DESCRIPTION',
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 12,
@@ -223,7 +196,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
 
               Container(
                 decoration: BoxDecoration(
@@ -238,12 +211,12 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   controller: _clubDescriptionController,
                   maxLines: 3,
                   maxLength: 1000,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 14),
                     border: InputBorder.none,
                     counterStyle: TextStyle(color: AppColors.textCaption, fontSize: 11),
@@ -252,10 +225,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
-              const Text(
-                'PRIVACY',
+              Text(
+                l10n?.privacy ?? 'PRIVACY',
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 12,
@@ -263,7 +236,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
 
               GestureDetector(
                 onTap: _showPrivacyPicker,
@@ -281,14 +254,16 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        _privacy,
+                        _privacy == 'PRIVATE'
+                            ? (l10n?.privateLabel ?? 'Private')
+                            : (l10n?.publicLabel ?? 'Public'),
                         style: TextStyle(
-                          color: _privacy == 'Privacy' ? AppColors.textSecondary : AppColors.textPrimary,
+                          color: AppColors.textPrimary,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.keyboard_arrow_down_rounded,
                         color: AppColors.textSecondary,
                         size: 24,
@@ -297,14 +272,14 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'MEMBERS ( ${_selectedMemberIds.length} )',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -330,7 +305,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                           color: AppColors.textPrimary.withValues(alpha: 0.12),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Icon(
                             Icons.person_add_outlined,
@@ -339,7 +314,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                           ),
                           SizedBox(width: 6),
                           Text(
-                            'Invite',
+                            AppLocalizations.of(context)?.invite ?? 'Invite',
                             style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 12,
@@ -352,7 +327,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               SizedBox(
                 width: double.infinity,
@@ -376,17 +351,17 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                             strokeWidth: 2,
                           ),
                         )
-                      : const Row(
+                      : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.add_rounded,
                               color: Colors.white,
                               size: 20,
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(
-                              'Create Club',
+                              l10n?.createClub ?? 'Create Club',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 15,
@@ -399,6 +374,9 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
               ),
             ],
           ),
+        ),
+            ),
+          ],
         ),
       ),
     );

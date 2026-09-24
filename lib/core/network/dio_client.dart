@@ -25,16 +25,9 @@ class DioClient {
     );
 
     _dio = Dio(options);
-    final transformer = _dio.transformer;
-    if (transformer is SyncTransformer) {
-      transformer.jsonDecodeCallback = (text) {
-        try {
-          return jsonDecode(text);
-        } catch (_) {
-          return text;
-        }
-      };
-    }
+    _dio.transformer = SyncTransformer(
+      jsonDecodeCallback: _safeJsonDecode,
+    );
 
     _dio.interceptors.add(
       InterceptorsWrapper(
@@ -52,7 +45,9 @@ class DioClient {
           return handler.next(response);
         },
         onError: (DioException e, handler) {
-          log('*** DioException [${e.response?.statusCode}] ***\nURI: ${e.requestOptions.uri}\nResponse Body: ${e.response?.data}\nError: ${e.error}\nMessage: ${e.message}', name: 'DIO-ERR');
+          if (kDebugMode) {
+            log('DioException [${e.response?.statusCode}] ${e.requestOptions.uri}: ${e.message}', name: 'DIO-ERR');
+          }
           return handler.next(e);
         },
       ),
@@ -92,4 +87,14 @@ class DioClient {
   }
 
   Dio get dio => _dio;
+}
+
+dynamic _safeJsonDecode(String text) {
+  final trimmed = text.trim();
+  if (trimmed.isEmpty) return null;
+  try {
+    return jsonDecode(trimmed);
+  } catch (_) {
+    return trimmed;
+  }
 }

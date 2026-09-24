@@ -2,6 +2,9 @@ class AppImages {
   AppImages._();
 
   static const String _basePath = 'assets/images';
+  static const String _iconPath = 'assets/icons';
+
+  static const String emptyFolder = '$_iconPath/empty_folder.png';
 
   static const String pushUpCard = '$_basePath/push_up_card.jpg';
   static const String pushUpHero = '$_basePath/push_up_hero.jpg';

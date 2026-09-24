@@ -265,14 +265,14 @@ class SoloChallengeDetailController extends BaseController {
                     width: 1.5,
                   ),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.location_off_rounded,
                   color: Color(0xFFFF5252),
                   size: 28,
                 ),
               ),
-              const SizedBox(height: 18),
-              const Text(
+              SizedBox(height: 18),
+              Text(
                 'Location Access Required',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -281,8 +281,8 @@ class SoloChallengeDetailController extends BaseController {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 10),
-              const Text(
+              SizedBox(height: 10),
+              Text(
                 'MoveM needs location access to track your GPS route, distance, and pace. Please enable location permissions in your device settings.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -291,7 +291,7 @@ class SoloChallengeDetailController extends BaseController {
                   height: 1.45,
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
@@ -303,7 +303,7 @@ class SoloChallengeDetailController extends BaseController {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Cancel',
                         style: TextStyle(
                           color: AppColors.textCaption,
@@ -313,7 +313,7 @@ class SoloChallengeDetailController extends BaseController {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
@@ -367,14 +367,14 @@ class SoloChallengeDetailController extends BaseController {
                     width: 1.5,
                   ),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.gps_off_rounded,
                   color: Color(0xFFFFB300),
                   size: 28,
                 ),
               ),
-              const SizedBox(height: 18),
-              const Text(
+              SizedBox(height: 18),
+              Text(
                 'Location Service Disabled',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -383,8 +383,8 @@ class SoloChallengeDetailController extends BaseController {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 10),
-              const Text(
+              SizedBox(height: 10),
+              Text(
                 'Please turn on GPS / Location service on your device so MoveM can record your run.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -393,7 +393,7 @@ class SoloChallengeDetailController extends BaseController {
                   height: 1.45,
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
@@ -405,7 +405,7 @@ class SoloChallengeDetailController extends BaseController {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Cancel',
                         style: TextStyle(
                           color: AppColors.textCaption,
@@ -415,7 +415,7 @@ class SoloChallengeDetailController extends BaseController {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {

@@ -109,7 +109,7 @@ class PushUpSummaryScreen extends StatelessWidget {
                                       width: 1.5,
                                     ),
                                   ),
-                                  child: const Center(
+                                  child: Center(
                                     child: Icon(
                                       Icons.arrow_back_ios_new_rounded,
                                       color: AppColors.textPrimary,
@@ -121,7 +121,7 @@ class PushUpSummaryScreen extends StatelessWidget {
                             ),
                             Text(
                               l10n?.workoutDetails ?? 'Workout Details',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -160,11 +160,11 @@ class PushUpSummaryScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 48),
+                SizedBox(height: 48),
 
                 Column(
                   children: [
-                    const Text(
+                    Text(
                       'CHALLENGE',
                       style: TextStyle(
                         color: AppColors.textCaption,
@@ -173,10 +173,10 @@ class PushUpSummaryScreen extends StatelessWidget {
                         letterSpacing: 2.0,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Text(
                       challenge.name.toUpperCase(),
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
@@ -200,7 +200,7 @@ class PushUpSummaryScreen extends StatelessWidget {
                 const SizedBox(height: 64),
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                  padding: EdgeInsets.symmetric(horizontal: 28.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -245,7 +245,7 @@ class PushUpSummaryScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 48),
+                SizedBox(height: 48),
               ],
             ),
           ),
@@ -263,17 +263,17 @@ class PushUpSummaryScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textCaption,
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 17,
             fontWeight: FontWeight.w900,
@@ -313,10 +313,10 @@ class PushUpSummaryScreen extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 10,
               fontWeight: FontWeight.bold,

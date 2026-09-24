@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../data/models/fitness_profile_model.dart';
 import '../../data/models/fitness_statistics_model.dart';
@@ -7,6 +8,11 @@ import '../../data/repositories/fitness_profile_repository.dart';
 import '../../data/repositories/fitness_achievement_repository.dart';
 
 class FitnessProfileController extends BaseController {
+  AppLocalizations? get _l10n {
+    final ctx = Get.context;
+    return ctx == null ? null : AppLocalizations.of(ctx);
+  }
+
   final FitnessProfileRepository _repository = FitnessProfileRepository();
   final FitnessAchievementRepository _achievementRepository = FitnessAchievementRepository();
 
@@ -59,12 +65,12 @@ class FitnessProfileController extends BaseController {
   }
 
   Future<void> fetchProfile() async {
-    await executeApi<FitnessProfileModel>(
+    await executeApi<FitnessProfileModel?>(
       showLoading: false,
       showErrorDialog: false,
       apiCall: () => _repository.getProfile(),
       onSuccess: (data) {
-        if (data.height > 0 && data.weight > 0) {
+        if (data != null && data.height > 0 && data.weight > 0) {
           profile.value = data;
           hasProfile.value = true;
         } else {
@@ -95,10 +101,14 @@ class FitnessProfileController extends BaseController {
   }
 
   Future<void> fetchAchievementCount() async {
-    final result = await _achievementRepository.getMyAchievementCount();
-    if (result.isSuccess && result.data != null) {
-      achievementCount.value = result.data!;
-    }
+    await executeApi<int>(
+      showLoading: false,
+      showErrorDialog: false,
+      apiCall: () => _achievementRepository.getMyAchievementCount(),
+      onSuccess: (data) {
+        achievementCount.value = data;
+      },
+    );
   }
 
   void setHeight(double cm) {
@@ -111,16 +121,17 @@ class FitnessProfileController extends BaseController {
 
   Future<bool> saveProfile() async {
     if (inputHeight.value < 50 || inputHeight.value > 300) {
-      Get.snackbar('Error', 'Please enter a valid height in cm (e.g., 170 cm). If using ft, ensure it converts to a reasonable value.');
+      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.invalidHeight ?? 'Please enter a valid height in cm (e.g., 170 cm). If using ft, ensure it converts to a reasonable value.');
       return false;
     }
     if (inputWeight.value < 20 || inputWeight.value > 500) {
-      Get.snackbar('Error', 'Please enter a valid weight in kg (e.g., 65 kg).');
+      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.invalidWeight ?? 'Please enter a valid weight in kg (e.g., 65 kg).');
       return false;
     }
 
     bool success = false;
     await executeApi<FitnessProfileModel>(
+      showErrorDialog: false,
       apiCall: () => _repository.createProfile(inputHeight.value, inputWeight.value),
       onSuccess: (data) {
         profile.value = data;
@@ -129,7 +140,7 @@ class FitnessProfileController extends BaseController {
       },
       onError: (e) {
         success = false;
-        Get.snackbar('Error', 'Failed to save profile. Please try again.');
+        Get.snackbar(_l10n?.errorTitle ?? 'Error', e.message.isNotEmpty ? e.message : (_l10n?.failedToSaveProfile ?? 'Failed to save profile. Please try again.'));
       },
     );
     return success;
@@ -139,6 +150,7 @@ class FitnessProfileController extends BaseController {
     bool success = false;
     await executeApi<FitnessProfileModel>(
       showLoading: false,
+      showErrorDialog: false,
       apiCall: () => _repository.updateProfile(height, weight),
       onSuccess: (data) {
         profile.value = data;
@@ -146,7 +158,7 @@ class FitnessProfileController extends BaseController {
       },
       onError: (e) {
         success = false;
-        Get.snackbar('Error', 'Failed to update profile. Please try again.');
+        Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.failedToUpdateProfile ?? 'Failed to update profile. Please try again.');
       },
     );
     return success;
@@ -154,11 +166,11 @@ class FitnessProfileController extends BaseController {
 
   Future<bool> saveBodyMetrics(double height, double weight) async {
     if (height < 50 || height > 300) {
-      Get.snackbar('Error', 'Please enter a valid height in cm (e.g., 170 cm).');
+      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.invalidHeight ?? 'Please enter a valid height in cm (e.g., 170 cm).');
       return false;
     }
     if (weight < 20 || weight > 500) {
-      Get.snackbar('Error', 'Please enter a valid weight in kg (e.g., 65 kg).');
+      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.invalidWeight ?? 'Please enter a valid weight in kg (e.g., 65 kg).');
       return false;
     }
 
@@ -169,6 +181,7 @@ class FitnessProfileController extends BaseController {
     bool success = false;
     await executeApi<FitnessProfileModel>(
       showLoading: false,
+      showErrorDialog: false,
       apiCall: () => _repository.createProfile(height, weight),
       onSuccess: (data) {
         profile.value = data;
@@ -177,7 +190,7 @@ class FitnessProfileController extends BaseController {
       },
       onError: (e) {
         success = false;
-        Get.snackbar('Error', 'Failed to save profile. Please try again.');
+        Get.snackbar(_l10n?.errorTitle ?? 'Error', e.message.isNotEmpty ? e.message : (_l10n?.failedToSaveProfile ?? 'Failed to save profile. Please try again.'));
       },
     );
     return success;

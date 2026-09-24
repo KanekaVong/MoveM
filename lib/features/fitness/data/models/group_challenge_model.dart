@@ -155,7 +155,15 @@ class ChallengeParticipantModel {
       joinedAt: json['joinedAt'] != null ? DateTime.tryParse(json['joinedAt'].toString()) : null,
       completedAt: json['completedAt'] != null ? DateTime.tryParse(json['completedAt'].toString()) : null,
       status: json['status']?.toString() ?? 'ACTIVE',
-      userName: json['userName']?.toString() ?? 'User #${json['userId'] ?? ''}',
+      userName: () {
+        final first = json['firstname']?.toString() ?? json['firstName']?.toString() ?? '';
+        final last = json['lastname']?.toString() ?? json['lastName']?.toString() ?? '';
+        final full = '$first $last'.trim();
+        if (full.isNotEmpty) return full;
+        return json['userName']?.toString() ??
+            json['username']?.toString() ??
+            'User #${json['userId'] ?? ''}';
+      }(),
     );
   }
 
