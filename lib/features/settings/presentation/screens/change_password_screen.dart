@@ -6,6 +6,7 @@ import 'package:movem/features/settings/presentation/controllers/setting_control
 import 'package:movem/features/settings/presentation/screens/settings_forgot_password_screen.dart';
 
 import 'package:movem/features/settings/data/services/setting_service.dart';
+import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 import 'package:movem/features/settings/data/repositories/setting_repository_impl.dart';
 import 'package:movem/core/storage/user_manager.dart';
@@ -281,27 +282,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: _changePassword,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3B82F6),
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: const Text(
-                      'Change Password',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                AppButton(
+                  label: 'Change Password',
+                  onPressed: _changePassword,
                 ),
               ],
             ),

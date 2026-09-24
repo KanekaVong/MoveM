@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../groups/data/dto/response/group_invite_response.dart';
 import '../controllers/task_invitation_controller.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -62,9 +63,11 @@ class TaskInvitationScreen extends StatelessWidget {
                             style: TextStyle(color: AppColors.textSecondary),
                           ),
                           SizedBox(height: 12),
-                          TextButton(
+                          AppButton.secondary(
+                            label: 'Retry',
                             onPressed: controller.fetchInvitations,
-                            child: Text('Retry'),
+                            width: null,
+                            height: 40,
                           ),
                         ],
                       ),

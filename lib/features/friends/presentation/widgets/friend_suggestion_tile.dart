@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/app_button.dart';
 
 class FriendSuggestionTile extends StatelessWidget {
   final String imageUrl;
@@ -63,45 +64,21 @@ class FriendSuggestionTile extends StatelessWidget {
             ),
           ),
           if (friendStatus == 'PENDING_REQUEST' || friendStatus == 'PENDING')
-            GestureDetector(
-              onTap: onCancel,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.chipSurface,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.borderMuted),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.close, color: AppColors.redError, size: 14),
-                    SizedBox(width: 4),
-                    Text(l10n?.cancel ?? 'Cancel', style: TextStyle(color: AppColors.redError, fontSize: 12, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
+            AppButton.secondary(
+              label: l10n?.cancel ?? 'Cancel',
+              icon: Icons.close,
+              onPressed: onCancel,
+              width: null,
+              height: 34,
             )
           else if (friendStatus == 'ACCEPTED' || friendStatus == 'FRIEND')
             onUnfriend != null
-                ? GestureDetector(
-                    onTap: onUnfriend,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: AppColors.chipSurface,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.borderMuted),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.person_remove_alt_1, color: AppColors.redError, size: 14),
-                          SizedBox(width: 4),
-                          Text(l10n?.unfriend ?? 'Unfriend', style: TextStyle(color: AppColors.redError, fontSize: 12, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    ),
+                ? AppButton.danger(
+                    label: l10n?.unfriend ?? 'Unfriend',
+                    icon: Icons.person_remove_alt_1,
+                    onPressed: onUnfriend,
+                    width: null,
+                    height: 34,
                   )
                 : Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -113,24 +90,12 @@ class FriendSuggestionTile extends StatelessWidget {
                     child: Text(l10n?.friends ?? 'Friends', style: TextStyle(color: AppColors.emeraldLight, fontSize: 12, fontWeight: FontWeight.bold)),
                   )
           else
-            GestureDetector(
-              onTap: onAdd,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.chipSurface,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.borderMuted),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.person_add_alt_1, color: AppColors.blueAccent, size: 14),
-                    SizedBox(width: 4),
-                    Text(l10n?.addFriends ?? 'Add Friends', style: TextStyle(color: AppColors.blueAccent, fontSize: 12, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
+            AppButton(
+              label: l10n?.addFriends ?? 'Add Friends',
+              icon: Icons.person_add_alt_1,
+              onPressed: onAdd,
+              width: null,
+              height: 34,
             ),
         ],
       ),

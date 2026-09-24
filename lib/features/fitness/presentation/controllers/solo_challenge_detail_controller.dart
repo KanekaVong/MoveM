@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../../shared/base/base_controller.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../data/models/solo_challenge_model.dart';
 import '../../data/repositories/fitness_challenge_repository.dart';
 import '../screens/push_up_countdown_screen.dart';
@@ -295,46 +296,21 @@ class SoloChallengeDetailController extends BaseController {
               Row(
                 children: [
                   Expanded(
-                    child: TextButton(
+                    child: AppButton.secondary(
+                      label: 'Cancel',
                       onPressed: () => Get.back(),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Text(
-                        'Cancel',
-                        style: TextStyle(
-                          color: AppColors.textCaption,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      height: 46,
                     ),
                   ),
                   SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
+                    child: AppButton(
+                      label: 'Settings',
                       onPressed: () {
                         Get.back();
                         openAppSettings();
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.accentBlue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text(
-                        'Settings',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      height: 46,
                     ),
                   ),
                 ],
@@ -397,46 +373,21 @@ class SoloChallengeDetailController extends BaseController {
               Row(
                 children: [
                   Expanded(
-                    child: TextButton(
+                    child: AppButton.secondary(
+                      label: 'Cancel',
                       onPressed: () => Get.back(),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Text(
-                        'Cancel',
-                        style: TextStyle(
-                          color: AppColors.textCaption,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      height: 46,
                     ),
                   ),
                   SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
+                    child: AppButton(
+                      label: 'Turn On',
                       onPressed: () {
                         Get.back();
                         Geolocator.openLocationSettings();
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.accentBlue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text(
-                        'Turn On',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      height: 46,
                     ),
                   ),
                 ],

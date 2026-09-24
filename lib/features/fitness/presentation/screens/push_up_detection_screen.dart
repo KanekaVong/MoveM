@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 
 import '../../../../core/utils/app_images.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../data/models/solo_challenge_model.dart';
 import '../controllers/push_up_detector_controller.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -414,43 +415,11 @@ class PushUpDetectionScreen extends StatelessWidget {
                             ),
 
                             const SizedBox(height: 14),
-                            GestureDetector(
-                                onTap: () => controller.finishWorkout(),
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF333C4D),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: Colors.white.withValues(alpha: 0.2),
-                                      width: 1,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.25),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 3),
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.stop_rounded, color: Colors.white, size: 22),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        'End',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 0.4,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                            AppButton.danger(
+                              label: 'End',
+                              icon: Icons.stop_rounded,
+                              onPressed: () => controller.finishWorkout(),
+                              height: 48,
                             ),
                           ],
                         ),
@@ -517,17 +486,27 @@ class PushUpDetectionScreen extends StatelessWidget {
           style: TextStyle(color: Colors.white70),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text(AppLocalizations.of(context)?.keepGoing ?? 'Continue', style: const TextStyle(color: Colors.white60)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
-            onPressed: () {
-              Get.back();
-              controller.finishWorkout();
-            },
-            child: const Text('View Summary', style: TextStyle(color: Colors.white)),
+          Row(
+            children: [
+              Expanded(
+                child: AppButton.secondary(
+                  label: AppLocalizations.of(context)?.keepGoing ?? 'Continue',
+                  onPressed: () => Get.back(),
+                  height: 46,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: AppButton(
+                  label: 'View Summary',
+                  onPressed: () {
+                    Get.back();
+                    controller.finishWorkout();
+                  },
+                  height: 46,
+                ),
+              ),
+            ],
           ),
         ],
       ),

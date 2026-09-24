@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/glass_container.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/settings_controller.dart';
@@ -308,29 +309,21 @@ class SettingsScreen extends GetView<SettingsController> {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
+                    child: AppButton.secondary(
+                      label: 'Cancel',
+                      height: 46,
                       onPressed: () => Get.back(),
-                      child: const Text('Cancel', style: TextStyle(color: Colors.white)),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.redError,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
+                    child: AppButton.danger(
+                      label: 'Log Out',
+                      height: 46,
                       onPressed: () {
                         Get.back();
                         controller.confirmLogout();
                       },
-                      child: Text('Log Out', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
@@ -565,35 +558,19 @@ class SettingsScreen extends GetView<SettingsController> {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
+                    child: AppButton.secondary(
+                      label: 'Cancel',
+                      height: 46,
                       onPressed: () => Get.back(),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        side: BorderSide(
-                          color: Colors.white.withValues(alpha: 0.15),
-                        ),
-                        minimumSize: const Size(
-                          double.infinity,
-                          46,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
                     ),
                   ),
 
                   const SizedBox(width: 12),
 
                   Expanded(
-                    child: ElevatedButton(
+                    child: AppButton.danger(
+                      label: 'Log Out',
+                      height: 46,
                       onPressed: () {
                         Get.back();
 
@@ -604,25 +581,6 @@ class SettingsScreen extends GetView<SettingsController> {
                           Get.offAllNamed(AppRoutes.login,);
                         }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        minimumSize: const Size(
-                          double.infinity,
-                          46,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Log Out',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
                     ),
                   ),
                 ],
@@ -657,36 +615,36 @@ class SettingsScreen extends GetView<SettingsController> {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(
-                color: Colors.white70,
+          Row(
+            children: [
+              Expanded(
+                child: AppButton.secondary(
+                  label: 'Cancel',
+                  height: 46,
+                  onPressed: () => Get.back(),
+                ),
               ),
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              Get.back();
+              const SizedBox(width: 12),
+              Expanded(
+                child: AppButton.danger(
+                  label: 'Remove',
+                  height: 46,
+                  onPressed: () async {
+                    Get.back();
 
-              await UserManager().removeSavedAccount(
-                account.user.id,
-              );
+                    await UserManager().removeSavedAccount(
+                      account.user.id,
+                    );
 
-              if (Get.isBottomSheetOpen ?? false) {
-                Get.back();
-              }
+                    if (Get.isBottomSheetOpen ?? false) {
+                      Get.back();
+                    }
 
-              _showAccountSwitcher();
-            },
-            child: const Text(
-              'Remove',
-              style: TextStyle(
-                color: Colors.redAccent,
-                fontWeight: FontWeight.bold,
+                    _showAccountSwitcher();
+                  },
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),

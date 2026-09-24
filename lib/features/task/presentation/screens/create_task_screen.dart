@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/create_task_controller.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 
 class CreateTaskScreen extends GetView<CreateTaskController> {
@@ -48,29 +49,9 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(24.0, 0, 24.0, 32.0),
-        child: SizedBox(
-          height: 52,
-          child: ElevatedButton(
-            onPressed: () => controller.submitTask(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accentBlue,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(28),
-              ),
-              elevation: 0,
-            ),
-            child: Text(
-              l10n?.createButton ?? 'Create',
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-                color: Colors.white,
-              ),
-            ),
-          ),
+        child: AppButton(
+          label: l10n?.createButton ?? 'Create',
+          onPressed: () => controller.submitTask(),
         ),
       ),
     );
@@ -104,7 +85,6 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
             hintStyle: TextStyle(
               color: AppColors.textCaption,
               fontSize: 14,
-              fontStyle: FontStyle.italic,
             ),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: AppColors.borderLight),
@@ -269,7 +249,6 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
               style: TextStyle(
                 color: AppColors.textCaption,
                 fontSize: 13,
-                fontStyle: FontStyle.italic,
               ),
             ),
             Icon(icon, color: AppColors.textPrimary, size: 20),
@@ -324,7 +303,6 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                 style: TextStyle(
                   color: AppColors.textCaption,
                   fontSize: 13,
-                  fontStyle: FontStyle.italic,
                 ),
               )),
               Icon(Icons.keyboard_arrow_down, color: AppColors.textPrimary, size: 20),
@@ -609,31 +587,32 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
               ),
               SizedBox(height: 32),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(
-                    onPressed: () => Get.back(),
-                    child: Text(l10n?.cancel ?? 'Cancel', style: TextStyle(color: AppColors.textCaption)),
-                  ),
-                  SizedBox(width: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (nameController.text.trim().isEmpty) {
-                        Get.snackbar(
-                          l10n?.errorTitle ?? 'Error',
-                          l10n?.requiredField ?? 'Required',
-                          backgroundColor: Colors.red,
-                          colorText: Colors.white,
-                        );
-                        return;
-                      }
-                      controller.createLabel(nameController.text.trim(), selectedColor.value);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3B82F6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  Expanded(
+                    child: AppButton.secondary(
+                      label: l10n?.cancel ?? 'Cancel',
+                      onPressed: () => Get.back(),
+                      height: 46,
                     ),
-                    child: Text(l10n?.createButton ?? 'Create', style: TextStyle(color: AppColors.textPrimary)),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: AppButton(
+                      label: l10n?.createButton ?? 'Create',
+                      onPressed: () {
+                        if (nameController.text.trim().isEmpty) {
+                          Get.snackbar(
+                            l10n?.errorTitle ?? 'Error',
+                            l10n?.requiredField ?? 'Required',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+                        controller.createLabel(nameController.text.trim(), selectedColor.value);
+                      },
+                      height: 46,
+                    ),
                   ),
                 ],
               ),

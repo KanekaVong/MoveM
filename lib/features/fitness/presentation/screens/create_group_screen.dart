@@ -4,6 +4,7 @@ import '../controllers/fitness_club_controller.dart';
 import 'invite_people_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 
 class CreateGroupScreen extends StatefulWidget {
@@ -329,48 +330,11 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
               ),
               SizedBox(height: 28),
 
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accentBlue,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                  ),
-                  onPressed: _isSubmitting ? null : _handleSubmit,
-                  child: _isSubmitting
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.add_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              l10n?.createClub ?? 'Create Club',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
+              AppButton(
+                label: l10n?.createClub ?? 'Create Club',
+                icon: Icons.add_rounded,
+                onPressed: _handleSubmit,
+                isLoading: _isSubmitting,
               ),
             ],
           ),

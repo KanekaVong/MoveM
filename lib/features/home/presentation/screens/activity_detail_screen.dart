@@ -40,7 +40,6 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
                         style: const TextStyle(
                           color: Color(0xFF94A3B8),
                           fontSize: 14,
-                          fontStyle: FontStyle.italic,
                         ),
                       ),
                     ],

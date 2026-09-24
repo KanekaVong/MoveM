@@ -14,6 +14,7 @@ import '../../data/repositories/fitness_workout_repository.dart';
 import '../../domain/gps_filter.dart';
 import '../../domain/pace_calculator.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'fitness_profile_controller.dart';
 
 class TrackingController extends GetxController {
   static const double _startFixMaxAccuracyMeters = 50.0;
@@ -58,8 +59,30 @@ class TrackingController extends GetxController {
   Position? _startFix;
   bool _runStarted = false;
 
-  int get steps => (session.value.totalDistanceMeters * 1.3).toInt();
-  int get calories => ((session.value.totalDistanceMeters / 1000.0) * 60).toInt();
+  double get _heightCm {
+    if (!Get.isRegistered<FitnessProfileController>()) return 0;
+    return Get.find<FitnessProfileController>().profile.value?.height ?? 0;
+  }
+
+  double get _weightKg {
+    if (!Get.isRegistered<FitnessProfileController>()) return 0;
+    return Get.find<FitnessProfileController>().profile.value?.weight ?? 0;
+  }
+
+  int get steps => PaceCalculator.stepsForDistance(
+        session.value.totalDistanceMeters,
+        heightCm: _heightCm,
+      );
+
+  int get calories => PaceCalculator.caloriesForRun(
+        session.value.totalDistanceMeters,
+        weightKg: _weightKg,
+      );
+
+  double get averagePaceMinPerKm => PaceCalculator.paceMinPerKm(
+        session.value.totalDistanceMeters,
+        session.value.elapsedDuration,
+      );
 
   String get formattedDuration {
     final secs = session.value.elapsedDurationMilliseconds ~/ 1000;
@@ -428,21 +451,15 @@ class TrackingController extends GetxController {
       }
 
       final trackPoint = _trackPointFrom(position);
-
-      double addedDistance = 0.0;
-      if (_lastAccepted != null) {
-        addedDistance = Geolocator.distanceBetween(
-          _lastAccepted!.latitude,
-          _lastAccepted!.longitude,
-          trackPoint.latitude,
-          trackPoint.longitude,
-        );
+      if (_lastAccepted != null &&
+          !trackPoint.timestamp.isAfter(_lastAccepted!.timestamp)) {
+        trackPoint.timestamp = DateTime.now();
       }
 
       session.update((val) {
         if (val != null) {
           val.points.add(trackPoint);
-          val.totalDistanceMeters += addedDistance;
+          val.totalDistanceMeters = _pathDistanceMeters(val.points);
         }
       });
 
@@ -452,6 +469,19 @@ class TrackingController extends GetxController {
       _updateSmoothedRoute(session.value.points);
       _updateCurrentPace(session.value.points);
     });
+  }
+
+  double _pathDistanceMeters(List<TrackPoint> points) {
+    var total = 0.0;
+    for (var i = 1; i < points.length; i++) {
+      total += Geolocator.distanceBetween(
+        points[i - 1].latitude,
+        points[i - 1].longitude,
+        points[i].latitude,
+        points[i].longitude,
+      );
+    }
+    return total;
   }
 
   void _updateSmoothedRoute(List<TrackPoint> points, {int window = 4}) {
@@ -480,7 +510,10 @@ class TrackingController extends GetxController {
     final now = DateTime.now();
     final recentPoints = points.where((p) => now.difference(p.timestamp).inSeconds <= 30).toList();
 
-    if (recentPoints.length < 2) return;
+    if (recentPoints.length < 2) {
+      currentPace.value = averagePaceMinPerKm;
+      return;
+    }
 
     double recentDistance = 0.0;
     for (int i = 1; i < recentPoints.length; i++) {

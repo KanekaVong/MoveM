@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/app_images.dart';
+import 'app_button.dart';
 
 /// Shared empty-state for lists and full screens.
 class NoDataComponent extends StatelessWidget {
@@ -63,21 +64,11 @@ class NoDataComponent extends StatelessWidget {
           ],
           if (actionLabel != null && onAction != null) ...[
             SizedBox(height: compact ? 12 : 18),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.accentBlue,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+            AppButton(
+              label: actionLabel!,
               onPressed: onAction,
-              child: Text(
-                actionLabel!,
-                style: const TextStyle(fontWeight: FontWeight.w700),
-              ),
+              width: null,
+              height: compact ? 40 : 46,
             ),
           ],
         ],

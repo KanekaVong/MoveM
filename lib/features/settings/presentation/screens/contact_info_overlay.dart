@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/contact_type.dart';
 import '../controllers/setting_controller.dart';
+import '../../../../shared/widgets/app_button.dart';
 
 class ContactInfoOverlay extends StatelessWidget {
   final ContactType type;
@@ -85,31 +86,18 @@ class ContactInfoOverlay extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: onChange,
-                child: Text(
-                  isEmail
-                      ? 'Change email'
-                      : 'Change phone number',
-                ),
-              ),
+            AppButton(
+              label: isEmail
+                  ? 'Change email'
+                  : 'Change phone number',
+              onPressed: onChange,
             ),
 
             if (!isEmail && onUnlink != null) ...[
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                child: TextButton(
-                  onPressed: onUnlink,
-                  child: const Text(
-                    'Unlink phone number',
-                    style: TextStyle(
-                      color: Colors.white70,
-                    ),
-                  ),
-                ),
+              const SizedBox(height: 12),
+              AppButton.secondary(
+                label: 'Unlink phone number',
+                onPressed: onUnlink,
               ),
             ],
           ],

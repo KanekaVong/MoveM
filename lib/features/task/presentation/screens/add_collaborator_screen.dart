@@ -130,7 +130,6 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
                                         style: TextStyle(
                                           color: AppColors.textSecondary,
                                           fontSize: 12,
-                                          fontStyle: FontStyle.italic,
                                         ),
                                       ),
                                     ],

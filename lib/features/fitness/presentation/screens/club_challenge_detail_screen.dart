@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../data/models/group_challenge_model.dart';
 import '../controllers/club_challenge_detail_controller.dart';
@@ -251,7 +252,6 @@ class _ClubChallengeDetailScreenState extends State<ClubChallengeDetailScreen> {
                   color: Colors.white,
                   fontSize: 26,
                   fontWeight: FontWeight.w900,
-                  fontStyle: FontStyle.italic,
                   letterSpacing: 2,
                   shadows: [
                     Shadow(color: Colors.black54, blurRadius: 12, offset: Offset(0, 2)),
@@ -370,37 +370,11 @@ class _ClubChallengeDetailScreenState extends State<ClubChallengeDetailScreen> {
   }
 
   Widget _buildJoinButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: Obx(() => ElevatedButton(
-            onPressed: _controller.isJoining.value
-                ? null
-                : (_hasEnded ? _createChallengeAgain : _controller.joinChallenge),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.isDark ? Colors.white : Colors.white,
-              foregroundColor: const Color(0xFF111827),
-              disabledBackgroundColor: Colors.white70,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              elevation: 0,
-            ),
-            child: _controller.isJoining.value
-                ? const SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text(
-                    'JOIN CLUB CHALLENGE',
-                    style: TextStyle(
-                      color: Color(0xFF111827),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.6,
-                    ),
-                  ),
-          )),
-    );
+    return Obx(() => AppButton(
+          label: 'Join Club Challenge',
+          onPressed: _hasEnded ? _createChallengeAgain : _controller.joinChallenge,
+          isLoading: _controller.isJoining.value,
+        ));
   }
 
   void _createChallengeAgain() {

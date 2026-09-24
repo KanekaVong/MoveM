@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/fitness_club_model.dart';
@@ -230,46 +231,12 @@ class _CreateClubChallengeScreenState extends State<CreateClubChallengeScreen> {
                           .toList(),
                     ),
                     const SizedBox(height: 32),
-                    SizedBox(
-                      width: double.infinity,
+                    AppButton(
+                      label: 'Create Challenge',
+                      icon: Icons.play_arrow_outlined,
+                      onPressed: _submit,
+                      isLoading: _isSubmitting,
                       height: 54,
-                      child: ElevatedButton(
-                        onPressed: _isSubmitting ? null : _submit,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.isDark ? Colors.white : AppColors.accentBlue,
-                          disabledBackgroundColor: AppColors.chipSurface,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: _isSubmitting
-                            ? const SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.play_arrow_outlined,
-                                    color: AppColors.isDark ? const Color(0xFF111827) : Colors.white,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'CREATE CHALLENGE',
-                                    style: TextStyle(
-                                      color: AppColors.isDark ? const Color(0xFF111827) : Colors.white,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: 0.6,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                      ),
                     ),
                   ],
                 ),

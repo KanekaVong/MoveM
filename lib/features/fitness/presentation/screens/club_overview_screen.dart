@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -45,9 +46,10 @@ class _ClubOverviewScreenState extends State<ClubOverviewScreen> {
           style: TextStyle(color: AppColors.textSecondary, height: 1.4),
         ),
         actions: [
-          TextButton(
+          AppButton.secondary(
+            label: 'Close',
             onPressed: () => Get.back(),
-            child: Text('Close', style: TextStyle(color: AppColors.accentBlue)),
+            height: 46,
           ),
         ],
       ),
@@ -276,7 +278,6 @@ class _ClubOverviewScreenState extends State<ClubOverviewScreen> {
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
-                        fontStyle: FontStyle.italic,
                       ),
                     ),
                     const SizedBox(height: 4),

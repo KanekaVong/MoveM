@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 
 class RegionSelectionScreen extends StatefulWidget {
@@ -432,45 +433,18 @@ class _RegionSelectionScreenState
 
               const Spacer(),
 
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: _selectedRegion == null ||
-                      _selectedRegion!
-                          .trim()
-                          .isEmpty
-                      ? null
-                      : () {
-                    Navigator.of(context).pop(
-                      _selectedRegion!.trim(),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                    const Color(0xFF3B82F6),
-                    disabledBackgroundColor: isDark
-                        ? const Color(0xFF263657)
-                        : const Color(0xFFE2E8F0),
-                    foregroundColor: Colors.white,
-                    disabledForegroundColor:
-                    isDark
-                        ? const Color(0xFF68758C)
-                        : const Color(0xFF94A3B8),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Save',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+              AppButton(
+                label: 'Save',
+                onPressed: _selectedRegion == null ||
+                    _selectedRegion!
+                        .trim()
+                        .isEmpty
+                    ? null
+                    : () {
+                  Navigator.of(context).pop(
+                    _selectedRegion!.trim(),
+                  );
+                },
               ),
             ],
           ),

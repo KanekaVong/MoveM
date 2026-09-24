@@ -8,6 +8,7 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import '../controllers/setting_controller.dart';
 
 import 'package:movem/features/settings/data/services/firebase_phone_service.dart';
+import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 
 class ChangeContactScreen extends StatefulWidget {
@@ -172,9 +173,8 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
 
               const Spacer(),
 
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
+              AppButton(
+                  label: 'Continue',
                   onPressed: () async {
                     final value = widget.type == ContactType.email
                         ? _contactController.text.trim()
@@ -229,8 +229,6 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
                       }
                     }
                   },
-                  child: const Text('Continue'),
-                ),
               ),
             ],
           ),

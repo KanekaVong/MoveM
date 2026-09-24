@@ -17,6 +17,7 @@ import 'package:movem/features/settings/data/services/setting_service.dart';
 import 'package:movem/features/settings/data/repositories/setting_repository_impl.dart';
 
 import 'package:movem/features/settings/presentation/screens/region_selection_screen.dart';
+import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/no_data_component.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 
@@ -130,35 +131,35 @@ class ProfileScreen extends StatelessWidget {
             width: double.maxFinite,
           ),
           actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
-                  color: Colors.white70,
+            Row(
+              children: [
+                Expanded(
+                  child: AppButton.secondary(
+                    label: 'Cancel',
+                    height: 46,
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                    },
+                  ),
                 ),
-              ),
-            ),
-            TextButton(
-              onPressed: () async {
-                if (selectedRegion == null ||
-                    selectedRegion!.trim().isEmpty) {
-                  return;
-                }
+                const SizedBox(width: 12),
+                Expanded(
+                  child: AppButton(
+                    label: 'Save',
+                    height: 46,
+                    onPressed: () async {
+                      if (selectedRegion == null ||
+                          selectedRegion!.trim().isEmpty) {
+                        return;
+                      }
 
-                Navigator.of(dialogContext).pop(
-                  selectedRegion,
-                );
-              },
-              child: const Text(
-                'Save',
-                style: TextStyle(
-                  color: Color(0xFF5394FF),
-                  fontWeight: FontWeight.bold,
+                      Navigator.of(dialogContext).pop(
+                        selectedRegion,
+                      );
+                    },
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         );
@@ -395,17 +396,23 @@ class ProfileScreen extends StatelessWidget {
                           style: TextStyle(color: Colors.white70),
                         ),
                         actions: [
-                          TextButton(
-                            onPressed: () {
-                              Get.back();
-                            },
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () async {
+                          Row(
+                            children: [
+                              Expanded(
+                                child: AppButton.secondary(
+                                  label: 'Cancel',
+                                  height: 46,
+                                  onPressed: () {
+                                    Get.back();
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: AppButton.danger(
+                                  label: 'Unlink',
+                                  height: 46,
+                                  onPressed: () async {
                               Get.back();
 
                               final settingController =
@@ -425,13 +432,10 @@ class ProfileScreen extends StatelessWidget {
                               }
 
                               Get.forceAppUpdate();
-                            },
-                            child: const Text(
-                              'Unlink',
-                              style: TextStyle(
-                                color: Colors.redAccent,
+                                  },
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ],
                       ),

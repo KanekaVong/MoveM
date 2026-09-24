@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../data/models/solo_challenge_model.dart';
 import 'push_up_detection_screen.dart';
 import 'running_tracking_screen.dart';
@@ -198,37 +199,10 @@ class _PushUpCountdownScreenState extends State<PushUpCountdownScreen>
             right: 24,
             bottom: 40,
             child: SafeArea(
-              child: GestureDetector(
-                onTap: _proceedToWorkout,
-                child: Container(
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF8E95A5).withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.35),
-                      width: 1.2,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Skip',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                ),
+              child: AppButton.secondary(
+                label: 'Skip',
+                onPressed: _proceedToWorkout,
+                height: 48,
               ),
             ),
           ),

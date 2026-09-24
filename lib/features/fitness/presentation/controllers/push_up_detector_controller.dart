@@ -8,6 +8,7 @@ import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../core/network/api_result.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../data/models/push_up_session_model.dart';
 import '../../data/models/solo_challenge_model.dart';
 import '../../data/models/workout_model.dart';
@@ -50,6 +51,7 @@ class PushUpDetectorController extends GetxController {
   late final PushUpSession currentSession;
   Timer? _durationTimer;
   int _lastFrameProcessTimestamp = 0;
+  final List<double> _angleWindow = [];
   List<CameraDescription> _availableCameras = [];
   int _selectedCameraIndex = 0;
   Future<ApiResult<FitnessWorkoutSessionModel>>? _startWorkoutFuture;
@@ -76,8 +78,8 @@ class PushUpDetectorController extends GetxController {
     });
 
     _stateMachine = PushUpStateMachine(
-      upThreshold: 155.0,
-      downThreshold: 90.0,
+      upThreshold: 150.0,
+      downThreshold: 110.0,
       onRepCompleted: (rep) {
         completedReps.value = _stateMachine.completedReps;
         currentSession.reps.add(rep);
@@ -219,6 +221,7 @@ class PushUpDetectorController extends GetxController {
           shoulder: leftShoulder,
           elbow: leftElbow,
           wrist: leftWrist,
+          minLikelihood: 0.3,
         );
 
         final rightShoulder = pose.landmarks[PoseLandmarkType.rightShoulder];
@@ -229,6 +232,7 @@ class PushUpDetectorController extends GetxController {
           shoulder: rightShoulder,
           elbow: rightElbow,
           wrist: rightWrist,
+          minLikelihood: 0.3,
         );
 
         double? activeAngle;
@@ -258,7 +262,12 @@ class PushUpDetectorController extends GetxController {
         }
 
         if (activeAngle != null) {
-          _stateMachine.processAngle(activeAngle, confidence: confidence);
+          _angleWindow.add(activeAngle);
+          if (_angleWindow.length > 3) {
+            _angleWindow.removeAt(0);
+          }
+          final smoothed = _angleWindow.reduce((a, b) => a + b) / _angleWindow.length;
+          _stateMachine.processAngle(smoothed, confidence: confidence);
         } else {
           currentFeedback.value = 'Position shoulders and arms in frame';
         }
@@ -305,6 +314,21 @@ class PushUpDetectorController extends GetxController {
       if (format == null) return null;
 
       if (image.planes.isEmpty) return null;
+
+      // NV21 on Android is already a single packed plane. Concatenating the
+      // extra planes corrupts the frame, so the pose joints never move enough
+      // to count a rep.
+      if (image.planes.length == 1) {
+        return InputImage.fromBytes(
+          bytes: image.planes[0].bytes,
+          metadata: InputImageMetadata(
+            size: Size(image.width.toDouble(), image.height.toDouble()),
+            rotation: rotation,
+            format: format,
+            bytesPerRow: image.planes[0].bytesPerRow,
+          ),
+        );
+      }
 
       final WriteBuffer allBytes = WriteBuffer();
       for (final Plane plane in image.planes) {
@@ -367,19 +391,13 @@ class PushUpDetectorController extends GetxController {
             style: const TextStyle(color: Colors.white70, fontSize: 14),
           ),
           actions: [
-            TextButton(
+            AppButton(
+              label: 'Start Next Set',
               onPressed: () {
                 Get.back();
                 currentSet.value++;
               },
-              child: const Text(
-                'Start Next Set',
-                style: TextStyle(
-                  color: Color(0xFF38BDF8),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
+              height: 46,
             ),
           ],
         ),

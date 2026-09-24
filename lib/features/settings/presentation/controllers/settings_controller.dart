@@ -6,6 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/Constants.dart';
 import '../../../../shared/base/base_controller.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../../auth/data/dto/response/user_response.dart';
 import '../../../auth/data/services/auth_service.dart';
 
@@ -91,15 +92,10 @@ class SettingsController extends BaseController {
                 code: 'km',
               ),
               const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () => Get.back(),
-                  child: Text(
-                    'Cancel / បោះបង់',
-                    style: TextStyle(color: AppColors.textCaption, fontSize: 14),
-                  ),
-                ),
+              AppButton.secondary(
+                label: 'Cancel / បោះបង់',
+                height: 46,
+                onPressed: () => Get.back(),
               ),
             ],
           ),

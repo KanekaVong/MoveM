@@ -108,7 +108,6 @@ class HomeNewsFeed extends GetView<HomeController> {
                         style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 13,
-                          fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

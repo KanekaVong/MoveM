@@ -4,6 +4,7 @@ import '../controllers/fitness_profile_controller.dart';
 import 'setup_goal_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/app_button.dart';
 
 class FitnessOnboardingScreen extends StatefulWidget {
   final FitnessProfileController controller;
@@ -179,26 +180,13 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
 
                   Padding(
                     padding: const EdgeInsets.only(bottom: 32.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _nextPage,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3B82F6),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          _currentPage == 0
-                              ? (AppLocalizations.of(context)?.next ?? 'Next')
-                              : (widget.isEditing
-                                  ? (AppLocalizations.of(context)?.save ?? 'Save')
-                                  : (AppLocalizations.of(context)?.submit ?? 'Submit')),
-                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)
-                        ),
-                      ),
+                    child: AppButton(
+                      onPressed: _nextPage,
+                      label: _currentPage == 0
+                          ? (AppLocalizations.of(context)?.next ?? 'Next')
+                          : (widget.isEditing
+                              ? (AppLocalizations.of(context)?.save ?? 'Save')
+                              : (AppLocalizations.of(context)?.submit ?? 'Submit')),
                     ),
                   ),
                 ],

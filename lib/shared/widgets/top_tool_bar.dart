@@ -106,21 +106,21 @@ class TopToolBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
 
-    final colored = ColoredBox(
-      color: backgroundColor ?? AppColors.pageBackground,
-      child: bar,
-    );
-
-    if (bottom == null) return colored;
-
+    // Scaffold gives an appBar the status-bar height on top of preferredSize,
+    // so SafeArea is needed there. Inside an existing SafeArea it adds nothing.
     return ColoredBox(
       color: backgroundColor ?? AppColors.pageBackground,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          bar,
-          bottom!,
-        ],
+      child: SafeArea(
+        bottom: false,
+        child: bottom == null
+            ? bar
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  bar,
+                  bottom!,
+                ],
+              ),
       ),
     );
   }

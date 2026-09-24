@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:movem/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 
 class AddAccountVerifyOtpScreen extends StatefulWidget {
@@ -179,54 +180,34 @@ class _AddAccountVerifyOtpScreenState
 
               const SizedBox(height: 20),
 
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () {
-                    final otp =
-                    _otpController.text.trim();
+              AppButton(
+                label: 'Verify',
+                onPressed: () {
+                  final otp =
+                  _otpController.text.trim();
 
-                    if (otp.isEmpty) {
-                      Get.snackbar(
-                        'Error',
-                        'Please enter the OTP code.',
-                      );
-                      return;
-                    }
+                  if (otp.isEmpty) {
+                    Get.snackbar(
+                      'Error',
+                      'Please enter the OTP code.',
+                    );
+                    return;
+                  }
 
-                    if (isEmailVerification) {
-                      _authController.verifyEmail(
-                        identifier,
-                        otp,
-                        isAddingAccount: true,
-                      );
-                    } else {
-                      _authController.verifyOtp(
-                        identifier,
-                        otp,
-                        isAddingAccount: true,
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                    const Color(0xFF3B82F6),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Verify',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+                  if (isEmailVerification) {
+                    _authController.verifyEmail(
+                      identifier,
+                      otp,
+                      isAddingAccount: true,
+                    );
+                  } else {
+                    _authController.verifyOtp(
+                      identifier,
+                      otp,
+                      isAddingAccount: true,
+                    );
+                  }
+                },
               ),
             ],
           ),
