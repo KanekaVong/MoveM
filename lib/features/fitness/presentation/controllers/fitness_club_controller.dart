@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/storage/user_manager.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../../friends/data/services/friends_service.dart';
@@ -18,12 +19,10 @@ class FitnessClubController extends BaseController {
   final FitnessClubRepository _clubRepo = FitnessClubRepository();
   final FitnessChallengeRepository _challengeRepo = FitnessChallengeRepository();
 
-  final myClubs = <FitnessClubModel>[].obs;
-  final publicClubs = <FitnessClubModel>[].obs;
+  final clubs = <FitnessClubModel>[].obs;
   final searchResults = <FitnessClubModel>[].obs;
 
-  final isLoadingMyClubs = false.obs;
-  final isLoadingPublicClubs = false.obs;
+  final isLoadingClubs = false.obs;
   final isSearching = false.obs;
 
   final selectedClub = Rxn<FitnessClubModel>();
@@ -44,28 +43,16 @@ class FitnessClubController extends BaseController {
   }
 
   Future<void> loadClubs() async {
-    await Future.wait([
-      fetchMyClubs(),
-      fetchPublicClubs(),
-    ]);
+    await fetchClubs();
   }
 
-  Future<void> fetchMyClubs() async {
-    isLoadingMyClubs.value = true;
-    final result = await _clubRepo.getMyClubs();
-    if (result.isSuccess && result.data != null) {
-      myClubs.value = result.data!;
-    }
-    isLoadingMyClubs.value = false;
-  }
-
-  Future<void> fetchPublicClubs() async {
-    isLoadingPublicClubs.value = true;
+  Future<void> fetchClubs() async {
+    isLoadingClubs.value = true;
     final result = await _clubRepo.getPublicClubs();
     if (result.isSuccess && result.data != null) {
-      publicClubs.value = result.data!;
+      clubs.value = result.data!;
     }
-    isLoadingPublicClubs.value = false;
+    isLoadingClubs.value = false;
   }
 
   Future<void> searchClubs(String query) async {
@@ -105,7 +92,7 @@ class FitnessClubController extends BaseController {
       apiCall: () => _clubRepo.createClub(req),
       onSuccess: (club) {
         createdClub = club;
-        myClubs.insert(0, club);
+        clubs.insert(0, club);
         Get.back();
         Get.snackbar(
           _l10n?.success ?? 'Done',
@@ -166,12 +153,11 @@ class FitnessClubController extends BaseController {
           isMember: true,
           userRole: 'MEMBER',
         );
-        myClubs.removeWhere((c) => c.id == club.id);
-        myClubs.insert(0, updated);
-
-        final idx = publicClubs.indexWhere((c) => c.id == club.id);
+        final idx = clubs.indexWhere((c) => c.id == club.id);
         if (idx >= 0) {
-          publicClubs[idx] = updated;
+          clubs[idx] = updated;
+        } else {
+          clubs.insert(0, updated);
         }
 
         Get.snackbar(
@@ -350,8 +336,8 @@ class FitnessClubController extends BaseController {
 
   Future<void> loadInbox() async {
     isLoadingInbox.value = true;
-    if (myClubs.isEmpty) {
-      await fetchMyClubs();
+    if (clubs.isEmpty) {
+      await fetchClubs();
     }
 
     final mineRes = await _clubRepo.getMyRequests();
@@ -364,7 +350,13 @@ class FitnessClubController extends BaseController {
       inboxInvitations.clear();
     }
 
-    final owned = myClubs.toList();
+    final currentUserId = int.tryParse(UserManager().userId ?? '');
+    final owned = clubs.where((c) {
+      final role = c.userRole?.toUpperCase();
+      return role == 'OWNER' ||
+          role == 'ADMIN' ||
+          (currentUserId != null && c.createdBy == currentUserId);
+    }).toList();
     final incoming = <ClubJoinRequestModel>[];
     for (final club in owned) {
       final res = await _clubRepo.getJoinRequests(club.id);
@@ -386,7 +378,7 @@ class FitnessClubController extends BaseController {
     actingRequestId.value = 0;
     if (res.isSuccess) {
       inboxJoinRequests.removeWhere((r) => r.id == request.id);
-      await fetchMyClubs();
+      await fetchClubs();
       return true;
     }
     Get.snackbar(
@@ -445,7 +437,7 @@ class FitnessClubController extends BaseController {
 
       if (clubName == null || clubName.isEmpty) {
         FitnessClubModel? known;
-        for (final club in myClubs) {
+        for (final club in clubs) {
           if (club.id == request.clubId) {
             known = club;
             break;

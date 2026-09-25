@@ -34,20 +34,12 @@ Future<void> mainCommon({required Environment environment}) async {
 
   try {
     await AppDatabase().init();
-  } catch (e) {
-    if (AppConfig.enableDetailedLogging) {
-      debugPrint('⚠️ Error initializing AppDatabase: $e');
-    }
-  }
+  } catch (_) {}
 
   try {
     await NotificationSchedulerService().initialize();
     await NotificationSchedulerService().rescheduleAllPendingReminders();
-  } catch (e) {
-    if (AppConfig.enableDetailedLogging) {
-      debugPrint('⚠️ Error initializing NotificationSchedulerService: $e');
-    }
-  }
+  } catch (_) {}
 
   try {
     await Firebase.initializeApp(
@@ -55,11 +47,7 @@ Future<void> mainCommon({required Environment environment}) async {
     );
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     await FcmService().initialize();
-  } catch (e) {
-    if (AppConfig.enableDetailedLogging) {
-      debugPrint('⚠️ Error initializing Firebase: $e');
-    }
-  }
+  } catch (_) {}
 
   final savedLocale = Locale(UserManager().languageCode);
   final savedTheme = UserManager().themeMode;
@@ -102,7 +90,10 @@ class MyApp extends StatelessWidget {
       initialRoute: UserManager().isLoggedIn ? AppRoutes.main : AppRoutes.login,
       getPages: AppPages.pages,
       builder: (context, child) {
-        return Listener(
+        final media = MediaQuery.of(context);
+        return MediaQuery(
+          data: media.copyWith(textScaler: TextScaler.noScaling),
+          child: Listener(
           behavior: HitTestBehavior.translucent,
           onPointerDown: (event) {
             final focus = FocusManager.instance.primaryFocus;
@@ -116,6 +107,7 @@ class MyApp extends StatelessWidget {
             }
           },
           child: child ?? const SizedBox.shrink(),
+        ),
         );
       },
     );

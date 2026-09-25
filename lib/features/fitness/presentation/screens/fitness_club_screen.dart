@@ -1,9 +1,10 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/fitness_club_controller.dart';
 import '../../data/models/fitness_club_model.dart';
 import 'club_detail_screen.dart';
-import 'club_explore_screen.dart';
 import 'club_invitations_screen.dart';
 import 'create_group_screen.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -86,8 +87,8 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
                     children: [
                       _buildSearchBar(),
                       const SizedBox(height: 20),
-                      _buildActionCards(),
-                      const SizedBox(height: 24),
+                      _buildCreateClubCard(),
+                      const SizedBox(height: 16),
                       _buildClubListSection(),
                       const SizedBox(height: 32),
                     ],
@@ -102,173 +103,128 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
   }
 
   Widget _buildSearchBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.isDark ? const Color(0xFF1E283D) : const Color(0xFF3E4A5C),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: TextField(
-        controller: _searchController,
-        onChanged: (_) => setState(() {}),
-        style: const TextStyle(color: Colors.white, fontSize: 14),
-        decoration: InputDecoration(
-          hintText: AppLocalizations.of(context)?.searchForClub ?? 'Search for Club',
-          hintStyle: TextStyle(
-            color: Colors.white.withValues(alpha: 0.55),
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
+    final isDark = AppColors.isDark;
+    final radius = BorderRadius.circular(12);
+    final hintColor = isDark
+        ? Colors.white.withValues(alpha: 0.6)
+        : AppColors.textSecondary;
+
+    return ClipRRect(
+      borderRadius: radius,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        child: Container(
+          height: 43,
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            color: isDark
+                ? const Color(0xFFE8E8E8).withValues(alpha: 0.2)
+                : const Color(0xFF0F172A).withValues(alpha: 0.05),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.2)
+                  : const Color(0xFF0F172A).withValues(alpha: 0.08),
+              width: 0.5,
+            ),
           ),
-          prefixIcon: Icon(
-            Icons.search_rounded,
-            color: Colors.white.withValues(alpha: 0.6),
-            size: 22,
+          child: TextField(
+            controller: _searchController,
+            onChanged: (_) => setState(() {}),
+            textAlign: TextAlign.center,
+            textAlignVertical: TextAlignVertical.center,
+            cursorColor: AppColors.textPrimary,
+            style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
+            decoration: InputDecoration(
+              isCollapsed: true,
+              hintText: AppLocalizations.of(context)?.searchForClub ?? 'Search for Club',
+              hintStyle: TextStyle(color: hintColor, fontSize: 14),
+              prefixIcon: Icon(Icons.search_rounded, color: AppColors.textPrimary, size: 24),
+              prefixIconConstraints: const BoxConstraints(minWidth: 52, minHeight: 43),
+              suffixIcon: _searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: Icon(Icons.clear, color: hintColor, size: 18),
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {});
+                      },
+                    )
+                  : const SizedBox(width: 52),
+              suffixIconConstraints: const BoxConstraints(minWidth: 52, minHeight: 43),
+              border: InputBorder.none,
+            ),
           ),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: Icon(Icons.clear, color: AppColors.textCaption, size: 18),
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() {});
-                  },
-                )
-              : null,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
       ),
     );
   }
 
-  Widget _buildActionCards() {
+  Widget _buildCreateClubCard() {
     final l10n = AppLocalizations.of(context);
-    return Row(
-      children: [
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              Get.to(() => const ClubExploreScreen());
-            },
-            child: Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: AppColors.cardSurface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: AppColors.borderLight,
-                  width: 1.2,
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF1B2436),
-                      shape: BoxShape.circle,
-                    ),
-                      child: Icon(
-                      Icons.login_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  SizedBox(height: 18),
-                  Text(
-                    l10n?.joinClub ?? 'Join Club',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    l10n?.joinClubSub ?? 'Find an active club',
-                    style: TextStyle(
-                      color: AppColors.textPrimary.withValues(alpha: 0.6),
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+    return GestureDetector(
+      onTap: () => Get.to(() => const CreateGroupScreen()),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+        decoration: BoxDecoration(
+          color: AppColors.cardSurface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.borderLight),
         ),
-        SizedBox(width: 14),
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              Get.to(() => const CreateGroupScreen());
-            },
-            child: Container(
-              padding: const EdgeInsets.all(18),
+        child: Row(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
-                color: AppColors.cardSurface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: AppColors.borderLight,
-                  width: 1.2,
-                ),
+                shape: BoxShape.circle,
+                color: AppColors.isDark ? const Color(0xFF3A4459) : const Color(0xFF1B2436),
               ),
+              child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+            ),
+            const SizedBox(width: 18),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF1B2436),
-                      shape: BoxShape.circle,
-                    ),
-                      child: Icon(
-                      Icons.add_rounded,
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                  ),
-                  SizedBox(height: 18),
                   Text(
                     l10n?.createClub ?? 'Create Club',
                     style: TextStyle(
                       color: AppColors.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      height: 1.1,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
-                    l10n?.createClubSub ?? 'Create Your Own Community',
+                    l10n?.createClubSub ?? 'Create Your Own Community, Socialize with us',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: AppColors.textPrimary.withValues(alpha: 0.6),
+                      color: AppColors.textPrimary.withValues(alpha: 0.85),
                       fontSize: 12,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
   Widget _buildClubListSection() {
     final l10n = AppLocalizations.of(context);
     return Obx(() {
-      final myClubs = _controller.myClubs;
+      final clubs = _controller.clubs;
       final query = _searchController.text.trim().toLowerCase();
       final displayClubs = query.isEmpty
-          ? myClubs.toList()
-          : myClubs
-              .where((club) => club.name.toLowerCase().contains(query))
-              .toList();
+          ? clubs.toList()
+          : clubs.where((club) => club.name.toLowerCase().contains(query)).toList();
 
-      if (_controller.isLoadingMyClubs.value && myClubs.isEmpty) {
-        return Center(
+      if (_controller.isLoadingClubs.value && clubs.isEmpty) {
+        return const Center(
           child: Padding(
             padding: EdgeInsets.all(32.0),
             child: CircularProgressIndicator(color: Colors.blueAccent),
@@ -278,9 +234,7 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
 
       if (displayClubs.isEmpty) {
         return NoDataComponent(
-          title: query.isNotEmpty
-              ? (l10n?.noClubsFound ?? 'No clubs found')
-              : (l10n?.haventJoinedClubs ?? "You haven't joined a club yet"),
+          title: l10n?.noClubsFound ?? 'No clubs found',
           subtitle: query.isNotEmpty
               ? (l10n?.nothingMatchesSearch ?? 'Nothing matches "$query".')
               : (l10n?.haventJoinedClubsSub ??
@@ -289,188 +243,217 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
       }
 
       return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                l10n?.yourClubs ?? 'Your Clubs',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.2,
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Get.to(() => const ClubExploreScreen());
-                },
-                child: Text(
-                  l10n?.exploreAll ?? 'Explore all »',
-                  style: TextStyle(
-                    color: AppColors.textPrimary.withValues(alpha: 0.65),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          ...displayClubs.map((club) {
-            return Padding(
+          for (final club in displayClubs)
+            Padding(
               padding: const EdgeInsets.only(bottom: 16.0),
-              child: _buildMoveMClubCard(club),
-            );
-          }),
+              child: _ClubCard(club: club),
+            ),
         ],
       );
     });
   }
+}
 
-  Widget _buildMoveMClubCard(FitnessClubModel club) {
+class _ClubCard extends StatelessWidget {
+  const _ClubCard({required this.club});
+
+  final FitnessClubModel club;
+
+  static const double _bannerHeight = 92;
+  static const double _bodyHeight = 82;
+  static const double _badgeWidth = 74;
+  static const double _badgeHeight = 84;
+
+  @override
+  Widget build(BuildContext context) {
+    final muted = AppColors.textPrimary.withValues(alpha: 0.75);
+
     return GestureDetector(
-      onTap: () {
-        Get.to(() => ClubDetailScreen(club: club));
-      },
+      onTap: () => Get.to(() => ClubDetailScreen(club: club)),
       child: Container(
-        width: double.infinity,
+        height: _bannerHeight + _bodyHeight,
         decoration: BoxDecoration(
           color: AppColors.cardSurface,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color: AppColors.borderLight,
-            width: 1.2,
-          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.borderLight),
         ),
         clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            // Top half: MoveM metallic banner with star and branding
-            Container(
-              width: double.infinity,
-              height: 84,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xFF8F939D),
-                    Color(0xFFA5A9B4),
-                    Color(0xFF8F939D),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+            const Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              height: _bannerHeight,
+              child: _MovemBanner(),
+            ),
+            Positioned(
+              left: 14,
+              top: _bannerHeight - _badgeHeight / 2,
+              child: _HexBadge(
+                letter: club.name.isNotEmpty ? club.name[0].toUpperCase() : 'M',
+                width: _badgeWidth,
+                height: _badgeHeight,
               ),
-              child: Stack(
+            ),
+            Positioned(
+              left: 14 + _badgeWidth + 10,
+              right: 16,
+              top: _bannerHeight + 8,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.auto_awesome,
-                          color: Color(0xFFB38F4D),
-                          size: 22,
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'M  O  V  E  M',
-                          style: TextStyle(
-                            color: Color(0xFF1B2333),
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 6,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        const Text(
-                          'MOVE MORE. BECOME MORE.',
-                          style: TextStyle(
-                            color: Color(0xFF8C6D33),
-                            fontSize: 7.5,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.8,
-                          ),
-                        ),
-                      ],
+                  Text(
+                    club.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
                     ),
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Text(
+                        '${club.memberCount} Members',
+                        style: TextStyle(color: muted, fontSize: 12),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(Icons.group_outlined, color: muted, size: 15),
+                    ],
                   ),
                 ],
               ),
             ),
-
-            // Bottom section: Hexagon avatar, title, members, double chevron
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
-              child: Row(
-                children: [
-                  ClipPath(
-                    clipper: HexagonClipper(),
-                    child: Container(
-                      width: 52,
-                      height: 56,
-                      color: const Color(0xFFE2E8F0),
-                      alignment: Alignment.center,
-                      child: Text(
-                        club.name.isNotEmpty ? club.name[0].toUpperCase() : 'M',
-                        style: TextStyle(
-                          color: Color(0xFF64748B),
-                          fontSize: 24,
-                          fontWeight: FontWeight.w900,
-                          fontFamily: 'sans-serif',
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          club.name,
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Text(
-                              '${club.memberCount} Members',
-                              style: TextStyle(
-                                color: AppColors.textPrimary.withValues(alpha: 0.7),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(width: 5),
-                            Icon(
-                              Icons.group_outlined,
-                              color: AppColors.textPrimary.withValues(alpha: 0.7),
-                              size: 15,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.keyboard_double_arrow_right_rounded,
-                    color: AppColors.textSecondary,
-                    size: 24,
-                  ),
-                ],
+            Positioned(
+              right: 12,
+              bottom: 8,
+              child: Icon(
+                Icons.keyboard_double_arrow_right_rounded,
+                color: AppColors.textPrimary,
+                size: 26,
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MovemBanner extends StatelessWidget {
+  const _MovemBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return const DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFE6E6E6), Color(0xFFD2D2D2)],
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 34,
+            height: 34,
+            child: CustomPaint(painter: _SparklePainter(color: Color(0xFFB08A55))),
+          ),
+          SizedBox(height: 6),
+          Text(
+            'MOVEM',
+            style: TextStyle(
+              color: Color(0xFF2A2F3A),
+              fontSize: 24,
+              fontWeight: FontWeight.w300,
+              letterSpacing: 14,
+              height: 1,
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            'MOVE MORE . BECOME MORE',
+            style: TextStyle(
+              color: Color(0xFF9A9A9A),
+              fontSize: 6,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 2.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SparklePainter extends CustomPainter {
+  const _SparklePainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    final r = size.shortestSide / 2;
+    final waist = r * 0.14;
+    final path = Path()
+      ..moveTo(cx, cy - r)
+      ..quadraticBezierTo(cx + waist, cy - waist, cx + r, cy)
+      ..quadraticBezierTo(cx + waist, cy + waist, cx, cy + r)
+      ..quadraticBezierTo(cx - waist, cy + waist, cx - r, cy)
+      ..quadraticBezierTo(cx - waist, cy - waist, cx, cy - r)
+      ..close();
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_SparklePainter oldDelegate) => oldDelegate.color != color;
+}
+
+class _HexBadge extends StatelessWidget {
+  const _HexBadge({required this.letter, required this.width, required this.height});
+
+  final String letter;
+  final double width;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      height: height,
+      child: ClipPath(
+        clipper: HexagonClipper(),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFFF4F4F4), Color(0xFFD6D6D6)],
+            ),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            letter,
+            style: const TextStyle(
+              color: Color(0xFF6B6B6B),
+              fontSize: 38,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
         ),
       ),
     );

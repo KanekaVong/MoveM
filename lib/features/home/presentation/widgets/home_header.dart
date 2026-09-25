@@ -1,10 +1,11 @@
 import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/home_controller.dart';
+import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/auth_image.dart';
 
 class HomeHeader extends GetView<HomeController> {
   const HomeHeader({super.key});
@@ -75,7 +76,13 @@ class HomeHeader extends GetView<HomeController> {
             GestureDetector(
               onTap: controller.onProfileTap,
               child: Obx(() {
-                final pic = controller.profilePicUrl;
+                final stored = controller.profilePicUrl;
+                final pic = stored != null &&
+                        stored.isNotEmpty &&
+                        !stored.startsWith('http') &&
+                        !stored.startsWith('/')
+                    ? AppConfig.resolveMediaUrl(stored)
+                    : stored;
                 final initial = controller.userInitial;
 
                 return Container(
@@ -89,10 +96,9 @@ class HomeHeader extends GetView<HomeController> {
                   clipBehavior: Clip.antiAlias,
                   child: pic != null && pic.isNotEmpty
                       ? (pic.startsWith('http')
-                          ? CachedNetworkImage(
-                              imageUrl: pic,
-                              fit: BoxFit.cover,
-                              errorWidget: (_, __, ___) => _buildInitialAvatar(initial),
+                          ? AuthImage(
+                              url: pic,
+                              fallback: _buildInitialAvatar(initial),
                             )
                           : Image.file(
                               File(pic),

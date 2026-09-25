@@ -14,8 +14,6 @@ abstract class FitnessEndpoints {
   static String soloChallengeDetail(dynamic challengeId) => 'fitness/solo-challenges/$challengeId';
 
   static const String clubs = 'fitness/clubs';
-  static const String myClubs = 'fitness/clubs/my';
-  static const String publicClubs = 'fitness/clubs/public';
   static const String searchClubs = 'fitness/clubs/search';
   static String clubByJoinToken(String joinToken) => 'fitness/clubs/join/$joinToken';
   static const String myClubJoinRequests = 'fitness/clubs/join-requests/my';

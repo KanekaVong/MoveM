@@ -1,10 +1,13 @@
 import 'package:get/get.dart';
+import '../../../../core/storage/profile_image_store.dart';
+import '../../../../core/utils/app_dialogs.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../../../core/storage/user_manager.dart';
 
 import '../../data/dto/request/update_profile_picture_request.dart';
 import '../../data/dto/request/change_password_request.dart';
 import '../../data/dto/request/update_profile_request.dart';
+import '../../data/services/setting_service.dart';
 import '../../domain/repositories/setting_repository.dart';
 import '../../../auth/data/dto/response/user_response.dart';
 
@@ -36,6 +39,26 @@ class SettingController extends BaseController {
     );
 
     return updatedUser;
+  }
+
+  /// Uploads [filePath] with POST /uploads/profile-pic, then saves the URL.
+  Future<UserResponse?> uploadAndSaveProfilePicture(String filePath) async {
+    AppDialogs.showLoading();
+    String? url;
+    try {
+      url = await Get.find<SettingService>().uploadProfilePicFile(filePath);
+    } catch (_) {
+      url = null;
+    }
+    if (url != null && url.isNotEmpty) {
+      await ProfileImageStore.remember(url, filePath);
+    }
+    AppDialogs.hideLoading();
+    if (url == null || url.isEmpty) {
+      Get.snackbar('Upload failed', 'Could not upload profile picture.');
+      return null;
+    }
+    return updateProfilePicture(UpdateProfilePictureRequest(profilePic: url));
   }
 
   Future<UserResponse?> updateProfilePicture(
