@@ -1108,10 +1108,8 @@ class AppLocalizationsKm extends AppLocalizations {
   String get joinClub => 'ចូលក្លឹប';
 
   @override
-  String get joinClubSub => 'រកក្លឹបកំពុងសកម្ម';
-
-  @override
-  String get createClubSub => 'បង្កើតសហគមន៍ផ្ទាល់ខ្លួន';
+  String get createClubSub =>
+      'បង្កើតសហគមន៍ផ្ទាល់ខ្លួន និងភ្ជាប់ទំនាក់ទំនងជាមួយយើង';
 
   @override
   String get noClubsFound => 'រកមិនឃើញក្លឹបទេ';
@@ -1124,19 +1122,10 @@ class AppLocalizationsKm extends AppLocalizations {
       'បង្កើតក្លឹប ឬរកមើលក្លឹបដើម្បីហាត់ជាមួយមិត្ត។';
 
   @override
-  String get yourClubs => 'ក្លឹបរបស់អ្នក';
-
-  @override
   String get discoverClubs => 'រកមើលក្លឹប';
 
   @override
-  String get exploreAll => 'មើលទាំងអស់';
-
-  @override
   String get beFirstClub => 'ក្លាយជាអ្នកបង្កើតក្លឹបដំបូង!';
-
-  @override
-  String get haventJoinedClubs => 'អ្នកមិនទាន់ចូលក្លឹបទេ';
 
   @override
   String get haventJoinedClubsSub =>
@@ -1607,4 +1596,55 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get notClubMember => 'ចូលក្លឹបនេះសិន ទើបបង្កើតការហាត់បាន។';
+
+  @override
+  String get unknownUser => 'អ្នកប្រើមិនស្គាល់';
+
+  @override
+  String get notSetUp => 'មិនទាន់កំណត់';
+
+  @override
+  String get taskCompleted => 'កិច្ចការបានបញ្ចប់';
+
+  @override
+  String get steps => 'ជំហាន';
+
+  @override
+  String get daysUntilYourTrip => 'ថ្ងៃទៀតដល់ដំណើរកម្សាន្ត';
+
+  @override
+  String get tasksStat => 'កិច្ចការ';
+
+  @override
+  String get workoutsStat => 'ការហាត់';
+
+  @override
+  String get tripsStat => 'ដំណើរកម្សាន្ត';
+
+  @override
+  String get badgesStat => 'សញ្ញា';
+
+  @override
+  String get unlinkPhoneTitle => 'ផ្តាច់លេខទូរសព្ទ?';
+
+  @override
+  String get unlinkPhoneConfirm => 'តើអ្នកចង់ផ្តាច់លេខទូរសព្ទចេញពីគណនីមែនទេ?';
+
+  @override
+  String get unlink => 'ផ្តាច់';
+
+  @override
+  String get selectDateOfBirth => 'ជ្រើសថ្ងៃខែឆ្នាំកំណើត';
+
+  @override
+  String get selectRegion => 'ជ្រើសតំបន់';
+
+  @override
+  String get phoneNumber => 'លេខទូរសព្ទ';
+
+  @override
+  String get dateOfBirth => 'ថ្ងៃខែឆ្នាំកំណើត';
+
+  @override
+  String get location => 'ទីតាំង';
 }

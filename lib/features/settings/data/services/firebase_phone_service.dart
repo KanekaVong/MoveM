@@ -26,10 +26,6 @@ class FirebasePhoneService {
       },
 
       verificationFailed: (FirebaseAuthException e) {
-        debugPrint(
-          'Firebase verification failed: ${e.code} - ${e.message}',
-        );
-
         if (!completer.isCompleted) {
           completer.completeError(
             Exception(e.message ?? 'Phone verification failed.'),

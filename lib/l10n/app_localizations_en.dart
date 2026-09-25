@@ -1106,10 +1106,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get joinClub => 'Join Club';
 
   @override
-  String get joinClubSub => 'Find an active club';
-
-  @override
-  String get createClubSub => 'Create your own community';
+  String get createClubSub => 'Create Your Own Community, Socialize with us';
 
   @override
   String get noClubsFound => 'No clubs found';
@@ -1122,19 +1119,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Create a club or look around to find friends to train with.';
 
   @override
-  String get yourClubs => 'Your Clubs';
-
-  @override
   String get discoverClubs => 'Discover Clubs';
 
   @override
-  String get exploreAll => 'Explore all';
-
-  @override
   String get beFirstClub => 'Be the first to start a club!';
-
-  @override
-  String get haventJoinedClubs => 'You haven\'t joined a club yet';
 
   @override
   String get haventJoinedClubsSub =>
@@ -1179,7 +1167,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noAchievementsFound => 'No achievements yet';
 
   @override
-  String get noAchievementsYet => 'No achievements yet';
+  String get noAchievementsYet => 'No Achievements Yet';
 
   @override
   String get profileTitle => 'Profile';
@@ -1613,4 +1601,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notClubMember => 'Join this club first to create a challenge.';
+
+  @override
+  String get unknownUser => 'Unknown User';
+
+  @override
+  String get notSetUp => 'Not Set Up';
+
+  @override
+  String get taskCompleted => 'Task Completed';
+
+  @override
+  String get steps => 'Steps';
+
+  @override
+  String get daysUntilYourTrip => 'Days Until Your Trip';
+
+  @override
+  String get tasksStat => 'Tasks';
+
+  @override
+  String get workoutsStat => 'Workouts';
+
+  @override
+  String get tripsStat => 'Trips';
+
+  @override
+  String get badgesStat => 'Badges';
+
+  @override
+  String get unlinkPhoneTitle => 'Unlink phone number?';
+
+  @override
+  String get unlinkPhoneConfirm =>
+      'Are you sure you want to unlink your phone number from your account?';
+
+  @override
+  String get unlink => 'Unlink';
+
+  @override
+  String get selectDateOfBirth => 'Select Date Of Birth';
+
+  @override
+  String get selectRegion => 'Select Region';
+
+  @override
+  String get phoneNumber => 'Phone Number';
+
+  @override
+  String get dateOfBirth => 'Date Of Birth';
+
+  @override
+  String get location => 'Location';
 }

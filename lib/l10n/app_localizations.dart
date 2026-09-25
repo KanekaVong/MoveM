@@ -2258,16 +2258,10 @@ abstract class AppLocalizations {
   /// **'Join Club'**
   String get joinClub;
 
-  /// No description provided for @joinClubSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Find an active club'**
-  String get joinClubSub;
-
   /// No description provided for @createClubSub.
   ///
   /// In en, this message translates to:
-  /// **'Create your own community'**
+  /// **'Create Your Own Community, Socialize with us'**
   String get createClubSub;
 
   /// No description provided for @noClubsFound.
@@ -2288,35 +2282,17 @@ abstract class AppLocalizations {
   /// **'Create a club or look around to find friends to train with.'**
   String get noClubsAvailableSub;
 
-  /// No description provided for @yourClubs.
-  ///
-  /// In en, this message translates to:
-  /// **'Your Clubs'**
-  String get yourClubs;
-
   /// No description provided for @discoverClubs.
   ///
   /// In en, this message translates to:
   /// **'Discover Clubs'**
   String get discoverClubs;
 
-  /// No description provided for @exploreAll.
-  ///
-  /// In en, this message translates to:
-  /// **'Explore all'**
-  String get exploreAll;
-
   /// No description provided for @beFirstClub.
   ///
   /// In en, this message translates to:
   /// **'Be the first to start a club!'**
   String get beFirstClub;
-
-  /// No description provided for @haventJoinedClubs.
-  ///
-  /// In en, this message translates to:
-  /// **'You haven\'t joined a club yet'**
-  String get haventJoinedClubs;
 
   /// No description provided for @haventJoinedClubsSub.
   ///
@@ -2399,7 +2375,7 @@ abstract class AppLocalizations {
   /// No description provided for @noAchievementsYet.
   ///
   /// In en, this message translates to:
-  /// **'No achievements yet'**
+  /// **'No Achievements Yet'**
   String get noAchievementsYet;
 
   /// No description provided for @profileTitle.
@@ -3199,6 +3175,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Join this club first to create a challenge.'**
   String get notClubMember;
+
+  /// No description provided for @unknownUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown User'**
+  String get unknownUser;
+
+  /// No description provided for @notSetUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Set Up'**
+  String get notSetUp;
+
+  /// No description provided for @taskCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Task Completed'**
+  String get taskCompleted;
+
+  /// No description provided for @steps.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps'**
+  String get steps;
+
+  /// No description provided for @daysUntilYourTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Days Until Your Trip'**
+  String get daysUntilYourTrip;
+
+  /// No description provided for @tasksStat.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get tasksStat;
+
+  /// No description provided for @workoutsStat.
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts'**
+  String get workoutsStat;
+
+  /// No description provided for @tripsStat.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips'**
+  String get tripsStat;
+
+  /// No description provided for @badgesStat.
+  ///
+  /// In en, this message translates to:
+  /// **'Badges'**
+  String get badgesStat;
+
+  /// No description provided for @unlinkPhoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlink phone number?'**
+  String get unlinkPhoneTitle;
+
+  /// No description provided for @unlinkPhoneConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to unlink your phone number from your account?'**
+  String get unlinkPhoneConfirm;
+
+  /// No description provided for @unlink.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlink'**
+  String get unlink;
+
+  /// No description provided for @selectDateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date Of Birth'**
+  String get selectDateOfBirth;
+
+  /// No description provided for @selectRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Region'**
+  String get selectRegion;
+
+  /// No description provided for @phoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phoneNumber;
+
+  /// No description provided for @dateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Of Birth'**
+  String get dateOfBirth;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
 }
 
 class _AppLocalizationsDelegate

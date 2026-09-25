@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
 
 class CustomMuiTextField extends StatelessWidget {
   final String label;
@@ -30,14 +31,19 @@ class CustomMuiTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dark = AppColors.isDark;
+    final labelColor = dark ? Colors.white54 : AppColors.textSecondary;
+    final valueColor = AppColors.textPrimary;
+    final borderColor = dark ? Colors.white.withValues(alpha: 0.2) : AppColors.borderMuted;
+    final focusColor = dark ? Colors.white : AppColors.accentBlue;
     final decoration = InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(
-        color: Colors.white54,
+      labelStyle: TextStyle(
+        color: labelColor,
         fontSize: 15,
       ),
-      floatingLabelStyle: const TextStyle(
-        color: Colors.white,
+      floatingLabelStyle: TextStyle(
+        color: valueColor,
         fontSize: 14,
         fontWeight: FontWeight.w500,
       ),
@@ -46,14 +52,14 @@ class CustomMuiTextField extends StatelessWidget {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(
-          color: Colors.white.withValues(alpha: 0.2),
+          color: borderColor,
           width: 1,
         ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(
-          color: Colors.white,
+        borderSide: BorderSide(
+          color: focusColor,
           width: 1.5,
         ),
       ),
@@ -85,7 +91,7 @@ class CustomMuiTextField extends StatelessWidget {
       keyboardType: keyboardType,
       validator: validator,
       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-      style: const TextStyle(color: Colors.white, fontSize: 15),
+      style: TextStyle(color: valueColor, fontSize: 15),
       decoration: decoration,
     );
 
@@ -102,8 +108,8 @@ class CustomMuiTextField extends StatelessWidget {
                 final remaining = maxLength! - value.text.length;
                 return Text(
                   '$remaining',
-                  style: const TextStyle(
-                    color: Colors.white38,
+                  style: TextStyle(
+                    color: AppColors.textCaption,
                     fontSize: 12,
                   ),
                 );

@@ -29,6 +29,24 @@ class SettingService {
     );
   }
 
+  /// Uploads the file and returns the URL the server sends back.
+  Future<String?> uploadProfilePicFile(String filePath) async {
+    final fileName = filePath.split('/').last;
+    final response = await _dio.post(
+      'uploads/profile-pic',
+      data: FormData.fromMap({
+        'file': await MultipartFile.fromFile(filePath, filename: fileName),
+      }),
+    );
+    final data = response.data;
+    if (data is String && data.trim().isNotEmpty) return data.trim();
+    if (data is Map) {
+      final url = data['url'] ?? data['profilePic'] ?? data['filePath'];
+      if (url != null && url.toString().trim().isNotEmpty) return url.toString().trim();
+    }
+    return null;
+  }
+
   Future<Response> requestEmailChange(String email) {
     return _dio.post('users/me/change-email',
       data: {
