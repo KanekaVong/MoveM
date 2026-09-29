@@ -545,6 +545,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loading => 'Loading...';
 
   @override
+  String get loadingMore => 'Loading more...';
+
+  @override
   String get beTheFirstToComment =>
       'Be the first to leave a comment or ask a question about this task.';
 

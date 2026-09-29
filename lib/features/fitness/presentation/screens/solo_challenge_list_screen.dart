@@ -7,6 +7,7 @@ import '../controllers/fitness_profile_controller.dart';
 import 'solo_fitness_detail_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/no_data_component.dart';
+import '../widgets/loading_more_label.dart';
 import '../../data/repositories/fitness_challenge_repository.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 
@@ -19,8 +20,15 @@ class SoloChallengeListScreen extends StatefulWidget {
 }
 
 class _SoloChallengeListScreenState extends State<SoloChallengeListScreen> {
+  static const int _pageSize = 10;
+
   late final FitnessProfileController _profileController;
+  final ScrollController _scrollController = ScrollController();
   String _selectedFilter = 'ALL';
+  int _visibleCount = _pageSize;
+  bool _canLoadNextPage = true;
+  bool _loadingMore = false;
+  int _pageToken = 0;
 
   @override
   void initState() {
@@ -38,9 +46,76 @@ class _SoloChallengeListScreenState extends State<SoloChallengeListScreen> {
     } else {
       _profileController.fetchSoloChallenges();
     }
+    _scrollController.addListener(_loadNextPageIfNeeded);
   }
 
-  Future<void> _fetchChallenges() => _profileController.fetchSoloChallenges();
+  @override
+  void dispose() {
+    _scrollController.removeListener(_loadNextPageIfNeeded);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchChallenges() async {
+    setState(() {
+      _pageToken++;
+      _visibleCount = _pageSize;
+      _canLoadNextPage = true;
+      _loadingMore = false;
+    });
+    if (widget.repository != null) {
+      final result = await widget.repository!.getSoloChallenges();
+      if (result.isSuccess && mounted) {
+        _profileController.soloChallenges.value = result.data ?? [];
+        _profileController.isLoadingChallenges.value = false;
+      }
+      return;
+    }
+    await _profileController.fetchSoloChallenges();
+  }
+
+  Future<void> _loadNextPageIfNeeded() async {
+    if (!_scrollController.hasClients || _loadingMore) return;
+    final position = _scrollController.position;
+    final nearEnd = position.maxScrollExtent <= 48 ||
+        position.pixels >= position.maxScrollExtent - 240;
+    if (!nearEnd) {
+      _canLoadNextPage = true;
+      return;
+    }
+    if (!_canLoadNextPage) return;
+    final total = _filteredChallenges(_profileController.soloChallenges).length;
+    if (_visibleCount >= total) return;
+    _canLoadNextPage = false;
+    final token = _pageToken;
+    setState(() => _loadingMore = true);
+    await Future.delayed(const Duration(milliseconds: 450));
+    if (!mounted || token != _pageToken) return;
+    final latestTotal = _filteredChallenges(_profileController.soloChallenges).length;
+    setState(() {
+      _visibleCount = (_visibleCount + _pageSize).clamp(0, latestTotal);
+      _loadingMore = false;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      if (_scrollController.position.maxScrollExtent <= 48) {
+        _canLoadNextPage = true;
+        _loadNextPageIfNeeded();
+      }
+    });
+  }
+
+  List<SoloChallengeModel> _filteredChallenges(List<SoloChallengeModel> challenges) {
+    if (_selectedFilter == 'ALL') return challenges;
+    final filter = _selectedFilter.toUpperCase();
+    return challenges.where((c) {
+      final type = c.type.toUpperCase();
+      if (filter == 'SQUATS' && (type == 'BODYWEIGHT' || type == 'SQUATS')) {
+        return true;
+      }
+      return type == filter;
+    }).toList();
+  }
 
   void _onChallengeTap(SoloChallengeModel item) {
     Get.to(() => SoloFitnessDetailScreen(challenge: item));
@@ -117,7 +192,13 @@ class _SoloChallengeListScreenState extends State<SoloChallengeListScreen> {
                         color: isSelected ? AppColors.accentBlue : AppColors.borderLight,
                       ),
                       onSelected: (val) {
-                        setState(() => _selectedFilter = cat);
+                        setState(() {
+                          _pageToken++;
+                          _selectedFilter = cat;
+                          _visibleCount = _pageSize;
+                          _canLoadNextPage = true;
+                          _loadingMore = false;
+                        });
                         Get.back();
                       },
                     );
@@ -181,16 +262,9 @@ class _SoloChallengeListScreenState extends State<SoloChallengeListScreen> {
               child: Obx(() {
                 final challenges = _profileController.soloChallenges.toList();
                 final isLoading = _profileController.isLoadingChallenges.value;
-                final items = _selectedFilter == 'ALL'
-                    ? challenges
-                    : challenges.where((c) {
-                        final filter = _selectedFilter.toUpperCase();
-                        final type = c.type.toUpperCase();
-                        if (filter == 'SQUATS' && (type == 'BODYWEIGHT' || type == 'SQUATS')) {
-                          return true;
-                        }
-                        return type == filter;
-                      }).toList();
+                final filtered = _filteredChallenges(challenges);
+                final visible = filtered.take(_visibleCount).toList();
+                final hasMore = visible.length < filtered.length;
 
                 if (isLoading && challenges.isEmpty) {
                   return Center(
@@ -205,8 +279,10 @@ class _SoloChallengeListScreenState extends State<SoloChallengeListScreen> {
                   onRefresh: _fetchChallenges,
                   color: AppColors.accentBlue,
                   backgroundColor: AppColors.cardSurface,
-                  child: items.isEmpty
+                  child: visible.isEmpty
                       ? ListView(
+                          controller: _scrollController,
+                          physics: const AlwaysScrollableScrollPhysics(),
                           children: [
                             SizedBox(height: MediaQuery.of(context).size.height * 0.18),
                             NoDataComponent(
@@ -217,11 +293,16 @@ class _SoloChallengeListScreenState extends State<SoloChallengeListScreen> {
                           ],
                         )
                       : ListView.separated(
+                          controller: _scrollController,
+                          physics: const AlwaysScrollableScrollPhysics(),
                           padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-                          itemCount: items.length,
+                          itemCount: visible.length + (hasMore ? 1 : 0),
                           separatorBuilder: (_, __) => const SizedBox(height: 14),
                           itemBuilder: (context, index) {
-                            return _buildChallengeCard(items[index]);
+                            if (index >= visible.length) {
+                              return const LoadingMoreLabel();
+                            }
+                            return _buildChallengeCard(visible[index]);
                           },
                         ),
                 );

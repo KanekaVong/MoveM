@@ -545,6 +545,9 @@ class AppLocalizationsKm extends AppLocalizations {
   String get loading => 'កំពុងដំណើរការ...';
 
   @override
+  String get loadingMore => 'កំពុងផ្ទុកបន្ថែម...';
+
+  @override
   String get beTheFirstToComment =>
       'ចូលរួមបញ្ចេញមតិយោបល់ដំបូងគេ ឬ សួរសំណួរអំពីកិច្ចការនេះ';
 

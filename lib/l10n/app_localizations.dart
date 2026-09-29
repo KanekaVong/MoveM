@@ -1160,6 +1160,12 @@ abstract class AppLocalizations {
   /// **'Loading...'**
   String get loading;
 
+  /// No description provided for @loadingMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading more...'**
+  String get loadingMore;
+
   /// No description provided for @beTheFirstToComment.
   ///
   /// In en, this message translates to:
