@@ -11,6 +11,7 @@ import '../../data/dto/response/invite_response.dart';
 import '../../data/repositories/invite_repository_impl.dart';
 import '../../data/services/invite_service.dart';
 import '../../domain/repositories/invite_repository.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class InviteFriendController extends BaseController {
   final InviteRepository repository;
@@ -75,7 +76,7 @@ class InviteFriendController extends BaseController {
 
   void copyInviteLink() {
     Clipboard.setData(ClipboardData(text: inviteLink.value));
-    Get.snackbar(
+    AppSnack.show(
       'Copied',
       'Invite link copied to clipboard',
       backgroundColor: const Color(0xFF1E293B).withOpacity(0.9),
@@ -89,7 +90,7 @@ class InviteFriendController extends BaseController {
 
   void copyToken() {
     Clipboard.setData(ClipboardData(text: inviteToken.value));
-    Get.snackbar(
+    AppSnack.show(
       'Copied',
       'Invite token copied to clipboard',
       backgroundColor: const Color(0xFF1E293B).withOpacity(0.9),

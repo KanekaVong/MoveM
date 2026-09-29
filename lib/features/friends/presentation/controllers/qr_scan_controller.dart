@@ -13,6 +13,7 @@ import '../../data/services/friends_service.dart';
 import '../../domain/repositories/friends_repository.dart';
 import 'public_user_profile_controller.dart';
 import '../screens/public_user_profile_screen.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class QrScanController extends BaseController {
   final FriendsRepository friendsRepository = FriendsRepositoryImpl(friendsService: FriendsService());
@@ -153,19 +154,19 @@ class QrScanController extends BaseController {
       final file = File(image.path);
       final exists = await file.exists();
       if (!exists) {
-        Get.snackbar('Error', 'Could not open the selected image');
+        AppSnack.show('Error', 'Could not open the selected image');
         return;
       }
 
       final payload = await _decodeQrFromFile(file);
       if (payload == null || payload.isEmpty) {
-        Get.snackbar('Invalid QR', 'No valid QR code found in this image');
+        AppSnack.show('Invalid QR', 'No valid QR code found in this image');
         return;
       }
 
       await handleQrPayload(payload);
     } catch (_) {
-      Get.snackbar('Error', 'Unable to scan QR from gallery');
+      AppSnack.show('Error', 'Unable to scan QR from gallery');
     } finally {
       if (!_isClosed && !isProcessing.value) {
         _pauseScanning = false;
@@ -262,7 +263,7 @@ class QrScanController extends BaseController {
         _pauseScanning = false;
         _startLiveScan();
       }
-      Get.snackbar('Invalid QR', 'No valid user found in QR code');
+      AppSnack.show('Invalid QR', 'No valid user found in QR code');
       return;
     }
 

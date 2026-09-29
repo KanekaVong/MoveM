@@ -5,6 +5,7 @@ import 'setup_goal_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_button.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class FitnessOnboardingScreen extends StatefulWidget {
   final FitnessProfileController controller;
@@ -53,7 +54,7 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
     final l10n = AppLocalizations.of(context);
     if (_currentPage == 0) {
       if (_heightController.text.isEmpty) {
-        Get.snackbar(l10n?.errorTitle ?? 'Error', l10n?.pleaseEnterHeight ?? 'Please enter your height');
+        AppSnack.show(l10n?.errorTitle ?? 'Error', l10n?.pleaseEnterHeight ?? 'Please enter your height');
         return;
       }
       double h = double.tryParse(_heightController.text) ?? 0.0;
@@ -68,7 +69,7 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
       );
     } else if (_currentPage == 1) {
       if (_weightController.text.isEmpty) {
-        Get.snackbar(l10n?.errorTitle ?? 'Error', l10n?.pleaseEnterWeight ?? 'Please enter your weight');
+        AppSnack.show(l10n?.errorTitle ?? 'Error', l10n?.pleaseEnterWeight ?? 'Please enter your weight');
         return;
       }
       double w = double.tryParse(_weightController.text) ?? 0.0;
@@ -84,7 +85,7 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
         );
         if (saved) {
           Get.back(result: true);
-          Get.snackbar(
+          AppSnack.show(
             l10n?.savedTitle ?? 'Saved',
             l10n?.profileUpdated ?? 'Fitness profile updated.',
             backgroundColor: const Color(0xFF166534),
@@ -105,37 +106,24 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
-      body: SingleChildScrollView(
+      body: SafeArea(
+        child: SingleChildScrollView(
         child: Column(
           children: [
-
-            Container(
-              height: 200,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppColors.chipSurface, AppColors.cardSurface],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: SafeArea(
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: IconButton(
-                    icon: Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
-                    onPressed: () {
-                      if (_currentPage > 0) {
-                        _pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      } else {
-                        Get.back();
-                      }
-                    },
-                  ),
-                ),
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
+                onPressed: () {
+                  if (_currentPage > 0) {
+                    _pageController.previousPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    Get.back();
+                  }
+                },
               ),
             ),
 
@@ -193,6 +181,7 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

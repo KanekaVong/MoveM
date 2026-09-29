@@ -10,6 +10,7 @@ import '../../data/dto/response/page_comment_response.dart';
 import '../../data/repositories/comment_repository_impl.dart';
 import '../../data/services/comment_service.dart';
 import '../../domain/repositories/comment_repository.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class CommentController extends BaseController {
   final String activityId;
@@ -98,7 +99,7 @@ class CommentController extends BaseController {
     } else if (result is ApiError<PageCommentResponse>) {
       state.value = ViewState.error;
       errorMessage.value = result.exception.message;
-      Get.snackbar(
+      AppSnack.show(
         'Error',
         result.exception.message,
         backgroundColor: Colors.red.withOpacity(0.85),
@@ -123,7 +124,7 @@ class CommentController extends BaseController {
       _scrollToBottom();
     } else if (result is ApiError<CommentResponse>) {
       textController.text = text;
-      Get.snackbar(
+      AppSnack.show(
         'Failed to Send',
         result.exception.message,
         backgroundColor: Colors.red.withOpacity(0.85),
@@ -154,7 +155,7 @@ class CommentController extends BaseController {
         comments[index] = result.data;
       }
       cancelEditing();
-      Get.snackbar(
+      AppSnack.show(
         'Updated',
         'Comment updated successfully',
         backgroundColor: Colors.green.withOpacity(0.85),
@@ -162,7 +163,7 @@ class CommentController extends BaseController {
         duration: const Duration(seconds: 2),
       );
     } else if (result is ApiError<CommentResponse>) {
-      Get.snackbar(
+      AppSnack.show(
         'Update Failed',
         result.exception.message,
         backgroundColor: Colors.red.withOpacity(0.85),
@@ -179,7 +180,7 @@ class CommentController extends BaseController {
     final result = await repository.deleteComment(commentId);
     if (result is ApiSuccess<void>) {
       comments.removeWhere((c) => c.id == commentId);
-      Get.snackbar(
+      AppSnack.show(
         'Deleted',
         'Comment deleted successfully',
         backgroundColor: AppColors.textPrimary,
@@ -187,7 +188,7 @@ class CommentController extends BaseController {
         duration: const Duration(seconds: 2),
       );
     } else if (result is ApiError<void>) {
-      Get.snackbar(
+      AppSnack.show(
         'Error',
         result.exception.message,
         backgroundColor: Colors.red.withOpacity(0.85),

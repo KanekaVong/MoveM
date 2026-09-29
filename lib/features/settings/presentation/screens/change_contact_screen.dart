@@ -11,6 +11,7 @@ import 'package:movem/core/theme/app_colors.dart';
 import '../../data/dto/request/update_profile_request.dart';
 import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class ChangeContactScreen extends StatefulWidget {
   final ContactType type;
@@ -213,7 +214,7 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
                     }
 
                     if (value.isEmpty) {
-                      Get.snackbar(
+                      AppSnack.show(
                         'Required',
                         widget.type == ContactType.email
                             ? 'Please enter an email address'
@@ -252,7 +253,7 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
 
                       if (updatedUser != null && mounted) {
                         Get.back();
-                        Get.snackbar(
+                        AppSnack.show(
                           'Success',
                           'Phone number updated successfully',
                           backgroundColor: Colors.green,

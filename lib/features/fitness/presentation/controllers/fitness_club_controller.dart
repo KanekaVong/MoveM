@@ -9,6 +9,7 @@ import '../../data/models/fitness_club_model.dart';
 import '../../data/models/group_challenge_model.dart';
 import '../../data/repositories/fitness_club_repository.dart';
 import '../../data/repositories/fitness_challenge_repository.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class FitnessClubController extends BaseController {
   AppLocalizations? get _l10n {
@@ -77,7 +78,7 @@ class FitnessClubController extends BaseController {
     required String privacy,
   }) async {
     if (name.trim().isEmpty) {
-      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.pleaseEnterClubName ?? 'Please enter a club name');
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.pleaseEnterClubName ?? 'Please enter a club name');
       return null;
     }
 
@@ -94,7 +95,7 @@ class FitnessClubController extends BaseController {
         createdClub = club;
         clubs.insert(0, club);
         Get.back();
-        Get.snackbar(
+        AppSnack.show(
           _l10n?.success ?? 'Done',
           _l10n?.clubCreatedMsg(club.name) ?? 'Club "${club.name}" created successfully!',
           backgroundColor: const Color(0xFF48A45B),
@@ -103,7 +104,7 @@ class FitnessClubController extends BaseController {
         );
       },
       onError: (e) {
-        Get.snackbar(
+        AppSnack.show(
           _l10n?.errorTitle ?? 'Error',
           _l10n?.failedToCreateClub ?? 'Failed to create club. Please try again.',
           backgroundColor: const Color(0xFFEF4444),
@@ -126,7 +127,7 @@ class FitnessClubController extends BaseController {
       clubMembers.removeWhere((m) => m.userId == userId);
       return true;
     }
-    Get.snackbar(
+    AppSnack.show(
       _l10n?.errorTitle ?? 'Error',
       result.exception?.message ?? _l10n?.failedToRemoveMember ?? 'Failed to remove member.',
       backgroundColor: const Color(0xFFEF4444),
@@ -160,7 +161,7 @@ class FitnessClubController extends BaseController {
           clubs.insert(0, updated);
         }
 
-        Get.snackbar(
+        AppSnack.show(
           _l10n?.joinedTitle ?? 'Joined!',
           _l10n?.joinedClubMsg(club.name) ?? 'You are now a member of ${club.name}',
           backgroundColor: const Color(0xFF48A45B),
@@ -169,7 +170,7 @@ class FitnessClubController extends BaseController {
         );
       },
       onError: (e) {
-        Get.snackbar(
+        AppSnack.show(
           _l10n?.errorTitle ?? 'Error',
           _l10n?.failedToJoinClub ?? 'Failed to join club. Please try again.',
           backgroundColor: const Color(0xFFEF4444),
@@ -184,7 +185,7 @@ class FitnessClubController extends BaseController {
     await executeApi<ClubJoinRequestModel>(
       apiCall: () => _clubRepo.requestToJoin(club.id),
       onSuccess: (_) {
-        Get.snackbar(
+        AppSnack.show(
           _l10n?.requestSentTitle ?? 'Request Sent',
           _l10n?.joinRequestSentMsg(club.name) ?? 'Your join request for ${club.name} is pending review.',
           backgroundColor: const Color(0xFF2563EB),
@@ -193,7 +194,7 @@ class FitnessClubController extends BaseController {
         );
       },
       onError: (e) {
-        Get.snackbar(
+        AppSnack.show(
           _l10n?.errorTitle ?? 'Error',
           _l10n?.failedToSubmitJoinRequest ?? 'Failed to submit join request. Please try again.',
           backgroundColor: const Color(0xFFEF4444),
@@ -263,7 +264,7 @@ class FitnessClubController extends BaseController {
     final res = await _challengeRepo.createClubChallenge(clubId, data);
     if (res.isSuccess && res.data != null) {
       clubChallenges.insert(0, res.data!);
-      Get.snackbar(
+      AppSnack.show(
         _l10n?.success ?? 'Done',
         _l10n?.challengeCreatedMsg(res.data!.name) ?? 'Club challenge "${res.data!.name}" created!',
         backgroundColor: const Color(0xFF48A45B),
@@ -272,7 +273,7 @@ class FitnessClubController extends BaseController {
       );
       return true;
     }
-    Get.snackbar(
+    AppSnack.show(
       _l10n?.errorTitle ?? 'Error',
       res.exception?.message ?? _l10n?.failedToCreateChallenge ?? 'Failed to create challenge. Please try again.',
       backgroundColor: const Color(0xFFEF4444),
@@ -324,7 +325,7 @@ class FitnessClubController extends BaseController {
       clubChallenges.insert(0, res.data!);
       return res.data;
     }
-    Get.snackbar(
+    AppSnack.show(
       _l10n?.errorTitle ?? 'Error',
       res.exception?.message ?? _l10n?.failedToCreateChallenge ?? 'Failed to create challenge. Please try again.',
       backgroundColor: const Color(0xFFEF4444),
@@ -381,7 +382,7 @@ class FitnessClubController extends BaseController {
       await fetchClubs();
       return true;
     }
-    Get.snackbar(
+    AppSnack.show(
       _l10n?.errorTitle ?? 'Error',
       res.exception?.message ?? _l10n?.couldNotApproveRequest ?? 'Could not approve request.',
       backgroundColor: const Color(0xFFEF4444),
@@ -399,7 +400,7 @@ class FitnessClubController extends BaseController {
       inboxJoinRequests.removeWhere((r) => r.id == request.id);
       return true;
     }
-    Get.snackbar(
+    AppSnack.show(
       _l10n?.errorTitle ?? 'Error',
       res.exception?.message ?? _l10n?.couldNotRejectRequest ?? 'Could not reject request.',
       backgroundColor: const Color(0xFFEF4444),
@@ -417,7 +418,7 @@ class FitnessClubController extends BaseController {
       inboxInvitations.removeWhere((r) => r.id == request.id);
       return true;
     }
-    Get.snackbar(
+    AppSnack.show(
       _l10n?.errorTitle ?? 'Error',
       res.exception?.message ?? _l10n?.couldNotCancelRequest ?? 'Could not cancel request.',
       backgroundColor: const Color(0xFFEF4444),

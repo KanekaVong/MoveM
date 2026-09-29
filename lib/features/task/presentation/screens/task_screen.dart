@@ -11,6 +11,7 @@ import 'task_invitation_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class TaskScreen extends GetView<TaskController> {
   const TaskScreen({super.key});
@@ -858,7 +859,7 @@ class TaskScreen extends GetView<TaskController> {
       onDismissed: (direction) async {
         final success = await controller.deleteTask(task.activityId);
         if (success) {
-          Get.snackbar(
+          AppSnack.show(
             l10n?.deleteTask ?? 'Delete Task',
             l10n?.taskDeletedSuccess ?? 'Task deleted successfully',
             backgroundColor: AppColors.emerald,

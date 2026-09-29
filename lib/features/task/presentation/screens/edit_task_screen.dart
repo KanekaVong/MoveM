@@ -10,6 +10,7 @@ import '../../data/dto/response/attachment_response.dart';
 import 'add_collaborator_screen.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class EditTaskScreen extends GetView<EditTaskController> {
   const EditTaskScreen({super.key});
@@ -792,7 +793,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
     if (!context.mounted) return;
     final l10n = AppLocalizations.of(context);
     if (controller.availableLabels.isEmpty) {
-      Get.snackbar(l10n?.labelsLabel ?? 'Labels', l10n?.noLabelsAvailable ?? 'No labels available.', backgroundColor: AppColors.textPrimary, colorText: Colors.white);
+      AppSnack.show(l10n?.labelsLabel ?? 'Labels', l10n?.noLabelsAvailable ?? 'No labels available.', backgroundColor: AppColors.textPrimary, colorText: Colors.white);
       return;
     }
     showModalBottomSheet(

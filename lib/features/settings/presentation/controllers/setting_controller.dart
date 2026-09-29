@@ -16,6 +16,7 @@ import '../../../home/presentation/controllers/home_controller.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import 'settings_controller.dart';
 import 'profile_controller.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class SettingController extends BaseController {
   final SettingRepository repository;
@@ -75,7 +76,7 @@ class SettingController extends BaseController {
     }
     AppDialogs.hideLoading();
     if (url == null || url.isEmpty) {
-      Get.snackbar('Upload failed', 'Could not upload profile picture.');
+      AppSnack.show('Upload failed', 'Could not upload profile picture.');
       return null;
     }
     return updateProfilePicture(UpdateProfilePictureRequest(profilePic: url));

@@ -5,6 +5,7 @@ import '../controllers/auth_controller.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/auth_glass_button.dart';
 import '../widgets/auth_layout.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -64,7 +65,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         _newPasswordController.text.trim(),
       );
     } else {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.errorTitle ?? 'Error',
         l10n?.fillAllFields ?? 'Please fill all fields.',
       );

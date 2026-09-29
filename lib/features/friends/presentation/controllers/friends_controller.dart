@@ -8,6 +8,7 @@ import '../../domain/repositories/friends_repository.dart';
 import '../../data/dto/response/friend_response.dart';
 import '../../data/dto/response/friend_request_response.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class FriendsController extends BaseController {
   AppLocalizations? get _l10n {
@@ -54,7 +55,7 @@ class FriendsController extends BaseController {
   void copyProfileLink() {
     final link = 'https://movem.app/user/@$profileUsername';
     Clipboard.setData(ClipboardData(text: link));
-    Get.snackbar(_l10n?.copied ?? 'Copied', _l10n?.copiedProfileLink ?? 'Profile link copied to clipboard', backgroundColor: const Color(0xFF48A45B), colorText: Colors.white);
+    AppSnack.show(_l10n?.copied ?? 'Copied', _l10n?.copiedProfileLink ?? 'Profile link copied to clipboard', backgroundColor: const Color(0xFF48A45B), colorText: Colors.white);
   }
 
   void loadInitialData() {
@@ -215,7 +216,7 @@ class FriendsController extends BaseController {
         },
       );
     } catch (e) {
-      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.unableToCancelFriendRequest ?? 'Unable to cancel request. Please try again later.');
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.unableToCancelFriendRequest ?? 'Unable to cancel request. Please try again later.');
     }
   }
 

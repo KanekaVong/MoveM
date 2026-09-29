@@ -18,6 +18,7 @@ import 'package:movem/shared/widgets/top_tool_bar.dart';
 import 'package:movem/core/utils/app_dialogs.dart';
 import '../controllers/setting_controller.dart';
 import '../../data/services/setting_service.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -161,7 +162,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _removeProfileImage = false;
       });
     } catch (e) {
-      Get.snackbar(
+      AppSnack.show(
         'Error',
         'Could not select image.',
       );
@@ -176,7 +177,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
       return url;
     } catch (_) {
-      Get.snackbar('Upload failed', 'Could not upload profile picture.');
+      AppSnack.show('Upload failed', 'Could not upload profile picture.');
       return null;
     }
   }
@@ -370,7 +371,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     } catch (e) {
       AppDialogs.hideLoading();
-      Get.snackbar('Error', 'Failed to save profile changes.');
+      AppSnack.show('Error', 'Failed to save profile changes.');
     }
   }
 

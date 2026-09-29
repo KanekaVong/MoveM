@@ -11,6 +11,7 @@ import 'package:movem/shared/widgets/top_tool_bar.dart';
 import 'package:movem/features/settings/data/repositories/setting_repository_impl.dart';
 import 'package:movem/core/storage/user_manager.dart';
 import 'package:movem/core/theme/app_colors.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -71,7 +72,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
     Navigator.of(context).pop();
 
-    Get.snackbar(
+    AppSnack.show(
       'Success',
       'Your password has been changed.',
     );

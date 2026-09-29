@@ -10,6 +10,7 @@ import '../../data/dto/response/comment_response.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class TaskCommentScreen extends StatelessWidget {
   final String activityId;
@@ -568,7 +569,7 @@ class TaskCommentScreen extends StatelessWidget {
                 onTap: () {
                   Clipboard.setData(ClipboardData(text: comment.content));
                   Get.back();
-                  Get.snackbar(
+                  AppSnack.show(
                     l10n?.copied ?? 'Copied',
                     l10n?.commentCopiedToast ?? 'Comment copied to clipboard',
                     backgroundColor: AppColors.textPrimary,

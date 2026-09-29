@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/edit_trip_controller.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 /// Reusable edit form container.
 class EditTripFormPanel extends StatelessWidget {
@@ -394,7 +395,7 @@ class _TripNameEditPanelState extends State<TripNameEditPanel> {
     final name = _nameController.text.trim();
 
     if (name.isEmpty) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.editTripName ?? 'Trip Name',
         l10n?.editTripNameRequired ??
             'Trip name cannot be empty',
@@ -408,14 +409,14 @@ class _TripNameEditPanelState extends State<TripNameEditPanel> {
     await widget.controller.saveTripName(name);
 
     if (success) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.editTripUpdateSuccess ?? 'Success',
         l10n?.editTripNameUpdated ??
             'Trip name updated',
         snackPosition: SnackPosition.BOTTOM,
       );
     } else {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.error ?? 'Error',
         l10n?.editTripUpdateFailed ??
             'Failed to update trip',
@@ -588,7 +589,7 @@ class _DurationEditPanelState extends State<DurationEditPanel > {
     final l10n = AppLocalizations.of(context);
 
     if (_startActivity == null || _deadline == null) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.editTripSectionDuration ?? 'Duration',
         'Please select both dates',
         snackPosition: SnackPosition.BOTTOM,
@@ -598,7 +599,7 @@ class _DurationEditPanelState extends State<DurationEditPanel > {
     }
 
     if (_deadline!.isBefore(_startActivity!)) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.editTripSectionDuration ?? 'Duration',
         'Deadline cannot be before the start date',
         snackPosition: SnackPosition.BOTTOM,
@@ -613,13 +614,13 @@ class _DurationEditPanelState extends State<DurationEditPanel > {
     );
 
     if (success) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.editTripUpdateSuccess ?? 'Success',
         'Duration updated',
         snackPosition: SnackPosition.BOTTOM,
       );
     } else {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.error ?? 'Error',
         l10n?.editTripUpdateFailed ?? 'Failed to update trip',
         snackPosition: SnackPosition.BOTTOM,
@@ -939,7 +940,7 @@ class _PackingEditPanelState extends State<PackingEditPanel> {
     final itemName = _itemController.text.trim();
 
     if (itemName.isEmpty) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.editTripItem ?? 'Item',
         l10n?.editTripItem ?? 'Please enter an item',
         snackPosition: SnackPosition.BOTTOM,
@@ -953,13 +954,13 @@ class _PackingEditPanelState extends State<PackingEditPanel> {
     if (success) {
       _itemController.clear();
 
-      Get.snackbar(
+      AppSnack.show(
         l10n?.editTripUpdateSuccess ?? 'Success',
         l10n?.editTripAddItem ?? 'Item added',
         snackPosition: SnackPosition.BOTTOM,
       );
     } else {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.error ?? 'Error',
         l10n?.editTripUpdateFailed ??
             'Failed to add item',
@@ -975,7 +976,7 @@ class _PackingEditPanelState extends State<PackingEditPanel> {
     if (!success && mounted) {
       final l10n = AppLocalizations.of(context);
 
-      Get.snackbar(
+      AppSnack.show(
         l10n?.error ?? 'Error',
         l10n?.editTripUpdateFailed ??
             'Failed to update item',
@@ -1169,7 +1170,7 @@ class _ChecklistEditPanelState
     final itemName = _itemController.text.trim();
 
     if (itemName.isEmpty) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.editTripItem ?? 'Item',
         'Please enter a checklist item',
         snackPosition: SnackPosition.BOTTOM,
@@ -1183,13 +1184,13 @@ class _ChecklistEditPanelState
     if (success) {
       _itemController.clear();
 
-      Get.snackbar(
+      AppSnack.show(
         l10n?.editTripUpdateSuccess ?? 'Success',
         l10n?.editTripAddItem ?? 'Item added',
         snackPosition: SnackPosition.BOTTOM,
       );
     } else {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.error ?? 'Error',
         l10n?.editTripUpdateFailed ??
             'Failed to add checklist item',
@@ -1208,7 +1209,7 @@ class _ChecklistEditPanelState
     if (!success && context.mounted) {
       final l10n = AppLocalizations.of(context);
 
-      Get.snackbar(
+      AppSnack.show(
         l10n?.error ?? 'Error',
         l10n?.editTripUpdateFailed ??
             'Failed to update checklist',
@@ -1283,7 +1284,7 @@ class _ChecklistEditPanelState
         return;
       }
 
-      Get.snackbar(
+      AppSnack.show(
         success
             ? (l10n?.editTripUpdateSuccess ?? 'Success')
             : (l10n?.error ?? 'Error'),
@@ -1501,7 +1502,7 @@ class _AttachmentsEditPanelState
       return;
     }
 
-    Get.snackbar(
+    AppSnack.show(
       success
           ? (l10n?.editTripUpdateSuccess ?? 'Success')
           : (l10n?.error ?? 'Error'),

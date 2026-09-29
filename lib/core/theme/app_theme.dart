@@ -18,6 +18,12 @@ class AppTheme {
         onError: AppColors.lightOnError,
       ),
       scaffoldBackgroundColor: AppColors.lightBackground,
+      snackBarTheme: const SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.white,
+        contentTextStyle: TextStyle(color: Color(0xFF111827), fontSize: 14, fontWeight: FontWeight.w600),
+        elevation: 6,
+      ),
       visualDensity: VisualDensity.adaptivePlatformDensity,
       textTheme: GoogleFonts.robotoCondensedTextTheme(ThemeData.light().textTheme),
     );
@@ -39,6 +45,12 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: AppColors.darkBackground,
       canvasColor: AppColors.darkBackground,
+      snackBarTheme: const SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Color(0xFF1E293B),
+        contentTextStyle: TextStyle(color: Color(0xFFE8EDF5), fontSize: 14, fontWeight: FontWeight.w600),
+        elevation: 6,
+      ),
       visualDensity: VisualDensity.adaptivePlatformDensity,
       textTheme: GoogleFonts.robotoCondensedTextTheme(ThemeData.dark().textTheme),
     );

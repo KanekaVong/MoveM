@@ -4,6 +4,7 @@ import '../controllers/auth_controller.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/auth_glass_button.dart';
 import '../widgets/auth_layout.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class RegisterScreen extends GetView<AuthController> {
   RegisterScreen({super.key});
@@ -16,7 +17,7 @@ class RegisterScreen extends GetView<AuthController> {
   void _submit(AppLocalizations? l10n) {
     final password = _passwordController.text.trim();
     if (password != _retypePasswordController.text.trim()) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.errorTitle ?? 'Error',
         l10n?.passwordsDoNotMatch ?? 'Passwords do not match.',
       );

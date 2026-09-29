@@ -42,12 +42,7 @@ class SetupGoalScreen extends StatelessWidget {
               SizedBox(height: 20),
 
               Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppColors.cardSurface,
-                  ),
-                  child: Obx(() {
+                child: Obx(() {
                     final step = controller.currentStep.value;
                     final title = step == 3
                         ? (AppLocalizations.of(context)?.fitnessAssessment ?? 'Fitness Assessment')
@@ -99,7 +94,6 @@ class SetupGoalScreen extends StatelessWidget {
                       ],
                     );
                   }),
-                ),
               ),
             ],
           ),
@@ -133,7 +127,8 @@ class SetupGoalScreen extends StatelessWidget {
         child: GlassContainer(
           height: 120,
           borderRadius: BorderRadius.circular(24),
-          opacity: isSelected ? 0.20 : 0.0,
+          color: AppColors.cardSurface,
+          opacity: 1,
           border: Border.all(
             color: AppColors.textPrimary.withValues(alpha: 0.2),
             width: isSelected ? 1.5 : 0.3,

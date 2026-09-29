@@ -9,6 +9,7 @@ import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 import '../controllers/setting_controller.dart';
 import '../models/contact_type.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class VerifyContactScreen extends StatefulWidget {
   final ContactType type;
@@ -279,7 +280,7 @@ class _VerifyContactScreenState extends State<VerifyContactScreen> {
                   final code = _codeController.text.trim();
 
                   if (code.isEmpty) {
-                    Get.snackbar(
+                    AppSnack.show(
                       'Required',
                       'Please enter the 6-digit verification code',
                       backgroundColor: Colors.redAccent,
@@ -311,7 +312,7 @@ class _VerifyContactScreenState extends State<VerifyContactScreen> {
                   } catch (e) {
                     AppDialogs.hideLoading();
                     debugPrint('[EmailVerification] Error: $e');
-                    Get.snackbar(
+                    AppSnack.show(
                       'Verification Failed',
                       e.toString().replaceAll('Exception: ', ''),
                       backgroundColor: Colors.redAccent,

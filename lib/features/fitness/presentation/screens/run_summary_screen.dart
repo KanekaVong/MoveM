@@ -15,6 +15,7 @@ import 'running_tracking_screen.dart';
 import 'solo_challenge_list_screen.dart';
 import '../../../../core/config/google_map_style.dart';
 import '../../../../core/theme/app_colors.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class RunSummaryScreen extends StatelessWidget {
   final RunSession session;
@@ -260,7 +261,7 @@ class RunSummaryScreen extends StatelessWidget {
                               icon: Icons.share_outlined,
                               label: 'SHARE',
                               onTap: () {
-                                Get.snackbar(
+                                AppSnack.show(
                                   'Share Workout',
                                   'Sharing $distanceStr running workout details...',
                                   backgroundColor: AppColors.textPrimary,

@@ -7,6 +7,7 @@ import 'package:movem/features/auth/presentation/controllers/auth_controller.dar
 import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 import 'package:movem/core/theme/app_colors.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class SettingsForgotPasswordScreen extends StatefulWidget {
   const SettingsForgotPasswordScreen({super.key});
@@ -78,7 +79,7 @@ class _SettingsForgotPasswordScreenState
     final email = _emailController.text.trim();
 
     if (email.isEmpty) {
-      Get.snackbar(
+      AppSnack.show(
         'Error',
         'Please enter your email.',
       );
@@ -96,7 +97,7 @@ class _SettingsForgotPasswordScreenState
     final confirmPassword = _confirmPasswordController.text;
 
     if (email.isEmpty) {
-      Get.snackbar(
+      AppSnack.show(
         'Error',
         'Please enter your email.',
       );
@@ -104,7 +105,7 @@ class _SettingsForgotPasswordScreenState
     }
 
     if (otp.isEmpty) {
-      Get.snackbar(
+      AppSnack.show(
         'Error',
         'Please enter the OTP.',
       );
@@ -112,7 +113,7 @@ class _SettingsForgotPasswordScreenState
     }
 
     if (newPassword.isEmpty) {
-      Get.snackbar(
+      AppSnack.show(
         'Error',
         'Please enter a new password.',
       );
@@ -120,7 +121,7 @@ class _SettingsForgotPasswordScreenState
     }
 
     if (newPassword.length < 8) {
-      Get.snackbar(
+      AppSnack.show(
         'Error',
         'Password must be at least 8 characters.',
       );
@@ -128,7 +129,7 @@ class _SettingsForgotPasswordScreenState
     }
 
     if (newPassword != confirmPassword) {
-      Get.snackbar(
+      AppSnack.show(
         'Error',
         'Passwords do not match.',
       );
