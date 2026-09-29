@@ -3,7 +3,7 @@ import 'package:uuid/uuid.dart';
 import '../utils/Constants.dart';
 import 'dart:convert';
 
-import 'saved_account.dart';
+import 'profile_image_store.dart';
 
 import '../../features/auth/data/dto/response/user_response.dart';
 
@@ -74,104 +74,6 @@ class UserManager {
     await _storage.remove(Constants.keyUserData);
   }
 
-  Future<List<SavedAccount>> getSavedAccounts() async {
-    final jsonString =
-    _storage.getString(Constants.keySavedAccounts);
-
-    if (jsonString == null || jsonString.isEmpty) {
-      return [];
-    }
-
-    try {
-      final decoded = jsonDecode(jsonString);
-
-      if (decoded is! List) {
-        return [];
-      }
-
-      return decoded
-          .map(
-            (item) => SavedAccount.fromJson(
-          Map<String, dynamic>.from(item),
-        ),
-      )
-          .toList();
-    } catch (_) {
-      return [];
-    }
-  }
-
-  Future<void> saveAccount(SavedAccount account) async {
-    final accounts = await getSavedAccounts();
-
-    accounts.removeWhere(
-          (saved) => saved.user.id == account.user.id,
-    );
-
-    accounts.add(account);
-
-    await _storage.setString(
-      Constants.keySavedAccounts,
-      jsonEncode(
-        accounts.map((account) => account.toJson()).toList(),
-      ),
-    );
-  }
-
-  Future<bool> isAccountSaved(String userId) async {
-    final accounts = await getSavedAccounts();
-
-    return accounts.any(
-          (account) => account.user.id == userId,
-    );
-  }
-
-  Future<void> removeSavedAccount(String userId) async {
-    final accounts = await getSavedAccounts();
-
-    accounts.removeWhere(
-          (account) => account.user.id == userId,
-    );
-
-    await _storage.setString(
-      Constants.keySavedAccounts,
-      jsonEncode(
-        accounts.map((account) => account.toJson()).toList(),
-      ),
-    );
-  }
-
-  Future<void> saveCurrentAccountToSavedAccounts() async {
-    final user = getUser();
-    final accessToken = await getToken();
-    final trustToken = await getTrustToken();
-
-    if (user == null ||
-        accessToken == null ||
-        trustToken == null) {
-      return;
-    }
-
-    await saveAccount(
-      SavedAccount(
-        accessToken: accessToken,
-        trustToken: trustToken,
-        user: user,
-      ),
-    );
-  }
-
-  Future<void> activateAccount(SavedAccount account) async {
-    await saveUser(account.user);
-    await saveToken(account.accessToken);
-    await saveTrustToken(account.trustToken);
-
-    await saveUserId(account.user.id.toString());
-    await saveUserName(account.user.username);
-
-    await setLogged(true);
-  }
-
   // ─── Token (Secure) ───
   Future<String?> getToken() => _storage.getSecureString(Constants.keyAccessToken);
   Future<void> saveToken(String token) => _storage.setSecureString(Constants.keyAccessToken, token);
@@ -193,9 +95,11 @@ class UserManager {
 
   Future<void> clearSession() async {
     await _storage.clearSecureString(Constants.keyAccessToken);
+    await _storage.clearSecureString(Constants.keyTrustToken);
     await _storage.remove(Constants.keyUserId);
     await _storage.remove(Constants.keyUserName);
     await _storage.remove(Constants.keyIsLogged);
     await clearUser();
+    ProfileImageStore.clear();
   }
 }

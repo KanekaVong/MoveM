@@ -12,12 +12,32 @@ import '../../domain/repositories/setting_repository.dart';
 import '../../../auth/data/dto/response/user_response.dart';
 
 import 'package:movem/features/auth/data/dto/response/auth_response.dart';
-import 'package:movem/core/storage/user_manager.dart';
+import '../../../home/presentation/controllers/home_controller.dart';
+import '../../../auth/presentation/controllers/auth_controller.dart';
+import 'settings_controller.dart';
+import 'profile_controller.dart';
 
 class SettingController extends BaseController {
   final SettingRepository repository;
 
   SettingController({required this.repository});
+
+  Future<void> _notifyUserUpdated(UserResponse data) async {
+    await UserManager().saveUser(data);
+
+    if (Get.isRegistered<HomeController>()) {
+      Get.find<HomeController>().currentUser.value = data;
+    }
+    if (Get.isRegistered<AuthController>()) {
+      Get.find<AuthController>().currentUser.value = data;
+    }
+    if (Get.isRegistered<SettingsController>()) {
+      Get.find<SettingsController>().user.value = data;
+    }
+    if (Get.isRegistered<ProfileController>()) {
+      Get.find<ProfileController>().user.value = data;
+    }
+  }
 
   Future<UserResponse?> updateProfile(
       UpdateProfileRequest request, {
@@ -30,7 +50,7 @@ class SettingController extends BaseController {
       onSuccess: (data) async {
         updatedUser = data;
 
-        await UserManager().saveUser(data);
+        await _notifyUserUpdated(data);
 
         if (goBack) {
           Get.back();
@@ -70,7 +90,7 @@ class SettingController extends BaseController {
       apiCall: () => repository.updateProfilePicture(request),
       onSuccess: (data) async {
         updatedUser = data;
-        await UserManager().saveUser(data);
+        await _notifyUserUpdated(data);
       },
     );
 
@@ -84,7 +104,7 @@ class SettingController extends BaseController {
       apiCall: () => repository.unlinkPhone(),
       onSuccess: (data) async {
         updatedUser = data;
-        await UserManager().saveUser(data);
+        await _notifyUserUpdated(data);
       },
     );
 
@@ -111,7 +131,7 @@ class SettingController extends BaseController {
       apiCall: () => repository.verifyEmailChange(code),
       onSuccess: (data) async {
         updatedUser = data;
-        await UserManager().saveUser(data);
+        await _notifyUserUpdated(data);
       },
     );
 
@@ -129,25 +149,6 @@ class SettingController extends BaseController {
     );
 
     return success;
-  }
-
-  Future<UserResponse?> verifyPhone(
-      String firebaseIdToken,
-      ) async {
-    UserResponse? updatedUser;
-
-    await executeApi(
-      apiCall: () => repository.verifyPhone(firebaseIdToken),
-      onSuccess: (user) {
-        updatedUser = user;
-      },
-    );
-
-    if (updatedUser != null) {
-      await UserManager().saveUser(updatedUser!);
-    }
-
-    return updatedUser;
   }
 
   Future<AuthResponse?> changePassword(

@@ -56,11 +56,10 @@ class LoginScreen extends GetView<AuthController> {
           ),
         ),
         const SizedBox(height: 12),
-        Obx(() => AuthGlassButton(
-              label: l10n?.loginAction ?? 'Login',
-              isLoading: controller.isLoading,
-              onPressed: _submit,
-            )),
+        AuthGlassButton(
+          label: l10n?.loginAction ?? 'Login',
+          onPressed: _submit,
+        ),
         const SizedBox(height: 10),
         AuthFooterLink(
           text: l10n?.noAccountSignUp ?? "Doesn't have an account yet? Sign Up",

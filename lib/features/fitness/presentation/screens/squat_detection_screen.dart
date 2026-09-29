@@ -202,7 +202,7 @@ class SquatDetectionScreen extends StatelessWidget {
               ),
 
               Positioned(
-                bottom: 30,
+                bottom: 20 + MediaQuery.paddingOf(context).bottom,
                 left: 20,
                 right: 20,
                 child: Column(

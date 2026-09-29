@@ -69,11 +69,10 @@ class RegisterScreen extends GetView<AuthController> {
           onSubmitted: (_) => _submit(l10n),
         ),
         const SizedBox(height: 12),
-        Obx(() => AuthGlassButton(
-              label: l10n?.registerAction ?? 'Register',
-              isLoading: controller.isLoading,
-              onPressed: () => _submit(l10n),
-            )),
+        AuthGlassButton(
+          label: l10n?.registerAction ?? 'Register',
+          onPressed: () => _submit(l10n),
+        ),
         const SizedBox(height: 10),
         AuthFooterLink(
           text: l10n?.haveAccountSignIn ?? 'Already have an account? Sign In',

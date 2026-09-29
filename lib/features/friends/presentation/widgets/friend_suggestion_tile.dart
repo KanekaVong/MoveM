@@ -12,6 +12,7 @@ class FriendSuggestionTile extends StatelessWidget {
   final VoidCallback? onCancel;
   final VoidCallback? onUnfriend;
   final String? friendStatus;
+  final VoidCallback? onTap;
 
   const FriendSuggestionTile({
     super.key,
@@ -22,6 +23,7 @@ class FriendSuggestionTile extends StatelessWidget {
     this.onCancel,
     this.onUnfriend,
     this.friendStatus,
+    this.onTap,
   });
 
   @override
@@ -33,36 +35,54 @@ class FriendSuggestionTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Row(
         children: [
-          ClipOval(
-            child: SizedBox(
-              width: 40,
-              height: 40,
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => _buildPlaceholder(initial),
-                errorWidget: (context, url, error) => _buildPlaceholder(initial),
+          Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onTap,
+              child: Row(
+                children: [
+                  ClipOval(
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => _buildPlaceholder(initial),
+                        errorWidget: (context, url, error) => _buildPlaceholder(initial),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          username,
+                          style: TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 10,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  username,
-                  style: TextStyle(color: AppColors.textMuted, fontSize: 10),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
+          const SizedBox(width: 8),
           if (friendStatus == 'PENDING_REQUEST' || friendStatus == 'PENDING')
             AppButton.secondary(
               label: l10n?.cancel ?? 'Cancel',

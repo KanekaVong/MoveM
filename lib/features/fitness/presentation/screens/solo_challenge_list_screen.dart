@@ -7,10 +7,12 @@ import '../controllers/fitness_profile_controller.dart';
 import 'solo_fitness_detail_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/no_data_component.dart';
+import '../../data/repositories/fitness_challenge_repository.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 
 class SoloChallengeListScreen extends StatefulWidget {
-  const SoloChallengeListScreen({super.key});
+  final FitnessChallengeRepository? repository;
+  const SoloChallengeListScreen({super.key, this.repository});
 
   @override
   State<SoloChallengeListScreen> createState() => _SoloChallengeListScreenState();
@@ -26,7 +28,16 @@ class _SoloChallengeListScreenState extends State<SoloChallengeListScreen> {
     _profileController = Get.isRegistered<FitnessProfileController>()
         ? Get.find<FitnessProfileController>()
         : Get.put(FitnessProfileController());
-    _profileController.fetchSoloChallenges();
+    if (widget.repository != null) {
+      widget.repository!.getSoloChallenges().then((result) {
+        if (result.isSuccess && mounted) {
+          _profileController.soloChallenges.value = result.data ?? [];
+          _profileController.isLoadingChallenges.value = false;
+        }
+      });
+    } else {
+      _profileController.fetchSoloChallenges();
+    }
   }
 
   Future<void> _fetchChallenges() => _profileController.fetchSoloChallenges();

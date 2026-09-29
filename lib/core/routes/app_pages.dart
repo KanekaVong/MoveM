@@ -17,8 +17,6 @@ import '../../features/main_nav/presentation/screens/bottom_nav_screen.dart';
 import '../../features/main_nav/presentation/bindings/main_nav_binding.dart';
 import '../../features/notifications/presentation/screens/notification_screen.dart';
 import '../../features/notifications/presentation/bindings/notification_binding.dart';
-
-import '../../features/settings/presentation/screens/ProfileScreen.dart';
 import '../../features/settings/presentation/controllers/profile_controller.dart';
 
 class AppPages {

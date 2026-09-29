@@ -34,7 +34,7 @@ class HomeScreen extends GetView<HomeController> {
                 HomeQuickActions(),
                 SizedBox(height: 22),
                 HomeNewsFeed(),
-                SizedBox(height: 100),
+                SizedBox(height: 160),
               ],
             ),
           ),

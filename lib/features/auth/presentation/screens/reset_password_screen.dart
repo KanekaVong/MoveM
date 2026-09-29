@@ -125,11 +125,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           onSubmitted: (_) => _submit(l10n),
         ),
         const SizedBox(height: 12),
-        Obx(() => AuthGlassButton(
-              label: l10n?.savePasswordAction ?? 'Save Password',
-              isLoading: controller.isLoading,
-              onPressed: () => _submit(l10n),
-            )),
+        AuthGlassButton(
+          label: l10n?.savePasswordAction ?? 'Save Password',
+          onPressed: () => _submit(l10n),
+        ),
       ],
     );
   }

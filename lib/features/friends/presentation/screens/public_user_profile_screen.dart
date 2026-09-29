@@ -4,14 +4,65 @@ import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/dto/response/friend_response.dart';
 import '../../data/dto/response/public_user_profile_response.dart';
+import '../../data/services/friends_service.dart';
+import '../../data/repositories/friends_repository_impl.dart';
+import '../../domain/repositories/friends_repository.dart';
 import '../controllers/public_user_profile_controller.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 
-class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
-  const PublicUserProfileScreen({super.key});
+class PublicUserProfileScreen extends StatefulWidget {
+  final String? userId;
+  final PublicUserProfileResponse? initialProfile;
+
+  const PublicUserProfileScreen({
+    super.key,
+    this.userId,
+    this.initialProfile,
+  });
+
+  @override
+  State<PublicUserProfileScreen> createState() => _PublicUserProfileScreenState();
+}
+
+class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
+  late final String? _tag;
+  late final PublicUserProfileController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final effectiveId = widget.userId ?? widget.initialProfile?.id ?? '';
+    _tag = effectiveId.isNotEmpty ? effectiveId : null;
+
+    if (_tag != null && Get.isRegistered<PublicUserProfileController>(tag: _tag)) {
+      controller = Get.find<PublicUserProfileController>(tag: _tag);
+    } else if (_tag == null && Get.isRegistered<PublicUserProfileController>()) {
+      controller = Get.find<PublicUserProfileController>();
+    } else {
+      final FriendsRepository repo = Get.isRegistered<FriendsRepository>()
+          ? Get.find<FriendsRepository>()
+          : FriendsRepositoryImpl(friendsService: FriendsService());
+      controller = Get.put(
+        PublicUserProfileController(
+          repository: repo,
+          userId: effectiveId,
+          initialProfile: widget.initialProfile,
+        ),
+        tag: _tag,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_tag != null && Get.isRegistered<PublicUserProfileController>(tag: _tag)) {
+      Get.delete<PublicUserProfileController>(tag: _tag, force: true);
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -307,18 +358,35 @@ class PublicUserProfileScreen extends GetView<PublicUserProfileController> {
         ? '${friend.firstname} ${friend.lastname}'.trim()
         : friend.username;
     final initial = name.isNotEmpty ? name[0].toUpperCase() : 'U';
-    return ClipOval(
-      child: SizedBox(
-        width: 44,
-        height: 44,
-        child: friend.profilePic.isNotEmpty
-            ? CachedNetworkImage(
-                imageUrl: friend.profilePic,
-                fit: BoxFit.cover,
-                placeholder: (_, __) => _avatarPlaceholder(initial),
-                errorWidget: (_, __, ___) => _avatarPlaceholder(initial),
-              )
-            : _avatarPlaceholder(initial),
+    return GestureDetector(
+      onTap: () {
+        Get.to(
+          () => PublicUserProfileScreen(
+            userId: friend.userId.toString(),
+            initialProfile: PublicUserProfileResponse(
+              id: friend.userId.toString(),
+              username: friend.username,
+              firstname: friend.firstname,
+              lastname: friend.lastname,
+              profilePic: friend.profilePic,
+              friendStatus: friend.friendStatus,
+            ),
+          ),
+        );
+      },
+      child: ClipOval(
+        child: SizedBox(
+          width: 44,
+          height: 44,
+          child: friend.profilePic.isNotEmpty
+              ? CachedNetworkImage(
+                  imageUrl: friend.profilePic,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => _avatarPlaceholder(initial),
+                  errorWidget: (_, __, ___) => _avatarPlaceholder(initial),
+                )
+              : _avatarPlaceholder(initial),
+        ),
       ),
     );
   }

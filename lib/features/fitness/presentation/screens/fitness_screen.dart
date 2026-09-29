@@ -203,7 +203,7 @@ class _FitnessWelcomeScreenState extends State<FitnessWelcomeScreen> {
                       );
                     },
                   ),
-                  const SizedBox(height: 100),
+                  const SizedBox(height: 140),
                 ],
               ),
             ),

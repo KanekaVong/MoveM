@@ -28,4 +28,8 @@ class ProfileImageStore {
     _files[remotePath] = dest.path;
     _files[name] = dest.path;
   }
+
+  static void clear() {
+    _files.clear();
+  }
 }

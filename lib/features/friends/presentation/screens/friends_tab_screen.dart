@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../data/dto/response/public_user_profile_response.dart';
 import '../bindings/friends_binding.dart';
 import '../widgets/friend_request_tile.dart';
 import '../widgets/friend_suggestion_tile.dart';
 import '../controllers/friends_controller.dart';
+import 'public_user_profile_screen.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 
@@ -20,6 +22,31 @@ class FriendsTabScreen extends GetView<FriendsController> {
     }
     final name = fallbackName.trim().isNotEmpty ? fallbackName.trim() : 'User';
     return 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(name)}&background=334155&color=fff';
+  }
+
+  void _openUserProfile({
+    required String userId,
+    required String username,
+    String firstname = '',
+    String lastname = '',
+    String? profilePic,
+    String? friendStatus,
+  }) {
+    Get.to(
+      () => PublicUserProfileScreen(
+        userId: userId,
+        initialProfile: PublicUserProfileResponse(
+          id: userId,
+          username: username.replaceFirst('@', ''),
+          firstname: firstname,
+          lastname: lastname,
+          profilePic: profilePic,
+          friendStatus: friendStatus,
+        ),
+      ),
+    )?.then((_) {
+      controller.loadInitialData();
+    });
   }
 
   @override
@@ -53,13 +80,15 @@ class FriendsTabScreen extends GetView<FriendsController> {
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            Obx(() => _buildMyFriendsTab(l10n)),
-            Obx(() => _buildRequestsTab(l10n)),
-            Obx(() => _buildMyRequestsTab(l10n)),
-            Obx(() => _buildSuggestionsTab(l10n)),
-          ],
+        body: SafeArea(
+          child: TabBarView(
+            children: [
+              Obx(() => _buildMyFriendsTab(l10n)),
+              Obx(() => _buildRequestsTab(l10n)),
+              Obx(() => _buildMyRequestsTab(l10n)),
+              Obx(() => _buildSuggestionsTab(l10n)),
+            ],
+          ),
         ),
       ),
     );
@@ -88,6 +117,14 @@ class FriendsTabScreen extends GetView<FriendsController> {
               name: displayName,
               username: '@${user.username}',
               friendStatus: 'FRIEND',
+              onTap: () => _openUserProfile(
+                userId: user.userId.toString(),
+                username: user.username,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                profilePic: user.profilePic,
+                friendStatus: 'FRIEND',
+              ),
               onAdd: () {},
               onUnfriend: () => controller.deleteFriend(user.userId),
             ),
@@ -118,6 +155,12 @@ class FriendsTabScreen extends GetView<FriendsController> {
               imageUrl: _getAvatarUrl(req.senderProfilePic, displayName),
               name: displayName,
               username: '@${req.senderUsername}',
+              onTap: () => _openUserProfile(
+                userId: req.senderId.toString(),
+                username: req.senderUsername,
+                profilePic: req.senderProfilePic,
+                friendStatus: 'INCOMING_REQUEST',
+              ),
               onAccept: () => controller.acceptRequest(req.requestId),
               onReject: () => controller.rejectRequest(req.requestId),
             ),
@@ -149,6 +192,12 @@ class FriendsTabScreen extends GetView<FriendsController> {
               name: displayName,
               username: '@${req.receiverUsername}',
               friendStatus: 'PENDING_REQUEST',
+              onTap: () => _openUserProfile(
+                userId: req.receiverId.toString(),
+                username: req.receiverUsername,
+                profilePic: req.receiverProfilePic,
+                friendStatus: 'PENDING_REQUEST',
+              ),
               onAdd: () {},
               onCancel: () => controller.cancelRequest(req.receiverUsername),
             ),
@@ -187,6 +236,14 @@ class FriendsTabScreen extends GetView<FriendsController> {
               name: displayName,
               username: '@${user.username}',
               friendStatus: user.friendStatus,
+              onTap: () => _openUserProfile(
+                userId: user.userId.toString(),
+                username: user.username,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                profilePic: user.profilePic,
+                friendStatus: user.friendStatus,
+              ),
               onAdd: () => controller.sendRequest(user.username),
               onCancel: () => controller.cancelRequest(user.username),
             ),

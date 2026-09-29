@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/theme/app_colors.dart';
 
 import '../../../fitness/presentation/screens/fitness_screen.dart';
 import '../../../home/presentation/screens/home_screen.dart';
@@ -48,7 +49,11 @@ class BottomNavScreen extends GetView<MainNavController> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
+    final navBottom = bottomInset > 0 ? bottomInset + 8 : 18.0;
+
     return Scaffold(
+      backgroundColor: AppColors.pageBackground,
       extendBody: true,
       body: Stack(
         children: [
@@ -75,7 +80,7 @@ class BottomNavScreen extends GetView<MainNavController> {
           Positioned(
             left: 16,
             right: 16,
-            bottom: 18,
+            bottom: navBottom,
             child: Obx(() {
               final visualIndex =
                   _getVisualIndex(controller.currentIndex.value);

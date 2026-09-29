@@ -17,14 +17,21 @@ class SettingRepositoryImpl implements SettingRepository {
   SettingRepositoryImpl({required this.settingService});
 
   UserResponse? _parseUserResponse(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      return UserResponse.fromJson(data);
+    if (data == null) return null;
+    if (data is Map) {
+      if (data.containsKey('data') && data['data'] is Map) {
+        return UserResponse.fromJson(Map<String, dynamic>.from(data['data']));
+      }
+      return UserResponse.fromJson(Map<String, dynamic>.from(data));
     }
     if (data is String) {
       try {
         final decoded = jsonDecode(data);
-        if (decoded is Map<String, dynamic>) {
-          return UserResponse.fromJson(decoded);
+        if (decoded is Map) {
+          if (decoded.containsKey('data') && decoded['data'] is Map) {
+            return UserResponse.fromJson(Map<String, dynamic>.from(decoded['data']));
+          }
+          return UserResponse.fromJson(Map<String, dynamic>.from(decoded));
         }
       } catch (_) {}
     }
@@ -184,29 +191,6 @@ class SettingRepositoryImpl implements SettingRepository {
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
       return ApiError(ApiException(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<ApiResult<UserResponse>> verifyPhone(
-      String firebaseIdToken,
-      ) async {
-    try {
-      final response = await settingService.verifyPhone(
-        firebaseIdToken,
-      );
-
-      final user = UserResponse.fromJson(
-        response.data as Map<String, dynamic>,
-      );
-
-      return ApiSuccess(user);
-    } on DioException catch (e) {
-      return ApiError(ApiException.fromDioError(e));
-    } catch (e) {
-      return ApiError(
-        ApiException(message: e.toString()),
-      );
     }
   }
 

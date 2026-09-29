@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
@@ -103,9 +102,8 @@ class QrScanController extends BaseController {
       }
       isCameraInitialized.value = true;
       _startLiveScan();
-    } catch (e, stack) {
+    } catch (_) {
       if (_isClosed) return;
-      log('camera init failed: $e', name: 'QR-SCAN', error: e, stackTrace: stack);
       scanStatus.value = 'Unable to initialize camera';
     }
   }
@@ -139,9 +137,7 @@ class QrScanController extends BaseController {
   }
 
   Future<void> pickImageFromGallery() async {
-    log('gallery scan started isProcessing=${isProcessing.value} pause=$_pauseScanning', name: 'QR-SCAN');
     if (isProcessing.value || _pauseScanning) {
-      log('gallery scan skipped because already busy', name: 'QR-SCAN');
       return;
     }
 
@@ -151,36 +147,29 @@ class QrScanController extends BaseController {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image == null) {
-        log('gallery pick cancelled', name: 'QR-SCAN');
         return;
       }
 
       final file = File(image.path);
       final exists = await file.exists();
-      final size = exists ? await file.length() : 0;
-      log('gallery image path=${image.path} mime=${image.mimeType} exists=$exists bytes=$size', name: 'QR-SCAN');
       if (!exists) {
         Get.snackbar('Error', 'Could not open the selected image');
         return;
       }
 
-      final payload = await _decodeQrFromFile(file, verbose: true);
+      final payload = await _decodeQrFromFile(file);
       if (payload == null || payload.isEmpty) {
-        log('gallery image has no QR payload', name: 'QR-SCAN');
         Get.snackbar('Invalid QR', 'No valid QR code found in this image');
         return;
       }
 
-      log('gallery QR payload=$payload', name: 'QR-SCAN');
       await handleQrPayload(payload);
-    } catch (e, stack) {
-      log('gallery scan failed: $e', name: 'QR-SCAN', error: e, stackTrace: stack);
+    } catch (_) {
       Get.snackbar('Error', 'Unable to scan QR from gallery');
     } finally {
       if (!_isClosed && !isProcessing.value) {
         _pauseScanning = false;
         _startLiveScan();
-        log('live scan resumed after gallery scan', name: 'QR-SCAN');
       }
     }
   }
@@ -202,37 +191,29 @@ class QrScanController extends BaseController {
         } catch (_) {}
         return;
       }
-      final payload = await _decodeQrFromFile(File(shot.path), verbose: false);
+      final payload = await _decodeQrFromFile(File(shot.path));
       try {
         await File(shot.path).delete();
       } catch (_) {}
       if (_isClosed) return;
       if (payload != null && payload.isNotEmpty) {
-        log('live camera QR payload=$payload', name: 'QR-SCAN');
         await handleQrPayload(payload);
       }
-    } catch (e, stack) {
+    } catch (e) {
       if (_isClosed) return;
-      final message = e.toString();
-      if (message.contains('disposed')) return;
-      log('live camera capture decode failed: $e', name: 'QR-SCAN', error: e, stackTrace: stack);
     } finally {
       _isProcessingFrame = false;
     }
   }
 
-  Future<String?> _decodeQrFromFile(File file, {bool verbose = false}) async {
+  Future<String?> _decodeQrFromFile(File file) async {
     final bytes = await file.readAsBytes();
-    if (verbose) {
-      log('decoding QR bytes=${bytes.length}', name: 'QR-SCAN');
-    }
-    return _decodeQrFromBytes(bytes, verbose: verbose);
+    return _decodeQrFromBytes(bytes);
   }
 
-  String? _decodeQrFromBytes(Uint8List bytes, {bool verbose = false}) {
+  String? _decodeQrFromBytes(Uint8List bytes) {
     final decoded = img.decodeImage(bytes);
     if (decoded == null) {
-      if (verbose) log('image decode returned null', name: 'QR-SCAN');
       return null;
     }
 
@@ -255,24 +236,19 @@ class QrScanController extends BaseController {
 
     try {
       final result = reader.decode(BinaryBitmap(HybridBinarizer(source)));
-      if (verbose) log('zxing decoded text=${result.text}', name: 'QR-SCAN');
       return result.text;
-    } catch (e) {
+    } catch (_) {
       try {
         final inverted = reader.decode(BinaryBitmap(HybridBinarizer(InvertedLuminanceSource(source))));
-        if (verbose) log('zxing inverted decoded text=${inverted.text}', name: 'QR-SCAN');
         return inverted.text;
-      } catch (inner) {
-        if (verbose) log('zxing decode not found: $e / $inner', name: 'QR-SCAN');
+      } catch (_) {
         return null;
       }
     }
   }
 
   Future<void> handleQrPayload(String rawContent) async {
-    log('handleQrPayload raw=$rawContent isProcessing=${isProcessing.value}', name: 'QR-SCAN');
     if (_isClosed || isProcessing.value) {
-      log('handleQrPayload skipped already processing', name: 'QR-SCAN');
       return;
     }
     isProcessing.value = true;
@@ -280,7 +256,6 @@ class QrScanController extends BaseController {
     _stopLiveScan();
 
     final userId = _extractUserId(rawContent);
-    log('extracted userId=$userId from raw=$rawContent', name: 'QR-SCAN');
     if (userId == null || userId.isEmpty) {
       isProcessing.value = false;
       if (!_isClosed) {
@@ -294,7 +269,6 @@ class QrScanController extends BaseController {
     await executeApi(
       apiCall: () => friendsRepository.getUserById(userId),
       onSuccess: (profile) async {
-        log('user fetch success id=${profile.id} username=${profile.username}', name: 'QR-SCAN');
         Get.off(
           () => const PublicUserProfileScreen(),
           binding: BindingsBuilder(() {
@@ -312,7 +286,6 @@ class QrScanController extends BaseController {
         });
       },
       onError: (e) async {
-        log('user fetch failed status=${e.statusCode} message=${e.message}', name: 'QR-SCAN');
         isProcessing.value = false;
         if (!_isClosed) {
           _pauseScanning = false;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../models/contact_type.dart';
-import '../controllers/setting_controller.dart';
 import '../../../../shared/widgets/app_button.dart';
 
 class ContactInfoOverlay extends StatelessWidget {
@@ -22,7 +22,11 @@ class ContactInfoOverlay extends StatelessWidget {
     final isEmail = type == ContactType.email;
 
     return Dialog(
-      backgroundColor: const Color(0xFF131D38),
+      backgroundColor: AppColors.cardSurface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: AppColors.borderLight),
+      ),
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -33,66 +37,50 @@ class ContactInfoOverlay extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: IconButton(
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(
+                icon: Icon(
                   Icons.close,
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                 ),
               ),
             ),
-
             Icon(
-              isEmail
-                  ? Icons.email_outlined
-                  : Icons.phone_outlined,
-              color: Colors.white,
+              isEmail ? Icons.email_outlined : Icons.phone_outlined,
+              color: AppColors.accentBlue,
               size: 40,
             ),
-
             const SizedBox(height: 16),
-
             Text(
-              isEmail
-                  ? 'Your email address:'
-                  : 'Your phone number:',
-              style: const TextStyle(
-                color: Colors.white,
+              isEmail ? 'Your email address:' : 'Your phone number:',
+              style: TextStyle(
+                color: AppColors.textPrimary,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 8),
-
             Text(
               value,
-              style: const TextStyle(
-                color: Colors.white70,
+              style: TextStyle(
+                color: AppColors.textSecondary,
                 fontSize: 16,
               ),
             ),
-
             const SizedBox(height: 16),
-
             Text(
               isEmail
                   ? 'Your email address is linked to your account and remains private. If updated, your previous address may be kept for account recovery.'
                   : 'Your phone number is linked to your account and remains private. If updated, your previous number may be kept for account recovery.',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white54,
+              style: TextStyle(
+                color: AppColors.textCaption,
                 fontSize: 13,
               ),
             ),
-
             const SizedBox(height: 24),
-
             AppButton(
-              label: isEmail
-                  ? 'Change email'
-                  : 'Change phone number',
+              label: isEmail ? 'Change email' : 'Change phone number',
               onPressed: onChange,
             ),
-
             if (!isEmail && onUnlink != null) ...[
               const SizedBox(height: 12),
               AppButton.secondary(

@@ -40,14 +40,18 @@ class PublicUserProfileController extends BaseController {
   void onInit() {
     super.onInit();
     if (profile.value == null) {
-      loadProfile();
+      loadProfile(showLoading: false);
     } else {
       _resolveFriendship();
+      loadProfile(showLoading: false);
     }
   }
 
-  Future<void> loadProfile() async {
+  Future<void> loadProfile({bool showLoading = false}) async {
+    if (userId.isEmpty) return;
     await executeApi(
+      showLoading: showLoading,
+      showErrorDialog: showLoading,
       apiCall: () => repository.getUserById(userId),
       onSuccess: (data) async {
         profile.value = data;

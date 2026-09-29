@@ -14,6 +14,5 @@ abstract class SettingRepository {
   Future<ApiResult<String>> requestEmailChange(String email);
   Future<ApiResult<UserResponse>> verifyEmailChange(String code);
   Future<ApiResult<String>> resendEmailChangeCode();
-  Future<ApiResult<UserResponse>> verifyPhone(String firebaseIdToken,);
   Future<ApiResult<AuthResponse>> changePassword(ChangePasswordRequest request,);
 }

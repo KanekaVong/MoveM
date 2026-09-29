@@ -13,8 +13,6 @@ import 'package:movem/l10n/app_localizations.dart';
 import 'package:movem/features/auth/data/dto/response/user_response.dart';
 import 'package:movem/features/settings/presentation/models/contact_type.dart';
 import 'package:movem/features/settings/presentation/screens/contact_info_overlay.dart';
-import 'package:movem/features/settings/presentation/screens/change_contact_screen.dart';
-import 'package:movem/features/settings/presentation/bindings/setting_binding.dart';
 import 'package:movem/features/settings/presentation/controllers/setting_controller.dart';
 import 'package:movem/features/settings/data/dto/request/update_profile_request.dart';
 import 'package:movem/features/settings/data/services/setting_service.dart';
@@ -114,91 +112,6 @@ class ProfileScreen extends StatelessWidget {
 
     // Rebuild ProfileScreen with the updated UserManager data.
     Get.forceAppUpdate();
-  }
-
-  Future<void> _pickRegion(
-      BuildContext context,
-      UserResponse? user,
-      ) async {
-    String? selectedRegion;
-
-    await showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF131D38),
-          title: Text(
-            AppLocalizations.of(context)!.selectRegion,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: SizedBox(
-            width: double.maxFinite,
-          ),
-          actions: [
-            Row(
-              children: [
-                Expanded(
-                  child: AppButton.secondary(
-                    label: AppLocalizations.of(context)!.cancel,
-                    height: 46,
-                    onPressed: () {
-                      Navigator.of(dialogContext).pop();
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: AppButton(
-                    label: AppLocalizations.of(context)!.save,
-                    height: 46,
-                    onPressed: () async {
-                      if (selectedRegion == null ||
-                          selectedRegion!.trim().isEmpty) {
-                        return;
-                      }
-
-                      Navigator.of(dialogContext).pop(
-                        selectedRegion,
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    ).then((result) async {
-      if (result == null) {
-        return;
-      }
-
-      final region = result as String;
-
-      final settingController = Get.isRegistered<SettingController>()
-          ? Get.find<SettingController>()
-          : SettingController(
-        repository: SettingRepositoryImpl(
-          settingService: SettingService(),
-        ),
-      );
-
-      final updatedUser = await settingController.updateProfile(
-        UpdateProfileRequest(
-          cityProvince: region,
-        ),
-        goBack: false,
-      );
-
-      if (updatedUser == null) {
-        return;
-      }
-
-      Get.forceAppUpdate();
-    });
   }
 
   @override
@@ -302,7 +215,9 @@ class ProfileScreen extends StatelessWidget {
                     child: GestureDetector(
                       onTap: () {
                         if (user != null) {
-                          Get.toNamed(AppRoutes.editProfile);
+                          Get.toNamed(AppRoutes.editProfile)?.then((_) {
+                            Get.forceAppUpdate();
+                          });
                         }
                       },
                       child: Row(
@@ -365,21 +280,23 @@ class ProfileScreen extends StatelessWidget {
             title: AppLocalizations.of(context)!.email,
             subtitle: _displayValue(context, user?.email),
             onTap: () {
-              if (user?.email == null || user!.email!.isEmpty) {
+              final email = user?.email;
+              if (email == null || email.isEmpty) {
                 return;
               }
 
               Get.dialog(
                 ContactInfoOverlay(
                   type: ContactType.email,
-                  value: user.email!,
-                  onChange: () {
+                  value: email,
+                  onChange: () async {
                     Get.back();
 
-                    Get.toNamed(
+                    await Get.toNamed(
                       AppRoutes.changeContact,
                       arguments: ContactType.email,
                     );
+                    Get.forceAppUpdate();
                   },
                 ),
               );
@@ -390,15 +307,16 @@ class ProfileScreen extends StatelessWidget {
             icon: Icons.phone_outlined,
             title: AppLocalizations.of(context)!.phoneNumber,
             subtitle: _displayValue(context, user?.phone),
-            onTap: () {
+            onTap: () async {
               final phone = user?.phone;
 
               // User has no phone linked yet
               if (phone == null || phone.isEmpty) {
-                Get.toNamed(
+                await Get.toNamed(
                   AppRoutes.changeContact,
                   arguments: ContactType.phone,
                 );
+                Get.forceAppUpdate();
                 return;
               }
 
@@ -407,27 +325,32 @@ class ProfileScreen extends StatelessWidget {
                 ContactInfoOverlay(
                   type: ContactType.phone,
                   value: phone,
-                  onChange: () {
+                  onChange: () async {
                     Get.back();
 
-                    Get.toNamed(
+                    await Get.toNamed(
                       AppRoutes.changeContact,
                       arguments: ContactType.phone,
                     );
+                    Get.forceAppUpdate();
                   },
                   onUnlink: () {
                     Get.back();
 
                     Get.dialog(
                       AlertDialog(
-                        backgroundColor: const Color(0xFF131D38),
+                        backgroundColor: AppColors.cardSurface,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide(color: AppColors.borderLight),
+                        ),
                         title: Text(
                           AppLocalizations.of(context)!.unlinkPhoneTitle,
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
                         ),
                         content: Text(
                           AppLocalizations.of(context)!.unlinkPhoneConfirm,
-                          style: TextStyle(color: Colors.white70),
+                          style: TextStyle(color: AppColors.textSecondary),
                         ),
                         actions: [
                           Row(

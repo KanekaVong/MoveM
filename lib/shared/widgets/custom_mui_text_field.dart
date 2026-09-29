@@ -7,6 +7,7 @@ class CustomMuiTextField extends StatelessWidget {
   final String? initialValue;
   final ValueChanged<String>? onChanged;
   final bool readOnly;
+  final bool obscureText;
   final VoidCallback? onTap;
   final int? maxLength;
   final bool showRemainingCount;
@@ -21,6 +22,7 @@ class CustomMuiTextField extends StatelessWidget {
     this.initialValue,
     this.onChanged,
     this.readOnly = false,
+    this.obscureText = false,
     this.onTap,
     this.maxLength,
     this.showRemainingCount = false,
@@ -33,7 +35,7 @@ class CustomMuiTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     final dark = AppColors.isDark;
     final labelColor = dark ? Colors.white54 : AppColors.textSecondary;
-    final valueColor = AppColors.textPrimary;
+    final valueColor = dark ? const Color(0xFFE8EDF5) : AppColors.textPrimary;
     final borderColor = dark ? Colors.white.withValues(alpha: 0.2) : AppColors.borderMuted;
     final focusColor = dark ? Colors.white : AppColors.accentBlue;
     final decoration = InputDecoration(
@@ -43,7 +45,7 @@ class CustomMuiTextField extends StatelessWidget {
         fontSize: 15,
       ),
       floatingLabelStyle: TextStyle(
-        color: valueColor,
+        color: dark ? Colors.white : AppColors.accentBlue,
         fontSize: 14,
         fontWeight: FontWeight.w500,
       ),
@@ -86,10 +88,12 @@ class CustomMuiTextField extends StatelessWidget {
       initialValue: initialValue,
       onChanged: onChanged,
       readOnly: readOnly,
+      obscureText: obscureText,
       onTap: onTap,
       maxLength: maxLength,
       keyboardType: keyboardType,
       validator: validator,
+      cursorColor: dark ? Colors.white : AppColors.accentBlue,
       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       style: TextStyle(color: valueColor, fontSize: 15),
       decoration: decoration,

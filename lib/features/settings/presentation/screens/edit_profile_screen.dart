@@ -13,7 +13,9 @@ import 'package:movem/features/auth/data/dto/response/user_response.dart';
 import 'package:movem/features/settings/data/dto/request/update_profile_request.dart';
 
 import 'package:movem/shared/widgets/auth_image.dart';
+import 'package:movem/shared/widgets/custom_mui_text_field.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
+import 'package:movem/core/utils/app_dialogs.dart';
 import '../controllers/setting_controller.dart';
 import '../../data/services/setting_service.dart';
 
@@ -180,12 +182,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildProfileImage() {
+    final dark = AppColors.isDark;
+    final placeholderBg = dark ? const Color(0xFF162341) : const Color(0xFFE2E8F0);
+    final placeholderIconColor = dark ? Colors.white54 : AppColors.textSecondary;
+
     if (_removeProfileImage) {
       return Container(
-        color: const Color(0xFF162341),
-        child: const Icon(
+        color: placeholderBg,
+        child: Icon(
           Icons.person_outline,
-          color: Colors.white54,
+          color: placeholderIconColor,
           size: 50,
         ),
       );
@@ -204,17 +210,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return AuthImage(
         url: AppConfig.resolveMediaUrl(profilePic),
         fallback: Container(
-          color: const Color(0xFF162341),
-          child: const Icon(Icons.person_outline, color: Colors.white54, size: 50),
+          color: placeholderBg,
+          child: Icon(Icons.person_outline, color: placeholderIconColor, size: 50),
         ),
       );
     }
 
     return Container(
-      color: const Color(0xFF162341),
-      child: const Icon(
+      color: placeholderBg,
+      child: Icon(
         Icons.person_outline,
-        color: Colors.white54,
+        color: placeholderIconColor,
         size: 50,
       ),
     );
@@ -292,79 +298,79 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
 
-    // --------------------------------------------------
-    // 1. Update normal profile fields
-    // --------------------------------------------------
+    AppDialogs.showLoading();
 
-    if (firstnameChanged ||
-        lastnameChanged ||
-        usernameChanged ||
-        bioChanged ||
-        genderChanged) {
-      final request = UpdateProfileRequest(
-        firstname: firstnameChanged ? firstname : null,
-        lastname: lastnameChanged ? lastname : null,
-        username: usernameChanged ? username : null,
-        bio: bioChanged ? bio : null,
-        gender: genderChanged ? _selectedGender : null,
-      );
+    try {
+      // --------------------------------------------------
+      // 1. Update normal profile fields
+      // --------------------------------------------------
 
-      final updatedProfile =
-      await _settingController.updateProfile(request);
-
-      if (updatedProfile == null) {
-        return;
-      }
-
-      _user = updatedProfile;
-    }
-
-    // --------------------------------------------------
-    // 2. Update profile picture
-    // --------------------------------------------------
-
-    if (profilePictureChanged) {
-      String? profilePicUrl;
-
-      if (_removeProfileImage) {
-        profilePicUrl = null;
-      } else if (_selectedProfileImage != null) {
-        profilePicUrl =
-        await _uploadProfileImage(
-          _selectedProfileImage!,
+      if (firstnameChanged ||
+          lastnameChanged ||
+          usernameChanged ||
+          bioChanged ||
+          genderChanged) {
+        final request = UpdateProfileRequest(
+          firstname: firstnameChanged ? firstname : null,
+          lastname: lastnameChanged ? lastname : null,
+          username: usernameChanged ? username : null,
+          bio: bioChanged ? bio : null,
+          gender: genderChanged ? _selectedGender : null,
         );
 
-        if (profilePicUrl == null) {
+        final updatedProfile =
+            await _settingController.updateProfile(request, goBack: false);
+
+        if (updatedProfile == null) {
+          AppDialogs.hideLoading();
           return;
         }
+
+        _user = updatedProfile;
       }
 
-      final updatedUser =
-      await _settingController.updateProfilePicture(
-        UpdateProfilePictureRequest(
-          profilePic: profilePicUrl,
-        ),
-      );
+      // --------------------------------------------------
+      // 2. Update profile picture
+      // --------------------------------------------------
 
-      if (updatedUser == null) {
-        return;
+      if (profilePictureChanged) {
+        String? profilePicUrl;
+
+        if (_removeProfileImage) {
+          profilePicUrl = null;
+        } else if (_selectedProfileImage != null) {
+          profilePicUrl =
+              await _uploadProfileImage(_selectedProfileImage!);
+
+          if (profilePicUrl == null) {
+            AppDialogs.hideLoading();
+            return;
+          }
+        }
+
+        final updatedUser =
+            await _settingController.updateProfilePicture(
+          UpdateProfilePictureRequest(
+            profilePic: profilePicUrl,
+          ),
+        );
+
+        if (updatedUser == null) {
+          AppDialogs.hideLoading();
+          return;
+        }
+
+        _user = updatedUser;
       }
 
-      _user = updatedUser;
-    }
+      AppDialogs.hideLoading();
 
-    // --------------------------------------------------
-    // 3. Get the newest stored user
-    // --------------------------------------------------
-
-    final latestUser = UserManager().getUser();
-
-    if (latestUser != null && mounted) {
-      setState(() {
-        _user = latestUser;
-      });
-
-      Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop(true);
+      }
+    } catch (e) {
+      AppDialogs.hideLoading();
+      Get.snackbar('Error', 'Failed to save profile changes.');
     }
   }
 
@@ -553,122 +559,5 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
       ),
     );
-  }
-}
-
-class CustomMuiTextField extends StatelessWidget {
-  final String label;
-  final TextEditingController? controller;
-  final String? initialValue;
-  final ValueChanged<String>? onChanged;
-  final bool readOnly;
-  final VoidCallback? onTap;
-  final int? maxLength;
-  final bool showRemainingCount;
-  final Widget? suffixIcon;
-  final TextInputType? keyboardType;
-  final String? Function(String?)? validator;
-
-  const CustomMuiTextField({
-    super.key,
-    required this.label,
-    this.controller,
-    this.initialValue,
-    this.onChanged,
-    this.readOnly = false,
-    this.onTap,
-    this.maxLength,
-    this.showRemainingCount = false,
-    this.suffixIcon,
-    this.keyboardType,
-    this.validator,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final decoration = InputDecoration(
-      labelText: label,
-      labelStyle: const TextStyle(
-        color: Colors.white54,
-        fontSize: 15,
-      ),
-      floatingLabelStyle: const TextStyle(
-        color: Colors.white,
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-      ),
-      floatingLabelBehavior: FloatingLabelBehavior.auto,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(
-          color: Colors.white.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(
-          color: Colors.white,
-          width: 1.5,
-        ),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(
-          color: Colors.redAccent,
-          width: 1,
-        ),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(
-          color: Colors.redAccent,
-          width: 1.5,
-        ),
-      ),
-      counterText: showRemainingCount ? '' : null,
-      suffixIcon: suffixIcon,
-    );
-
-    final textField = TextFormField(
-      controller: controller,
-      initialValue: initialValue,
-      onChanged: onChanged,
-      readOnly: readOnly,
-      onTap: onTap,
-      maxLength: maxLength,
-      keyboardType: keyboardType,
-      validator: validator,
-      style: const TextStyle(color: Colors.white, fontSize: 15),
-      decoration: decoration,
-    );
-
-    if (maxLength != null && showRemainingCount && controller != null) {
-      return Stack(
-        alignment: Alignment.centerRight,
-        children: [
-          textField,
-          Positioned(
-            right: 12,
-            child: ValueListenableBuilder<TextEditingValue>(
-              valueListenable: controller!,
-              builder: (context, value, child) {
-                final remaining = maxLength! - value.text.length;
-                return Text(
-                  '$remaining',
-                  style: const TextStyle(
-                    color: Colors.white38,
-                    fontSize: 12,
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      );
-    }
-
-    return textField;
   }
 }

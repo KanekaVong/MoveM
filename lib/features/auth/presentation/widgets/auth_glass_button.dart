@@ -90,24 +90,15 @@ class _AuthGlassButtonState extends State<AuthGlassButton> {
                     splashColor: _brandBlue.withValues(alpha: 0.12),
                     highlightColor: _brandBlue.withValues(alpha: 0.06),
                     child: Center(
-                      child: widget.isLoading
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.4,
-                                color: _brandBlue,
-                              ),
-                            )
-                          : Text(
-                              widget.label,
-                              style: GoogleFonts.robotoCondensed(
-                                color: _brandBlue,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
+                      child: Text(
+                        widget.label,
+                        style: GoogleFonts.robotoCondensed(
+                          color: _brandBlue,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
                     ),
                   ),
                 ),
