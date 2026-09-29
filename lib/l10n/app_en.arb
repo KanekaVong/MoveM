@@ -611,5 +611,11 @@
   "selectRegion": "Select Region",
   "phoneNumber": "Phone Number",
   "dateOfBirth": "Date Of Birth",
-  "location": "Location"
+  "location": "Location",
+  "congratulationOnYour": "CONGRATULATION ON YOUR",
+  "first10Kilometers": "FIRST 10 KILOMETERS!",
+  "firstWorkout": "FIRST WORKOUT!",
+  "newAchievement": "NEW ACHIEVEMENT!",
+  "awesome": "AWESOME!!!",
+  "verificationFailed": "Verification Failed"
 }

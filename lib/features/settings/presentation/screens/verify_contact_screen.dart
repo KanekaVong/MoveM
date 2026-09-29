@@ -10,6 +10,7 @@ import 'package:movem/shared/widgets/top_tool_bar.dart';
 import '../controllers/setting_controller.dart';
 import '../models/contact_type.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/l10n/app_localizations.dart';
 
 class VerifyContactScreen extends StatefulWidget {
   final ContactType type;
@@ -278,6 +279,7 @@ class _VerifyContactScreenState extends State<VerifyContactScreen> {
                 label: 'Change',
                 onPressed: () async {
                   final code = _codeController.text.trim();
+                  final failedTitle = AppLocalizations.of(context)?.verificationFailed ?? 'Verification Failed';
 
                   if (code.isEmpty) {
                     AppSnack.show(
@@ -311,9 +313,8 @@ class _VerifyContactScreenState extends State<VerifyContactScreen> {
                     return;
                   } catch (e) {
                     AppDialogs.hideLoading();
-                    debugPrint('[EmailVerification] Error: $e');
                     AppSnack.show(
-                      'Verification Failed',
+                      failedTitle,
                       e.toString().replaceAll('Exception: ', ''),
                       backgroundColor: Colors.redAccent,
                       colorText: Colors.white,

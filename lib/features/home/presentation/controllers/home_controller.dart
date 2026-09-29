@@ -121,7 +121,7 @@ class HomeController extends BaseController {
       steps: post.steps > 0 ? '${post.steps}Steps' : null,
       distanceKm: post.distance > 0 ? post.distance : null,
       workoutType: workoutType,
-      hasGpsRoute: isRunning && post.distance > 0,
+      hasGpsRoute: post.points.length >= 2 || (isRunning && post.distance > 0),
       createdAt: post.finishedAt,
       kudosCount: post.kudosCount,
       myKudos: post.myKudos,
@@ -134,6 +134,9 @@ class HomeController extends BaseController {
           ? post.averagePace
           : _formatAveragePace(post.durationSeconds, post.distance),
       challengeName: post.challengeName ?? _fallbackChallengeName(workoutType, post.distance),
+      routePoints: post.points
+          .map((point) => FeedRoutePoint(latitude: point.latitude, longitude: point.longitude))
+          .toList(),
     );
   }
 

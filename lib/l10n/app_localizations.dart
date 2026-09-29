@@ -3277,6 +3277,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Location'**
   String get location;
+
+  /// No description provided for @congratulationOnYour.
+  ///
+  /// In en, this message translates to:
+  /// **'CONGRATULATION ON YOUR'**
+  String get congratulationOnYour;
+
+  /// No description provided for @first10Kilometers.
+  ///
+  /// In en, this message translates to:
+  /// **'FIRST 10 KILOMETERS!'**
+  String get first10Kilometers;
+
+  /// No description provided for @firstWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'FIRST WORKOUT!'**
+  String get firstWorkout;
+
+  /// No description provided for @newAchievement.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW ACHIEVEMENT!'**
+  String get newAchievement;
+
+  /// No description provided for @awesome.
+  ///
+  /// In en, this message translates to:
+  /// **'AWESOME!!!'**
+  String get awesome;
+
+  /// No description provided for @verificationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Failed'**
+  String get verificationFailed;
 }
 
 class _AppLocalizationsDelegate

@@ -598,5 +598,11 @@
   "selectRegion": "ជ្រើសតំបន់",
   "phoneNumber": "លេខទូរសព្ទ",
   "dateOfBirth": "ថ្ងៃខែឆ្នាំកំណើត",
-  "location": "ទីតាំង"
+  "location": "ទីតាំង",
+  "congratulationOnYour": "សូមអបអរសាទរចំពោះ",
+  "first10Kilometers": "១០ គីឡូម៉ែត្រដំបូង!",
+  "firstWorkout": "ការហាត់ដំបូង!",
+  "newAchievement": "សមិទ្ធផលថ្មី!",
+  "awesome": "អស្ចារ្យ!!!",
+  "verificationFailed": "ការផ្ទៀងផ្ទាត់បរាជ័យ"
 }

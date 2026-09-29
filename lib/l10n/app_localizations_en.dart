@@ -1653,4 +1653,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get location => 'Location';
+
+  @override
+  String get congratulationOnYour => 'CONGRATULATION ON YOUR';
+
+  @override
+  String get first10Kilometers => 'FIRST 10 KILOMETERS!';
+
+  @override
+  String get firstWorkout => 'FIRST WORKOUT!';
+
+  @override
+  String get newAchievement => 'NEW ACHIEVEMENT!';
+
+  @override
+  String get awesome => 'AWESOME!!!';
+
+  @override
+  String get verificationFailed => 'Verification Failed';
 }

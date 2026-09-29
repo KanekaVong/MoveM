@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/models/workout_model.dart';
 
 Future<void> showAchievementUnlockDialog(WorkoutEarnedAchievement achievement) {
@@ -20,7 +21,8 @@ class _AchievementUnlockDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final highlight = _highlight(achievement);
+    final l10n = AppLocalizations.of(context);
+    final highlight = _highlight(achievement, l10n);
     final screenHeight = MediaQuery.sizeOf(context).height;
     final cardHeight = screenHeight < 700 ? 400.0 : 450.0;
 
@@ -75,8 +77,8 @@ class _AchievementUnlockDialog extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
-                          'CONGRATULATION ON YOUR',
+                        Text(
+                          l10n?.congratulationOnYour ?? 'CONGRATULATION ON YOUR',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,
@@ -110,8 +112,8 @@ class _AchievementUnlockDialog extends StatelessWidget {
                               elevation: 0,
                               shape: const StadiumBorder(),
                             ),
-                            child: const Text(
-                              'AWESOME!!!',
+                            child: Text(
+                              l10n?.awesome ?? 'AWESOME!!!',
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w900,
@@ -141,18 +143,18 @@ String _badgeAsset(WorkoutEarnedAchievement achievement) {
   return AppImages.badgeFirstWorkout;
 }
 
-String _highlight(WorkoutEarnedAchievement achievement) {
+String _highlight(WorkoutEarnedAchievement achievement, AppLocalizations? l10n) {
   final key = '${achievement.name} ${achievement.description}'.toLowerCase();
   if (key.contains('10') && key.contains('km')) {
-    return 'FIRST 10 KILOMETERS!';
+    return l10n?.first10Kilometers ?? 'FIRST 10 KILOMETERS!';
   }
   if (key.contains('first') && key.contains('workout')) {
-    return 'FIRST WORKOUT!';
+    return l10n?.firstWorkout ?? 'FIRST WORKOUT!';
   }
   final name = achievement.name.trim().isNotEmpty
       ? achievement.name.trim()
       : achievement.description.trim();
-  if (name.isEmpty) return 'NEW ACHIEVEMENT!';
+  if (name.isEmpty) return l10n?.newAchievement ?? 'NEW ACHIEVEMENT!';
   final upper = name.toUpperCase();
   return upper.endsWith('!') ? upper : '$upper!';
 }

@@ -93,7 +93,11 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
       height: 250,
       child: item.hasGpsRoute
           ? CustomPaint(
-              painter: const GpsRoutePainter(colorfulDots: true, strokeWidth: 3.2),
+              painter: GpsRoutePainter(
+                routePoints: item.routePoints,
+                colorfulDots: true,
+                strokeWidth: 3.2,
+              ),
               child: Center(
                 child: Text(
                   distanceLabel,

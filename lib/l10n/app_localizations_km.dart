@@ -1647,4 +1647,22 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get location => 'ទីតាំង';
+
+  @override
+  String get congratulationOnYour => 'សូមអបអរសាទរចំពោះ';
+
+  @override
+  String get first10Kilometers => '១០ គីឡូម៉ែត្រដំបូង!';
+
+  @override
+  String get firstWorkout => 'ការហាត់ដំបូង!';
+
+  @override
+  String get newAchievement => 'សមិទ្ធផលថ្មី!';
+
+  @override
+  String get awesome => 'អស្ចារ្យ!!!';
+
+  @override
+  String get verificationFailed => 'ការផ្ទៀងផ្ទាត់បរាជ័យ';
 }

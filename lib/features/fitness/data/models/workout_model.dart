@@ -478,6 +478,50 @@ class ShareWorkoutRequest {
   }
 }
 
+class SharedRoutePoint {
+  final int id;
+  final int pointSequence;
+  final double latitude;
+  final double longitude;
+  final double accuracy;
+  final double? altitude;
+  final DateTime? recordedAt;
+
+  const SharedRoutePoint({
+    required this.id,
+    required this.pointSequence,
+    required this.latitude,
+    required this.longitude,
+    this.accuracy = 0,
+    this.altitude,
+    this.recordedAt,
+  });
+
+  factory SharedRoutePoint.fromJson(Map<String, dynamic> json) {
+    return SharedRoutePoint(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      pointSequence: (json['pointSequence'] as num?)?.toInt() ?? 0,
+      latitude: (json['latitude'] as num?)?.toDouble() ?? 0,
+      longitude: (json['longitude'] as num?)?.toDouble() ?? 0,
+      accuracy: (json['accuracy'] as num?)?.toDouble() ?? 0,
+      altitude: (json['altitude'] as num?)?.toDouble(),
+      recordedAt: json['recordedAt'] != null ? DateTime.tryParse(json['recordedAt'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'pointSequence': pointSequence,
+      'latitude': latitude,
+      'longitude': longitude,
+      'accuracy': accuracy,
+      if (altitude != null) 'altitude': altitude,
+      'recordedAt': recordedAt?.toIso8601String(),
+    };
+  }
+}
+
 class SharedWorkoutPostResponse {
   final int sessionId;
   final int userId;
@@ -498,6 +542,7 @@ class SharedWorkoutPostResponse {
   final String? averagePace;
   final String? challengeName;
   final List<AttachmentResponse> attachments;
+  final List<SharedRoutePoint> points;
 
   SharedWorkoutPostResponse({
     required this.sessionId,
@@ -519,6 +564,7 @@ class SharedWorkoutPostResponse {
     this.averagePace,
     this.challengeName,
     this.attachments = const [],
+    this.points = const [],
   });
 
   factory SharedWorkoutPostResponse.fromJson(Map<String, dynamic> json) {
@@ -548,7 +594,19 @@ class SharedWorkoutPostResponse {
               .map((e) => AttachmentResponse.fromJson(e as Map<String, dynamic>))
               .toList()
           : [],
+      points: _parseRoutePoints(json['points']),
     );
+  }
+
+  static List<SharedRoutePoint> _parseRoutePoints(dynamic raw) {
+    if (raw is! List) return const [];
+    final points = raw
+        .whereType<Map>()
+        .map((item) => SharedRoutePoint.fromJson(Map<String, dynamic>.from(item)))
+        .where((point) => point.latitude != 0 || point.longitude != 0)
+        .toList();
+    points.sort((a, b) => a.pointSequence.compareTo(b.pointSequence));
+    return points;
   }
 
   Map<String, dynamic> toJson() {
@@ -572,6 +630,7 @@ class SharedWorkoutPostResponse {
       'averagePace': averagePace,
       'challengeName': challengeName,
       'attachments': attachments.map((e) => e.toJson()).toList(),
+      'points': points.map((point) => point.toJson()).toList(),
     };
   }
 
