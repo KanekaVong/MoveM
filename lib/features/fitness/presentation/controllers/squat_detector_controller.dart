@@ -14,6 +14,7 @@ import '../../data/repositories/fitness_workout_repository.dart';
 import '../../domain/squat_angle_calculator.dart';
 import '../../domain/squat_state_machine.dart';
 import '../screens/squat_summary_screen.dart';
+import 'achievement_notice_controller.dart';
 
 class SquatDetectorController extends GetxController {
   final SoloChallengeModel challenge;
@@ -398,6 +399,7 @@ class SquatDetectorController extends GetxController {
         );
         if (finishRes.isSuccess && finishRes.data != null) {
           summaryModel = finishRes.data!.toSummaryModel();
+          AchievementNoticeController.ensure().enqueue(finishRes.data!.currentAchievements);
         }
       } catch (_) {}
     }

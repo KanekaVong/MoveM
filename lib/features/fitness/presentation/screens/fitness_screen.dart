@@ -2,12 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../controllers/achievement_notice_controller.dart';
 import '../controllers/fitness_profile_controller.dart';
 import 'fitness_dashboard_screen.dart';
 import 'fitness_onboarding_screen.dart';
 
-class FitnessScreen extends StatelessWidget {
+class FitnessScreen extends StatefulWidget {
   const FitnessScreen({super.key});
+
+  @override
+  State<FitnessScreen> createState() => _FitnessScreenState();
+}
+
+class _FitnessScreenState extends State<FitnessScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (Get.isRegistered<AchievementNoticeController>()) {
+        Get.find<AchievementNoticeController>().presentWhenFitnessIsVisible();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +219,7 @@ class _FitnessWelcomeScreenState extends State<FitnessWelcomeScreen> {
                       );
                     },
                   ),
-                  const SizedBox(height: 100),
+                  const SizedBox(height: 140),
                 ],
               ),
             ),

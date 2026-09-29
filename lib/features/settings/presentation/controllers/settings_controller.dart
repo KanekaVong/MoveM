@@ -9,6 +9,7 @@ import '../../../../shared/base/base_controller.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../auth/data/dto/response/user_response.dart';
 import '../../../auth/data/services/auth_service.dart';
+import '../../../auth/presentation/controllers/auth_controller.dart';
 
 class SettingsController extends BaseController {
   final AuthService _authService = AuthService();
@@ -101,7 +102,7 @@ class SettingsController extends BaseController {
           ),
         ),
       ),
-      barrierColor: Colors.black.withOpacity(0.6),
+      barrierColor: Colors.black.withValues(alpha: 0.6),
     );
   }
 
@@ -162,6 +163,10 @@ class SettingsController extends BaseController {
   }
 
   Future<void> confirmLogout() async {
+    if (Get.isRegistered<AuthController>()) {
+      await Get.find<AuthController>().logout();
+      return;
+    }
     try {
       await _authService.logout();
     } catch (_) {}

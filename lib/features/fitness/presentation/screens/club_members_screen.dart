@@ -9,6 +9,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/models/fitness_club_model.dart';
 import '../controllers/fitness_club_controller.dart';
 import 'invite_people_screen.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class ClubMembersScreen extends StatefulWidget {
   final FitnessClubModel club;
@@ -72,7 +73,7 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
     await _controller.loadClubDetails(widget.club.id);
 
     final l10n = AppLocalizations.of(Get.context!);
-    Get.snackbar(
+    AppSnack.show(
       added > 0 ? (l10n?.invited ?? 'Invited') : (l10n?.errorTitle ?? 'Error'),
       added > 0
           ? (l10n?.membersAdded(added, widget.club.name) ?? '$added added to ${widget.club.name}.')
@@ -121,7 +122,7 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
 
     final removed = await _controller.removeMember(widget.club.id, member.userId);
     if (removed) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.removedTitle ?? 'Removed',
         l10n?.memberRemoved(name, widget.club.name) ?? '$name was removed from ${widget.club.name}.',
         backgroundColor: const Color(0xFF48A45B),

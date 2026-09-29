@@ -14,6 +14,7 @@ import '../../../groups/data/repositories/group_repository_impl.dart';
 import '../../../groups/data/services/group_service.dart';
 import '../../../groups/data/dto/response/group_search_user_response.dart';
 import '../../../groups/data/dto/response/pending_invite_response.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class AddCollaboratorController extends BaseController {
   AppLocalizations? get _l10n {
@@ -203,11 +204,11 @@ class AddCollaboratorController extends BaseController {
     final clean = name.replaceAll('@', '').trim();
     if (clean.isEmpty) return;
     if (isCustomAlreadyMember(clean)) {
-      Get.snackbar(_l10n?.alreadyMemberTitle ?? 'Already a Member', _l10n?.alreadyMember ?? '$clean is already a member.', backgroundColor: AppColors.emerald, colorText: Colors.white);
+      AppSnack.show(_l10n?.alreadyMemberTitle ?? 'Already a Member', _l10n?.alreadyMember ?? '$clean is already a member.', backgroundColor: AppColors.emerald, colorText: Colors.white);
       return;
     }
     if (isCustomAlreadyInvited(clean)) {
-      Get.snackbar(_l10n?.alreadyInvitedTitle ?? 'Already Invited', _l10n?.alreadyInvited ?? '$clean already has a pending invitation.', backgroundColor: AppColors.amber, colorText: Colors.white);
+      AppSnack.show(_l10n?.alreadyInvitedTitle ?? 'Already Invited', _l10n?.alreadyInvited ?? '$clean already has a pending invitation.', backgroundColor: AppColors.amber, colorText: Colors.white);
       return;
     }
     Get.back(result: [

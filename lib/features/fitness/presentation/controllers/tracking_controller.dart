@@ -14,7 +14,9 @@ import '../../data/repositories/fitness_workout_repository.dart';
 import '../../domain/gps_filter.dart';
 import '../../domain/pace_calculator.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'achievement_notice_controller.dart';
 import 'fitness_profile_controller.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class TrackingController extends GetxController {
   static const double _startFixMaxAccuracyMeters = 50.0;
@@ -119,7 +121,7 @@ class TrackingController extends GetxController {
     if (!hasPermission) {
       isAcquiringGps.value = false;
       gpsFailed.value = true;
-      Get.snackbar(
+      AppSnack.show(
         _l10n?.permissionDeniedTitle ?? 'Permission Denied',
         _l10n?.locationRequired ?? 'Location permission is required.',
       );
@@ -130,7 +132,7 @@ class TrackingController extends GetxController {
     if (!serviceEnabled) {
       isAcquiringGps.value = false;
       gpsFailed.value = true;
-      Get.snackbar(
+      AppSnack.show(
         _l10n?.serviceDisabledTitle ?? 'Service Disabled',
         _l10n?.enableLocation ?? 'Please enable location services.',
       );
@@ -150,7 +152,7 @@ class TrackingController extends GetxController {
       _lockStream = null;
       isAcquiringGps.value = false;
       gpsFailed.value = true;
-      Get.snackbar(
+      AppSnack.show(
         _l10n?.errorTitle ?? 'GPS',
         'Could not get your current location. Move outdoors and try again.',
       );
@@ -273,7 +275,7 @@ class TrackingController extends GetxController {
 
     final hasPermission = await _requestPermissions();
     if (!hasPermission) {
-      Get.snackbar(
+      AppSnack.show(
         _l10n?.permissionDeniedTitle ?? 'Permission Denied',
         _l10n?.locationRequired ?? 'Location permission is required.',
       );
@@ -282,7 +284,7 @@ class TrackingController extends GetxController {
 
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      Get.snackbar(
+      AppSnack.show(
         _l10n?.serviceDisabledTitle ?? 'Service Disabled',
         _l10n?.enableLocation ?? 'Please enable location services.',
       );
@@ -408,6 +410,7 @@ class TrackingController extends GetxController {
         );
         if (finishRes.isSuccess && finishRes.data != null) {
           summaryModel = finishRes.data!.toSummaryModel();
+          AchievementNoticeController.ensure().enqueue(finishRes.data!.currentAchievements);
         }
       } catch (_) {}
     }

@@ -5,6 +5,7 @@ import '../../../groups/data/repositories/group_repository_impl.dart';
 import '../../../groups/data/services/group_service.dart';
 import '../../../groups/domain/repositories/group_repository.dart';
 import 'task_controller.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class TaskInvitationController extends GetxController {
   final GroupRepository repository;
@@ -46,7 +47,7 @@ class TaskInvitationController extends GetxController {
     if (result is ApiSuccess<GroupInviteResponse>) {
       invitations.removeWhere((item) => item.inviteId == id);
       _refreshTasks();
-      Get.snackbar(
+      AppSnack.show(
         'Invitation accepted',
         invite.activityName?.isNotEmpty == true
             ? 'You joined ${invite.activityName}'
@@ -54,7 +55,7 @@ class TaskInvitationController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
     } else {
-      Get.snackbar(
+      AppSnack.show(
         'Could not accept',
         result.exception?.message ?? 'Please try again',
         snackPosition: SnackPosition.BOTTOM,
@@ -71,7 +72,7 @@ class TaskInvitationController extends GetxController {
     if (result is ApiSuccess<GroupInviteResponse>) {
       invitations.removeWhere((item) => item.inviteId == id);
     } else {
-      Get.snackbar(
+      AppSnack.show(
         'Could not decline',
         result.exception?.message ?? 'Please try again',
         snackPosition: SnackPosition.BOTTOM,

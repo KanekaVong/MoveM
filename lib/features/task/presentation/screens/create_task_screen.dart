@@ -5,6 +5,7 @@ import '../controllers/create_task_controller.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class CreateTaskScreen extends GetView<CreateTaskController> {
   const CreateTaskScreen({super.key});
@@ -601,7 +602,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                       label: l10n?.createButton ?? 'Create',
                       onPressed: () {
                         if (nameController.text.trim().isEmpty) {
-                          Get.snackbar(
+                          AppSnack.show(
                             l10n?.errorTitle ?? 'Error',
                             l10n?.requiredField ?? 'Required',
                             backgroundColor: Colors.red,

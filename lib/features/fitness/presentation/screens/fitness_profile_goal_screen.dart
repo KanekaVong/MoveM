@@ -173,8 +173,10 @@ class _FitnessProfileGoalScreenState extends State<FitnessProfileGoalScreen> {
                 end: Alignment.bottomCenter,
                 colors: [
                   Colors.black.withValues(alpha: 0.18),
-                  Colors.black.withValues(alpha: 0.55),
+                  Colors.black.withValues(alpha: 0.28),
+                  AppColors.pageBackground,
                 ],
+                stops: const [0.0, 0.62, 1.0],
               ),
             ),
           ),

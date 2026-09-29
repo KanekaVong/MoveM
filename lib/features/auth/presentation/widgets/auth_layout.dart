@@ -81,7 +81,7 @@ class _AuthHeader extends StatelessWidget {
             child: Text(
               'MOVEM',
               style: GoogleFonts.michroma(
-                fontSize: 30,
+                fontSize: 24,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 2,
               ),
@@ -100,7 +100,7 @@ class _AuthHeader extends StatelessWidget {
               child: Text(
                 'YOUR LIFE, IN MOTION',
                 style: GoogleFonts.robotoCondensed(
-                  fontSize: 36,
+                  fontSize: 22,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.4,
                 ),
@@ -235,7 +235,7 @@ class _GradientTitle extends StatelessWidget {
     return InnerShadowText(
       text.toUpperCase(),
       style: GoogleFonts.robotoCondensed(
-        fontSize: 36,
+        fontSize: 26,
         fontWeight: FontWeight.w700,
       ),
     );

@@ -1,3 +1,10 @@
+class FeedRoutePoint {
+  final double latitude;
+  final double longitude;
+
+  const FeedRoutePoint({required this.latitude, required this.longitude});
+}
+
 class HomeFeedItem {
   final String id;
   final int? sessionId;
@@ -22,6 +29,7 @@ class HomeFeedItem {
   final int caloriesCount;
   final String? averagePace;
   final String? challengeName;
+  final List<FeedRoutePoint> routePoints;
 
   const HomeFeedItem({
     required this.id,
@@ -47,6 +55,7 @@ class HomeFeedItem {
     this.caloriesCount = 0,
     this.averagePace,
     this.challengeName,
+    this.routePoints = const [],
   });
 
   HomeFeedItem copyWith({
@@ -73,6 +82,7 @@ class HomeFeedItem {
     int? caloriesCount,
     String? averagePace,
     String? challengeName,
+    List<FeedRoutePoint>? routePoints,
   }) {
     return HomeFeedItem(
       id: id ?? this.id,
@@ -98,6 +108,7 @@ class HomeFeedItem {
       caloriesCount: caloriesCount ?? this.caloriesCount,
       averagePace: averagePace ?? this.averagePace,
       challengeName: challengeName ?? this.challengeName,
+      routePoints: routePoints ?? this.routePoints,
     );
   }
 }

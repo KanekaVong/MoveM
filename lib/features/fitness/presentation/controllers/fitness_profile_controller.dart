@@ -6,6 +6,7 @@ import '../../data/models/fitness_statistics_model.dart';
 import '../../data/models/solo_challenge_model.dart';
 import '../../data/repositories/fitness_profile_repository.dart';
 import '../../data/repositories/fitness_achievement_repository.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class FitnessProfileController extends BaseController {
   AppLocalizations? get _l10n {
@@ -121,11 +122,11 @@ class FitnessProfileController extends BaseController {
 
   Future<bool> saveProfile() async {
     if (inputHeight.value < 50 || inputHeight.value > 300) {
-      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.invalidHeight ?? 'Please enter a valid height in cm (e.g., 170 cm). If using ft, ensure it converts to a reasonable value.');
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.invalidHeight ?? 'Please enter a valid height in cm (e.g., 170 cm). If using ft, ensure it converts to a reasonable value.');
       return false;
     }
     if (inputWeight.value < 20 || inputWeight.value > 500) {
-      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.invalidWeight ?? 'Please enter a valid weight in kg (e.g., 65 kg).');
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.invalidWeight ?? 'Please enter a valid weight in kg (e.g., 65 kg).');
       return false;
     }
 
@@ -140,7 +141,7 @@ class FitnessProfileController extends BaseController {
       },
       onError: (e) {
         success = false;
-        Get.snackbar(_l10n?.errorTitle ?? 'Error', e.message.isNotEmpty ? e.message : (_l10n?.failedToSaveProfile ?? 'Failed to save profile. Please try again.'));
+        AppSnack.show(_l10n?.errorTitle ?? 'Error', e.message.isNotEmpty ? e.message : (_l10n?.failedToSaveProfile ?? 'Failed to save profile. Please try again.'));
       },
     );
     return success;
@@ -158,7 +159,7 @@ class FitnessProfileController extends BaseController {
       },
       onError: (e) {
         success = false;
-        Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.failedToUpdateProfile ?? 'Failed to update profile. Please try again.');
+        AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.failedToUpdateProfile ?? 'Failed to update profile. Please try again.');
       },
     );
     return success;
@@ -166,11 +167,11 @@ class FitnessProfileController extends BaseController {
 
   Future<bool> saveBodyMetrics(double height, double weight) async {
     if (height < 50 || height > 300) {
-      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.invalidHeight ?? 'Please enter a valid height in cm (e.g., 170 cm).');
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.invalidHeight ?? 'Please enter a valid height in cm (e.g., 170 cm).');
       return false;
     }
     if (weight < 20 || weight > 500) {
-      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.invalidWeight ?? 'Please enter a valid weight in kg (e.g., 65 kg).');
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.invalidWeight ?? 'Please enter a valid weight in kg (e.g., 65 kg).');
       return false;
     }
 
@@ -190,7 +191,7 @@ class FitnessProfileController extends BaseController {
       },
       onError: (e) {
         success = false;
-        Get.snackbar(_l10n?.errorTitle ?? 'Error', e.message.isNotEmpty ? e.message : (_l10n?.failedToSaveProfile ?? 'Failed to save profile. Please try again.'));
+        AppSnack.show(_l10n?.errorTitle ?? 'Error', e.message.isNotEmpty ? e.message : (_l10n?.failedToSaveProfile ?? 'Failed to save profile. Please try again.'));
       },
     );
     return success;

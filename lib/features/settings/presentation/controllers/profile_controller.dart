@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import '../../../../core/storage/user_manager.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../../auth/data/dto/response/user_response.dart';
-import '../screens/EditProfileScreen.dart';
+import '../../../../core/routes/app_routes.dart';
 
 class ProfileController extends BaseController {
   final Rx<UserResponse?> user = Rx<UserResponse?>(null);
@@ -48,10 +48,8 @@ class ProfileController extends BaseController {
   }
 
   void onEditProfileTap() {
-    if (user.value != null) {
-      Get.to(() => EditProfileScreen(user: user.value))?.then((_) {
-        loadProfile();
-      });
-    }
+    Get.toNamed(AppRoutes.editProfile)?.then((_) {
+      loadProfile();
+    });
   }
 }

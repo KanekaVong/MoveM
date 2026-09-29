@@ -13,6 +13,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class ClubDetailScreen extends StatefulWidget {
   final FitnessClubModel club;
@@ -326,7 +327,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     await _controller.loadClubDetails(club.id);
 
     final l10n = AppLocalizations.of(Get.context!);
-    Get.snackbar(
+    AppSnack.show(
       added > 0 ? (l10n?.invited ?? 'Invited') : (l10n?.errorTitle ?? 'Error'),
       added > 0
           ? (l10n?.membersAdded(added, club.name) ?? '$added added to ${club.name}.')

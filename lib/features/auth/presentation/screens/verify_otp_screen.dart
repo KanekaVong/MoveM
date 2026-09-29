@@ -50,11 +50,10 @@ class VerifyOtpScreen extends GetView<AuthController> {
           onSubmitted: (_) => submit(),
         ),
         const SizedBox(height: 12),
-        Obx(() => AuthGlassButton(
-              label: l10n?.verifyAction ?? 'Verify',
-              isLoading: controller.isLoading,
-              onPressed: submit,
-            )),
+        AuthGlassButton(
+          label: l10n?.verifyAction ?? 'Verify',
+          onPressed: submit,
+        ),
         const SizedBox(height: 10),
         AuthFooterLink(
           text: l10n?.resendCode ?? 'Resend Code',

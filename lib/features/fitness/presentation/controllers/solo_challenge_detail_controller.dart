@@ -10,6 +10,7 @@ import '../../data/models/solo_challenge_model.dart';
 import '../../data/repositories/fitness_challenge_repository.dart';
 import '../screens/push_up_countdown_screen.dart';
 import '../screens/running_tracking_screen.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class SoloChallengeDetailController extends BaseController {
   final FitnessChallengeRepository _repository;
@@ -232,7 +233,7 @@ class SoloChallengeDetailController extends BaseController {
       return false;
     }
 
-    Get.snackbar(
+    AppSnack.show(
       'Location Required',
       'Location access is needed to track your running distance, pace, and route.',
       backgroundColor: AppColors.textPrimary,

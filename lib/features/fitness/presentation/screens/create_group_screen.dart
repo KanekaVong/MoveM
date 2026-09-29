@@ -6,6 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class CreateGroupScreen extends StatefulWidget {
   const CreateGroupScreen({super.key});
@@ -44,7 +45,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     final name = _clubNameController.text.trim();
     final l10n = AppLocalizations.of(context);
     if (name.isEmpty) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.requiredField ?? 'Required',
         l10n?.pleaseEnterClubName ?? 'Please enter a club name',
         backgroundColor: Colors.redAccent,

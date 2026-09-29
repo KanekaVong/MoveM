@@ -4,6 +4,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../data/models/group_challenge_model.dart';
 import '../../data/repositories/fitness_challenge_repository.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class ClubChallengeDetailController extends BaseController {
   ClubChallengeDetailController(this.initialChallenge);
@@ -57,7 +58,7 @@ class ClubChallengeDetailController extends BaseController {
     if (res.isSuccess) {
       isJoined.value = true;
       await loadParticipants();
-      Get.snackbar(
+      AppSnack.show(
         _l10n?.joinedTitle ?? 'Joined',
         _l10n?.youJoinedChallenge(challenge.value.name) ??
             'You joined ${challenge.value.name}.',
@@ -68,7 +69,7 @@ class ClubChallengeDetailController extends BaseController {
       return;
     }
 
-    Get.snackbar(
+    AppSnack.show(
       _l10n?.errorTitle ?? 'Error',
       res.exception?.message ??
           _l10n?.failedToJoinChallenge ??

@@ -11,6 +11,7 @@ import '../../../task/domain/repositories/comment_repository.dart';
 import '../../domain/models/home_feed_item.dart';
 import 'home_controller.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class ActivityDetailController extends BaseController {
   AppLocalizations? get _l10n {
@@ -93,7 +94,7 @@ class ActivityDetailController extends BaseController {
       _syncCommentCount();
     } else {
       textController.text = text;
-      Get.snackbar(_l10n?.errorTitle ?? 'Failed to Send', _l10n?.failedToSendComment ?? 'Unable to post comment right now');
+      AppSnack.show(_l10n?.errorTitle ?? 'Failed to Send', _l10n?.failedToSendComment ?? 'Unable to post comment right now');
     }
   }
 

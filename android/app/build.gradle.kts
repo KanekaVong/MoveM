@@ -158,3 +158,18 @@ tasks.matching { it.name.startsWith("assemble") }.configureEach {
 tasks.matching { it.name == "assembleRelease" }.configureEach {
     finalizedBy("copyReleaseApk")
 }
+
+// Release was reinstalling an APK built from a cached Dart snapshot, so
+// source changes showed up in dev and not in release. Gradle rerunning the
+// task is not enough: Flutter's own snapshot stamp still skips the compile.
+tasks.configureEach {
+    if (name.startsWith("compileFlutterBuild") && name.endsWith("Release")) {
+        outputs.upToDateWhen { false }
+        doFirst {
+            val flutterBuild = rootProject.file("../.dart_tool/flutter_build")
+            if (flutterBuild.exists()) {
+                flutterBuild.deleteRecursively()
+            }
+        }
+    }
+}

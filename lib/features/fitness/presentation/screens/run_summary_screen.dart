@@ -1,17 +1,21 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../data/models/run_session.dart';
 import '../../data/models/track_point.dart';
 import '../../data/models/solo_challenge_model.dart';
 import '../../data/models/workout_model.dart';
 import '../../domain/pace_calculator.dart';
 import '../../../main_nav/presentation/controllers/main_nav_controller.dart';
+import '../controllers/achievement_notice_controller.dart';
 import '../controllers/tracking_controller.dart';
 import '../controllers/fitness_profile_controller.dart';
 import 'running_tracking_screen.dart';
 import 'solo_challenge_list_screen.dart';
+import '../../../../core/config/google_map_style.dart';
 import '../../../../core/theme/app_colors.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class RunSummaryScreen extends StatelessWidget {
   final RunSession session;
@@ -87,6 +91,9 @@ class RunSummaryScreen extends StatelessWidget {
     );
 
     final challengeTitle = challenge?.name ?? 'RUNNING SESSION';
+    final routePoints = session.points
+        .where((p) => p.latitude != 0 || p.longitude != 0)
+        .toList();
 
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
@@ -145,32 +152,37 @@ class RunSummaryScreen extends StatelessWidget {
 
             Expanded(
               child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Column(
+                child: Column(
                     children: [
-                      SizedBox(height: 20),
+                      const SizedBox(height: 8),
 
                       SizedBox(
                         width: double.infinity,
-                        height: 230,
-                        child: CustomPaint(
-                          painter: RoutePolygonPainter(points: session.points),
-                          child: Center(
-                            child: Text(
-                              distanceStr,
-                              style: TextStyle(
-                                color: AppColors.textPrimary,
-                                fontSize: 44,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 1.5,
-                              ),
-                            ),
-                          ),
+                        height: 280,
+                        child: routePoints.isEmpty
+                            ? CustomPaint(
+                                painter: RoutePolygonPainter(points: session.points),
+                              )
+                            : _WorkoutRouteMap(points: routePoints),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      Text(
+                        distanceStr,
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 40,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.5,
                         ),
                       ),
 
-                      const SizedBox(height: 36),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Column(
+                          children: [
+                      const SizedBox(height: 28),
 
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,7 +261,7 @@ class RunSummaryScreen extends StatelessWidget {
                               icon: Icons.share_outlined,
                               label: 'SHARE',
                               onTap: () {
-                                Get.snackbar(
+                                AppSnack.show(
                                   'Share Workout',
                                   'Sharing $distanceStr running workout details...',
                                   backgroundColor: AppColors.textPrimary,
@@ -285,14 +297,16 @@ class RunSummaryScreen extends StatelessWidget {
                       ),
 
                       const SizedBox(height: 32),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
     );
   }
 
@@ -307,7 +321,7 @@ class RunSummaryScreen extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Color(0xFF8E9BAE),
+            color: AppColors.textCaption,
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
@@ -377,12 +391,15 @@ class RunSummaryScreen extends StatelessWidget {
       Get.find<FitnessProfileController>().fetchStatistics();
     }
     if (Get.isRegistered<MainNavController>()) {
-      Get.find<MainNavController>().changeTab(0);
+      Get.find<MainNavController>().changeTab(2);
     }
     if (Get.isRegistered<TrackingController>()) {
       Get.delete<TrackingController>();
     }
     Get.until((route) => route.isFirst);
+    if (Get.isRegistered<AchievementNoticeController>()) {
+      Get.find<AchievementNoticeController>().presentWhenFitnessIsVisible();
+    }
   }
 }
 
@@ -519,4 +536,101 @@ class RoutePolygonPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant RoutePolygonPainter oldDelegate) =>
       oldDelegate.points.length != points.length;
+}
+
+class _WorkoutRouteMap extends StatefulWidget {
+  final List<TrackPoint> points;
+
+  const _WorkoutRouteMap({required this.points});
+
+  @override
+  State<_WorkoutRouteMap> createState() => _WorkoutRouteMapState();
+}
+
+class _WorkoutRouteMapState extends State<_WorkoutRouteMap> {
+  GoogleMapController? _controller;
+
+  List<LatLng> get _latLngs => widget.points
+      .map((p) => LatLng(p.latitude, p.longitude))
+      .toList();
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fit(GoogleMapController controller) async {
+    final pts = _latLngs;
+    if (pts.isEmpty) return;
+
+    if (pts.length == 1) {
+      await controller.moveCamera(CameraUpdate.newLatLngZoom(pts.first, 16));
+      return;
+    }
+
+    var minLat = pts.first.latitude;
+    var maxLat = pts.first.latitude;
+    var minLng = pts.first.longitude;
+    var maxLng = pts.first.longitude;
+    for (final p in pts) {
+      if (p.latitude < minLat) minLat = p.latitude;
+      if (p.latitude > maxLat) maxLat = p.latitude;
+      if (p.longitude < minLng) minLng = p.longitude;
+      if (p.longitude > maxLng) maxLng = p.longitude;
+    }
+
+    const pad = 0.0004;
+    if (maxLat - minLat < pad) {
+      minLat -= pad;
+      maxLat += pad;
+    }
+    if (maxLng - minLng < pad) {
+      minLng -= pad;
+      maxLng += pad;
+    }
+
+    await controller.moveCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(minLat, minLng),
+          northeast: LatLng(maxLat, maxLng),
+        ),
+        48,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final pts = _latLngs;
+    return GoogleMap(
+      initialCameraPosition: CameraPosition(
+        target: pts.isNotEmpty ? pts.first : const LatLng(0, 0),
+        zoom: 15,
+      ),
+      style: AppColors.isDark ? GoogleMapStyle.darkMapStyle : null,
+      myLocationButtonEnabled: false,
+      zoomControlsEnabled: false,
+      mapToolbarEnabled: false,
+      compassEnabled: false,
+      polylines: {
+        Polyline(
+          polylineId: const PolylineId('summary_route'),
+          color: const Color(0xFFFF6A00),
+          width: 5,
+          points: pts,
+          jointType: JointType.round,
+          startCap: Cap.roundCap,
+          endCap: Cap.roundCap,
+        ),
+      },
+      onMapCreated: (controller) async {
+        _controller = controller;
+        await Future<void>.delayed(const Duration(milliseconds: 250));
+        if (!mounted) return;
+        await _fit(controller);
+      },
+    );
+  }
 }

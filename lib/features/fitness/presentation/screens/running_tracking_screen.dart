@@ -333,7 +333,7 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
 
           Positioned(
             right: 16,
-            bottom: 180,
+            bottom: 170 + MediaQuery.paddingOf(context).bottom,
             child: Obx(() {
               if (controller.autoFollow.value) return const SizedBox.shrink();
               return GestureDetector(
@@ -471,7 +471,7 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
           Positioned(
             left: 20,
             right: 20,
-            bottom: 30,
+            bottom: 20 + MediaQuery.paddingOf(context).bottom,
             child: SafeArea(
               child: GlassContainer(
                 width: double.infinity,

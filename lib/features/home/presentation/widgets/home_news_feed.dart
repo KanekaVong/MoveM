@@ -19,40 +19,52 @@ class HomeNewsFeed extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Obx(() {
-      final items = controller.feedItems;
-      if (items.isEmpty) {
-        return NoDataComponent(
-          compact: true,
-          title: l10n?.noActivityYet ?? 'No activity yet',
-          subtitle: l10n?.feedEmptySub ??
-              'Workouts and updates from your circle will show up here.',
-        );
-      }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n?.newsFeed ?? 'News Feed',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.2,
+          ),
+        ),
+        const SizedBox(height: 14),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: controller.fetchSocialFeed,
+            color: AppColors.accentBlue,
+            backgroundColor: AppColors.cardSurface,
+            child: Obx(() {
+              final items = controller.feedItems;
+              if (items.isEmpty) {
+                return ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    NoDataComponent(
+                      compact: true,
+                      title: l10n?.noActivityYet ?? 'No activity yet',
+                      subtitle: l10n?.feedEmptySub ??
+                          'Workouts and updates from your circle will show up here.',
+                    ),
+                  ],
+                );
+              }
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n?.newsFeed ?? 'News Feed',
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.2,
-            ),
+              return ListView.separated(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(bottom: 120),
+                itemCount: items.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 16),
+                itemBuilder: (context, index) => _buildFeedCard(items[index]),
+              );
+            }),
           ),
-          SizedBox(height: 14),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: items.length,
-            separatorBuilder: (_, __) => SizedBox(height: 16),
-            itemBuilder: (context, index) => _buildFeedCard(items[index]),
-          ),
-        ],
-      );
-    });
+        ),
+      ],
+    );
   }
 
   Widget _buildFeedCard(HomeFeedItem item) {
@@ -193,7 +205,7 @@ class HomeNewsFeed extends GetView<HomeController> {
           borderRadius: BorderRadius.circular(16),
         ),
         child: CustomPaint(
-          painter: const GpsRoutePainter(),
+          painter: GpsRoutePainter(routePoints: item.routePoints),
           child: Center(
             child: Text(
               distanceLabel,

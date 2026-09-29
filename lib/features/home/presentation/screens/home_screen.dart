@@ -15,28 +15,19 @@ class HomeScreen extends GetView<HomeController> {
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: controller.fetchDashboard,
-          color: AppColors.accentBlue,
-          backgroundColor: AppColors.cardSurface,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                HomeHeader(),
-                SizedBox(height: 18),
-                HomeHeroBanner(),
-                SizedBox(height: 22),
-                HomeQuickActions(),
-                SizedBox(height: 22),
-                HomeNewsFeed(),
-                SizedBox(height: 100),
-              ],
-            ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 12, 18, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              HomeHeader(),
+              SizedBox(height: 18),
+              HomeHeroBanner(),
+              SizedBox(height: 22),
+              HomeQuickActions(),
+              SizedBox(height: 22),
+              Expanded(child: HomeNewsFeed()),
+            ],
           ),
         ),
       ),

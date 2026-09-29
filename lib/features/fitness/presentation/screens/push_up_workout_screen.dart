@@ -330,7 +330,7 @@ class _PushUpWorkoutScreenState extends State<PushUpWorkoutScreen>
             Positioned(
               left: 20,
               right: 20,
-              bottom: 34,
+              bottom: 24 + MediaQuery.paddingOf(context).bottom,
               child: SafeArea(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),

@@ -11,6 +11,8 @@ import '../bindings/friends_binding.dart';
 import '../widgets/friend_request_tile.dart';
 import '../widgets/friend_suggestion_tile.dart';
 import '../controllers/friends_controller.dart';
+import '../../data/dto/response/public_user_profile_response.dart';
+import 'public_user_profile_screen.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 
@@ -186,6 +188,31 @@ class AddFriendsScreen extends GetView<FriendsController> {
     return 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(name)}&background=334155&color=fff';
   }
 
+  void _openUserProfile({
+    required String userId,
+    required String username,
+    String firstname = '',
+    String lastname = '',
+    String? profilePic,
+    String? friendStatus,
+  }) {
+    Get.to(
+      () => PublicUserProfileScreen(
+        userId: userId,
+        initialProfile: PublicUserProfileResponse(
+          id: userId,
+          username: username.replaceFirst('@', ''),
+          firstname: firstname,
+          lastname: lastname,
+          profilePic: profilePic,
+          friendStatus: friendStatus,
+        ),
+      ),
+    )?.then((_) {
+      controller.loadInitialData();
+    });
+  }
+
   Widget _buildRequestsList() {
     if (controller.incomingRequests.isEmpty) {
       return NoDataComponent(
@@ -214,6 +241,12 @@ class AddFriendsScreen extends GetView<FriendsController> {
                 imageUrl: _getAvatarUrl(req.senderProfilePic, displayName),
                 name: displayName,
                 username: '@${req.senderUsername}',
+                onTap: () => _openUserProfile(
+                  userId: req.senderId.toString(),
+                  username: req.senderUsername,
+                  profilePic: req.senderProfilePic,
+                  friendStatus: 'INCOMING_REQUEST',
+                ),
                 onAccept: () => controller.acceptRequest(req.requestId),
                 onReject: () => controller.rejectRequest(req.requestId),
               ),
@@ -263,6 +296,14 @@ class AddFriendsScreen extends GetView<FriendsController> {
                 name: displayName,
                 username: '@${user.username}',
                 friendStatus: user.friendStatus,
+                onTap: () => _openUserProfile(
+                  userId: user.userId.toString(),
+                  username: user.username,
+                  firstname: user.firstname,
+                  lastname: user.lastname,
+                  profilePic: user.profilePic,
+                  friendStatus: user.friendStatus,
+                ),
                 onAdd: () => controller.sendRequest(user.username),
                 onCancel: () => controller.cancelRequest(user.username),
               ),

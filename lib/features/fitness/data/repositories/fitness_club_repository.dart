@@ -29,22 +29,6 @@ class FitnessClubRepository {
         .toList();
   }
 
-  Future<ApiResult<List<FitnessClubModel>>> getMyClubs() async {
-    try {
-      final response = await _dioClient.dio.get('fitness/clubs/my');
-      final list = _asMapList(response.data)
-          .map(FitnessClubModel.fromJson)
-          .toList();
-      return ApiSuccess(list);
-    } on DioException catch (e) {
-      return ApiError(ApiException.fromDioError(e));
-    } on ApiException catch (e) {
-      return ApiError(e);
-    } catch (e) {
-      return ApiError(ApiException(message: e.toString()));
-    }
-  }
-
   Future<ApiResult<List<FitnessClubModel>>> getPublicClubs() async {
     try {
       final response = await _dioClient.dio.get('fitness/clubs/public');

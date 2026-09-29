@@ -8,6 +8,7 @@ import '../../data/dto/response/task_response.dart';
 import '../../data/dto/response/checklist_response.dart';
 import '../../data/services/task_service.dart';
 import '../../data/repositories/task_repository_impl.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class TaskDetailController extends BaseController {
   AppLocalizations? get _l10n {
@@ -64,7 +65,7 @@ class TaskDetailController extends BaseController {
         task.value = data;
         await NotificationSchedulerService().cancelRemindersForTask(currentTask.activityId);
         Get.back(result: true);
-        Get.snackbar(_l10n?.success ?? 'Done', _l10n?.taskMarkedComplete ?? 'Task marked as complete!', backgroundColor: Colors.green, colorText: Colors.white);
+        AppSnack.show(_l10n?.success ?? 'Done', _l10n?.taskMarkedComplete ?? 'Task marked as complete!', backgroundColor: Colors.green, colorText: Colors.white);
       },
     );
   }

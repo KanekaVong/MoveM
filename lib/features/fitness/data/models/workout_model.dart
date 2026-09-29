@@ -83,6 +83,7 @@ class FitnessWorkoutSessionModel {
   final double? height;
   final double? weight;
   final double? bmi;
+  final List<WorkoutEarnedAchievement> currentAchievements;
 
   FitnessWorkoutSessionModel({
     required this.sessionId,
@@ -101,6 +102,7 @@ class FitnessWorkoutSessionModel {
     this.height,
     this.weight,
     this.bmi,
+    this.currentAchievements = const [],
   });
 
   factory FitnessWorkoutSessionModel.fromJson(Map<String, dynamic> json) {
@@ -121,7 +123,16 @@ class FitnessWorkoutSessionModel {
       height: (json['height'] as num?)?.toDouble(),
       weight: (json['weight'] as num?)?.toDouble(),
       bmi: (json['bmi'] as num?)?.toDouble(),
+      currentAchievements: _parseEarnedAchievements(json['currentAchievements']),
     );
+  }
+
+  static List<WorkoutEarnedAchievement> _parseEarnedAchievements(dynamic raw) {
+    if (raw is! List) return const [];
+    return raw
+        .whereType<Map>()
+        .map((item) => WorkoutEarnedAchievement.fromJson(Map<String, dynamic>.from(item)))
+        .toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -142,6 +153,7 @@ class FitnessWorkoutSessionModel {
       if (height != null) 'height': height,
       if (weight != null) 'weight': weight,
       if (bmi != null) 'bmi': bmi,
+      'currentAchievements': currentAchievements.map((item) => item.toJson()).toList(),
     };
   }
 
@@ -158,6 +170,54 @@ class FitnessWorkoutSessionModel {
       steps: steps,
       caloriesBurned: caloriesBurned,
     );
+  }
+}
+
+class WorkoutEarnedAchievement {
+  final int achievementId;
+  final String name;
+  final String description;
+  final String icon;
+  final String conditionType;
+  final double conditionValue;
+  final DateTime? earnedAt;
+  final bool notified;
+
+  const WorkoutEarnedAchievement({
+    required this.achievementId,
+    required this.name,
+    required this.description,
+    required this.icon,
+    required this.conditionType,
+    required this.conditionValue,
+    this.earnedAt,
+    required this.notified,
+  });
+
+  factory WorkoutEarnedAchievement.fromJson(Map<String, dynamic> json) {
+    return WorkoutEarnedAchievement(
+      achievementId: (json['achievementId'] as num?)?.toInt() ?? 0,
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      icon: json['icon']?.toString() ?? '',
+      conditionType: json['conditionType']?.toString() ?? '',
+      conditionValue: (json['conditionValue'] as num?)?.toDouble() ?? 0,
+      earnedAt: json['earnedAt'] != null ? DateTime.tryParse(json['earnedAt'].toString()) : null,
+      notified: json['notified'] == true,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'achievementId': achievementId,
+      'name': name,
+      'description': description,
+      'icon': icon,
+      'conditionType': conditionType,
+      'conditionValue': conditionValue,
+      'earnedAt': earnedAt?.toIso8601String(),
+      'notified': notified,
+    };
   }
 }
 
@@ -418,6 +478,50 @@ class ShareWorkoutRequest {
   }
 }
 
+class SharedRoutePoint {
+  final int id;
+  final int pointSequence;
+  final double latitude;
+  final double longitude;
+  final double accuracy;
+  final double? altitude;
+  final DateTime? recordedAt;
+
+  const SharedRoutePoint({
+    required this.id,
+    required this.pointSequence,
+    required this.latitude,
+    required this.longitude,
+    this.accuracy = 0,
+    this.altitude,
+    this.recordedAt,
+  });
+
+  factory SharedRoutePoint.fromJson(Map<String, dynamic> json) {
+    return SharedRoutePoint(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      pointSequence: (json['pointSequence'] as num?)?.toInt() ?? 0,
+      latitude: (json['latitude'] as num?)?.toDouble() ?? 0,
+      longitude: (json['longitude'] as num?)?.toDouble() ?? 0,
+      accuracy: (json['accuracy'] as num?)?.toDouble() ?? 0,
+      altitude: (json['altitude'] as num?)?.toDouble(),
+      recordedAt: json['recordedAt'] != null ? DateTime.tryParse(json['recordedAt'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'pointSequence': pointSequence,
+      'latitude': latitude,
+      'longitude': longitude,
+      'accuracy': accuracy,
+      if (altitude != null) 'altitude': altitude,
+      'recordedAt': recordedAt?.toIso8601String(),
+    };
+  }
+}
+
 class SharedWorkoutPostResponse {
   final int sessionId;
   final int userId;
@@ -438,6 +542,7 @@ class SharedWorkoutPostResponse {
   final String? averagePace;
   final String? challengeName;
   final List<AttachmentResponse> attachments;
+  final List<SharedRoutePoint> points;
 
   SharedWorkoutPostResponse({
     required this.sessionId,
@@ -459,6 +564,7 @@ class SharedWorkoutPostResponse {
     this.averagePace,
     this.challengeName,
     this.attachments = const [],
+    this.points = const [],
   });
 
   factory SharedWorkoutPostResponse.fromJson(Map<String, dynamic> json) {
@@ -488,7 +594,19 @@ class SharedWorkoutPostResponse {
               .map((e) => AttachmentResponse.fromJson(e as Map<String, dynamic>))
               .toList()
           : [],
+      points: _parseRoutePoints(json['points']),
     );
+  }
+
+  static List<SharedRoutePoint> _parseRoutePoints(dynamic raw) {
+    if (raw is! List) return const [];
+    final points = raw
+        .whereType<Map>()
+        .map((item) => SharedRoutePoint.fromJson(Map<String, dynamic>.from(item)))
+        .where((point) => point.latitude != 0 || point.longitude != 0)
+        .toList();
+    points.sort((a, b) => a.pointSequence.compareTo(b.pointSequence));
+    return points;
   }
 
   Map<String, dynamic> toJson() {
@@ -512,6 +630,7 @@ class SharedWorkoutPostResponse {
       'averagePace': averagePace,
       'challengeName': challengeName,
       'attachments': attachments.map((e) => e.toJson()).toList(),
+      'points': points.map((point) => point.toJson()).toList(),
     };
   }
 

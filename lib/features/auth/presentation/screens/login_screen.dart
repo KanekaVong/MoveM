@@ -29,8 +29,8 @@ class LoginScreen extends GetView<AuthController> {
       onBack: Navigator.of(context).canPop() ? () => Get.back() : null,
       children: [
         AuthTextField(
-          label: l10n?.emailOrPhone ?? 'EMAIL / PHONE NUMBER',
-          hint: l10n?.emailPhoneHint ?? 'Email/Phone Number',
+          label: l10n?.emailOrPhone ?? 'EMAIL',
+          hint: l10n?.emailPhoneHint ?? 'Email',
           controller: _emailPhoneController,
           keyboardType: TextInputType.emailAddress,
         ),
@@ -56,11 +56,10 @@ class LoginScreen extends GetView<AuthController> {
           ),
         ),
         const SizedBox(height: 12),
-        Obx(() => AuthGlassButton(
-              label: l10n?.loginAction ?? 'Login',
-              isLoading: controller.isLoading,
-              onPressed: _submit,
-            )),
+        AuthGlassButton(
+          label: l10n?.loginAction ?? 'Login',
+          onPressed: _submit,
+        ),
         const SizedBox(height: 10),
         AuthFooterLink(
           text: l10n?.noAccountSignUp ?? "Doesn't have an account yet? Sign Up",

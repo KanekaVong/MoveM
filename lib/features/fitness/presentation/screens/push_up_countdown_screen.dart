@@ -197,7 +197,7 @@ class _PushUpCountdownScreenState extends State<PushUpCountdownScreen>
           Positioned(
             left: 24,
             right: 24,
-            bottom: 40,
+            bottom: 24 + MediaQuery.paddingOf(context).bottom,
             child: SafeArea(
               child: AppButton.secondary(
                 label: 'Skip',

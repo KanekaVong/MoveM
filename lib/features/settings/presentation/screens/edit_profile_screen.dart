@@ -3,15 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:movem/core/config/app_config.dart';
+import 'package:movem/core/storage/profile_image_store.dart';
+import 'package:movem/core/theme/app_colors.dart';
 import 'package:movem/core/storage/user_manager.dart';
 
 import 'package:movem/features/settings/data/dto/request/update_profile_picture_request.dart';
 import 'package:movem/features/auth/data/dto/response/user_response.dart';
 import 'package:movem/features/settings/data/dto/request/update_profile_request.dart';
 
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:movem/shared/widgets/auth_image.dart';
+import 'package:movem/shared/widgets/custom_mui_text_field.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
+import 'package:movem/core/utils/app_dialogs.dart';
 import '../controllers/setting_controller.dart';
+import '../../data/services/setting_service.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -71,7 +78,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     await showModalBottomSheet<void>(
       context: context,
-      backgroundColor: const Color(0xFF131D38),
+      backgroundColor: AppColors.isDark ? const Color(0xFF131D38) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(24),
@@ -88,15 +95,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   width: 42,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.white24,
+                    color: AppColors.borderMuted,
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   'Change Profile Photo',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -155,7 +162,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _removeProfileImage = false;
       });
     } catch (e) {
-      Get.snackbar(
+      AppSnack.show(
         'Error',
         'Could not select image.',
       );
@@ -164,50 +171,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<String?> _uploadProfileImage(File imageFile) async {
     try {
-      final userId = _user?.id;
-
-      if (userId == null) {
-        Get.snackbar(
-          'Error',
-          'User information is unavailable.',
-        );
-        return null;
+      final url = await Get.find<SettingService>().uploadProfilePicFile(imageFile.path);
+      if (url != null && url.isNotEmpty) {
+        await ProfileImageStore.remember(url, imageFile.path);
       }
-
-      final fileName =
-          'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
-
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('profile_pictures')
-          .child(userId.toString())
-          .child(fileName);
-
-      await storageRef.putFile(imageFile);
-
-      return await storageRef.getDownloadURL();
-    } on FirebaseException catch (e) {
-      Get.snackbar(
-        'Upload failed',
-        e.message ?? 'Could not upload profile picture.',
-      );
-      return null;
-    } catch (e) {
-      Get.snackbar(
-        'Upload failed',
-        'Could not upload profile picture.',
-      );
+      return url;
+    } catch (_) {
+      AppSnack.show('Upload failed', 'Could not upload profile picture.');
       return null;
     }
   }
 
   Widget _buildProfileImage() {
+    final dark = AppColors.isDark;
+    final placeholderBg = dark ? const Color(0xFF162341) : const Color(0xFFE2E8F0);
+    final placeholderIconColor = dark ? Colors.white54 : AppColors.textSecondary;
+
     if (_removeProfileImage) {
       return Container(
-        color: const Color(0xFF162341),
-        child: const Icon(
+        color: placeholderBg,
+        child: Icon(
           Icons.person_outline,
-          color: Colors.white54,
+          color: placeholderIconColor,
           size: 50,
         ),
       );
@@ -223,27 +208,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final profilePic = _user?.profilePic;
 
     if (profilePic != null && profilePic.isNotEmpty) {
-      return Image.network(
-        profilePic,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            color: const Color(0xFF162341),
-            child: const Icon(
-              Icons.person_outline,
-              color: Colors.white54,
-              size: 50,
-            ),
-          );
-        },
+      return AuthImage(
+        url: AppConfig.resolveMediaUrl(profilePic),
+        fallback: Container(
+          color: placeholderBg,
+          child: Icon(Icons.person_outline, color: placeholderIconColor, size: 50),
+        ),
       );
     }
 
     return Container(
-      color: const Color(0xFF162341),
-      child: const Icon(
+      color: placeholderBg,
+      child: Icon(
         Icons.person_outline,
-        color: Colors.white54,
+        color: placeholderIconColor,
         size: 50,
       ),
     );
@@ -271,13 +249,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         child: Icon(
           icon,
-          color: isDestructive ? Colors.redAccent : Colors.white,
+          color: isDestructive ? Colors.redAccent : AppColors.accentBlue,
         ),
       ),
       title: Text(
         title,
         style: TextStyle(
-          color: isDestructive ? Colors.redAccent : Colors.white,
+          color: isDestructive ? Colors.redAccent : AppColors.textPrimary,
           fontSize: 15,
           fontWeight: FontWeight.w500,
         ),
@@ -321,79 +299,79 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
 
-    // --------------------------------------------------
-    // 1. Update normal profile fields
-    // --------------------------------------------------
+    AppDialogs.showLoading();
 
-    if (firstnameChanged ||
-        lastnameChanged ||
-        usernameChanged ||
-        bioChanged ||
-        genderChanged) {
-      final request = UpdateProfileRequest(
-        firstname: firstnameChanged ? firstname : null,
-        lastname: lastnameChanged ? lastname : null,
-        username: usernameChanged ? username : null,
-        bio: bioChanged ? bio : null,
-        gender: genderChanged ? _selectedGender : null,
-      );
+    try {
+      // --------------------------------------------------
+      // 1. Update normal profile fields
+      // --------------------------------------------------
 
-      final updatedProfile =
-      await _settingController.updateProfile(request);
-
-      if (updatedProfile == null) {
-        return;
-      }
-
-      _user = updatedProfile;
-    }
-
-    // --------------------------------------------------
-    // 2. Update profile picture
-    // --------------------------------------------------
-
-    if (profilePictureChanged) {
-      String? profilePicUrl;
-
-      if (_removeProfileImage) {
-        profilePicUrl = null;
-      } else if (_selectedProfileImage != null) {
-        profilePicUrl =
-        await _uploadProfileImage(
-          _selectedProfileImage!,
+      if (firstnameChanged ||
+          lastnameChanged ||
+          usernameChanged ||
+          bioChanged ||
+          genderChanged) {
+        final request = UpdateProfileRequest(
+          firstname: firstnameChanged ? firstname : null,
+          lastname: lastnameChanged ? lastname : null,
+          username: usernameChanged ? username : null,
+          bio: bioChanged ? bio : null,
+          gender: genderChanged ? _selectedGender : null,
         );
 
-        if (profilePicUrl == null) {
+        final updatedProfile =
+            await _settingController.updateProfile(request, goBack: false);
+
+        if (updatedProfile == null) {
+          AppDialogs.hideLoading();
           return;
         }
+
+        _user = updatedProfile;
       }
 
-      final updatedUser =
-      await _settingController.updateProfilePicture(
-        UpdateProfilePictureRequest(
-          profilePic: profilePicUrl,
-        ),
-      );
+      // --------------------------------------------------
+      // 2. Update profile picture
+      // --------------------------------------------------
 
-      if (updatedUser == null) {
-        return;
+      if (profilePictureChanged) {
+        String? profilePicUrl;
+
+        if (_removeProfileImage) {
+          profilePicUrl = null;
+        } else if (_selectedProfileImage != null) {
+          profilePicUrl =
+              await _uploadProfileImage(_selectedProfileImage!);
+
+          if (profilePicUrl == null) {
+            AppDialogs.hideLoading();
+            return;
+          }
+        }
+
+        final updatedUser =
+            await _settingController.updateProfilePicture(
+          UpdateProfilePictureRequest(
+            profilePic: profilePicUrl,
+          ),
+        );
+
+        if (updatedUser == null) {
+          AppDialogs.hideLoading();
+          return;
+        }
+
+        _user = updatedUser;
       }
 
-      _user = updatedUser;
-    }
+      AppDialogs.hideLoading();
 
-    // --------------------------------------------------
-    // 3. Get the newest stored user
-    // --------------------------------------------------
-
-    final latestUser = UserManager().getUser();
-
-    if (latestUser != null && mounted) {
-      setState(() {
-        _user = latestUser;
-      });
-
-      Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop(true);
+      }
+    } catch (e) {
+      AppDialogs.hideLoading();
+      AppSnack.show('Error', 'Failed to save profile changes.');
     }
   }
 
@@ -408,12 +386,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final pageColor = AppColors.pageBackground;
+    final onPage = AppColors.textPrimary;
+    final dark = AppColors.isDark;
     return Scaffold(
-      backgroundColor: const Color(0xFF0B132B),
+      backgroundColor: pageColor,
       appBar: TopToolBar(
         title: 'Edit Profile',
-        backgroundColor: const Color(0xFF0B132B),
-        foregroundColor: Colors.white,
+        backgroundColor: pageColor,
+        foregroundColor: onPage,
         onBack: () => Navigator.of(context).pop(),
         actions: [
           TopToolBarAction(
@@ -437,7 +418,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: dark ? Colors.white.withValues(alpha: 0.2) : AppColors.borderMuted,
                           width: 1.5,
                         ),
                       ),
@@ -507,18 +488,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 initialSelection: _selectedGender,
                 expandedInsets: EdgeInsets.zero,
                 label: const Text('Gender'),
-                textStyle: const TextStyle(color: Colors.white, fontSize: 15),
-                trailingIcon: const Icon(Icons.keyboard_arrow_down, color: Colors.white54),
-                selectedTrailingIcon: const Icon(Icons.keyboard_arrow_up, color: Colors.white54),
+                textStyle: TextStyle(color: onPage, fontSize: 15),
+                trailingIcon: Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+                selectedTrailingIcon: Icon(Icons.keyboard_arrow_up, color: AppColors.textSecondary),
                 menuStyle: MenuStyle(
-                  backgroundColor: WidgetStateProperty.all(const Color(0xFF131D38)),
+                  backgroundColor: WidgetStateProperty.all(dark ? const Color(0xFF131D38) : Colors.white),
                   maximumSize: WidgetStateProperty.all(const Size.fromHeight(250)),
                 ),
                 inputDecorationTheme: InputDecorationTheme(
                   floatingLabelBehavior: FloatingLabelBehavior.auto,
-                  labelStyle: const TextStyle(color: Colors.white54, fontSize: 15),
-                  floatingLabelStyle: const TextStyle(
-                    color: Colors.white,
+                  labelStyle: TextStyle(color: AppColors.textSecondary, fontSize: 15),
+                  floatingLabelStyle: TextStyle(
+                    color: onPage,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -526,45 +507,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: dark ? Colors.white.withValues(alpha: 0.2) : AppColors.borderMuted,
                       width: 1,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                      color: Colors.white,
+                    borderSide: BorderSide(
+                      color: dark ? Colors.white : AppColors.accentBlue,
                       width: 1.5,
                     ),
                   ),
                 ),
-                dropdownMenuEntries: const [
+                dropdownMenuEntries: [
                   DropdownMenuEntry<String>(
                     value: 'MALE',
                     label: 'Male',
                     style: ButtonStyle(
-                      foregroundColor: WidgetStatePropertyAll(Colors.white),
+                      foregroundColor: WidgetStatePropertyAll(AppColors.textPrimary),
                     ),
                   ),
                   DropdownMenuEntry<String>(
                     value: 'FEMALE',
                     label: 'Female',
                     style: ButtonStyle(
-                      foregroundColor: WidgetStatePropertyAll(Colors.white),
+                      foregroundColor: WidgetStatePropertyAll(AppColors.textPrimary),
                     ),
                   ),
                   DropdownMenuEntry<String>(
                     value: 'OTHER',
                     label: 'Other',
                     style: ButtonStyle(
-                      foregroundColor: WidgetStatePropertyAll(Colors.white),
+                      foregroundColor: WidgetStatePropertyAll(AppColors.textPrimary),
                     ),
                   ),
                   DropdownMenuEntry<String>(
                     value: 'PREFER_NOT_TO_SAY',
                     label: 'Prefer not to say',
                     style: ButtonStyle(
-                      foregroundColor: WidgetStatePropertyAll(Colors.white),
+                      foregroundColor: WidgetStatePropertyAll(AppColors.textPrimary),
                     ),
                   ),
                 ],
@@ -579,122 +560,5 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
       ),
     );
-  }
-}
-
-class CustomMuiTextField extends StatelessWidget {
-  final String label;
-  final TextEditingController? controller;
-  final String? initialValue;
-  final ValueChanged<String>? onChanged;
-  final bool readOnly;
-  final VoidCallback? onTap;
-  final int? maxLength;
-  final bool showRemainingCount;
-  final Widget? suffixIcon;
-  final TextInputType? keyboardType;
-  final String? Function(String?)? validator;
-
-  const CustomMuiTextField({
-    super.key,
-    required this.label,
-    this.controller,
-    this.initialValue,
-    this.onChanged,
-    this.readOnly = false,
-    this.onTap,
-    this.maxLength,
-    this.showRemainingCount = false,
-    this.suffixIcon,
-    this.keyboardType,
-    this.validator,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final decoration = InputDecoration(
-      labelText: label,
-      labelStyle: const TextStyle(
-        color: Colors.white54,
-        fontSize: 15,
-      ),
-      floatingLabelStyle: const TextStyle(
-        color: Colors.white,
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-      ),
-      floatingLabelBehavior: FloatingLabelBehavior.auto,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(
-          color: Colors.white.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(
-          color: Colors.white,
-          width: 1.5,
-        ),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(
-          color: Colors.redAccent,
-          width: 1,
-        ),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(
-          color: Colors.redAccent,
-          width: 1.5,
-        ),
-      ),
-      counterText: showRemainingCount ? '' : null,
-      suffixIcon: suffixIcon,
-    );
-
-    final textField = TextFormField(
-      controller: controller,
-      initialValue: initialValue,
-      onChanged: onChanged,
-      readOnly: readOnly,
-      onTap: onTap,
-      maxLength: maxLength,
-      keyboardType: keyboardType,
-      validator: validator,
-      style: const TextStyle(color: Colors.white, fontSize: 15),
-      decoration: decoration,
-    );
-
-    if (maxLength != null && showRemainingCount && controller != null) {
-      return Stack(
-        alignment: Alignment.centerRight,
-        children: [
-          textField,
-          Positioned(
-            right: 12,
-            child: ValueListenableBuilder<TextEditingValue>(
-              valueListenable: controller!,
-              builder: (context, value, child) {
-                final remaining = maxLength! - value.text.length;
-                return Text(
-                  '$remaining',
-                  style: const TextStyle(
-                    color: Colors.white38,
-                    fontSize: 12,
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      );
-    }
-
-    return textField;
   }
 }

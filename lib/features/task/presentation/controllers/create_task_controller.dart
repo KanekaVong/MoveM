@@ -14,6 +14,7 @@ import '../../data/local/task_local_repository.dart';
 import '../../data/services/task_service.dart';
 import '../../data/repositories/task_repository_impl.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class CreateTaskController extends BaseController {
   AppLocalizations? get _l10n {
@@ -76,7 +77,7 @@ class CreateTaskController extends BaseController {
         availableLabels.add(data);
         selectedLabel.value = data;
         Get.back();
-        Get.snackbar(_l10n?.success ?? 'Done', _l10n?.labelCreatedSuccess ?? 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        AppSnack.show(_l10n?.success ?? 'Done', _l10n?.labelCreatedSuccess ?? 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
       },
     );
   }
@@ -90,7 +91,7 @@ class CreateTaskController extends BaseController {
 
   Future<void> submitTask() async {
     if (titleController.text.trim().isEmpty) {
-      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.taskTitleEmpty ?? 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.taskTitleEmpty ?? 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
@@ -135,7 +136,7 @@ class CreateTaskController extends BaseController {
       apiCall: () => repository.createTask(request),
       onSuccess: (data) async {
         Get.back(result: true);
-        Get.snackbar(_l10n?.success ?? 'Done', _l10n?.taskCreatedSuccess ?? 'Task created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        AppSnack.show(_l10n?.success ?? 'Done', _l10n?.taskCreatedSuccess ?? 'Task created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
 
         if (checklists.isNotEmpty) {
           for (var item in checklists) {

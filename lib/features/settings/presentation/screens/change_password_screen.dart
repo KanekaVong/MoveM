@@ -10,6 +10,8 @@ import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 import 'package:movem/features/settings/data/repositories/setting_repository_impl.dart';
 import 'package:movem/core/storage/user_manager.dart';
+import 'package:movem/core/theme/app_colors.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -22,9 +24,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _currentPasswordController = TextEditingController();
-
   final _newPasswordController = TextEditingController();
-
   final _confirmPasswordController = TextEditingController();
 
   bool _currentObscured = true;
@@ -56,15 +56,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       );
     }
 
-    final deviceId =
-    await UserManager().getOrCreateDeviceId();
+    final deviceId = await UserManager().getOrCreateDeviceId();
 
     await controller.changePassword(
       ChangePasswordRequest(
-        currentPassword:
-        _currentPasswordController.text,
-        newPassword:
-        _newPasswordController.text,
+        currentPassword: _currentPasswordController.text,
+        newPassword: _newPasswordController.text,
         deviceId: deviceId,
       ),
     );
@@ -75,7 +72,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
     Navigator.of(context).pop();
 
-    Get.snackbar(
+    AppSnack.show(
       'Success',
       'Your password has been changed.',
     );
@@ -88,28 +85,28 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(
-        color: Color(0xFF8793A8),
+      hintStyle: TextStyle(
+        color: AppColors.textCaption,
       ),
       filled: true,
-      fillColor: const Color(0xFF162341),
+      fillColor: AppColors.cardSurface,
       suffixIcon: IconButton(
         onPressed: onToggle,
         icon: Icon(
           obscured ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-          color: Colors.white70,
+          color: AppColors.textSecondary,
         ),
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(
-          color: Color(0xFF263657),
+        borderSide: BorderSide(
+          color: AppColors.borderLight,
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(
-          color: Color(0xFF263657),
+        borderSide: BorderSide(
+          color: AppColors.borderLight,
         ),
       ),
       focusedBorder: OutlineInputBorder(
@@ -125,11 +122,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppColors.pageBackground,
       appBar: const TopToolBar(
-        title: 'Settings',
-        backgroundColor: Color(0xFF0F172A),
-        foregroundColor: Colors.white,
+        title: 'Change Password',
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -139,28 +134,28 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Change your password',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
+                    color: AppColors.textPrimary,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Enter your current password and choose a new one.',
                   style: TextStyle(
-                    color: Color(0xFFA0AAB2),
-                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
                     height: 1.5,
                   ),
                 ),
                 const SizedBox(height: 30),
-                const Text(
+                Text(
                   'Current Password',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
@@ -169,8 +164,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 TextFormField(
                   controller: _currentPasswordController,
                   obscureText: _currentObscured,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
                   ),
                   decoration: _passwordDecoration(
                     hint: 'Enter current password',
@@ -190,10 +185,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   },
                 ),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   'New Password',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
@@ -202,8 +197,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 TextFormField(
                   controller: _newPasswordController,
                   obscureText: _newObscured,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
                   ),
                   decoration: _passwordDecoration(
                     hint: 'Enter new password',
@@ -227,10 +222,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   },
                 ),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   'Confirm New Password',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
@@ -239,8 +234,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: _confirmObscured,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
                   ),
                   decoration: _passwordDecoration(
                     hint: 'Confirm new password',
@@ -269,7 +264,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   child: TextButton(
                     onPressed: () {
                       Get.to(
-                            () => const SettingsForgotPasswordScreen(),
+                        () => const SettingsForgotPasswordScreen(),
                       );
                     },
                     child: const Text(

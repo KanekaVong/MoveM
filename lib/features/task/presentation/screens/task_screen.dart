@@ -11,6 +11,7 @@ import 'task_invitation_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class TaskScreen extends GetView<TaskController> {
   const TaskScreen({super.key});
@@ -469,7 +470,7 @@ class TaskScreen extends GetView<TaskController> {
       width: double.infinity,
       padding: const EdgeInsets.all(22.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: AppColors.borderLight,
@@ -477,7 +478,7 @@ class TaskScreen extends GetView<TaskController> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: Colors.black.withValues(alpha: AppColors.isDark ? 0.25 : 0.06),
             offset: const Offset(0, 8),
             blurRadius: 16,
           ),
@@ -572,7 +573,9 @@ class TaskScreen extends GetView<TaskController> {
               value: 1.0,
               strokeWidth: 10,
               valueColor: AlwaysStoppedAnimation<Color>(
-                AppColors.borderLight.withValues(alpha: 0.9),
+                AppColors.isDark
+                    ? const Color(0xFF1E293B)
+                    : AppColors.borderLight,
               ),
             ),
           ),
@@ -723,33 +726,6 @@ class TaskScreen extends GetView<TaskController> {
     );
   }
 
-  Widget _buildMockUpcomingItem(String title, String due) {
-    return RichText(
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: '$title ',
-            style: TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          TextSpan(
-            text: due,
-            style: const TextStyle(
-              color: Color(0xFFEF4444),
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildOngoingItem(dynamic task) {
     String dueText = 'Due Next Month';
     if (task.deadline != null) {
@@ -819,55 +795,6 @@ class TaskScreen extends GetView<TaskController> {
     );
   }
 
-  Widget _buildMockOngoingItem(String title, String due, double prog) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        RichText(
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: '$title ',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextSpan(
-                text: due,
-                style: TextStyle(
-                  color: Color(0xFF4ADE80),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(2),
-          child: Container(
-            height: 4,
-            width: double.infinity,
-            color: AppColors.chipSurface,
-            child: FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: prog.clamp(0.05, 1.0),
-              child: Container(
-                color: const Color(0xFF4ADE80),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildTaskList() {
     return Obx(() {
       if (controller.isLoading && controller.tasks.isEmpty) {
@@ -890,7 +817,7 @@ class TaskScreen extends GetView<TaskController> {
           color: AppColors.pageBackground,
           child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.fromLTRB(20.0, 0, 20.0, 120.0),
+            padding: EdgeInsets.fromLTRB(20.0, 0, 20.0, 160.0),
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 48),
               child: NoDataComponent(
@@ -906,7 +833,7 @@ class TaskScreen extends GetView<TaskController> {
         color: AppColors.pageBackground,
         child: ListView.separated(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 120.0),
+          padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 160.0),
           itemCount: controller.tasks.length,
           separatorBuilder: (context, index) => const SizedBox(height: 16),
           itemBuilder: (context, index) {
@@ -932,7 +859,7 @@ class TaskScreen extends GetView<TaskController> {
       onDismissed: (direction) async {
         final success = await controller.deleteTask(task.activityId);
         if (success) {
-          Get.snackbar(
+          AppSnack.show(
             l10n?.deleteTask ?? 'Delete Task',
             l10n?.taskDeletedSuccess ?? 'Task deleted successfully',
             backgroundColor: AppColors.emerald,
@@ -1083,25 +1010,26 @@ class TaskScreen extends GetView<TaskController> {
       } catch (_) {}
     }
 
+    final dark = AppColors.isDark;
     Color priorityColor = const Color(0xFF4ADE80);
-    Color priorityBgColor = const Color(0xFFECFDF3);
-    Color priorityBorderColor = const Color(0xFF22C55E).withValues(alpha: 0.3);
+    Color priorityBgColor = dark ? const Color(0xFF22C55E).withValues(alpha: 0.15) : const Color(0xFFECFDF3);
+    Color priorityBorderColor = const Color(0xFF22C55E).withValues(alpha: 0.35);
     String priorityText = task.priority ?? 'Low';
 
     if (priorityText.toUpperCase() == 'LOW') {
       priorityColor = const Color(0xFF4ADE80);
-      priorityBgColor = const Color(0xFFECFDF3);
-      priorityBorderColor = const Color(0xFF22C55E).withValues(alpha: 0.3);
+      priorityBgColor = dark ? const Color(0xFF22C55E).withValues(alpha: 0.15) : const Color(0xFFECFDF3);
+      priorityBorderColor = const Color(0xFF22C55E).withValues(alpha: 0.35);
     } else if (priorityText.toUpperCase() == 'NORMAL' ||
         priorityText.toUpperCase() == 'MEDIUM') {
       priorityColor = const Color(0xFFFBBF24);
-      priorityBgColor = const Color(0xFFFFFBEB);
-      priorityBorderColor = const Color(0xFFF59E0B).withValues(alpha: 0.3);
+      priorityBgColor = dark ? const Color(0xFFF59E0B).withValues(alpha: 0.15) : const Color(0xFFFFFBEB);
+      priorityBorderColor = const Color(0xFFF59E0B).withValues(alpha: 0.35);
     } else if (priorityText.toUpperCase() == 'HIGH' ||
         priorityText.toUpperCase() == 'URGENT') {
       priorityColor = const Color(0xFFF87171);
-      priorityBgColor = const Color(0xFFFEF2F2);
-      priorityBorderColor = const Color(0xFFEF4444).withValues(alpha: 0.3);
+      priorityBgColor = dark ? const Color(0xFFEF4444).withValues(alpha: 0.15) : const Color(0xFFFEF2F2);
+      priorityBorderColor = const Color(0xFFEF4444).withValues(alpha: 0.35);
     }
 
     Color indicatorColor = const Color(0xFF22C55E);
@@ -1135,7 +1063,7 @@ class TaskScreen extends GetView<TaskController> {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.cardSurface,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: AppColors.borderLight,
@@ -1143,7 +1071,7 @@ class TaskScreen extends GetView<TaskController> {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
+                color: Colors.black.withValues(alpha: AppColors.isDark ? 0.25 : 0.05),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),

@@ -4,6 +4,7 @@ import '../controllers/auth_controller.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/auth_glass_button.dart';
 import '../widgets/auth_layout.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class RegisterScreen extends GetView<AuthController> {
   RegisterScreen({super.key});
@@ -16,7 +17,7 @@ class RegisterScreen extends GetView<AuthController> {
   void _submit(AppLocalizations? l10n) {
     final password = _passwordController.text.trim();
     if (password != _retypePasswordController.text.trim()) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.errorTitle ?? 'Error',
         l10n?.passwordsDoNotMatch ?? 'Passwords do not match.',
       );
@@ -44,8 +45,8 @@ class RegisterScreen extends GetView<AuthController> {
       onBack: () => Get.back(),
       children: [
         AuthTextField(
-          label: l10n?.emailOrPhone ?? 'EMAIL / PHONE NUMBER',
-          hint: l10n?.emailPhoneHint ?? 'Email/Phone Number',
+          label: l10n?.emailOrPhone ?? 'EMAIL',
+          hint: l10n?.emailPhoneHint ?? 'Email',
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
         ),
@@ -69,11 +70,10 @@ class RegisterScreen extends GetView<AuthController> {
           onSubmitted: (_) => _submit(l10n),
         ),
         const SizedBox(height: 12),
-        Obx(() => AuthGlassButton(
-              label: l10n?.registerAction ?? 'Register',
-              isLoading: controller.isLoading,
-              onPressed: () => _submit(l10n),
-            )),
+        AuthGlassButton(
+          label: l10n?.registerAction ?? 'Register',
+          onPressed: () => _submit(l10n),
+        ),
         const SizedBox(height: 10),
         AuthFooterLink(
           text: l10n?.haveAccountSignIn ?? 'Already have an account? Sign In',

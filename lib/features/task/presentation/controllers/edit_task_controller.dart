@@ -22,6 +22,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../groups/domain/repositories/group_repository.dart';
 import '../../../groups/data/repositories/group_repository_impl.dart';
 import '../../../groups/data/services/group_service.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class EditTaskController extends BaseController {
   AppLocalizations? get _l10n {
@@ -69,7 +70,7 @@ class EditTaskController extends BaseController {
       initialTask = Get.arguments as TaskResponse;
       if (initialTask.isComplete || initialTask.isPastDeadline) {
         Get.back();
-        Get.snackbar(
+        AppSnack.show(
           _l10n?.errorTitle ?? 'Locked',
           _l10n?.cannotEditAfterDeadline ?? 'This task cannot be edited after the deadline.',
           backgroundColor: Colors.red,
@@ -80,7 +81,7 @@ class EditTaskController extends BaseController {
       _populateInitialData();
     } else {
       Get.back();
-      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.noTaskData ?? 'No task data provided', backgroundColor: Colors.red, colorText: Colors.white);
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.noTaskData ?? 'No task data provided', backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
 
@@ -176,7 +177,7 @@ class EditTaskController extends BaseController {
         availableLabels.add(data);
         selectedLabel.value = data;
         Get.back();
-        Get.snackbar(_l10n?.success ?? 'Done', _l10n?.labelCreatedSuccess ?? 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        AppSnack.show(_l10n?.success ?? 'Done', _l10n?.labelCreatedSuccess ?? 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
       },
     );
   }
@@ -259,12 +260,12 @@ class EditTaskController extends BaseController {
 
   Future<void> saveChanges() async {
     if (initialTask.isComplete || initialTask.isPastDeadline) {
-      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.cannotEditAfterDeadline ?? 'This task cannot be modified after the deadline.', backgroundColor: Colors.orange, colorText: Colors.white);
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.cannotEditAfterDeadline ?? 'This task cannot be modified after the deadline.', backgroundColor: Colors.orange, colorText: Colors.white);
       return;
     }
 
     if (titleController.text.trim().isEmpty) {
-      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.taskTitleEmpty ?? 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.taskTitleEmpty ?? 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
@@ -338,16 +339,16 @@ class EditTaskController extends BaseController {
       if (updateResult is ApiSuccess<TaskResponse>) {
         final data = updateResult.data;
         Get.back(result: true);
-        Get.snackbar(_l10n?.success ?? 'Done', _l10n?.taskUpdatedSuccess ?? 'Task updated successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        AppSnack.show(_l10n?.success ?? 'Done', _l10n?.taskUpdatedSuccess ?? 'Task updated successfully!', backgroundColor: Colors.green, colorText: Colors.white);
         _processBackgroundUpdates(data.activityId, activityName, description);
       } else if (updateResult is ApiError<TaskResponse>) {
         _logger.e('Update task failed: ${updateResult.exception.message}');
-        Get.snackbar(_l10n?.updateFailedTitle ?? 'Update Failed', updateResult.exception.message, backgroundColor: Colors.red, colorText: Colors.white);
+        AppSnack.show(_l10n?.updateFailedTitle ?? 'Update Failed', updateResult.exception.message, backgroundColor: Colors.red, colorText: Colors.white);
       }
     } catch (e, stack) {
       AppDialogs.hideLoading();
       _logger.e('Unexpected error during saveChanges: $e', error: e, stackTrace: stack);
-      Get.snackbar(_l10n?.errorTitle ?? 'Error', _l10n?.unexpectedError ?? 'Something went wrong. Try again.', backgroundColor: Colors.red, colorText: Colors.white);
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.unexpectedError ?? 'Something went wrong. Try again.', backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
 

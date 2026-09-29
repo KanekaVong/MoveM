@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../controllers/edit_task_controller.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -11,6 +10,7 @@ import '../../data/dto/response/attachment_response.dart';
 import 'add_collaborator_screen.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class EditTaskScreen extends GetView<EditTaskController> {
   const EditTaskScreen({super.key});
@@ -793,7 +793,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
     if (!context.mounted) return;
     final l10n = AppLocalizations.of(context);
     if (controller.availableLabels.isEmpty) {
-      Get.snackbar(l10n?.labelsLabel ?? 'Labels', l10n?.noLabelsAvailable ?? 'No labels available.', backgroundColor: AppColors.textPrimary, colorText: Colors.white);
+      AppSnack.show(l10n?.labelsLabel ?? 'Labels', l10n?.noLabelsAvailable ?? 'No labels available.', backgroundColor: AppColors.textPrimary, colorText: Colors.white);
       return;
     }
     showModalBottomSheet(

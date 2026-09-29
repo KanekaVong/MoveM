@@ -7,6 +7,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/models/fitness_club_model.dart';
 import '../../data/models/group_challenge_model.dart';
 import '../controllers/fitness_club_controller.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 /// Activity types offered when building a custom club challenge.
 /// Values match the backend `workoutType` enum.
@@ -128,14 +129,14 @@ class _CreateClubChallengeScreenState extends State<CreateClubChallengeScreen> {
     final l10n = AppLocalizations.of(context);
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.challengeNameTitle ?? 'Challenge name',
         l10n?.pleaseEnterChallengeName ?? 'Please enter a challenge name.',
       );
       return;
     }
     if (!_endAt.isAfter(_startAt)) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.datesTitle ?? 'Dates',
         l10n?.endDateAfterStart ?? 'End date must be after the start date.',
       );
@@ -144,7 +145,7 @@ class _CreateClubChallengeScreenState extends State<CreateClubChallengeScreen> {
 
     final targetValue = double.tryParse(_targetController.text.trim()) ?? 0;
     if (targetValue <= 0) {
-      Get.snackbar(
+      AppSnack.show(
         l10n?.targetTitle ?? 'Target',
         l10n?.enterTargetInUnit(_targetUnit) ?? 'Enter a target in $_targetUnit.',
       );
