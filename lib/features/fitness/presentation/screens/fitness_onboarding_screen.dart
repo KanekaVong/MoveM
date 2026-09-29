@@ -335,12 +335,15 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               decoration: BoxDecoration(
-                color: isLeftActive ? const Color(0xFF2E394E) : Colors.transparent,
+                color: isLeftActive ? AppColors.accentBlue : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 leftText,
-                style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: isLeftActive ? Colors.white : AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -349,12 +352,15 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               decoration: BoxDecoration(
-                color: !isLeftActive ? const Color(0xFF2E394E) : Colors.transparent,
+                color: !isLeftActive ? AppColors.accentBlue : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 rightText,
-                style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: !isLeftActive ? Colors.white : AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

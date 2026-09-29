@@ -18,6 +18,8 @@ class AppImages {
   static const String inviteFriendsBg = '$_basePath/invite_friends_bg.png';
   static const String jinhouyAvatar = '$_basePath/jinhouy_avatar.jpg';
   static const String userAvatarDefault = '$_basePath/user_avatar_default.jpg';
+  static const String badge10KmClub = '$_basePath/badge_10km_club.png';
+  static const String badgeFirstWorkout = '$_basePath/badge_first_workout.png';
 
   // Downloaded Pictures (from /Downloads/Pics)
   static const String pic1 = '$_basePath/1.png';

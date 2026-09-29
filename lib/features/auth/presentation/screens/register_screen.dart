@@ -44,8 +44,8 @@ class RegisterScreen extends GetView<AuthController> {
       onBack: () => Get.back(),
       children: [
         AuthTextField(
-          label: l10n?.emailOrPhone ?? 'EMAIL / PHONE NUMBER',
-          hint: l10n?.emailPhoneHint ?? 'Email/Phone Number',
+          label: l10n?.emailOrPhone ?? 'EMAIL',
+          hint: l10n?.emailPhoneHint ?? 'Email',
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
         ),

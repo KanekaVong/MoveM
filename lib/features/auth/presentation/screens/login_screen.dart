@@ -29,8 +29,8 @@ class LoginScreen extends GetView<AuthController> {
       onBack: Navigator.of(context).canPop() ? () => Get.back() : null,
       children: [
         AuthTextField(
-          label: l10n?.emailOrPhone ?? 'EMAIL / PHONE NUMBER',
-          hint: l10n?.emailPhoneHint ?? 'Email/Phone Number',
+          label: l10n?.emailOrPhone ?? 'EMAIL',
+          hint: l10n?.emailPhoneHint ?? 'Email',
           controller: _emailPhoneController,
           keyboardType: TextInputType.emailAddress,
         ),

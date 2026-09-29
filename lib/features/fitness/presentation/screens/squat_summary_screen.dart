@@ -6,6 +6,7 @@ import '../../../main_nav/presentation/controllers/main_nav_controller.dart';
 import '../../data/models/solo_challenge_model.dart';
 import '../../data/models/squat_session_model.dart';
 import '../../data/models/workout_model.dart';
+import '../controllers/achievement_notice_controller.dart';
 import '../controllers/fitness_profile_controller.dart';
 import 'solo_challenge_list_screen.dart';
 import 'squat_detection_screen.dart';
@@ -336,8 +337,11 @@ class SquatSummaryScreen extends StatelessWidget {
       controller.fetchStatistics();
     }
     if (Get.isRegistered<MainNavController>()) {
-      Get.find<MainNavController>().changeTab(0);
+      Get.find<MainNavController>().changeTab(2);
     }
     Get.until((route) => route.isFirst);
+    if (Get.isRegistered<AchievementNoticeController>()) {
+      Get.find<AchievementNoticeController>().presentWhenFitnessIsVisible();
+    }
   }
 }

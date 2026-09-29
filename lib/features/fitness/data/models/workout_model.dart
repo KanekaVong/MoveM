@@ -83,6 +83,7 @@ class FitnessWorkoutSessionModel {
   final double? height;
   final double? weight;
   final double? bmi;
+  final List<WorkoutEarnedAchievement> currentAchievements;
 
   FitnessWorkoutSessionModel({
     required this.sessionId,
@@ -101,6 +102,7 @@ class FitnessWorkoutSessionModel {
     this.height,
     this.weight,
     this.bmi,
+    this.currentAchievements = const [],
   });
 
   factory FitnessWorkoutSessionModel.fromJson(Map<String, dynamic> json) {
@@ -121,7 +123,16 @@ class FitnessWorkoutSessionModel {
       height: (json['height'] as num?)?.toDouble(),
       weight: (json['weight'] as num?)?.toDouble(),
       bmi: (json['bmi'] as num?)?.toDouble(),
+      currentAchievements: _parseEarnedAchievements(json['currentAchievements']),
     );
+  }
+
+  static List<WorkoutEarnedAchievement> _parseEarnedAchievements(dynamic raw) {
+    if (raw is! List) return const [];
+    return raw
+        .whereType<Map>()
+        .map((item) => WorkoutEarnedAchievement.fromJson(Map<String, dynamic>.from(item)))
+        .toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -142,6 +153,7 @@ class FitnessWorkoutSessionModel {
       if (height != null) 'height': height,
       if (weight != null) 'weight': weight,
       if (bmi != null) 'bmi': bmi,
+      'currentAchievements': currentAchievements.map((item) => item.toJson()).toList(),
     };
   }
 
@@ -158,6 +170,54 @@ class FitnessWorkoutSessionModel {
       steps: steps,
       caloriesBurned: caloriesBurned,
     );
+  }
+}
+
+class WorkoutEarnedAchievement {
+  final int achievementId;
+  final String name;
+  final String description;
+  final String icon;
+  final String conditionType;
+  final double conditionValue;
+  final DateTime? earnedAt;
+  final bool notified;
+
+  const WorkoutEarnedAchievement({
+    required this.achievementId,
+    required this.name,
+    required this.description,
+    required this.icon,
+    required this.conditionType,
+    required this.conditionValue,
+    this.earnedAt,
+    required this.notified,
+  });
+
+  factory WorkoutEarnedAchievement.fromJson(Map<String, dynamic> json) {
+    return WorkoutEarnedAchievement(
+      achievementId: (json['achievementId'] as num?)?.toInt() ?? 0,
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      icon: json['icon']?.toString() ?? '',
+      conditionType: json['conditionType']?.toString() ?? '',
+      conditionValue: (json['conditionValue'] as num?)?.toDouble() ?? 0,
+      earnedAt: json['earnedAt'] != null ? DateTime.tryParse(json['earnedAt'].toString()) : null,
+      notified: json['notified'] == true,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'achievementId': achievementId,
+      'name': name,
+      'description': description,
+      'icon': icon,
+      'conditionType': conditionType,
+      'conditionValue': conditionValue,
+      'earnedAt': earnedAt?.toIso8601String(),
+      'notified': notified,
+    };
   }
 }
 

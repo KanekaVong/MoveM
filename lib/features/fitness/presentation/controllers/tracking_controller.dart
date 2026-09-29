@@ -14,6 +14,7 @@ import '../../data/repositories/fitness_workout_repository.dart';
 import '../../domain/gps_filter.dart';
 import '../../domain/pace_calculator.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'achievement_notice_controller.dart';
 import 'fitness_profile_controller.dart';
 
 class TrackingController extends GetxController {
@@ -408,6 +409,7 @@ class TrackingController extends GetxController {
         );
         if (finishRes.isSuccess && finishRes.data != null) {
           summaryModel = finishRes.data!.toSummaryModel();
+          AchievementNoticeController.ensure().enqueue(finishRes.data!.currentAchievements);
         }
       } catch (_) {}
     }

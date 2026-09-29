@@ -8,6 +8,7 @@ import '../../data/models/solo_challenge_model.dart';
 import '../../data/models/workout_model.dart';
 import '../../domain/pace_calculator.dart';
 import '../../../main_nav/presentation/controllers/main_nav_controller.dart';
+import '../controllers/achievement_notice_controller.dart';
 import '../controllers/tracking_controller.dart';
 import '../controllers/fitness_profile_controller.dart';
 import 'running_tracking_screen.dart';
@@ -319,7 +320,7 @@ class RunSummaryScreen extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Color(0xFF8E9BAE),
+            color: AppColors.textCaption,
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
@@ -389,12 +390,15 @@ class RunSummaryScreen extends StatelessWidget {
       Get.find<FitnessProfileController>().fetchStatistics();
     }
     if (Get.isRegistered<MainNavController>()) {
-      Get.find<MainNavController>().changeTab(0);
+      Get.find<MainNavController>().changeTab(2);
     }
     if (Get.isRegistered<TrackingController>()) {
       Get.delete<TrackingController>();
     }
     Get.until((route) => route.isFirst);
+    if (Get.isRegistered<AchievementNoticeController>()) {
+      Get.find<AchievementNoticeController>().presentWhenFitnessIsVisible();
+    }
   }
 }
 

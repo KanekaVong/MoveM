@@ -16,6 +16,7 @@ import '../../data/repositories/fitness_workout_repository.dart';
 import '../../domain/push_up_angle_calculator.dart';
 import '../../domain/push_up_state_machine.dart';
 import '../screens/push_up_summary_screen.dart';
+import 'achievement_notice_controller.dart';
 
 class PushUpDetectorController extends GetxController {
   final SoloChallengeModel challenge;
@@ -435,6 +436,7 @@ class PushUpDetectorController extends GetxController {
         );
         if (finishRes.isSuccess && finishRes.data != null) {
           summaryModel = finishRes.data!.toSummaryModel();
+          AchievementNoticeController.ensure().enqueue(finishRes.data!.currentAchievements);
         }
       } catch (_) {}
     }
