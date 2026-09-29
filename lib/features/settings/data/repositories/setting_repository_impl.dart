@@ -97,6 +97,28 @@ class SettingRepositoryImpl implements SettingRepository {
   }
 
   @override
+  Future<ApiResult<UserResponse>> uploadProfilePictureFile(String filePath) async {
+    try {
+      final response = await settingService.uploadProfilePictureFile(filePath);
+      final user = _parseUserResponse(response.data);
+
+      if (user != null) {
+        return ApiSuccess(user);
+      }
+
+      return ApiError(
+        ApiException(
+          message: 'Invalid profile picture response from server.',
+        ),
+      );
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  @override
   Future<ApiResult<UserResponse>> unlinkPhone() async {
     try {
       final response = await settingService.unlinkPhone();

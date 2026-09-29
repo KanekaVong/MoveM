@@ -19,9 +19,14 @@ class AppDialogs {
   }
 
   static void hideLoading() {
-    if (Get.isDialogOpen ?? false) {
-      Get.back();
+    if (!(Get.isDialogOpen ?? false)) return;
+    // Get.back() closes a snackbar and returns, which leaves this dialog up.
+    final navigator = Get.key.currentState;
+    if (navigator != null && navigator.canPop()) {
+      navigator.pop();
+      return;
     }
+    Get.back();
   }
 
   static void showError(String message, {VoidCallback? onConfirm}) {

@@ -8,6 +8,7 @@ import '../../../../core/utils/Constants.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../auth/data/dto/response/user_response.dart';
+import '../../../auth/data/device_registration.dart';
 import '../../../auth/data/services/auth_service.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 
@@ -172,6 +173,7 @@ class SettingsController extends BaseController {
     } catch (_) {}
 
     await UserManager().clearSession();
+    DeviceRegistration.reset();
     user.value = null;
     Get.offAllNamed(AppRoutes.login);
   }

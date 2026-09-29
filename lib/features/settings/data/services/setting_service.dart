@@ -9,7 +9,7 @@ class SettingService {
   final Dio _dio = DioClient().dio;
 
   Future<Response> updateProfile(UpdateProfileRequest request) {
-    return _dio.patch('users/me', data: request.toJson());
+    return _dio.patch('user/me', data: request.toJson());
   }
 
   Future<Response> unlinkPhone() {
@@ -29,40 +29,16 @@ class SettingService {
     );
   }
 
-  /// Uploads the file using POST /api/uploads/profile-pic (multipart 'file')
-  /// and returns the URL/path the server sends back.
-  Future<String?> uploadProfilePicFile(String filePath) async {
+  /// POST /api/user/me/profile-picture with multipart field `file`.
+  /// The response is the updated user, including `profilePic`.
+  Future<Response> uploadProfilePictureFile(String filePath) async {
     final fileName = filePath.split('/').last;
-    final response = await _dio.post(
-      'uploads/profile-pic',
+    return _dio.post(
+      'user/me/profile-picture',
       data: FormData.fromMap({
         'file': await MultipartFile.fromFile(filePath, filename: fileName),
       }),
     );
-    final data = response.data;
-    if (data is String && data.trim().isNotEmpty) {
-      var str = data.trim();
-      if (str.startsWith('"') && str.endsWith('"') && str.length >= 2) {
-        str = str.substring(1, str.length - 1).trim();
-      }
-      return str;
-    }
-    if (data is Map) {
-      final url = data['url'] ??
-          data['profilePic'] ??
-          data['filePath'] ??
-          data['path'] ??
-          data['file'] ??
-          data['data'];
-      if (url != null && url.toString().trim().isNotEmpty) {
-        var str = url.toString().trim();
-        if (str.startsWith('"') && str.endsWith('"') && str.length >= 2) {
-          str = str.substring(1, str.length - 1).trim();
-        }
-        return str;
-      }
-    }
-    return null;
   }
 
   Future<Response> requestEmailChange(String email) {

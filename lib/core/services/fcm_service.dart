@@ -38,6 +38,9 @@ class FcmService {
 
   bool _isInitialized = false;
 
+  /// Called after a new Firebase token is stored. Set from app startup.
+  Future<void> Function()? onTokenSaved;
+
   Future<void> initialize() async {
     if (_isInitialized) return;
 
@@ -82,6 +85,7 @@ class FcmService {
 
       _messaging.onTokenRefresh.listen((newToken) async {
         await UserManager().saveFcmToken(newToken);
+        await onTokenSaved?.call();
       });
 
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {

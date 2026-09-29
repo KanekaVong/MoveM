@@ -76,6 +76,19 @@ class AuthService {
     );
   }
 
+  Future<Response> registerDevice({
+    required String deviceToken,
+    required String platform,
+  }) {
+    return dio.post(
+      'auth/device',
+      data: {
+        'deviceToken': deviceToken,
+        'platform': platform,
+      },
+    );
+  }
+
   Future<void> logout() async {
     await dio.post('auth/logout', options: Options(responseType: ResponseType.plain));
   }

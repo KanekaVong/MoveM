@@ -8,6 +8,7 @@ import 'firebase_options.dart';
 import 'core/config/app_config.dart';
 import 'core/config/app_environment.dart';
 import 'core/services/fcm_service.dart';
+import 'features/auth/data/device_registration.dart';
 import 'core/services/notification_scheduler_service.dart';
 import 'core/storage/app_database.dart';
 import 'core/utils/Constants.dart';
@@ -46,6 +47,7 @@ Future<void> mainCommon({required Environment environment}) async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    FcmService().onTokenSaved = DeviceRegistration.registerIfLoggedIn;
     await FcmService().initialize();
   } catch (_) {}
 

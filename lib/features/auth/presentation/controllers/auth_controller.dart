@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../data/device_registration.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../data/dto/request/login_request.dart';
 import '../../data/dto/request/register_request.dart';
@@ -61,6 +62,7 @@ class AuthController extends BaseController {
             data.user!.username,
           );
 
+          DeviceRegistration.registerIfLoggedIn();
           Get.offAllNamed(AppRoutes.main);
           return;
         }
@@ -126,6 +128,7 @@ class AuthController extends BaseController {
         await UserManager().setLogged(true);
         await UserManager().saveUserId(data.user!.id.toString());
         await UserManager().saveUserName(data.user!.username);
+        DeviceRegistration.registerIfLoggedIn();
 
         AppDialogs.showSingleActionDialog(
           title: 'Verified',
@@ -209,6 +212,7 @@ class AuthController extends BaseController {
         await UserManager().saveUserName(
           data.user!.username,
         );
+        DeviceRegistration.registerIfLoggedIn();
 
         AppDialogs.showSingleActionDialog(
           title: 'Verified',
@@ -236,6 +240,7 @@ class AuthController extends BaseController {
       await repository.logout();
     } catch (_) {}
     await UserManager().clearSession();
+    DeviceRegistration.reset();
     currentUser.value = null;
     if (Get.isRegistered<HomeController>()) {
       Get.find<HomeController>().currentUser.value = null;

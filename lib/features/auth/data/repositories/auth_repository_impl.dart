@@ -185,6 +185,24 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<ApiResult<void>> registerDevice({
+    required String deviceToken,
+    required String platform,
+  }) async {
+    try {
+      await authService.registerDevice(
+        deviceToken: deviceToken,
+        platform: platform,
+      );
+      return const ApiSuccess(null);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  @override
   Future<ApiResult<void>> logout() async {
     try {
       await authService.logout();
