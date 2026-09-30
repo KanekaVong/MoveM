@@ -34,23 +34,60 @@ class UpdateTripRequest {
   });
 
   Map<String, dynamic> toJson() {
-    final json = <String, dynamic>{
-      'activityName': activityName,
-      'description': description,
-      'startActivity': startActivity?.toIso8601String(),
-      'deadline': deadline?.toIso8601String(),
-      'locationName': locationName,
-      'locationAddress': locationAddress,
-      'lat': lat,
-      'lng': lng,
-      'googlePlaceId': googlePlaceId,
-      'coordinates': coordinates,
-      'destination': destination,
-      'status': status,
-    };
+    final json = <String, dynamic>{};
+
+    if (activityName != null) {
+      json['activityName'] = activityName;
+    }
+
+    if (startActivity != null) {
+      json['startActivity'] =
+          startActivity!.toIso8601String();
+    }
+
+    if (deadline != null) {
+      json['deadline'] =
+          deadline!.toIso8601String();
+    }
+
+    if (destination != null) {
+      json['destination'] = destination;
+    }
 
     if (totalBudget != null) {
       json['totalBudget'] = totalBudget;
+    }
+
+    if (description != null) {
+      json['description'] = description;
+    }
+
+    if (locationName != null) {
+      json['locationName'] = locationName;
+    }
+
+    if (locationAddress != null) {
+      json['locationAddress'] = locationAddress;
+    }
+
+    if (lat != null) {
+      json['lat'] = lat;
+    }
+
+    if (lng != null) {
+      json['lng'] = lng;
+    }
+
+    if (googlePlaceId != null) {
+      json['googlePlaceId'] = googlePlaceId;
+    }
+
+    if (coordinates != null) {
+      json['coordinates'] = coordinates;
+    }
+
+    if (status != null) {
+      json['status'] = status;
     }
 
     if (addChecklistItems != null) {

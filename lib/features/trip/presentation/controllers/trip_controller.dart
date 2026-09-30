@@ -7,6 +7,9 @@ import '../../domain/repositories/trip_repository.dart';
 import '../../data/dto/request/create_trip_request.dart';
 import '../../data/dto/response/trip_response.dart';
 import 'package:get/get.dart';
+import 'package:dio/dio.dart' as dio;
+import 'package:dio/dio.dart' as dio;
+import 'package:image_picker/image_picker.dart';
 
 class TripController extends BaseController {
   static const String _tripWelcomeSeenKey = 'trip_welcome_seen';
@@ -40,6 +43,7 @@ class TripController extends BaseController {
         recentTrips
           ..clear()
           ..addAll(data);
+        print('MY TRIPS RESULT: $data');
       },
       showLoading: showLoading,
       showErrorDialog: false,
@@ -104,6 +108,63 @@ class TripController extends BaseController {
     );
 
     return success;
+  }
+
+  Future<bool> uploadCoverPhoto(
+      String activityId,
+      dio.MultipartFile file,
+      ) async {
+    var success = false;
+
+    await executeApi(
+      apiCall: () => repository.uploadCoverPhoto(
+        activityId,
+        file,
+      ),
+      onSuccess: (_) {
+        success = true;
+      },
+      showErrorDialog: false,
+      onError: (e) {
+        AppDialogs.showError(e.message);
+      },
+    );
+
+    return success;
+  }
+
+  Future<bool> pickAndUploadCoverPhoto(
+      String activityId,
+      ) async {
+    final picker = ImagePicker();
+
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (pickedFile == null) {
+      return false;
+    }
+
+    final file = await dio.MultipartFile.fromFile(
+      pickedFile.path,
+      filename: pickedFile.name,
+    );
+
+    final success = await uploadCoverPhoto(
+      activityId,
+      file,
+    );
+
+    if (!success) {
+      return false;
+    }
+
+    await getMyTrips(
+      showLoading: false,
+    );
+
+    return true;
   }
 
 }

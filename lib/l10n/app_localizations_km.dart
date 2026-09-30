@@ -92,7 +92,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get finish => 'បញ្ចប់';
 
   @override
-  String get accept => 'ទទួលយក';
+  String get accept => 'យល់ព្រម';
 
   @override
   String get reject => 'បដិសេធ';
@@ -265,7 +265,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get descriptionLabel => 'ការពិពណ៌នា';
 
   @override
-  String get descriptionHint => 'សរសេរកំណត់ចំណាំបន្ថែម...';
+  String get descriptionHint => 'បញ្ចូលការពិពណ៌នា';
 
   @override
   String get deadlineLabel => 'កាលបរិច្ឆេទកំណត់';
@@ -1020,7 +1020,7 @@ class AppLocalizationsKm extends AppLocalizations {
       'បច្ចុប្បន្នមិនមាននរណាម្នាក់ដើម្បីណែនាំទេ។';
 
   @override
-  String get noUsersFound => 'រកមិនឃើញមិត្តទេ';
+  String get noUsersFound => 'រកមិនឃើញអ្នកប្រើប្រាស់';
 
   @override
   String get nothingMatchesSearch => 'គ្មានអ្វីត្រូវនឹងការស្វែងរករបស់អ្នកទេ។';
@@ -1149,7 +1149,7 @@ class AppLocalizationsKm extends AppLocalizations {
       'ពេលមានគេសុំចូលក្លឹបរបស់អ្នក នឹងបង្ហាញនៅទីនេះ។';
 
   @override
-  String get noMembersYet => 'មិនទាន់មានសមាជិកទេ';
+  String get noMembersYet => 'មិនទាន់មានសមាជិក';
 
   @override
   String get inviteToGrowClub => 'អញ្ជើញមិត្តដើម្បីពង្រីកក្លឹបនេះ។';
@@ -1407,7 +1407,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String membersCount(int count) {
-    return 'សមាជិក ($count)';
+    return '$count សមាជិក';
   }
 
   @override
@@ -1568,7 +1568,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get goals => 'គោលដៅ';
 
   @override
-  String get history => 'ប្រវត្តិ';
+  String get history => 'ប្រវត្តិចំណាយ';
 
   @override
   String get profileAndGoal => 'ប្រវត្តិរូប និងគោលដៅ';
@@ -1668,4 +1668,315 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get verificationFailed => 'ការផ្ទៀងផ្ទាត់បរាជ័យ';
+
+  @override
+  String get tripMembers => 'សមាជិកដំណើរកម្សាន្ត';
+
+  @override
+  String get pendingInvitations => 'ការអញ្ជើញដែលកំពុងរង់ចាំ';
+
+  @override
+  String get noPendingInvitations => 'មិនមានការអញ្ជើញដែលកំពុងរង់ចាំ';
+
+  @override
+  String get pending => 'មិនទាន់ទូទាត់';
+
+  @override
+  String get inviteFriend => 'អញ្ជើញមិត្តភក្តិ';
+
+  @override
+  String get searchFriends => 'ស្វែងរកមិត្តភក្តិ';
+
+  @override
+  String get searchFriendsHint => 'ស្វែងរកតាមឈ្មោះអ្នកប្រើ ឬអ៊ីមែល';
+
+  @override
+  String get searchToFindFriends => 'ស្វែងរកដើម្បីរកមិត្តភក្តិ';
+
+  @override
+  String get invitationPending => 'ការអញ្ជើញកំពុងរង់ចាំ';
+
+  @override
+  String get invitationSent => 'បានផ្ញើការអញ្ជើញដោយជោគជ័យ';
+
+  @override
+  String get failedToSendInvitation => 'ការផ្ញើការអញ្ជើញបានបរាជ័យ';
+
+  @override
+  String get tripInvitations => 'ការអញ្ជើញចូលរួមដំណើរកម្សាន្ត';
+
+  @override
+  String get noTripInvitations => 'មិនមានការអញ្ជើញចូលរួមដំណើរកម្សាន្ត';
+
+  @override
+  String get invitedYouToTrip => 'បានអញ្ជើញអ្នកចូលរួមដំណើរកម្សាន្ត';
+
+  @override
+  String get invitationAccepted => 'បានយល់ព្រមការអញ្ជើញ';
+
+  @override
+  String get tripAddedToYourTrips =>
+      'ដំណើរកម្សាន្តូវបានបន្ថែមទៅក្នុងបញ្ជីដំណើររបស់អ្នក។';
+
+  @override
+  String get invitationRejected => 'បានបដិសេធការអញ្ជើញ';
+
+  @override
+  String get addExpense => 'បន្ថែមចំណាយ';
+
+  @override
+  String get addBudget => 'បន្ថែមថវិកា';
+
+  @override
+  String get expense => 'ចំណាយ';
+
+  @override
+  String get amount => 'ចំនួនទឹកប្រាក់';
+
+  @override
+  String get description => 'ការពិពណ៌នា';
+
+  @override
+  String get type => 'ប្រភេទ';
+
+  @override
+  String get tapToEnterAmount => 'ចុចដើម្បីបញ្ចូលចំនួនទឹកប្រាក់';
+
+  @override
+  String get tripExpenses => 'ចំណាយសម្រាប់ដំណើរ';
+
+  @override
+  String get totalBudget => 'ថវិកាសរុប';
+
+  @override
+  String get spent => 'បានចំណាយ';
+
+  @override
+  String get remaining => 'នៅសល់';
+
+  @override
+  String get categories => 'ប្រភេទ';
+
+  @override
+  String get addExpenseBudget => 'បន្ថែមចំណាយ / ថវិកា';
+
+  @override
+  String get foodsAndDrinks => 'អាហារ និង ភេសជ្ជៈ';
+
+  @override
+  String get accommodations => 'កន្លែងស្នាក់នៅ';
+
+  @override
+  String get transportation => 'ការធ្វើដំណើរ';
+
+  @override
+  String get others => 'ផ្សេងៗ';
+
+  @override
+  String paidBy(Object amount, Object payerName) {
+    return '$amount • បង់ដោយ $payerName';
+  }
+
+  @override
+  String get trackAllYourExpenses => 'តាមដានចំណាយទាំងអស់របស់អ្នក';
+
+  @override
+  String get allCategories => 'គ្រប់ប្រភេទ';
+
+  @override
+  String get filterExpenses => 'ត្រងចំណាយ';
+
+  @override
+  String get splitBills => 'បែងចែកវិក្កយបត្រ';
+
+  @override
+  String get noExpensesYet => 'មិនទាន់មានចំណាយទេ';
+
+  @override
+  String get expensesWillAppearHere =>
+      'ចំណាយសម្រាប់ដំណើររបស់អ្នកនឹងបង្ហាញនៅទីនេះ។';
+
+  @override
+  String get deleteExpense => 'លុបចំណាយ?';
+
+  @override
+  String deleteExpenseConfirmation(Object description) {
+    return 'តើអ្នកប្រាកដថាចង់លុប \"$description\" មែនទេ?';
+  }
+
+  @override
+  String get unknown => 'មិនស្គាល់';
+
+  @override
+  String get allocatedAmount => 'ចំនួនថវិកាដែលបានបែងចែក';
+
+  @override
+  String editCategory(Object category) {
+    return 'កែប្រែ $category';
+  }
+
+  @override
+  String get addDescriptions => 'បន្ថែមការពិពណ៌នា';
+
+  @override
+  String get descriptionDetailsHint =>
+      'សរសេរព័ត៌មានលម្អិតអំពីចំណាយនេះ ដើម្បីឱ្យមិត្តភក្តិរបស់អ្នកដឹងថាវាសម្រាប់អ្វី។';
+
+  @override
+  String expensePaidBy(Object amount, Object payerName) {
+    return '$amount បង់ដោយ $payerName';
+  }
+
+  @override
+  String get splitBetween => 'ចែករំលែកទៅកាន់';
+
+  @override
+  String get amountOwed => 'ចំនួនដែលត្រូវបង់';
+
+  @override
+  String get settled => 'បានទូទាត់';
+
+  @override
+  String get unsettled => 'មិនទាន់ទូទាត់';
+
+  @override
+  String get noSplitInformation => 'មិនមានព័ត៌មានអំពីការចែករំលែកទេ។';
+
+  @override
+  String get splitBillsWithFriends =>
+      'បែងចែកវិក្កយបត្រជាមួយមិត្តភក្តិរបស់អ្នក!';
+
+  @override
+  String get members => 'សមាជិក';
+
+  @override
+  String get expenseAmount => 'ចំនួនចំណាយ';
+
+  @override
+  String get splitType => 'ប្រភេទការចែក';
+
+  @override
+  String get equal => 'ស្មើគ្នា';
+
+  @override
+  String get custom => 'កំណត់ដោយខ្លួនឯង';
+
+  @override
+  String get splitAmount => 'ចំនួនទឹកប្រាក់ចែក';
+
+  @override
+  String get createSplitBill => 'បង្កើតការបែងចែកវិក្កយបត្រ';
+
+  @override
+  String get comingSoon => 'នឹងមកដល់ឆាប់ៗនេះ';
+
+  @override
+  String get splitBillComingSoon =>
+      'មុខងារបង្កើតការបែងចែកវិក្កយបត្រនឹងមានក្នុងពេលឆាប់ៗនេះ។';
+
+  @override
+  String get ok => 'យល់ព្រម';
+
+  @override
+  String totalSpent(Object amount) {
+    return 'ចំណាយសរុប៖ $amount\$';
+  }
+
+  @override
+  String get addTripCover => 'បន្ថែមរូបភាពគម្របដំណើរកម្សាន្ត';
+
+  @override
+  String get changeTripCover => 'ប្តូររូបភាពគម្របដំណើរកម្សាន្ត';
+
+  @override
+  String get addTripCoverImage => 'បន្ថែមរូបភាពគម្របដំណើរកម្សាន្ត';
+
+  @override
+  String get changeCurrentImage => 'ប្តូររូបភាពបច្ចុប្បន្ន';
+
+  @override
+  String get recentTrips => 'ដំណើរកម្សាន្តថ្មីៗ';
+
+  @override
+  String get sortBy => 'តម្រៀបតាម';
+
+  @override
+  String get newestDate => 'កាលបរិច្ឆេទថ្មីបំផុត';
+
+  @override
+  String get oldestDate => 'កាលបរិច្ឆេទចាស់បំផុត';
+
+  @override
+  String get highestSpent => 'ចំណាយខ្ពស់បំផុត';
+
+  @override
+  String get noTripsYet => 'មិនទាន់មានដំណើរទេ។';
+
+  @override
+  String get editTripDeleteStop => 'លុបចំណត';
+
+  @override
+  String get editTripDeleteStopConfirmation =>
+      'តើអ្នកប្រាកដថាចង់លុបចំណតនេះមែនទេ?';
+
+  @override
+  String get editTripEditStop => 'កែសម្រួលចំណត';
+
+  @override
+  String get editTripEditStopNotImplemented => 'ការកែសម្រួលចំណតនឹងមាននៅទីនេះ។';
+
+  @override
+  String get editTripAddStop => 'បន្ថែមចំណត';
+
+  @override
+  String get editTripAddStopSuccess => 'បានបន្ថែមចំណតដោយជោគជ័យ';
+
+  @override
+  String get editTripDeleteChecklist => 'លុបបញ្ជីត្រួតពិនិត្យ';
+
+  @override
+  String get editTripDeleteChecklistConfirm =>
+      'តើអ្នកប្រាកដថាចង់លុបធាតុក្នុងបញ្ជីត្រួតពិនិត្យនេះមែនទេ?';
+
+  @override
+  String get editTripDelete => 'លុប';
+
+  @override
+  String get editTripCancel => 'បោះបង់';
+
+  @override
+  String get editTripDeleteChecklistSuccess =>
+      'បានលុបធាតុក្នុងបញ្ជីត្រួតពិនិត្យដោយជោគជ័យ';
+
+  @override
+  String get editTripDeleteChecklistFailed =>
+      'បរាជ័យក្នុងការលុបធាតុក្នុងបញ្ជីត្រួតពិនិត្យ';
+
+  @override
+  String get editTripEdit => 'កែសម្រួល';
+
+  @override
+  String get viewBills => 'មើលវិក្កយបត្រ';
+
+  @override
+  String get alreadySettled => 'បានទូទាត់រួចហើយ?';
+
+  @override
+  String get paid => 'បានទូទាត់';
+
+  @override
+  String get confirmSettlement => 'បញ្ជាក់ទូទាត់';
+
+  @override
+  String get confirmSettlementMessage =>
+      'តើអ្នកប្រាកដថាចង់សម្គាល់ចំណែករបស់អ្នកថាបានទូទាត់ហើយឬទេ?';
+
+  @override
+  String get settle => 'សម្គាល់ថាបានទូទាត់';
+
+  @override
+  String get noRecentTripsYet => 'មិនទាន់មានដំណើរកម្សាន្តថ្មីៗទេ។';
+
+  @override
+  String get notAvailable => 'មិនមាន';
 }

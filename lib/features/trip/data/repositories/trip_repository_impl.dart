@@ -16,6 +16,14 @@ import '../dto/response/trip_checklist_response.dart';
 import '../dto/response/trip_attachment_response.dart';
 import '../dto/response/trip_member_response.dart';
 import '../dto/request/update_trip_request.dart';
+import '../dto/response/trip_route_response.dart';
+import '../dto/response/trip_cover_photo_response.dart';
+import '../../../groups/data/dto/response/pending_invite_response.dart';
+import '../dto/request/trip_budget_request.dart';
+import '../dto/response/trip_budget_response.dart';
+import '../dto/request/trip_expense_request.dart';
+import '../dto/response/trip_expense_response.dart';
+import '../../data/dto/request/trip_expense_split_request.dart';
 
 class TripRepositoryImpl implements TripRepository {
   final TripService tripService;
@@ -98,6 +106,48 @@ class TripRepositoryImpl implements TripRepository {
       );
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(
+        ApiException(
+          message: e.toString(),
+        ),
+      );
+    }
+  }
+
+
+  @override
+  Future<ApiResult<TripRouteResponse>> getTripRoute(
+      String activityId, {
+        String travelMode = 'DRIVING',
+      }) async {
+    try {
+      final response = await tripService.getTripRoute(
+        activityId,
+        travelMode: travelMode,
+      );
+
+      dynamic data = response.data;
+
+      if (data is String) {
+        data = jsonDecode(data);
+      }
+
+      if (data is Map<String, dynamic>) {
+        return ApiSuccess(
+          TripRouteResponse.fromJson(data),
+        );
+      }
+
+      return ApiError(
+        ApiException(
+          message: 'Invalid trip route response from server.',
+        ),
+      );
+    } on DioException catch (e) {
+      return ApiError(
+        ApiException.fromDioError(e),
+      );
     } catch (e) {
       return ApiError(
         ApiException(
@@ -192,6 +242,109 @@ class TripRepositoryImpl implements TripRepository {
           message: 'Invalid reorder stops response from server.',
         ),
       );
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(
+        ApiException(
+          message: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<ApiResult<TripStopResponse>> addTripStop(
+      String activityId,
+      Map<String, dynamic> request,
+      ) async {
+    try {
+      final response = await tripService.addTripStop(
+        activityId,
+        request,
+      );
+
+      dynamic data = response.data;
+
+      if (data is String) {
+        data = jsonDecode(data);
+      }
+
+      if (data is Map<String, dynamic>) {
+        return ApiSuccess(
+          TripStopResponse.fromJson(data),
+        );
+      }
+
+      return ApiError(
+        ApiException(
+          message: 'Invalid add stop response from server.',
+        ),
+      );
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(
+        ApiException(
+          message: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<ApiResult<TripStopResponse>> updateTripStop(
+      String activityId,
+      int stopId,
+      Map<String, dynamic> request,
+      ) async {
+    try {
+      final response = await tripService.updateTripStop(
+        activityId,
+        stopId,
+        request,
+      );
+
+      dynamic data = response.data;
+
+      if (data is String) {
+        data = jsonDecode(data);
+      }
+
+      if (data is Map<String, dynamic>) {
+        return ApiSuccess(
+          TripStopResponse.fromJson(data),
+        );
+      }
+
+      return ApiError(
+        ApiException(
+          message: 'Invalid update stop response from server.',
+        ),
+      );
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(
+        ApiException(
+          message: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<ApiResult<void>> deleteTripStop(
+      String activityId,
+      int stopId,
+      ) async {
+    try {
+      await tripService.deleteTripStop(
+        activityId,
+        stopId,
+      );
+
+      return const ApiSuccess(null);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
@@ -325,35 +478,28 @@ class TripRepositoryImpl implements TripRepository {
   }
 
   @override
-  Future<ApiResult<TripChecklistResponse>> addChecklist(
+  Future<void> deletePackingItem(
+      String activityId,
+      int itemId,
+      ) async {
+    await tripService.deletePackingItem(
+      activityId,
+      itemId,
+    );
+  }
+
+  @override
+  Future<ApiResult<void>> addChecklist(
       String activityId,
       String itemName,
       ) async {
     try {
-      final response = await tripService.addChecklist(
+      await tripService.addChecklist(
         activityId,
         itemName,
       );
 
-      dynamic data = response.data;
-
-      if (data is String) {
-        data = jsonDecode(data);
-      }
-
-      if (data is Map<String, dynamic>) {
-        final checklist =
-        TripChecklistResponse.fromJson(data);
-
-        return ApiSuccess(checklist);
-      }
-
-      return ApiError(
-        ApiException(
-          message:
-          'Invalid add checklist response from server.',
-        ),
-      );
+      return const ApiSuccess(null);
     } on DioException catch (e) {
       return ApiError(
         ApiException.fromDioError(e),
@@ -432,19 +578,46 @@ class TripRepositoryImpl implements TripRepository {
   }
 
   @override
-  Future<ApiResult<void>> updateChecklist(
+  Future<ApiResult<void>> deleteChecklist(
+      String activityId,
       int checklistId,
-      String itemName,
       ) async {
     try {
-      await tripService.updateChecklist(
+      await tripService.deleteChecklist(
+        activityId,
         checklistId,
-        itemName,
       );
 
       return const ApiSuccess(null);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(
+        ApiException(
+          message: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<ApiResult<void>> updateChecklist(
+      String activityId,
+      int checklistId,
+      Map<String, dynamic> request,
+      ) async {
+    try {
+      await tripService.updateChecklist(
+        activityId,
+        checklistId,
+        request,
+      );
+
+      return const ApiSuccess(null);
+    } on DioException catch (e) {
+      return ApiError(
+        ApiException.fromDioError(e),
+      );
     } catch (e) {
       return ApiError(
         ApiException(
@@ -527,6 +700,88 @@ class TripRepositoryImpl implements TripRepository {
       );
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(
+        ApiException(
+          message: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<ApiResult<TripCoverPhotoResponse>> getCoverPhoto(
+      String activityId,
+      ) async {
+    try {
+      final response = await tripService.getCoverPhoto(
+        activityId,
+      );
+
+      dynamic data = response.data;
+
+      if (data is String) {
+        data = jsonDecode(data);
+      }
+
+      if (data is Map<String, dynamic>) {
+        return ApiSuccess(
+          TripCoverPhotoResponse.fromJson(data),
+        );
+      }
+
+      return ApiError(
+        ApiException(
+          message:
+          'Invalid cover photo response from server.',
+        ),
+      );
+    } on DioException catch (e) {
+      return ApiError(
+        ApiException.fromDioError(e),
+      );
+    } catch (e) {
+      return ApiError(
+        ApiException(
+          message: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<ApiResult<TripCoverPhotoResponse>> uploadCoverPhoto(
+      String activityId,
+      MultipartFile file,
+      ) async {
+    try {
+      final response = await tripService.uploadCoverPhoto(
+        activityId,
+        file,
+      );
+
+      dynamic data = response.data;
+
+      if (data is String) {
+        data = jsonDecode(data);
+      }
+
+      if (data is Map<String, dynamic>) {
+        return ApiSuccess(
+          TripCoverPhotoResponse.fromJson(data),
+        );
+      }
+
+      return ApiError(
+        ApiException(
+          message:
+          'Invalid cover photo response from server.',
+        ),
+      );
+    } on DioException catch (e) {
+      return ApiError(
+        ApiException.fromDioError(e),
+      );
     } catch (e) {
       return ApiError(
         ApiException(
@@ -626,6 +881,45 @@ class TripRepositoryImpl implements TripRepository {
   }
 
   @override
+  Future<ApiResult<List<PendingInviteResponse>>> getPendingInvites(
+      String activityId,
+      ) async {
+    try {
+      final response = await tripService.getPendingInvites(activityId);
+
+      dynamic data = response.data;
+
+      if (data is String) {
+        data = jsonDecode(data);
+      }
+
+      if (data is List) {
+        final invites = data
+            .map(
+              (item) => PendingInviteResponse.fromJson(
+            Map<String, dynamic>.from(item),
+          ),
+        )
+            .toList();
+
+        return ApiSuccess(invites);
+      }
+
+      return ApiError(
+        ApiException(
+          message: 'Invalid pending invitations response from server.',
+        ),
+      );
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(
+        ApiException(message: e.toString()),
+      );
+    }
+  }
+
+  @override
   Future<ApiResult<TripResponse>> updateTrip(
       String activityId,
       UpdateTripRequest request,
@@ -653,6 +947,218 @@ class TripRepositoryImpl implements TripRepository {
           message: 'Invalid update trip response from server.',
         ),
       );
+    } on DioException catch (e) {
+      return ApiError(
+        ApiException.fromDioError(e),
+      );
+    } catch (e) {
+      return ApiError(
+        ApiException(
+          message: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<ApiResult<TripBudgetResponse>> updateTripBudget(
+      String activityId,
+      int budgetId,
+      TripBudgetRequest request,
+      ) async {
+    try {
+      final response = await tripService.updateTripBudget(
+        activityId,
+        budgetId,
+        request,
+      );
+
+      dynamic data = response.data;
+
+      if (data is String) {
+        data = jsonDecode(data);
+      }
+
+      if (data is Map<String, dynamic>) {
+        return ApiSuccess(
+          TripBudgetResponse.fromJson(data),
+        );
+      }
+
+      return ApiError(
+        ApiException(
+          message: 'Invalid update budget response from server.',
+        ),
+      );
+    } on DioException catch (e) {
+      return ApiError(
+        ApiException.fromDioError(e),
+      );
+    } catch (e) {
+      return ApiError(
+        ApiException(
+          message: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<ApiResult<TripExpenseResponse>> createTripExpense(
+      String activityId,
+      TripExpenseRequest request,
+      ) async {
+    try {
+      final response = await tripService.createTripExpense(
+        activityId,
+        request,
+      );
+
+      dynamic data = response.data;
+
+      if (data is String) {
+        data = jsonDecode(data);
+      }
+
+      if (data is Map<String, dynamic>) {
+        return ApiSuccess(
+          TripExpenseResponse.fromJson(data),
+        );
+      }
+
+      return ApiError(
+        ApiException(
+          message: 'Invalid create trip expense response from server.',
+        ),
+      );
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(
+        ApiException(message: e.toString()),
+      );
+    }
+  }
+
+  @override
+  Future<ApiResult<List<TripExpenseResponse>>> getTripExpenses(
+      String activityId,
+      ) async {
+    try {
+      final response = await tripService.getTripExpenses(activityId);
+
+      dynamic data = response.data;
+
+      if (data is String) {
+        data = jsonDecode(data);
+      }
+
+      if (data is List) {
+        return ApiSuccess(
+          data
+              .map(
+                (e) => TripExpenseResponse.fromJson(
+              e as Map<String, dynamic>,
+            ),
+          )
+              .toList(),
+        );
+      }
+
+      return ApiError(
+        ApiException(
+          message: 'Invalid get trip expenses response from server.',
+        ),
+      );
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(
+        ApiException(message: e.toString()),
+      );
+    }
+  }
+
+  @override
+  Future<ApiResult<void>> deleteTripExpense(
+      String activityId,
+      int expenseId,
+      ) async {
+    try {
+      await tripService.deleteTripExpense(
+        activityId,
+        expenseId,
+      );
+
+      return const ApiSuccess(null);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(
+        ApiException(message: e.toString()),
+      );
+    }
+  }
+
+  @override
+  Future<ApiResult<TripExpenseResponse>> createExpenseSplits(
+      String activityId,
+      String tripActivityId,
+      int expenseId,
+      TripExpenseSplitRequest request,
+      ) async {
+    try {
+      final response = await tripService.createExpenseSplits(
+        activityId,
+        tripActivityId,
+        expenseId,
+        request,
+      );
+
+      dynamic data = response.data;
+
+      if (data is String) {
+        data = jsonDecode(data);
+      }
+
+      if (data is Map<String, dynamic>) {
+        return ApiSuccess(
+          TripExpenseResponse.fromJson(data),
+        );
+      }
+
+      return ApiError(
+        ApiException(
+          message: 'Invalid create split response from server.',
+        ),
+      );
+    } on DioException catch (e) {
+      return ApiError(
+        ApiException.fromDioError(e),
+      );
+    } catch (e) {
+      return ApiError(
+        ApiException(
+          message: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<ApiResult<void>> settleExpenseSplit(
+      String activityId,
+      int expenseId,
+      int splitId,
+      ) async {
+    try {
+      await tripService.settleExpenseSplit(
+        activityId,
+        expenseId,
+        splitId,
+      );
+
+      return const ApiSuccess(null);
     } on DioException catch (e) {
       return ApiError(
         ApiException.fromDioError(e),

@@ -495,9 +495,14 @@
     "placeholders": { "unit": { "type": "String" } }
   },
   "loadingChallenges": "កំពុងផ្ទុកការហាត់...",
-  "membersCount": "សមាជិក ({count})",
+  "membersCount": "{count} សមាជិក",
   "@membersCount": {
-    "placeholders": { "count": { "type": "int" } }
+    "description": "Number of trip members",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "completedChallengesLabel": "ការហាត់បានបញ្ចប់",
   "viewAllArrow": "មើលទាំងអស់ >>",
@@ -605,5 +610,148 @@
   "firstWorkout": "ការហាត់ដំបូង!",
   "newAchievement": "សមិទ្ធផលថ្មី!",
   "awesome": "អស្ចារ្យ!!!",
-  "verificationFailed": "ការផ្ទៀងផ្ទាត់បរាជ័យ"
+  "verificationFailed": "ការផ្ទៀងផ្ទាត់បរាជ័យ",
+  "notClubMember": "ចូលក្លឹបនេះសិន ទើបបង្កើតការហាត់បាន។",
+
+  "tripMembers": "សមាជិកដំណើរកម្សាន្ត",
+  "noMembersYet": "មិនទាន់មានសមាជិក",
+  "pendingInvitations": "ការអញ្ជើញដែលកំពុងរង់ចាំ",
+  "noPendingInvitations": "មិនមានការអញ្ជើញដែលកំពុងរង់ចាំ",
+  "pending": "កំពុងរង់ចាំ",
+  "inviteFriend": "អញ្ជើញមិត្តភក្តិ",
+
+  "inviteFriend": "អញ្ជើញមិត្តភក្តិ",
+  "searchFriends": "ស្វែងរកមិត្តភក្តិ",
+  "searchFriendsHint": "ស្វែងរកតាមឈ្មោះអ្នកប្រើ ឬអ៊ីមែល",
+  "noUsersFound": "រកមិនឃើញអ្នកប្រើប្រាស់",
+  "searchToFindFriends": "ស្វែងរកដើម្បីរកមិត្តភក្តិ",
+  "invite": "អញ្ជើញ",
+  "invited": "បានអញ្ជើញ",
+  "invitationPending": "ការអញ្ជើញកំពុងរង់ចាំ",
+  "invitationSent": "បានផ្ញើការអញ្ជើញដោយជោគជ័យ",
+  "failedToSendInvitation": "ការផ្ញើការអញ្ជើញបានបរាជ័យ",
+
+  "tripInvitations": "ការអញ្ជើញចូលរួមដំណើរកម្សាន្ត",
+  "noTripInvitations": "មិនមានការអញ្ជើញចូលរួមដំណើរកម្សាន្ត",
+  "invitedYouToTrip": "បានអញ្ជើញអ្នកចូលរួមដំណើរកម្សាន្ត",
+  "accept": "យល់ព្រម",
+  "reject": "បដិសេធ",
+  "invitationAccepted": "បានយល់ព្រមការអញ្ជើញ",
+  "tripAddedToYourTrips": "ដំណើរកម្សាន្តូវបានបន្ថែមទៅក្នុងបញ្ជីដំណើររបស់អ្នក។",
+  "invitationRejected": "បានបដិសេធការអញ្ជើញ",
+
+  "addExpense": "បន្ថែមចំណាយ",
+  "addBudget": "បន្ថែមថវិកា",
+  "budget": "ថវិកា",
+  "expense": "ចំណាយ",
+  "amount": "ចំនួនទឹកប្រាក់",
+  "description": "ការពិពណ៌នា",
+  "descriptionHint": "បញ្ចូលការពិពណ៌នា",
+  "type": "ប្រភេទ",
+  "tapToEnterAmount": "ចុចដើម្បីបញ្ចូលចំនួនទឹកប្រាក់",
+  "tripExpenses": "ចំណាយសម្រាប់ដំណើរ",
+  "totalBudget": "ថវិកាសរុប",
+  "spent": "បានចំណាយ",
+  "remaining": "នៅសល់",
+  "categories": "ប្រភេទ",
+  "addExpenseBudget": "បន្ថែមចំណាយ / ថវិកា",
+  "foodsAndDrinks": "អាហារ និង ភេសជ្ជៈ",
+  "accommodations": "កន្លែងស្នាក់នៅ",
+  "transportation": "ការធ្វើដំណើរ",
+  "others": "ផ្សេងៗ",
+
+  "paidBy": "{amount} • បង់ដោយ {payerName}",
+   "@paidBy": {
+     "placeholders": {
+       "amount": {},
+       "payerName": {}
+     }
+   },
+
+   "history": "ប្រវត្តិចំណាយ",
+   "trackAllYourExpenses": "តាមដានចំណាយទាំងអស់របស់អ្នក",
+   "allCategories": "គ្រប់ប្រភេទ",
+   "filterExpenses": "ត្រងចំណាយ",
+   "splitBills": "បែងចែកវិក្កយបត្រ",
+   "noExpensesYet": "មិនទាន់មានចំណាយទេ",
+   "expensesWillAppearHere": "ចំណាយសម្រាប់ដំណើររបស់អ្នកនឹងបង្ហាញនៅទីនេះ។",
+   "deleteExpense": "លុបចំណាយ?",
+   "deleteExpenseConfirmation": "តើអ្នកប្រាកដថាចង់លុប \"{description}\" មែនទេ?",
+   "@deleteExpenseConfirmation": {
+     "placeholders": {
+       "description": {}
+     }
+   },
+   "unknown": "មិនស្គាល់",
+   "allocatedAmount": "ចំនួនថវិកាដែលបានបែងចែក",
+   "editCategory": "កែប្រែ {category}",
+   "@editCategory": {
+     "placeholders": {
+       "category": {}
+     }
+   },
+   "addDescriptions": "បន្ថែមការពិពណ៌នា",
+   "descriptionDetailsHint": "សរសេរព័ត៌មានលម្អិតអំពីចំណាយនេះ ដើម្បីឱ្យមិត្តភក្តិរបស់អ្នកដឹងថាវាសម្រាប់អ្វី។",
+   "expensePaidBy": "{amount} បង់ដោយ {payerName}",
+   "@expensePaidBy": {
+     "placeholders": {
+       "amount": {},
+       "payerName": {}
+     }
+   },
+   "splitBetween": "ចែករំលែកទៅកាន់",
+   "amountOwed": "ចំនួនដែលត្រូវបង់",
+   "settled": "បានទូទាត់",
+   "unsettled": "មិនទាន់ទូទាត់",
+   "noSplitInformation": "មិនមានព័ត៌មានអំពីការចែករំលែកទេ។",
+   "splitBillsWithFriends": "បែងចែកវិក្កយបត្រជាមួយមិត្តភក្តិរបស់អ្នក!",
+   "members": "សមាជិក",
+   "expenseAmount": "ចំនួនចំណាយ",
+   "splitType": "ប្រភេទការចែក",
+   "equal": "ស្មើគ្នា",
+   "custom": "កំណត់ដោយខ្លួនឯង",
+   "splitAmount": "ចំនួនទឹកប្រាក់ចែក",
+   "createSplitBill": "បង្កើតការបែងចែកវិក្កយបត្រ",
+   "comingSoon": "នឹងមកដល់ឆាប់ៗនេះ",
+   "splitBillComingSoon": "មុខងារបង្កើតការបែងចែកវិក្កយបត្រនឹងមានក្នុងពេលឆាប់ៗនេះ។",
+   "ok": "យល់ព្រម",
+   "membersCount": "{count} សមាជិក",
+   "totalSpent": "ចំណាយសរុប៖ {amount}$",
+   "addTripCover": "បន្ថែមរូបភាពគម្របដំណើរ",
+   "changeTripCover": "ប្តូររូបភាពគម្របដំណើរ",
+   "addTripCoverImage": "បន្ថែមរូបភាពគម្របដំណើរ",
+   "changeCurrentImage": "ប្តូររូបភាពបច្ចុប្បន្ន",
+   "recentTrips": "ដំណើរថ្មីៗ",
+   "sortBy": "តម្រៀបតាម",
+   "newestDate": "កាលបរិច្ឆេទថ្មីបំផុត",
+   "oldestDate": "កាលបរិច្ឆេទចាស់បំផុត",
+   "highestSpent": "ចំណាយខ្ពស់បំផុត",
+   "noTripsYet": "មិនទាន់មានដំណើរទេ។",
+   "editTripDeleteStop": "លុបចំណត",
+   "editTripDeleteStopConfirmation": "តើអ្នកប្រាកដថាចង់លុបចំណតនេះមែនទេ?",
+   "editTripEditStop": "កែសម្រួលចំណត",
+   "editTripEditStopNotImplemented": "ការកែសម្រួលចំណតនឹងមាននៅទីនេះ។",
+   "editTripAddStop": "បន្ថែមចំណត",
+   "editTripAddStopSuccess": "បានបន្ថែមចំណតដោយជោគជ័យ",
+   "editTripDeleteChecklist": "លុបបញ្ជីត្រួតពិនិត្យ",
+   "editTripDeleteChecklistConfirm": "តើអ្នកប្រាកដថាចង់លុបធាតុក្នុងបញ្ជីត្រួតពិនិត្យនេះមែនទេ?",
+   "editTripDelete": "លុប",
+   "editTripCancel": "បោះបង់",
+   "editTripDeleteChecklistSuccess": "បានលុបធាតុក្នុងបញ្ជីត្រួតពិនិត្យដោយជោគជ័យ",
+   "editTripDeleteChecklistFailed": "បរាជ័យក្នុងការលុបធាតុក្នុងបញ្ជីត្រួតពិនិត្យ",
+   "editTripEdit": "កែសម្រួល",
+   "viewBills": "មើលវិក្កយបត្រ",
+   "alreadySettled": "បានទូទាត់រួចហើយ?",
+   "pending": "មិនទាន់ទូទាត់",
+   "paid": "បានទូទាត់",
+   "confirmSettlement": "បញ្ជាក់ទូទាត់",
+   "confirmSettlementMessage": "តើអ្នកប្រាកដថាចង់សម្គាល់ចំណែករបស់អ្នកថាបានទូទាត់ហើយឬទេ?",
+   "settle": "សម្គាល់ថាបានទូទាត់",
+   "recentTrips": "ដំណើរកម្សាន្តថ្មីៗ",
+   "noRecentTripsYet": "មិនទាន់មានដំណើរកម្សាន្តថ្មីៗទេ។",
+   "changeTripCover": "ប្តូររូបភាពគម្របដំណើរកម្សាន្ត",
+   "addTripCover": "បន្ថែមរូបភាពគម្របដំណើរកម្សាន្ត",
+   "changeCurrentImage": "ប្តូររូបភាពបច្ចុប្បន្ន",
+   "addTripCoverImage": "បន្ថែមរូបភាពគម្របដំណើរកម្សាន្ត",
+   "notAvailable": "មិនមាន"
 }

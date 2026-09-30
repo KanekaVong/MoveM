@@ -847,7 +847,7 @@ class _CreateTripLocationScreenState extends State<CreateTripLocationScreen> {
                                     icon: Icons.my_location,
                                     onTap: () =>
                                         _getCurrentLocation(
-                                          selectLocation: true,
+                                          selectLocation: false,
                                         ),
                                   ),
                                 ],

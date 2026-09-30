@@ -4,6 +4,7 @@ import 'trip_reminder_response.dart';
 import 'trip_budget_response.dart';
 import 'trip_packing_item_response.dart';
 import 'trip_attachment_response.dart';
+import 'trip_cover_photo_response.dart';
 
 class TripResponse {
   final String activityId;
@@ -31,6 +32,7 @@ class TripResponse {
   final List<TripBudgetResponse> budgets;
   final List<TripPackingItemResponse> packingItems;
   final List<TripAttachmentResponse> attachments;
+  final TripCoverPhotoResponse? coverPhoto;
 
   TripResponse({
     required this.activityId,
@@ -53,6 +55,7 @@ class TripResponse {
     this.budgets = const [],
     this.packingItems = const [],
     this.attachments = const [],
+    this.coverPhoto,
   });
 
   factory TripResponse.fromJson(
@@ -151,6 +154,13 @@ class TripResponse {
               )
               .toList()
           : [],
+      coverPhoto: json['coverPhoto'] != null
+          ? TripCoverPhotoResponse.fromJson(
+        Map<String, dynamic>.from(
+          json['coverPhoto'],
+        ),
+      )
+          : null,
     );
   }
 }

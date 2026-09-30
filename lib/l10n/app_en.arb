@@ -618,5 +618,162 @@
   "firstWorkout": "FIRST WORKOUT!",
   "newAchievement": "NEW ACHIEVEMENT!",
   "awesome": "AWESOME!!!",
-  "verificationFailed": "Verification Failed"
+  "verificationFailed": "Verification Failed",
+  "notClubMember": "Join this club first to create a challenge.",
+
+  "tripMembers": "Trip Members",
+  "noMembersYet": "No members yet",
+  "pendingInvitations": "Pending Invitations",
+  "noPendingInvitations": "No pending invitations",
+  "pending": "Pending",
+  "inviteFriend": "Invite Friend",
+
+  "inviteFriend": "Invite Friend",
+  "searchFriends": "Search friends",
+  "searchFriendsHint": "Search by username or email",
+  "noUsersFound": "No users found",
+  "searchToFindFriends": "Search to find friends",
+  "invite": "Invite",
+  "invited": "Invited",
+  "invitationPending": "Invitation Pending",
+  "invitationSent": "Invitation sent successfully",
+  "failedToSendInvitation": "Failed to send invitation",
+
+  "tripInvitations": "Trip Invitations",
+  "noTripInvitations": "No trip invitations",
+  "invitedYouToTrip": "invited you to a trip",
+  "accept": "Accept",
+  "reject": "Reject",
+  "invitationAccepted": "Invitation accepted",
+  "tripAddedToYourTrips": "The trip has been added to your trips.",
+  "invitationRejected": "Invitation rejected",
+
+   "addExpense": "Add Expense",
+   "addBudget": "Add Budget",
+   "budget": "Budget",
+   "expense": "Expense",
+   "amount": "Amount",
+   "description": "Description",
+   "descriptionHint": "Enter description",
+   "type": "Type",
+   "tapToEnterAmount": "Tap to enter amount",
+
+   "tripExpenses": "Trip Expenses",
+    "totalBudget": "TOTAL BUDGET",
+    "spent": "SPENT",
+    "remaining": "REMAINING",
+    "categories": "CATEGORIES",
+    "addExpenseBudget": "ADD EXPENSE / BUDGET",
+
+    "foodsAndDrinks": "Foods & Drinks",
+    "accommodations": "Accommodations",
+    "transportation": "Transportation",
+    "others": "Others",
+
+    "paidBy": "{amount} • Paid by {payerName}",
+    "@paidBy": {
+      "placeholders": {
+        "amount": {},
+        "payerName": {}
+      }
+    },
+
+    "history": "HISTORY",
+    "trackAllYourExpenses": "Track All Your Expenses",
+    "allCategories": "All Categories",
+    "filterExpenses": "Filter Expenses",
+    "splitBills": "Split Bills",
+    "noExpensesYet": "No expenses yet",
+    "expensesWillAppearHere": "Your trip expenses will appear here.",
+    "deleteExpense": "Delete Expense?",
+    "deleteExpenseConfirmation": "Are you sure you want to delete \"{description}\"?",
+    "@deleteExpenseConfirmation": {
+      "placeholders": {
+        "description": {}
+      }
+    },
+     "unknown": "Unknown",
+     "allocatedAmount": "Allocated Amount",
+     "editCategory": "Edit {category}",
+     "@editCategory": {
+       "placeholders": {
+         "category": {}
+       }
+     },
+     "addDescriptions": "Add Descriptions",
+     "descriptionDetailsHint": "Write more details on this expense so your friends know what they're for.",
+     "expensePaidBy": "{amount} is paid by {payerName}",
+     "@expensePaidBy": {
+       "placeholders": {
+         "amount": {},
+         "payerName": {}
+       }
+     },
+     "splitBetween": "Split Between",
+     "amountOwed": "Amount Owed",
+     "settled": "Settled",
+     "unsettled": "Unsettled",
+     "noSplitInformation": "No split information available.",
+     "splitBillsWithFriends": "Split Bills With Your Friends!",
+     "members": "Members",
+     "expenseAmount": "Expense Amount",
+     "splitType": "Split Type",
+     "equal": "Equal",
+     "custom": "Custom",
+     "splitAmount": "Split Amount",
+     "createSplitBill": "CREATE SPLIT BILL",
+     "comingSoon": "Coming Soon",
+     "splitBillComingSoon": "Split bill creation will be available soon.",
+     "ok": "OK",
+     "membersCount": "{count} members",
+     "@membersCount": {
+       "description": "Number of trip members",
+       "placeholders": {
+         "count": {
+           "type": "int"
+         }
+       }
+     },
+     "totalSpent": "Total Spent: {amount}$",
+     "@totalSpent": {
+       "description": "Total amount spent on a trip"
+     },
+     "addTripCover": "Add Trip Cover",
+     "changeTripCover": "Change Trip Cover",
+     "addTripCoverImage": "Add trip cover image",
+     "changeCurrentImage": "Change current image",
+     "recentTrips": "RECENT TRIPS",
+     "sortBy": "Sort By",
+     "newestDate": "Newest Date",
+     "oldestDate": "Oldest Date",
+     "highestSpent": "Highest Spent",
+     "noTripsYet": "No trips yet.",
+     "editTripDeleteStop": "Delete Stop",
+     "editTripDeleteStopConfirmation": "Are you sure you want to delete this stop?",
+     "editTripEditStop": "Edit Stop",
+     "editTripEditStopNotImplemented": "Stop editing will be available here.",
+     "editTripAddStop": "Add Stop",
+     "editTripAddStopSuccess": "Stop added successfully",
+     "editTripDeleteChecklist": "Delete Checklist",
+     "editTripDeleteChecklistConfirm": "Are you sure you want to delete this checklist item?",
+     "editTripDelete": "Delete",
+     "editTripCancel": "Cancel",
+     "editTripDeleteChecklistSuccess": "Checklist deleted successfully",
+     "editTripDeleteChecklistFailed": "Failed to delete checklist item",
+     "editTripEdit": "Edit",
+     "viewBills": "View Bills",
+     "alreadySettled": "Already settled?",
+     "pending": "Pending",
+     "paid": "Paid",
+     "confirmSettlement": "Confirm Payment",
+     "confirmSettlementMessage": "Are you sure you want to mark your share as paid?",
+     "settle": "Mark as Paid",
+     "recentTrips": "Recent Trips",
+     "noRecentTripsYet": "No recent trips yet.",
+     "changeTripCover": "Change Trip Cover",
+     "addTripCover": "Add Trip Cover",
+     "changeCurrentImage": "Change current image",
+     "addTripCoverImage": "Add trip cover image",
+     "notAvailable": "N/A"
+
 }

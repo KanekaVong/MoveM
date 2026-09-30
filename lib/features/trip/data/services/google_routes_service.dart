@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import 'package:flutter/foundation.dart';
 import '../../../../core/config/google_maps_config.dart';
 
 class GoogleRouteResult {
@@ -29,47 +29,87 @@ class GoogleRoutesService {
   static const String _routesUrl =
       'https://routes.googleapis.com/directions/v2:computeRoutes';
 
+  String _toGoogleTravelMode(String mode) {
+    switch (mode) {
+      case 'DRIVING':
+        return 'DRIVE';
+
+      case 'WALKING':
+        return 'WALK';
+
+      case 'CYCLING':
+        return 'BICYCLE';
+
+      case 'RIDING':
+        return 'TWO_WHEELER';
+
+      default:
+        return 'DRIVE';
+    }
+  }
+
   Future<GoogleRouteResult> calculateRoute({
     required LatLng origin,
     required LatLng destination,
     List<LatLng> intermediates = const [],
+    String travelMode = 'DRIVING',
   }) async {
     final apiKey = await GoogleMapsConfig.apiKey;
 
-    final response = await dio.post(
-      _routesUrl,
-      data: {
-        'origin': _location(origin),
-        'destination': _location(destination),
-        'intermediates': intermediates
-            .map(_location)
-            .toList(),
-        'travelMode': 'DRIVE',
-        'routingPreference': 'TRAFFIC_AWARE',
-        'computeAlternativeRoutes': false,
-        'routeModifiers': {
-          'avoidTolls': false,
-          'avoidHighways': false,
-          'avoidFerries': false,
-        },
-        'languageCode': 'en-US',
-        'units': 'METRIC',
-        'polylineQuality': 'OVERVIEW',
-        'polylineEncoding': 'ENCODED_POLYLINE',
-      },
-      options: Options(
-        headers: {
-          'Authorization': null,
-          'Content-Type': 'application/json',
-          'X-Goog-Api-Key': apiKey,
-          'X-Goog-FieldMask': [
-            'routes.distanceMeters',
-            'routes.duration',
-            'routes.polyline.encodedPolyline',
-          ].join(','),
-        },
-      ),
-    );
+    final googleTravelMode =
+    _toGoogleTravelMode(travelMode);
+
+    final requestData = <String, dynamic>{
+      'origin': _location(origin),
+      'destination': _location(destination),
+      'intermediates': intermediates
+          .map(_location)
+          .toList(),
+      'travelMode': googleTravelMode,
+      'computeAlternativeRoutes': false,
+      'languageCode': 'en-US',
+      'units': 'METRIC',
+      'polylineQuality': 'OVERVIEW',
+      'polylineEncoding': 'ENCODED_POLYLINE',
+    };
+
+    if (googleTravelMode == 'DRIVE' ||
+        googleTravelMode == 'TWO_WHEELER') {
+      requestData['routingPreference'] = 'TRAFFIC_AWARE';
+
+      requestData['routeModifiers'] = {
+        'avoidTolls': false,
+        'avoidHighways': false,
+        'avoidFerries': false,
+      };
+    }
+
+    Response response;
+
+    try {
+      response = await dio.post(
+        _routesUrl,
+        data: requestData,
+        options: Options(
+          headers: {
+            'Authorization': null,
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': apiKey,
+            'X-Goog-FieldMask': [
+              'routes.distanceMeters',
+              'routes.duration',
+              'routes.polyline.encodedPolyline',
+            ].join(','),
+          },
+        ),
+      );
+    } on DioException catch (e) {
+      debugPrint('GOOGLE ROUTES ERROR');
+      debugPrint('STATUS: ${e.response?.statusCode}');
+      debugPrint('DATA: ${e.response?.data}');
+      debugPrint('REQUEST: ${e.requestOptions.data}');
+      rethrow;
+    }
 
     final data = response.data;
 
@@ -102,7 +142,7 @@ class GoogleRoutesService {
         route['duration'] as String? ?? '0s';
 
     return GoogleRouteResult(
-      points: _decodePolyline(encodedPolyline),
+      points: decodePolyline(encodedPolyline),
       distanceMeters: distanceMeters,
       duration: duration,
     );
@@ -119,7 +159,7 @@ class GoogleRoutesService {
     };
   }
 
-  List<LatLng> _decodePolyline(String encoded) {
+  List<LatLng> decodePolyline(String encoded) {
     final points = <LatLng>[];
 
     int index = 0;

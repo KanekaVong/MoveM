@@ -265,7 +265,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get descriptionLabel => 'DESCRIPTION';
 
   @override
-  String get descriptionHint => 'Add extra notes...';
+  String get descriptionHint => 'Enter description';
 
   @override
   String get deadlineLabel => 'DEADLINE';
@@ -765,7 +765,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get destination => 'DESTINATION';
 
   @override
-  String get budget => 'BUDGET';
+  String get budget => 'Budget';
 
   @override
   String get stops => 'STOPS';
@@ -1408,7 +1408,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String membersCount(int count) {
-    return 'Members ($count)';
+    return '$count members';
   }
 
   @override
@@ -1573,7 +1573,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get goals => 'Goals';
 
   @override
-  String get history => 'History';
+  String get history => 'HISTORY';
 
   @override
   String get profileAndGoal => 'PROFILE & GOAL';
@@ -1674,4 +1674,311 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get verificationFailed => 'Verification Failed';
+
+  @override
+  String get tripMembers => 'Trip Members';
+
+  @override
+  String get pendingInvitations => 'Pending Invitations';
+
+  @override
+  String get noPendingInvitations => 'No pending invitations';
+
+  @override
+  String get pending => 'Pending';
+
+  @override
+  String get inviteFriend => 'Invite Friend';
+
+  @override
+  String get searchFriends => 'Search friends';
+
+  @override
+  String get searchFriendsHint => 'Search by username or email';
+
+  @override
+  String get searchToFindFriends => 'Search to find friends';
+
+  @override
+  String get invitationPending => 'Invitation Pending';
+
+  @override
+  String get invitationSent => 'Invitation sent successfully';
+
+  @override
+  String get failedToSendInvitation => 'Failed to send invitation';
+
+  @override
+  String get tripInvitations => 'Trip Invitations';
+
+  @override
+  String get noTripInvitations => 'No trip invitations';
+
+  @override
+  String get invitedYouToTrip => 'invited you to a trip';
+
+  @override
+  String get invitationAccepted => 'Invitation accepted';
+
+  @override
+  String get tripAddedToYourTrips => 'The trip has been added to your trips.';
+
+  @override
+  String get invitationRejected => 'Invitation rejected';
+
+  @override
+  String get addExpense => 'Add Expense';
+
+  @override
+  String get addBudget => 'Add Budget';
+
+  @override
+  String get expense => 'Expense';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get type => 'Type';
+
+  @override
+  String get tapToEnterAmount => 'Tap to enter amount';
+
+  @override
+  String get tripExpenses => 'Trip Expenses';
+
+  @override
+  String get totalBudget => 'TOTAL BUDGET';
+
+  @override
+  String get spent => 'SPENT';
+
+  @override
+  String get remaining => 'REMAINING';
+
+  @override
+  String get categories => 'CATEGORIES';
+
+  @override
+  String get addExpenseBudget => 'ADD EXPENSE / BUDGET';
+
+  @override
+  String get foodsAndDrinks => 'Foods & Drinks';
+
+  @override
+  String get accommodations => 'Accommodations';
+
+  @override
+  String get transportation => 'Transportation';
+
+  @override
+  String get others => 'Others';
+
+  @override
+  String paidBy(Object amount, Object payerName) {
+    return '$amount • Paid by $payerName';
+  }
+
+  @override
+  String get trackAllYourExpenses => 'Track All Your Expenses';
+
+  @override
+  String get allCategories => 'All Categories';
+
+  @override
+  String get filterExpenses => 'Filter Expenses';
+
+  @override
+  String get splitBills => 'Split Bills';
+
+  @override
+  String get noExpensesYet => 'No expenses yet';
+
+  @override
+  String get expensesWillAppearHere => 'Your trip expenses will appear here.';
+
+  @override
+  String get deleteExpense => 'Delete Expense?';
+
+  @override
+  String deleteExpenseConfirmation(Object description) {
+    return 'Are you sure you want to delete \"$description\"?';
+  }
+
+  @override
+  String get unknown => 'Unknown';
+
+  @override
+  String get allocatedAmount => 'Allocated Amount';
+
+  @override
+  String editCategory(Object category) {
+    return 'Edit $category';
+  }
+
+  @override
+  String get addDescriptions => 'Add Descriptions';
+
+  @override
+  String get descriptionDetailsHint =>
+      'Write more details on this expense so your friends know what they\'re for.';
+
+  @override
+  String expensePaidBy(Object amount, Object payerName) {
+    return '$amount is paid by $payerName';
+  }
+
+  @override
+  String get splitBetween => 'Split Between';
+
+  @override
+  String get amountOwed => 'Amount Owed';
+
+  @override
+  String get settled => 'Settled';
+
+  @override
+  String get unsettled => 'Unsettled';
+
+  @override
+  String get noSplitInformation => 'No split information available.';
+
+  @override
+  String get splitBillsWithFriends => 'Split Bills With Your Friends!';
+
+  @override
+  String get members => 'Members';
+
+  @override
+  String get expenseAmount => 'Expense Amount';
+
+  @override
+  String get splitType => 'Split Type';
+
+  @override
+  String get equal => 'Equal';
+
+  @override
+  String get custom => 'Custom';
+
+  @override
+  String get splitAmount => 'Split Amount';
+
+  @override
+  String get createSplitBill => 'CREATE SPLIT BILL';
+
+  @override
+  String get comingSoon => 'Coming Soon';
+
+  @override
+  String get splitBillComingSoon =>
+      'Split bill creation will be available soon.';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String totalSpent(Object amount) {
+    return 'Total Spent: $amount\$';
+  }
+
+  @override
+  String get addTripCover => 'Add Trip Cover';
+
+  @override
+  String get changeTripCover => 'Change Trip Cover';
+
+  @override
+  String get addTripCoverImage => 'Add trip cover image';
+
+  @override
+  String get changeCurrentImage => 'Change current image';
+
+  @override
+  String get recentTrips => 'Recent Trips';
+
+  @override
+  String get sortBy => 'Sort By';
+
+  @override
+  String get newestDate => 'Newest Date';
+
+  @override
+  String get oldestDate => 'Oldest Date';
+
+  @override
+  String get highestSpent => 'Highest Spent';
+
+  @override
+  String get noTripsYet => 'No trips yet.';
+
+  @override
+  String get editTripDeleteStop => 'Delete Stop';
+
+  @override
+  String get editTripDeleteStopConfirmation =>
+      'Are you sure you want to delete this stop?';
+
+  @override
+  String get editTripEditStop => 'Edit Stop';
+
+  @override
+  String get editTripEditStopNotImplemented =>
+      'Stop editing will be available here.';
+
+  @override
+  String get editTripAddStop => 'Add Stop';
+
+  @override
+  String get editTripAddStopSuccess => 'Stop added successfully';
+
+  @override
+  String get editTripDeleteChecklist => 'Delete Checklist';
+
+  @override
+  String get editTripDeleteChecklistConfirm =>
+      'Are you sure you want to delete this checklist item?';
+
+  @override
+  String get editTripDelete => 'Delete';
+
+  @override
+  String get editTripCancel => 'Cancel';
+
+  @override
+  String get editTripDeleteChecklistSuccess => 'Checklist deleted successfully';
+
+  @override
+  String get editTripDeleteChecklistFailed => 'Failed to delete checklist item';
+
+  @override
+  String get editTripEdit => 'Edit';
+
+  @override
+  String get viewBills => 'View Bills';
+
+  @override
+  String get alreadySettled => 'Already settled?';
+
+  @override
+  String get paid => 'Paid';
+
+  @override
+  String get confirmSettlement => 'Confirm Payment';
+
+  @override
+  String get confirmSettlementMessage =>
+      'Are you sure you want to mark your share as paid?';
+
+  @override
+  String get settle => 'Mark as Paid';
+
+  @override
+  String get noRecentTripsYet => 'No recent trips yet.';
+
+  @override
+  String get notAvailable => 'N/A';
 }

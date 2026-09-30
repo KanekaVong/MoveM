@@ -19,6 +19,9 @@ import '../../features/notifications/presentation/screens/notification_screen.da
 import '../../features/notifications/presentation/bindings/notification_binding.dart';
 import '../../features/settings/presentation/controllers/profile_controller.dart';
 
+import '../../features/trip/presentation/screens/trip_invitations_screen.dart';
+import '../../features/trip/presentation/bindings/trip_invitation_binding.dart';
+
 class AppPages {
   static final pages = [
     GetPage(
@@ -82,6 +85,11 @@ class AppPages {
       name: AppRoutes.notifications,
       page: () => const NotificationScreen(),
       binding: NotificationBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.tripInvitations,
+      page: () => const TripInvitationsScreen(),
+      binding: TripInvitationBinding(),
     ),
     GetPage(
       name: AppRoutes.profile,

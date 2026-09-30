@@ -10,6 +10,7 @@ import '../../data/dto/response/trip_stop_response.dart';
 import '../../domain/repositories/trip_repository.dart';
 import '../../../../core/network/api_result.dart';
 import '../../data/dto/request/update_trip_request.dart';
+import '../../../groups/data/dto/response/pending_invite_response.dart';
 import 'trip_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -40,6 +41,9 @@ class EditTripController extends BaseController {
   final RxList<TripAttachmentResponse> attachments =
       <TripAttachmentResponse>[].obs;
 
+  final RxList<PendingInviteResponse> pendingInvites =
+      <PendingInviteResponse>[].obs;
+
   final RxBool isEditLoading = false.obs;
   final RxBool isSaving = false.obs;
 
@@ -66,6 +70,7 @@ class EditTripController extends BaseController {
       await Future.wait([
         _loadTrip(),
         _loadMembers(),
+        _loadPendingInvites(),
         _loadPackingItems(),
         _loadChecklists(),
         _loadAttachments(),
@@ -101,6 +106,14 @@ class EditTripController extends BaseController {
 
     if (result is ApiSuccess<List<TripMemberResponse>>) {
       members.assignAll(result.data);
+    }
+  }
+
+  Future<void> _loadPendingInvites() async {
+    final result = await tripRepository.getPendingInvites(activityId);
+
+    if (result is ApiSuccess<List<PendingInviteResponse>>) {
+      pendingInvites.assignAll(result.data);
     }
   }
 
@@ -281,10 +294,157 @@ class EditTripController extends BaseController {
     return false;
   }
 
+  Future<bool> addTripStop({
+    required String locationName,
+    required int sequenceOrder,
+    DateTime? arrivalTime,
+    DateTime? departureTime,
+    String? locationAddress,
+    double? lat,
+    double? lng,
+    String? googlePlaceId,
+    String? coordinates,
+  }) async {
+    final value = locationName.trim();
+
+    if (value.isEmpty) {
+      return false;
+    }
+
+    final request = <String, dynamic>{
+      'locationName': value,
+      'sequenceOrder': sequenceOrder,
+    };
+
+    if (arrivalTime != null) {
+      request['arrivalTime'] = arrivalTime.toIso8601String();
+    }
+
+    if (departureTime != null) {
+      request['departureTime'] = departureTime.toIso8601String();
+    }
+
+    if (locationAddress != null) {
+      request['locationAddress'] = locationAddress;
+    }
+
+    if (lat != null) {
+      request['lat'] = lat;
+    }
+
+    if (lng != null) {
+      request['lng'] = lng;
+    }
+
+    if (googlePlaceId != null) {
+      request['googlePlaceId'] = googlePlaceId;
+    }
+
+    if (coordinates != null) {
+      request['coordinates'] = coordinates;
+    }
+
+    final result = await tripRepository.addTripStop(
+      activityId,
+      request,
+    );
+
+    if (result is ApiSuccess<TripStopResponse>) {
+      stops.add(result.data);
+      return true;
+    }
+
+    if (result is ApiError<TripStopResponse>) {
+      errorMessage.value = result.exception.message;
+    }
+
+    return false;
+  }
+
+  Future<bool> updateTripStop({
+    required int stopId,
+    required String locationName,
+    DateTime? arrivalTime,
+    DateTime? departureTime,
+    String? locationAddress,
+    double? lat,
+    double? lng,
+    String? googlePlaceId,
+    String? coordinates,
+    bool? isCompleted,
+  }) async {
+    final value = locationName.trim();
+
+    if (value.isEmpty) {
+      return false;
+    }
+
+    final index = stops.indexWhere(
+          (stop) => stop.id == stopId,
+    );
+
+    if (index == -1) {
+      return false;
+    }
+
+    final current = stops[index];
+
+    final result = await tripRepository.updateTripStop(
+      activityId,
+      stopId,
+      {
+        'id': stopId,
+        'locationName': value,
+        'arrivalTime': arrivalTime?.toIso8601String(),
+        'departureTime': departureTime?.toIso8601String(),
+        'locationAddress': locationAddress,
+        'lat': lat,
+        'lng': lng,
+        'googlePlaceId': googlePlaceId,
+        'coordinates': coordinates,
+        'isCompleted': isCompleted ?? current.isCompleted ?? false,
+      },
+    );
+
+    if (result is ApiSuccess<TripStopResponse>) {
+      stops[index] = result.data;
+      return true;
+    }
+
+    if (result is ApiError<TripStopResponse>) {
+      errorMessage.value = result.exception.message;
+    }
+
+    return false;
+  }
+
+  Future<bool> deleteTripStop(
+      int stopId,
+      ) async {
+    final result = await tripRepository.deleteTripStop(
+      activityId,
+      stopId,
+    );
+
+    if (result is ApiSuccess<void>) {
+      stops.removeWhere(
+            (stop) => stop.id == stopId,
+      );
+
+      return true;
+    }
+
+    if (result is ApiError<void>) {
+      errorMessage.value = result.exception.message;
+    }
+
+    return false;
+  }
+
   // packing items
   Future<bool> addPackingItem(
-    String itemName,
-  ) async {
+      String itemName,
+      ) async {
     final value = itemName.trim();
 
     if (value.isEmpty) {
@@ -305,8 +465,8 @@ class EditTripController extends BaseController {
   }
 
   Future<bool> togglePackingItem(
-    int itemId,
-  ) async {
+      int itemId,
+      ) async {
     final result = await tripRepository.togglePackingItem(
       activityId,
       itemId,
@@ -314,7 +474,7 @@ class EditTripController extends BaseController {
 
     if (result is ApiSuccess<TripPackingItemResponse>) {
       final index = packingItems.indexWhere(
-        (item) => item.id == itemId,
+            (item) => item.id == itemId,
       );
 
       if (index != -1) {
@@ -325,6 +485,25 @@ class EditTripController extends BaseController {
     }
 
     return false;
+  }
+
+  Future<bool> deletePackingItem(
+      int itemId,
+      ) async {
+    try {
+      await tripRepository.deletePackingItem(
+        activityId,
+        itemId,
+      );
+
+      packingItems.removeWhere(
+            (item) => item.id == itemId,
+      );
+
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   // checklist
@@ -338,44 +517,74 @@ class EditTripController extends BaseController {
       return false;
     }
 
+    final result = await tripRepository.addChecklist(
+      activityId,
+      value,
+    );
+
+    if (result is ApiSuccess<void>) {
+      await loadEditTripData();
+      return true;
+    }
+
+    if (result is ApiError<void>) {
+      errorMessage.value = result.exception.message;
+    }
+
+    return false;
+  }
+
+  Future<bool> toggleChecklist(
+      int checklistId,
+      ) async {
+    final index = checklists.indexWhere(
+          (item) => item.id == checklistId,
+    );
+
+    if (index == -1) {
+      return false;
+    }
+
+    final current = checklists[index];
+
     final success = await updateTrip(
-      addChecklistItems: [
+      updateChecklistItems: [
         {
-          'itemName': value,
+          'id': checklistId,
+          'itemName': current.itemName ?? '',
+          'isCompleted': !current.completed,
         },
       ],
     );
 
     if (success) {
+      checklists[index] = TripChecklistResponse(
+        id: current.id,
+        itemName: current.itemName,
+        completed: !current.completed,
+      );
+
       await tripController.getMyTrips();
     }
 
     return success;
   }
 
-  Future<bool> toggleChecklist(
-    int checklistId,
-  ) async {
-    final result = await tripRepository.completeChecklist(
+  Future<bool> deleteChecklist(int checklistId) async {
+    final result = await tripRepository.deleteChecklist(
+      activityId,
       checklistId,
     );
 
     if (result is ApiSuccess<void>) {
-      final index = checklists.indexWhere(
-        (item) => item.id == checklistId,
+      checklists.removeWhere(
+            (item) => item.id == checklistId,
       );
-
-      if (index != -1) {
-        final current = checklists[index];
-
-        checklists[index] = TripChecklistResponse(
-          id: current.id,
-          itemName: current.itemName,
-          completed: !current.completed,
-        );
-      }
-
       return true;
+    }
+
+    if (result is ApiError<void>) {
+      errorMessage.value = result.exception.message;
     }
 
     return false;
@@ -385,26 +594,41 @@ class EditTripController extends BaseController {
       int checklistId,
       String itemName,
       ) async {
-    final value = itemName.trim();
+    final request = {
+      'itemName': itemName.trim(),
+    };
 
-    if (value.isEmpty) {
-      return false;
-    }
-
-    final success = await updateTrip(
-      updateChecklistItems: [
-        {
-          'id': checklistId,
-          'itemName': value,
-        },
-      ],
+    final result = await tripRepository.updateChecklist(
+      activityId,
+      checklistId,
+      request,
     );
 
-    if (success) {
-      await tripController.getMyTrips();
+    if (result is ApiSuccess<void>) {
+      final index = checklists.indexWhere(
+            (item) => item.id == checklistId,
+      );
+
+      if (index != -1) {
+        final current = checklists[index];
+
+        checklists[index] = TripChecklistResponse(
+          id: current.id,
+          itemName: itemName.trim(),
+          completed: current.completed,
+        );
+
+        checklists.refresh();
+      }
+
+      return true;
     }
 
-    return success;
+    if (result is ApiError<void>) {
+      errorMessage.value = result.exception.message;
+    }
+
+    return false;
   }
 
   // attachment

@@ -450,7 +450,7 @@ class CreateTripFormPanel extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     ...children,
-                    const Spacer(), // <-- shrinks first, then scroll kicks in
+                    const Spacer(),
                     if (bottomAction != null)
                       SafeArea(top: false, child: bottomAction!),
                   ],

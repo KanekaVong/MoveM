@@ -605,7 +605,7 @@ abstract class AppLocalizations {
   /// No description provided for @descriptionHint.
   ///
   /// In en, this message translates to:
-  /// **'Add extra notes...'**
+  /// **'Enter description'**
   String get descriptionHint;
 
   /// No description provided for @deadlineLabel.
@@ -1589,7 +1589,7 @@ abstract class AppLocalizations {
   /// No description provided for @budget.
   ///
   /// In en, this message translates to:
-  /// **'BUDGET'**
+  /// **'Budget'**
   String get budget;
 
   /// No description provided for @stops.
@@ -2822,10 +2822,10 @@ abstract class AppLocalizations {
   /// **'Loading challenges...'**
   String get loadingChallenges;
 
-  /// No description provided for @membersCount.
+  /// Number of trip members
   ///
   /// In en, this message translates to:
-  /// **'Members ({count})'**
+  /// **'{count} members'**
   String membersCount(int count);
 
   /// No description provided for @completedChallengesLabel.
@@ -3119,7 +3119,7 @@ abstract class AppLocalizations {
   /// No description provided for @history.
   ///
   /// In en, this message translates to:
-  /// **'History'**
+  /// **'HISTORY'**
   String get history;
 
   /// No description provided for @profileAndGoal.
@@ -3319,6 +3319,588 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Verification Failed'**
   String get verificationFailed;
+
+  /// No description provided for @tripMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Members'**
+  String get tripMembers;
+
+  /// No description provided for @pendingInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Invitations'**
+  String get pendingInvitations;
+
+  /// No description provided for @noPendingInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending invitations'**
+  String get noPendingInvitations;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pending;
+
+  /// No description provided for @inviteFriend.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Friend'**
+  String get inviteFriend;
+
+  /// No description provided for @searchFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Search friends'**
+  String get searchFriends;
+
+  /// No description provided for @searchFriendsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by username or email'**
+  String get searchFriendsHint;
+
+  /// No description provided for @searchToFindFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Search to find friends'**
+  String get searchToFindFriends;
+
+  /// No description provided for @invitationPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation Pending'**
+  String get invitationPending;
+
+  /// No description provided for @invitationSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation sent successfully'**
+  String get invitationSent;
+
+  /// No description provided for @failedToSendInvitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send invitation'**
+  String get failedToSendInvitation;
+
+  /// No description provided for @tripInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Invitations'**
+  String get tripInvitations;
+
+  /// No description provided for @noTripInvitations.
+  ///
+  /// In en, this message translates to:
+  /// **'No trip invitations'**
+  String get noTripInvitations;
+
+  /// No description provided for @invitedYouToTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'invited you to a trip'**
+  String get invitedYouToTrip;
+
+  /// No description provided for @invitationAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation accepted'**
+  String get invitationAccepted;
+
+  /// No description provided for @tripAddedToYourTrips.
+  ///
+  /// In en, this message translates to:
+  /// **'The trip has been added to your trips.'**
+  String get tripAddedToYourTrips;
+
+  /// No description provided for @invitationRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation rejected'**
+  String get invitationRejected;
+
+  /// No description provided for @addExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Expense'**
+  String get addExpense;
+
+  /// No description provided for @addBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Budget'**
+  String get addBudget;
+
+  /// No description provided for @expense.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense'**
+  String get expense;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @type.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get type;
+
+  /// No description provided for @tapToEnterAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to enter amount'**
+  String get tapToEnterAmount;
+
+  /// No description provided for @tripExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Expenses'**
+  String get tripExpenses;
+
+  /// No description provided for @totalBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'TOTAL BUDGET'**
+  String get totalBudget;
+
+  /// No description provided for @spent.
+  ///
+  /// In en, this message translates to:
+  /// **'SPENT'**
+  String get spent;
+
+  /// No description provided for @remaining.
+  ///
+  /// In en, this message translates to:
+  /// **'REMAINING'**
+  String get remaining;
+
+  /// No description provided for @categories.
+  ///
+  /// In en, this message translates to:
+  /// **'CATEGORIES'**
+  String get categories;
+
+  /// No description provided for @addExpenseBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'ADD EXPENSE / BUDGET'**
+  String get addExpenseBudget;
+
+  /// No description provided for @foodsAndDrinks.
+  ///
+  /// In en, this message translates to:
+  /// **'Foods & Drinks'**
+  String get foodsAndDrinks;
+
+  /// No description provided for @accommodations.
+  ///
+  /// In en, this message translates to:
+  /// **'Accommodations'**
+  String get accommodations;
+
+  /// No description provided for @transportation.
+  ///
+  /// In en, this message translates to:
+  /// **'Transportation'**
+  String get transportation;
+
+  /// No description provided for @others.
+  ///
+  /// In en, this message translates to:
+  /// **'Others'**
+  String get others;
+
+  /// No description provided for @paidBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} • Paid by {payerName}'**
+  String paidBy(Object amount, Object payerName);
+
+  /// No description provided for @trackAllYourExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Track All Your Expenses'**
+  String get trackAllYourExpenses;
+
+  /// No description provided for @allCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All Categories'**
+  String get allCategories;
+
+  /// No description provided for @filterExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Expenses'**
+  String get filterExpenses;
+
+  /// No description provided for @splitBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Split Bills'**
+  String get splitBills;
+
+  /// No description provided for @noExpensesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses yet'**
+  String get noExpensesYet;
+
+  /// No description provided for @expensesWillAppearHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Your trip expenses will appear here.'**
+  String get expensesWillAppearHere;
+
+  /// No description provided for @deleteExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Expense?'**
+  String get deleteExpense;
+
+  /// No description provided for @deleteExpenseConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{description}\"?'**
+  String deleteExpenseConfirmation(Object description);
+
+  /// No description provided for @unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknown;
+
+  /// No description provided for @allocatedAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Allocated Amount'**
+  String get allocatedAmount;
+
+  /// No description provided for @editCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {category}'**
+  String editCategory(Object category);
+
+  /// No description provided for @addDescriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Descriptions'**
+  String get addDescriptions;
+
+  /// No description provided for @descriptionDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write more details on this expense so your friends know what they\'re for.'**
+  String get descriptionDetailsHint;
+
+  /// No description provided for @expensePaidBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} is paid by {payerName}'**
+  String expensePaidBy(Object amount, Object payerName);
+
+  /// No description provided for @splitBetween.
+  ///
+  /// In en, this message translates to:
+  /// **'Split Between'**
+  String get splitBetween;
+
+  /// No description provided for @amountOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount Owed'**
+  String get amountOwed;
+
+  /// No description provided for @settled.
+  ///
+  /// In en, this message translates to:
+  /// **'Settled'**
+  String get settled;
+
+  /// No description provided for @unsettled.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsettled'**
+  String get unsettled;
+
+  /// No description provided for @noSplitInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'No split information available.'**
+  String get noSplitInformation;
+
+  /// No description provided for @splitBillsWithFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Split Bills With Your Friends!'**
+  String get splitBillsWithFriends;
+
+  /// No description provided for @members.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get members;
+
+  /// No description provided for @expenseAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense Amount'**
+  String get expenseAmount;
+
+  /// No description provided for @splitType.
+  ///
+  /// In en, this message translates to:
+  /// **'Split Type'**
+  String get splitType;
+
+  /// No description provided for @equal.
+  ///
+  /// In en, this message translates to:
+  /// **'Equal'**
+  String get equal;
+
+  /// No description provided for @custom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get custom;
+
+  /// No description provided for @splitAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Split Amount'**
+  String get splitAmount;
+
+  /// No description provided for @createSplitBill.
+  ///
+  /// In en, this message translates to:
+  /// **'CREATE SPLIT BILL'**
+  String get createSplitBill;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get comingSoon;
+
+  /// No description provided for @splitBillComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Split bill creation will be available soon.'**
+  String get splitBillComingSoon;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// Total amount spent on a trip
+  ///
+  /// In en, this message translates to:
+  /// **'Total Spent: {amount}\$'**
+  String totalSpent(Object amount);
+
+  /// No description provided for @addTripCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Trip Cover'**
+  String get addTripCover;
+
+  /// No description provided for @changeTripCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Trip Cover'**
+  String get changeTripCover;
+
+  /// No description provided for @addTripCoverImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add trip cover image'**
+  String get addTripCoverImage;
+
+  /// No description provided for @changeCurrentImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Change current image'**
+  String get changeCurrentImage;
+
+  /// No description provided for @recentTrips.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Trips'**
+  String get recentTrips;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort By'**
+  String get sortBy;
+
+  /// No description provided for @newestDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest Date'**
+  String get newestDate;
+
+  /// No description provided for @oldestDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest Date'**
+  String get oldestDate;
+
+  /// No description provided for @highestSpent.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest Spent'**
+  String get highestSpent;
+
+  /// No description provided for @noTripsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No trips yet.'**
+  String get noTripsYet;
+
+  /// No description provided for @editTripDeleteStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Stop'**
+  String get editTripDeleteStop;
+
+  /// No description provided for @editTripDeleteStopConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this stop?'**
+  String get editTripDeleteStopConfirmation;
+
+  /// No description provided for @editTripEditStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Stop'**
+  String get editTripEditStop;
+
+  /// No description provided for @editTripEditStopNotImplemented.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop editing will be available here.'**
+  String get editTripEditStopNotImplemented;
+
+  /// No description provided for @editTripAddStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Stop'**
+  String get editTripAddStop;
+
+  /// No description provided for @editTripAddStopSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop added successfully'**
+  String get editTripAddStopSuccess;
+
+  /// No description provided for @editTripDeleteChecklist.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Checklist'**
+  String get editTripDeleteChecklist;
+
+  /// No description provided for @editTripDeleteChecklistConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this checklist item?'**
+  String get editTripDeleteChecklistConfirm;
+
+  /// No description provided for @editTripDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get editTripDelete;
+
+  /// No description provided for @editTripCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get editTripCancel;
+
+  /// No description provided for @editTripDeleteChecklistSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Checklist deleted successfully'**
+  String get editTripDeleteChecklistSuccess;
+
+  /// No description provided for @editTripDeleteChecklistFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete checklist item'**
+  String get editTripDeleteChecklistFailed;
+
+  /// No description provided for @editTripEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editTripEdit;
+
+  /// No description provided for @viewBills.
+  ///
+  /// In en, this message translates to:
+  /// **'View Bills'**
+  String get viewBills;
+
+  /// No description provided for @alreadySettled.
+  ///
+  /// In en, this message translates to:
+  /// **'Already settled?'**
+  String get alreadySettled;
+
+  /// No description provided for @paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get paid;
+
+  /// No description provided for @confirmSettlement.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Payment'**
+  String get confirmSettlement;
+
+  /// No description provided for @confirmSettlementMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to mark your share as paid?'**
+  String get confirmSettlementMessage;
+
+  /// No description provided for @settle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Paid'**
+  String get settle;
+
+  /// No description provided for @noRecentTripsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent trips yet.'**
+  String get noRecentTripsYet;
+
+  /// No description provided for @notAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'N/A'**
+  String get notAvailable;
 }
 
 class _AppLocalizationsDelegate

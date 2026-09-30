@@ -5,6 +5,18 @@ import 'package:get/get.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/edit_trip_controller.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../data/dto/response/trip_member_response.dart';
+import '../../../groups/data/dto/response/pending_invite_response.dart';
+import '../../data/dto/response/trip_stop_response.dart';
+import 'dart:async';
+import 'package:movem/core/config/google_map_style.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+
+import 'package:movem/features/trip/data/services/google_places_service.dart';
 import 'package:movem/core/utils/app_snack.dart';
 
 /// Reusable edit form container.
@@ -359,7 +371,6 @@ class EditTripFieldSpacing extends StatelessWidget {
   }
 }
 
-
 class TripNameEditPanel extends StatefulWidget {
   final EditTripController controller;
 
@@ -397,29 +408,25 @@ class _TripNameEditPanelState extends State<TripNameEditPanel> {
     if (name.isEmpty) {
       AppSnack.show(
         l10n?.editTripName ?? 'Trip Name',
-        l10n?.editTripNameRequired ??
-            'Trip name cannot be empty',
+        l10n?.editTripNameRequired ?? 'Trip name cannot be empty',
         snackPosition: SnackPosition.BOTTOM,
       );
 
       return;
     }
 
-    final success =
-    await widget.controller.saveTripName(name);
+    final success = await widget.controller.saveTripName(name);
 
     if (success) {
       AppSnack.show(
         l10n?.editTripUpdateSuccess ?? 'Success',
-        l10n?.editTripNameUpdated ??
-            'Trip name updated',
+        l10n?.editTripNameUpdated ?? 'Trip name updated',
         snackPosition: SnackPosition.BOTTOM,
       );
     } else {
       AppSnack.show(
         l10n?.error ?? 'Error',
-        l10n?.editTripUpdateFailed ??
-            'Failed to update trip',
+        l10n?.editTripUpdateFailed ?? 'Failed to update trip',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -440,20 +447,16 @@ class _TripNameEditPanelState extends State<TripNameEditPanel> {
               EditTripSectionTitle(
                 title: l10n?.editTripName ?? 'Trip Name',
               ),
-
               const EditTripFieldSpacing(height: 24),
-
               EditTripTextField(
                 controller: _nameController,
-                hintText:
-                l10n?.editTripNameHint ?? 'Enter trip name',
+                hintText: l10n?.editTripNameHint ?? 'Enter trip name',
                 textInputAction: TextInputAction.done,
               ),
             ],
           ),
-
           Obx(
-                () => EditTripPrimaryButton(
+            () => EditTripPrimaryButton(
               text: l10n?.editTripSaveChanges ?? 'SAVE CHANGES',
               isLoading: widget.controller.isSaving.value,
               onPressed: _save,
@@ -465,20 +468,19 @@ class _TripNameEditPanelState extends State<TripNameEditPanel> {
   }
 }
 
-
-class DurationEditPanel  extends StatefulWidget {
+class DurationEditPanel extends StatefulWidget {
   final EditTripController controller;
 
-  const DurationEditPanel ({
+  const DurationEditPanel({
     super.key,
     required this.controller,
   });
 
   @override
-  State<DurationEditPanel > createState() => _DurationEditPanelState();
+  State<DurationEditPanel> createState() => _DurationEditPanelState();
 }
 
-class _DurationEditPanelState extends State<DurationEditPanel > {
+class _DurationEditPanelState extends State<DurationEditPanel> {
   DateTime? _startActivity;
   DateTime? _deadline;
 
@@ -526,18 +528,14 @@ class _DurationEditPanelState extends State<DurationEditPanel > {
     setState(() {
       _startActivity = result;
 
-      if (_deadline != null &&
-          _deadline!.isBefore(_startActivity!)) {
+      if (_deadline != null && _deadline!.isBefore(_startActivity!)) {
         _deadline = _startActivity;
       }
     });
   }
 
   Future<void> _selectDeadline() async {
-    final current =
-        _deadline ??
-            _startActivity ??
-            DateTime.now();
+    final current = _deadline ?? _startActivity ?? DateTime.now();
 
     final selectedDate = await showDatePicker(
       context: context,
@@ -654,7 +652,7 @@ class _DurationEditPanelState extends State<DurationEditPanel > {
           ),
           const Spacer(),
           Obx(
-                () => EditTripPrimaryButton(
+            () => EditTripPrimaryButton(
               text: l10n?.editTripSaveChanges ?? 'SAVE CHANGES',
               isLoading: widget.controller.isSaving.value,
               onPressed: _save,
@@ -680,8 +678,7 @@ class EditTripDateField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark =
-        Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),
@@ -690,25 +687,18 @@ class EditTripDateField extends StatelessWidget {
         decoration: InputDecoration(
           labelText: label,
           filled: true,
-          fillColor:
-          isDark ? AppColors.slate800 : Colors.white,
+          fillColor: isDark ? AppColors.slate800 : Colors.white,
           labelStyle: TextStyle(
-            color: isDark
-                ? AppColors.slate400
-                : AppColors.slate500,
+            color: isDark ? AppColors.slate400 : AppColors.slate500,
           ),
           suffixIcon: Icon(
             Icons.calendar_today_rounded,
-            color: isDark
-                ? AppColors.slate400
-                : AppColors.slate500,
+            color: isDark ? AppColors.slate400 : AppColors.slate500,
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: BorderSide(
-              color: isDark
-                  ? AppColors.slate700
-                  : AppColors.slate300,
+              color: isDark ? AppColors.slate700 : AppColors.slate300,
             ),
           ),
           border: OutlineInputBorder(
@@ -718,9 +708,7 @@ class EditTripDateField extends StatelessWidget {
         child: Text(
           value,
           style: TextStyle(
-            color: isDark
-                ? AppColors.darkOnSurface
-                : AppColors.lightOnSurface,
+            color: isDark ? AppColors.darkOnSurface : AppColors.lightOnSurface,
             fontSize: 15,
             fontWeight: FontWeight.w500,
           ),
@@ -730,7 +718,372 @@ class EditTripDateField extends StatelessWidget {
   }
 }
 
-class StopsEditPanel extends StatelessWidget {
+class MembersEditPanel extends StatelessWidget {
+  final EditTripController controller;
+  final VoidCallback onInviteFriend;
+
+  const MembersEditPanel({
+    super.key,
+    required this.controller,
+    required this.onInviteFriend,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final textColor =
+        isDark ? AppColors.darkOnSurface : AppColors.lightOnSurface;
+
+    final secondaryTextColor = isDark ? AppColors.slate400 : AppColors.slate500;
+
+    return EditTripFormPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          EditTripSectionTitle(
+            title: l10n?.tripMembers ?? 'Trip Members',
+            icon: Icons.group_rounded,
+          ),
+          const EditTripFieldSpacing(height: 18),
+          Expanded(
+            child: Obx(() {
+              final members = controller.members;
+              final pendingInvites = controller.pendingInvites;
+
+              final hasMembers = members.isNotEmpty;
+              final hasPending = pendingInvites.isNotEmpty;
+
+              if (!hasMembers && !hasPending) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.group_outlined,
+                        size: 44,
+                        color: secondaryTextColor,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        l10n?.noMembersYet ?? 'No members yet',
+                        style: TextStyle(
+                          color: secondaryTextColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  if (hasMembers) ...[
+                    ...members.map(
+                      (member) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: _MemberItem(
+                          member: member,
+                          isDark: isDark,
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (hasPending) ...[
+                    const SizedBox(height: 8),
+                    _MembersSubsectionTitle(
+                      title: l10n?.pendingInvitations ?? 'Pending Invitations',
+                      icon: Icons.schedule_rounded,
+                      isDark: isDark,
+                    ),
+                    const SizedBox(height: 10),
+                    ...pendingInvites.map(
+                      (invite) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: _PendingInviteItem(
+                          invite: invite,
+                          isDark: isDark,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              );
+            }),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton.icon(
+              onPressed: onInviteFriend,
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    isDark ? const Color(0xFFF1F5F9) : AppColors.commentBarBg,
+                foregroundColor:
+                    isDark ? AppColors.darkOnPrimary : Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              icon: const Icon(
+                Icons.person_add_alt_1,
+                size: 19,
+              ),
+              label: Text(
+                l10n?.inviteFriend ?? 'Invite Friend',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MembersSubsectionTitle extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final bool isDark;
+
+  const _MembersSubsectionTitle({
+    required this.title,
+    required this.icon,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 16,
+          color: isDark ? AppColors.slate300 : AppColors.slate600,
+        ),
+        const SizedBox(width: 7),
+        Text(
+          title,
+          style: TextStyle(
+            color: isDark ? AppColors.slate300 : AppColors.slate600,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MemberItem extends StatelessWidget {
+  final TripMemberResponse member;
+  final bool isDark;
+
+  const _MemberItem({
+    required this.member,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fullName = '${member.firstname} ${member.lastname}'.trim();
+
+    final displayName = fullName.isEmpty ? member.username : fullName;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.slate800 : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isDark ? AppColors.slate700 : AppColors.slate300,
+        ),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: isDark ? AppColors.slate700 : AppColors.slate100,
+            backgroundImage: member.profilePic.isNotEmpty
+                ? NetworkImage(member.profilePic)
+                : null,
+            child: member.profilePic.isEmpty
+                ? Icon(
+                    Icons.person_rounded,
+                    color: isDark ? AppColors.slate300 : AppColors.slate600,
+                  )
+                : null,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  displayName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: isDark
+                        ? AppColors.darkOnSurface
+                        : AppColors.lightOnSurface,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '@${member.username}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: isDark ? AppColors.slate400 : AppColors.slate500,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 6,
+            ),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.slate700 : AppColors.slate100,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              member.role,
+              style: TextStyle(
+                color: isDark ? AppColors.slate300 : AppColors.slate600,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PendingInviteItem extends StatelessWidget {
+  final PendingInviteResponse invite;
+  final bool isDark;
+
+  const _PendingInviteItem({
+    required this.invite,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    final backgroundColor = isDark ? AppColors.slate800 : Colors.white;
+
+    final borderColor = isDark ? AppColors.slate700 : AppColors.slate300;
+
+    final textColor =
+        isDark ? AppColors.darkOnSurface : AppColors.lightOnSurface;
+
+    final secondaryTextColor = isDark ? AppColors.slate400 : AppColors.slate500;
+
+    final initial = invite.inviteeUsername.isNotEmpty
+        ? invite.inviteeUsername[0].toUpperCase()
+        : '?';
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: borderColor,
+        ),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: isDark ? AppColors.slate700 : AppColors.slate100,
+            child: Text(
+              initial,
+              style: TextStyle(
+                color: isDark ? AppColors.slate200 : AppColors.slate600,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '@${invite.inviteeUsername}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (invite.inviteeEmail != null &&
+                    invite.inviteeEmail!.isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    invite.inviteeEmail!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: secondaryTextColor,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 6,
+            ),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.slate700 : AppColors.slate100,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              l10n?.pending ?? 'Pending',
+              style: TextStyle(
+                color: secondaryTextColor,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class StopsEditPanel extends StatefulWidget {
   final EditTripController controller;
 
   const StopsEditPanel({
@@ -739,58 +1092,866 @@ class StopsEditPanel extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final isDark =
-        Theme.of(context).brightness == Brightness.dark;
+  State<StopsEditPanel> createState() => _StopsEditPanelState();
+}
 
-    return EditTripFormPanel(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          EditTripSectionTitle(
-            title: l10n?.editTripSectionStops ?? 'Stops',
-            icon: Icons.location_on_rounded,
+class _StopsEditPanelState extends State<StopsEditPanel> {
+  final GooglePlacesService _placesService = GooglePlacesService();
+
+  final TextEditingController _searchController = TextEditingController();
+
+  GoogleMapController? _mapController;
+
+  Timer? _autocompleteTimer;
+
+  bool _hasPermission = false;
+  bool _isGettingLocation = false;
+  bool _isSearching = false;
+  bool _isResolvingLocation = false;
+
+  List<GooglePlacePrediction> _suggestions = [];
+
+  static const LatLng _defaultLocation = LatLng(
+    11.5564,
+    104.9282,
+  );
+
+  LatLng _initialPosition = _defaultLocation;
+  LatLng? _selectedLocation;
+
+  int? _editingStopId;
+  String? _selectedLocationName;
+  String? _selectedLocationAddress;
+  String? _selectedGooglePlaceId;
+
+  @override
+  void dispose() {
+    _autocompleteTimer?.cancel();
+    _searchController.dispose();
+    _mapController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLocationPermission();
+    });
+  }
+
+  void _showMessage(String message) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
+  Future<bool> _ensureLocationPermission() async {
+    var status = await Permission.location.status;
+
+    if (!status.isGranted) {
+      status = await Permission.location.request();
+    }
+
+    if (!status.isGranted) {
+      return false;
+    }
+
+    if (mounted) {
+      setState(() {
+        _hasPermission = true;
+      });
+    }
+
+    return true;
+  }
+
+  Future<void> _checkLocationPermission() async {
+    final granted = await _ensureLocationPermission();
+
+    if (!granted) return;
+
+    await _getCurrentLocation();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    if (_isGettingLocation) return;
+
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    if (!serviceEnabled) {
+      return;
+    }
+
+    final granted = await _ensureLocationPermission();
+
+    if (!granted) return;
+
+    if (mounted) {
+      setState(() {
+        _isGettingLocation = true;
+      });
+    }
+
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.low,
+        ),
+      );
+
+      final location = LatLng(
+        position.latitude,
+        position.longitude,
+      );
+
+      _initialPosition = location;
+
+      await _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          location,
+          15.0,
+        ),
+      );
+    } catch (_) {
+    } finally {
+      if (!mounted) return;
+
+      setState(() {
+        _isGettingLocation = false;
+      });
+    }
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+
+    controller.setMapStyle(
+      GoogleMapStyle.darkMapStyle,
+    );
+
+    final target = _selectedLocation ?? _initialPosition;
+
+    controller.animateCamera(
+      CameraUpdate.newLatLngZoom(
+        target,
+        _selectedLocation != null ? 15.0 : 12.0,
+      ),
+    );
+  }
+
+  void _onMapTap(LatLng position) {
+    _resolveCoordinates(position);
+  }
+
+  Future<void> _resolveCoordinates(
+    LatLng location,
+  ) async {
+    if (_isResolvingLocation) return;
+
+    if (mounted) {
+      setState(() {
+        _isResolvingLocation = true;
+      });
+    }
+
+    try {
+      final result = await _placesService.reverseGeocode(
+        location.latitude,
+        location.longitude,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _selectedLocation = LatLng(
+          result.latitude,
+          result.longitude,
+        );
+
+        _selectedLocationName = result.name.trim();
+        _selectedLocationAddress = result.address;
+        _selectedGooglePlaceId = result.placeId;
+
+        _searchController.text = result.name.trim();
+        _suggestions = [];
+      });
+
+      await _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng(
+            result.latitude,
+            result.longitude,
           ),
+          14.0,
+        ),
+      );
+    } catch (_) {
+      _showMessage(
+        AppLocalizations.of(context)?.tripLocationNotFound ??
+            'Location not found',
+      );
+    } finally {
+      if (!mounted) return;
 
-          const EditTripFieldSpacing(height: 12),
+      setState(() {
+        _isResolvingLocation = false;
+      });
+    }
+  }
 
-          Text(
-            l10n?.editTripReorderStops ??
-                'Drag to reorder stops',
-            style: TextStyle(
-              color: isDark
-                  ? AppColors.slate400
-                  : AppColors.slate500,
-              fontSize: 13,
+  void _onSearchChanged(String value) {
+    _autocompleteTimer?.cancel();
+
+    final query = value.trim();
+
+    if (query.isEmpty) {
+      _placesService.resetSession();
+
+      setState(() {
+        _suggestions = [];
+        _isSearching = false;
+      });
+
+      return;
+    }
+
+    if (query.length < 3) {
+      setState(() {
+        _suggestions = [];
+        _isSearching = false;
+      });
+
+      return;
+    }
+
+    setState(() {
+      _isSearching = true;
+    });
+
+    _autocompleteTimer = Timer(
+      const Duration(milliseconds: 400),
+      () {
+        _loadSuggestions(query);
+      },
+    );
+  }
+
+  Future<void> _loadSuggestions(String query) async {
+    try {
+      final results = await _placesService.autocomplete(query);
+
+      if (!mounted) return;
+
+      if (_searchController.text.trim() != query) {
+        return;
+      }
+
+      setState(() {
+        _suggestions = results;
+        _isSearching = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _suggestions = [];
+        _isSearching = false;
+      });
+    }
+  }
+
+  Future<void> _selectPrediction(
+    GooglePlacePrediction prediction,
+  ) async {
+    FocusScope.of(context).unfocus();
+
+    _autocompleteTimer?.cancel();
+
+    if (mounted) {
+      setState(() {
+        _suggestions = [];
+        _isSearching = false;
+      });
+    }
+
+    try {
+      final details = await _placesService.getPlaceDetails(
+        prediction.placeId,
+      );
+
+      if (!mounted) return;
+
+      final location = LatLng(
+        details.latitude,
+        details.longitude,
+      );
+
+      setState(() {
+        _selectedLocation = location;
+        _selectedLocationName = details.name.trim();
+        _selectedLocationAddress = details.address;
+        _selectedGooglePlaceId = details.placeId;
+
+        _searchController.text = details.name.trim();
+      });
+
+      await _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          location,
+          14.0,
+        ),
+      );
+    } catch (_) {
+      _showMessage(
+        AppLocalizations.of(context)?.tripLocationSearchFailed ??
+            'Location search failed',
+      );
+    }
+  }
+
+  Future<void> _addStop() async {
+    final location = _selectedLocation;
+    final locationName = _selectedLocationName;
+
+    if (location == null ||
+        locationName == null ||
+        locationName.trim().isEmpty) {
+      return;
+    }
+
+    if (_editingStopId != null) {
+      final success = await widget.controller.updateTripStop(
+        stopId: _editingStopId!,
+        locationName: locationName,
+        locationAddress: _selectedLocationAddress,
+        lat: location.latitude,
+        lng: location.longitude,
+        googlePlaceId: _selectedGooglePlaceId,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      final l10n = AppLocalizations.of(context);
+
+      Get.snackbar(
+        success
+            ? (l10n?.editTripUpdateSuccess ?? 'Success')
+            : (l10n?.error ?? 'Error'),
+        success
+            ? 'Stop updated successfully'
+            : (l10n?.editTripUpdateFailed ?? 'Failed to update stop'),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+
+      if (success) {
+        setState(() {
+          _editingStopId = null;
+          _selectedLocation = null;
+          _selectedLocationName = null;
+          _selectedLocationAddress = null;
+          _selectedGooglePlaceId = null;
+          _searchController.clear();
+          _suggestions = [];
+        });
+
+        _placesService.resetSession();
+      }
+
+      return;
+    }
+
+    final success = await widget.controller.addTripStop(
+      locationName: locationName,
+      sequenceOrder: widget.controller.stops.length + 1,
+      locationAddress: _selectedLocationAddress,
+      lat: location.latitude,
+      lng: location.longitude,
+      googlePlaceId: _selectedGooglePlaceId,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context);
+
+    Get.snackbar(
+      success
+          ? (l10n?.editTripUpdateSuccess ?? 'Success')
+          : (l10n?.error ?? 'Error'),
+      success
+          ? (l10n?.editTripAddStopSuccess ?? 'Stop added successfully')
+          : (l10n?.editTripUpdateFailed ?? 'Failed to add stop'),
+      snackPosition: SnackPosition.BOTTOM,
+    );
+
+    if (success) {
+      setState(() {
+        _selectedLocation = null;
+        _selectedLocationName = null;
+        _selectedLocationAddress = null;
+        _selectedGooglePlaceId = null;
+        _searchController.clear();
+        _suggestions = [];
+      });
+
+      _placesService.resetSession();
+    }
+  }
+
+  Future<void> _deleteStop(
+    BuildContext context,
+    int stopId,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(
+            l10n?.editTripDeleteStop ?? 'Delete Stop',
+          ),
+          content: Text(
+            l10n?.editTripDeleteStopConfirmation ??
+                'Are you sure you want to delete this stop?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, false);
+              },
+              child: const Text('CANCEL'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, true);
+              },
+              child: const Text('DELETE'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    final success = await widget.controller.deleteTripStop(stopId);
+
+    if (!context.mounted) {
+      return;
+    }
+
+    Get.snackbar(
+      success
+          ? (l10n?.editTripUpdateSuccess ?? 'Success')
+          : (l10n?.error ?? 'Error'),
+      success
+          ? (l10n?.editTripDeleteStop ?? 'Stop deleted')
+          : (l10n?.editTripUpdateFailed ?? 'Failed to delete stop'),
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  Future<void> _editStop(
+    BuildContext context,
+    TripStopResponse stop,
+  ) async {
+    if (stop.id == null || stop.lat == null || stop.lng == null) {
+      Get.snackbar(
+        'Error',
+        'This stop does not have a valid location.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    setState(() {
+      _editingStopId = stop.id;
+      _selectedLocation = LatLng(
+        stop.lat!,
+        stop.lng!,
+      );
+      _selectedLocationName = stop.locationName;
+      _selectedLocationAddress = stop.locationAddress;
+      _selectedGooglePlaceId = stop.googlePlaceId;
+      _searchController.text = stop.locationName ?? '';
+      _suggestions = [];
+    });
+
+    await _mapController?.animateCamera(
+      CameraUpdate.newLatLngZoom(
+        LatLng(
+          stop.lat!,
+          stop.lng!,
+        ),
+        14.0,
+      ),
+    );
+
+    _placesService.resetSession();
+  }
+
+  Widget _buildSearchOverlay(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black38,
+            blurRadius: 20,
+            offset: Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
+          color: const Color(0xE6151D2D),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _searchController,
+                onChanged: _onSearchChanged,
+                textInputAction: TextInputAction.search,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
+                decoration: InputDecoration(
+                  hintText: l10n.tripLocationSearchHint,
+                  hintStyle: const TextStyle(
+                    color: Colors.white54,
+                    fontSize: 14,
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.search_rounded,
+                    color: Colors.white70,
+                  ),
+                  suffixIcon: _isSearching
+                      ? const Padding(
+                          padding: EdgeInsets.all(14),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : (_searchController.text.isNotEmpty
+                          ? IconButton(
+                              onPressed: () {
+                                _searchController.clear();
+
+                                setState(() {
+                                  _suggestions = [];
+                                  _isSearching = false;
+                                  _selectedLocation = null;
+                                  _selectedLocationName = null;
+                                  _selectedLocationAddress = null;
+                                  _selectedGooglePlaceId = null;
+                                });
+
+                                _placesService.resetSession();
+                              },
+                              icon: const Icon(
+                                Icons.close_rounded,
+                                color: Colors.white70,
+                              ),
+                            )
+                          : null),
+                  filled: true,
+                  fillColor: const Color(0x99171E2D),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                ),
+              ),
+              if (_suggestions.isNotEmpty)
+                Container(
+                  constraints: const BoxConstraints(
+                    maxHeight: 250,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: Color(0xF2171E2D),
+                  ),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                    ),
+                    itemCount: _suggestions.length,
+                    separatorBuilder: (_, __) => Divider(
+                      height: 1,
+                      color: Colors.white.withValues(
+                        alpha: 0.08,
+                      ),
+                    ),
+                    itemBuilder: (context, index) {
+                      final prediction = _suggestions[index];
+
+                      return ListTile(
+                        onTap: () => _selectPrediction(
+                          prediction,
+                        ),
+                        leading: const Icon(
+                          Icons.location_on_outlined,
+                          color: Colors.white70,
+                          size: 21,
+                        ),
+                        title: Text(
+                          prediction.primaryText,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        subtitle: prediction.secondaryText == null
+                            ? null
+                            : Text(
+                                prediction.secondaryText!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 11,
+                                ),
+                              ),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMapControl({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return ClipOval(
+      child: Material(
+        color: Colors.white,
+        child: InkWell(
+          onTap: onTap,
+          child: SizedBox(
+            width: 44,
+            height: 44,
+            child: Icon(
+              icon,
+              color: Colors.black,
+              size: 20,
             ),
           ),
+        ),
+      ),
+    );
+  }
 
-          const EditTripFieldSpacing(height: 16),
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-          Expanded(
-            child: Obx(() {
-              final stops = controller.stops;
+    return EditTripFormPanel(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            EditTripSectionTitle(
+              title: l10n?.editTripSectionStops ?? 'Stops',
+              icon: Icons.location_on_rounded,
+            ),
+            const EditTripFieldSpacing(height: 12),
+            SizedBox(
+              height: 220,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Stack(
+                  children: [
+                    GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: _initialPosition,
+                        zoom: 12.0,
+                      ),
+                      onMapCreated: _onMapCreated,
+                      onTap: _onMapTap,
+                      myLocationEnabled: _hasPermission,
+                      myLocationButtonEnabled: false,
+                      zoomControlsEnabled: false,
+                      mapToolbarEnabled: false,
+                      compassEnabled: false,
+                      gestureRecognizers: <Factory<
+                          OneSequenceGestureRecognizer>>{
+                        Factory<OneSequenceGestureRecognizer>(
+                          () => EagerGestureRecognizer(),
+                        ),
+                      },
+                      markers: _selectedLocation == null
+                          ? {}
+                          : {
+                              Marker(
+                                markerId: const MarkerId(
+                                  'selected-location',
+                                ),
+                                position: _selectedLocation!,
+                              ),
+                            },
+                    ),
+                    Positioned(
+                      top: 12,
+                      left: 12,
+                      right: 12,
+                      child: _buildSearchOverlay(
+                        context,
+                        l10n!,
+                      ),
+                    ),
+                    Positioned(
+                      right: 12,
+                      bottom: 12,
+                      child: Column(
+                        children: [
+                          _buildMapControl(
+                            icon: Icons.add,
+                            onTap: () async {
+                              await _mapController?.animateCamera(
+                                CameraUpdate.zoomIn(),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 8),
+                          _buildMapControl(
+                            icon: Icons.remove,
+                            onTap: () async {
+                              await _mapController?.animateCamera(
+                                CameraUpdate.zoomOut(),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                          _buildMapControl(
+                            icon: Icons.my_location,
+                            onTap: _getCurrentLocation,
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (_isResolvingLocation)
+                      Positioned.fill(
+                        child: Container(
+                          color: Colors.black.withOpacity(0.15),
+                          child: const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            const EditTripFieldSpacing(height: 12),
+            if (_selectedLocationName != null)
+              Text(
+                _selectedLocationName!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: isDark
+                      ? AppColors.darkOnSurface
+                      : AppColors.lightOnSurface,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            if (_selectedLocationAddress != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  _selectedLocationAddress!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: isDark ? AppColors.slate400 : AppColors.slate500,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            const EditTripFieldSpacing(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _selectedLocation == null ? null : _addStop,
+                icon: const Icon(
+                  Icons.add_location_alt_rounded,
+                ),
+                label: Text(
+                  _editingStopId != null
+                      ? 'Save Changes'
+                      : (l10n?.editTripAddStop ?? 'Add Stop'),
+                ),
+              ),
+            ),
+            const EditTripFieldSpacing(height: 16),
+            Text(
+              l10n?.editTripReorderStops ?? 'Drag to reorder stops',
+              style: TextStyle(
+                color: isDark ? AppColors.slate400 : AppColors.slate500,
+                fontSize: 13,
+              ),
+            ),
+            const EditTripFieldSpacing(height: 12),
+            Obx(() {
+              final stops = widget.controller.stops;
 
               if (stops.isEmpty) {
-                return Center(
-                  child: Text(
-                    l10n?.editTripNoStopsAdded ??
-                        'No stops added',
-                    style: TextStyle(
-                      color: isDark
-                          ? AppColors.slate400
-                          : AppColors.slate500,
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 30,
+                  ),
+                  child: Center(
+                    child: Text(
+                      l10n?.editTripNoStopsAdded ?? 'No stops added',
+                      style: TextStyle(
+                        color: isDark ? AppColors.slate400 : AppColors.slate500,
+                      ),
                     ),
                   ),
                 );
               }
 
               return ReorderableListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 buildDefaultDragHandles: false,
                 itemCount: stops.length,
                 onReorder: (oldIndex, newIndex) async {
-                  await controller.reorderStops(
+                  await widget.controller.reorderStops(
                     oldIndex,
                     newIndex,
                   );
@@ -798,14 +1959,11 @@ class StopsEditPanel extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final stop = stops[index];
 
-                  final stopName =
-                  stop.locationName?.trim().isNotEmpty == true
+                  final stopName = stop.locationName?.trim().isNotEmpty == true
                       ? stop.locationName!
-                      : l10n?.editTripUnnamedStop ??
-                      'Unnamed stop';
+                      : l10n?.editTripUnnamedStop ?? 'Unnamed stop';
 
-                  final address =
-                  stop.locationAddress?.trim();
+                  final address = stop.locationAddress?.trim();
 
                   return Container(
                     key: ValueKey(
@@ -815,20 +1973,14 @@ class StopsEditPanel extends StatelessWidget {
                       bottom: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? AppColors.slate800
-                          : Colors.white,
-                      borderRadius:
-                      BorderRadius.circular(14),
+                      color: isDark ? AppColors.slate800 : Colors.white,
+                      borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: isDark
-                            ? AppColors.slate700
-                            : AppColors.slate300,
+                        color: isDark ? AppColors.slate700 : AppColors.slate300,
                       ),
                     ),
                     child: ListTile(
-                      contentPadding:
-                      const EdgeInsets.symmetric(
+                      contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14,
                         vertical: 4,
                       ),
@@ -837,9 +1989,8 @@ class StopsEditPanel extends StatelessWidget {
                         height: 34,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? AppColors.slate700
-                              : AppColors.slate100,
+                          color:
+                              isDark ? AppColors.slate700 : AppColors.slate100,
                           shape: BoxShape.circle,
                         ),
                         child: Text(
@@ -848,8 +1999,7 @@ class StopsEditPanel extends StatelessWidget {
                             color: isDark
                                 ? AppColors.darkOnSurface
                                 : AppColors.lightOnSurface,
-                            fontWeight:
-                            FontWeight.w700,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
@@ -860,47 +2010,75 @@ class StopsEditPanel extends StatelessWidget {
                               ? AppColors.darkOnSurface
                               : AppColors.lightOnSurface,
                           fontSize: 15,
-                          fontWeight:
-                          FontWeight.w600,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      subtitle: address == null ||
-                          address.isEmpty
+                      subtitle: address == null || address.isEmpty
                           ? null
                           : Padding(
-                        padding:
-                        const EdgeInsets.only(
-                          top: 4,
-                        ),
-                        child: Text(
-                          address,
-                          maxLines: 2,
-                          overflow:
-                          TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: isDark
-                                ? AppColors.slate400
-                                : AppColors.slate500,
-                            fontSize: 12,
+                              padding: const EdgeInsets.only(
+                                top: 4,
+                              ),
+                              child: Text(
+                                address,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: isDark
+                                      ? AppColors.slate400
+                                      : AppColors.slate500,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          PopupMenuButton<String>(
+                            onSelected: (value) {
+                              if (value == 'edit') {
+                                _editStop(
+                                  context,
+                                  stop,
+                                );
+                              }
+
+                              if (value == 'delete' && stop.id != null) {
+                                _deleteStop(
+                                  context,
+                                  stop.id!,
+                                );
+                              }
+                            },
+                            itemBuilder: (_) => const [
+                              PopupMenuItem(
+                                value: 'edit',
+                                child: Text('Edit'),
+                              ),
+                              PopupMenuItem(
+                                value: 'delete',
+                                child: Text('Delete'),
+                              ),
+                            ],
                           ),
-                        ),
-                      ),
-                      trailing: ReorderableDragStartListener(
-                        index: index,
-                        child: Icon(
-                          Icons.drag_handle_rounded,
-                          color: isDark
-                              ? AppColors.slate400
-                              : AppColors.slate500,
-                        ),
+                          ReorderableDragStartListener(
+                            index: index,
+                            child: Icon(
+                              Icons.drag_handle_rounded,
+                              color: isDark
+                                  ? AppColors.slate400
+                                  : AppColors.slate500,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   );
                 },
               );
             }),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -915,8 +2093,7 @@ class PackingEditPanel extends StatefulWidget {
   });
 
   @override
-  State<PackingEditPanel> createState() =>
-      _PackingEditPanelState();
+  State<PackingEditPanel> createState() => _PackingEditPanelState();
 }
 
 class _PackingEditPanelState extends State<PackingEditPanel> {
@@ -948,8 +2125,7 @@ class _PackingEditPanelState extends State<PackingEditPanel> {
       return;
     }
 
-    final success =
-    await widget.controller.addPackingItem(itemName);
+    final success = await widget.controller.addPackingItem(itemName);
 
     if (success) {
       _itemController.clear();
@@ -962,46 +2138,43 @@ class _PackingEditPanelState extends State<PackingEditPanel> {
     } else {
       AppSnack.show(
         l10n?.error ?? 'Error',
-        l10n?.editTripUpdateFailed ??
-            'Failed to add item',
+        l10n?.editTripUpdateFailed ?? 'Failed to add item',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
   }
 
   Future<void> _toggleItem(int itemId) async {
-    final success =
-    await widget.controller.togglePackingItem(itemId);
+    final success = await widget.controller.togglePackingItem(itemId);
 
     if (!success && mounted) {
       final l10n = AppLocalizations.of(context);
 
       AppSnack.show(
         l10n?.error ?? 'Error',
-        l10n?.editTripUpdateFailed ??
-            'Failed to update item',
+        l10n?.editTripUpdateFailed ?? 'Failed to update item',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
   }
 
+  Future<bool> _deleteItem(int itemId) async {
+    return await widget.controller.deletePackingItem(itemId);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isDark =
-        Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return EditTripFormPanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           EditTripSectionTitle(
-            title:
-            l10n?.editTripSectionPacking ??
-                'Packing Items',
+            title: l10n?.editTripSectionPacking ?? 'Packing Items',
             icon: Icons.backpack_rounded,
           ),
-
           const EditTripFieldSpacing(height: 20),
 
           Row(
@@ -1009,11 +2182,8 @@ class _PackingEditPanelState extends State<PackingEditPanel> {
               Expanded(
                 child: EditTripTextField(
                   controller: _itemController,
-                  hintText:
-                  l10n?.editTripAddItem ??
-                      'Add Item',
-                  textInputAction:
-                  TextInputAction.done,
+                  hintText: l10n?.editTripAddItem ?? 'Add Item',
+                  textInputAction: TextInputAction.done,
                   onSubmitted: (_) => _addItem(),
                 ),
               ),
@@ -1028,14 +2198,12 @@ class _PackingEditPanelState extends State<PackingEditPanel> {
                     backgroundColor: isDark
                         ? const Color(0xFFF1F5F9)
                         : AppColors.commentBarBg,
-                    foregroundColor: isDark
-                        ? AppColors.darkOnPrimary
-                        : Colors.white,
+                    foregroundColor:
+                        isDark ? AppColors.darkOnPrimary : Colors.white,
                     elevation: 0,
                     padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
                   onPressed: _addItem,
@@ -1046,23 +2214,17 @@ class _PackingEditPanelState extends State<PackingEditPanel> {
               ),
             ],
           ),
-
           const EditTripFieldSpacing(height: 16),
-
           Expanded(
             child: Obx(() {
-              final items =
-                  widget.controller.packingItems;
+              final items = widget.controller.packingItems;
 
               if (items.isEmpty) {
                 return Center(
                   child: Text(
-                    l10n?.editTripNoPackingItems ??
-                        'No packing items yet',
+                    l10n?.editTripNoPackingItems ?? 'No packing items yet',
                     style: TextStyle(
-                      color: isDark
-                          ? AppColors.slate400
-                          : AppColors.slate500,
+                      color: isDark ? AppColors.slate400 : AppColors.slate500,
                     ),
                   ),
                 );
@@ -1070,57 +2232,74 @@ class _PackingEditPanelState extends State<PackingEditPanel> {
 
               return ListView.separated(
                 itemCount: items.length,
-                separatorBuilder: (_, __) =>
-                const SizedBox(height: 8),
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final item = items[index];
 
-                  return Container(
-                    key: ValueKey(
-                      item.id ?? 'packing_$index',
-                    ),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? AppColors.slate800
-                          : Colors.white,
-                      borderRadius:
-                      BorderRadius.circular(14),
-                      border: Border.all(
-                        color: isDark
-                            ? AppColors.slate700
-                            : AppColors.slate300,
-                      ),
-                    ),
-                    child: CheckboxListTile(
-                      value: item.isPacked ?? false,
-                      onChanged: item.id == null
-                          ? null
-                          : (_) => _toggleItem(
-                        item.id!,
-                      ),
-                      controlAffinity:
-                      ListTileControlAffinity.leading,
-                      contentPadding:
-                      const EdgeInsets.symmetric(
-                        horizontal: 12,
-                      ),
-                      title: Text(
-                        item.itemName ??
-                            l10n?.editTripUnnamedStop ??
-                            'Unnamed item',
-                        style: TextStyle(
-                          color: isDark
-                              ? AppColors.darkOnSurface
-                              : AppColors.lightOnSurface,
-                          fontSize: 15,
-                          fontWeight:
-                          FontWeight.w500,
-                          decoration:
-                          (item.isPacked ?? false)
-                              ? TextDecoration
-                              .lineThrough
-                              : null,
+                  return Material(
+                    color: isDark ? AppColors.slate800 : Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    clipBehavior: Clip.antiAlias,
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color:
+                              isDark ? AppColors.slate700 : AppColors.slate300,
                         ),
+                      ),
+                      child: CheckboxListTile(
+                        value: item.isPacked ?? false,
+                        onChanged: item.id == null
+                            ? null
+                            : (_) => _toggleItem(item.id!),
+                        controlAffinity: ListTileControlAffinity.leading,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                        ),
+                        title: Text(
+                          item.itemName ??
+                              l10n?.editTripUnnamedStop ??
+                              'Unnamed item',
+                          style: TextStyle(
+                            color: isDark
+                                ? AppColors.darkOnSurface
+                                : AppColors.lightOnSurface,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            decoration: (item.isPacked ?? false)
+                                ? TextDecoration.lineThrough
+                                : null,
+                          ),
+                        ),
+                        secondary: item.id == null
+                            ? null
+                            : IconButton(
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.redAccent,
+                                ),
+                                onPressed: () async {
+                                  final success = await _deleteItem(item.id!);
+
+                                  if (!mounted) return;
+
+                                  if (success) {
+                                    Get.snackbar(
+                                      l10n?.editTripUpdateSuccess ?? 'Success',
+                                      '${item.itemName ?? 'Item'} deleted',
+                                      snackPosition: SnackPosition.BOTTOM,
+                                    );
+                                  } else {
+                                    Get.snackbar(
+                                      l10n?.error ?? 'Error',
+                                      l10n?.editTripUpdateFailed ??
+                                          'Failed to delete item',
+                                      snackPosition: SnackPosition.BOTTOM,
+                                    );
+                                  }
+                                },
+                              ),
                       ),
                     ),
                   );
@@ -1143,12 +2322,10 @@ class ChecklistEditPanel extends StatefulWidget {
   });
 
   @override
-  State<ChecklistEditPanel> createState() =>
-      _ChecklistEditPanelState();
+  State<ChecklistEditPanel> createState() => _ChecklistEditPanelState();
 }
 
-class _ChecklistEditPanelState
-    extends State<ChecklistEditPanel> {
+class _ChecklistEditPanelState extends State<ChecklistEditPanel> {
   late final TextEditingController _itemController;
 
   @override
@@ -1164,7 +2341,6 @@ class _ChecklistEditPanelState
     super.dispose();
   }
 
-
   Future<void> _addItem() async {
     final l10n = AppLocalizations.of(context);
     final itemName = _itemController.text.trim();
@@ -1178,8 +2354,7 @@ class _ChecklistEditPanelState
       return;
     }
 
-    final success =
-    await widget.controller.addChecklist(itemName);
+    final success = await widget.controller.addChecklist(itemName);
 
     if (success) {
       _itemController.clear();
@@ -1192,41 +2367,101 @@ class _ChecklistEditPanelState
     } else {
       AppSnack.show(
         l10n?.error ?? 'Error',
-        l10n?.editTripUpdateFailed ??
-            'Failed to add checklist item',
+        l10n?.editTripUpdateFailed ?? 'Failed to add checklist item',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
   }
 
   Future<void> _toggleItem(
-      BuildContext context,
-      int checklistId,
-      ) async {
-    final success =
-    await widget.controller.toggleChecklist(checklistId);
+    BuildContext context,
+    int checklistId,
+  ) async {
+    final success = await widget.controller.toggleChecklist(checklistId);
 
     if (!success && context.mounted) {
       final l10n = AppLocalizations.of(context);
 
       AppSnack.show(
         l10n?.error ?? 'Error',
-        l10n?.editTripUpdateFailed ??
-            'Failed to update checklist',
+        l10n?.editTripUpdateFailed ?? 'Failed to update checklist',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
   }
 
-  Future<void> _editItem(
-      BuildContext context,
-      int checklistId,
-      String currentName,
-      ) async {
+  Future<void> _deleteItem(
+    BuildContext context,
+    int checklistId,
+  ) async {
     final l10n = AppLocalizations.of(context);
 
-    final textController =
-    TextEditingController(text: currentName);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(
+            l10n?.editTripDeleteChecklist ?? 'Delete Checklist',
+          ),
+          content: Text(
+            l10n?.editTripDeleteChecklistConfirm ??
+                'Are you sure you want to delete this checklist item?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, false);
+              },
+              child: Text(
+                l10n?.editTripCancel ?? 'Cancel',
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, true);
+              },
+              child: Text(
+                l10n?.editTripDelete ?? 'Delete',
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    final success = await widget.controller.deleteChecklist(
+      checklistId,
+    );
+
+    if (!context.mounted) {
+      return;
+    }
+
+    Get.snackbar(
+      success
+          ? (l10n?.editTripUpdateSuccess ?? 'Success')
+          : (l10n?.error ?? 'Error'),
+      success
+          ? (l10n?.editTripDeleteChecklistSuccess ??
+              'Checklist deleted successfully')
+          : (l10n?.editTripDeleteChecklistFailed ??
+              'Failed to delete checklist item'),
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  Future<void> _editItem(
+    BuildContext context,
+    int checklistId,
+    String currentName,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+
+    final textController = TextEditingController(text: currentName);
 
     final newName = await showDialog<String>(
       context: context,
@@ -1257,8 +2492,7 @@ class _ChecklistEditPanelState
                 );
               },
               child: Text(
-                l10n?.editTripSaveChanges ??
-                    'SAVE CHANGES',
+                l10n?.editTripSaveChanges ?? 'SAVE CHANGES',
               ),
             ),
           ],
@@ -1290,8 +2524,7 @@ class _ChecklistEditPanelState
             : (l10n?.error ?? 'Error'),
         success
             ? 'Checklist updated'
-            : (l10n?.editTripUpdateFailed ??
-            'Failed to update checklist'),
+            : (l10n?.editTripUpdateFailed ?? 'Failed to update checklist'),
         snackPosition: SnackPosition.BOTTOM,
       );
     });
@@ -1300,67 +2533,53 @@ class _ChecklistEditPanelState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isDark =
-        Theme.of(context).brightness ==
-            Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return EditTripFormPanel(
       child: Column(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           EditTripSectionTitle(
-            title:
-            l10n?.editTripSectionChecklist ??
-                'Checklist',
+            title: l10n?.editTripSectionChecklist ?? 'Checklist',
             icon: Icons.checklist_rounded,
           ),
-
-      const EditTripFieldSpacing(height: 20),
-
-      Row(
-        children: [
-          Expanded(
-            child: EditTripTextField(
-              controller: _itemController,
-              hintText:
-              l10n?.editTripAddItem ??
-                  'Add Item',
-              textInputAction: TextInputAction.done,
-              onSubmitted: (_) => _addItem(),
-            ),
-          ),
-
-          const SizedBox(width: 10),
-
-          SizedBox(
-            height: 50,
-            width: 50,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isDark
-                    ? const Color(0xFFF1F5F9)
-                    : AppColors.commentBarBg,
-                foregroundColor: isDark
-                    ? AppColors.darkOnPrimary
-                    : Colors.white,
-                elevation: 0,
-                padding: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+          const EditTripFieldSpacing(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: EditTripTextField(
+                  controller: _itemController,
+                  hintText: l10n?.editTripAddItem ?? 'Add Item',
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => _addItem(),
                 ),
               ),
-              onPressed: _addItem,
-              child: const Icon(
-                Icons.add_rounded,
+              const SizedBox(width: 10),
+              SizedBox(
+                height: 50,
+                width: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isDark
+                        ? const Color(0xFFF1F5F9)
+                        : AppColors.commentBarBg,
+                    foregroundColor:
+                        isDark ? AppColors.darkOnPrimary : Colors.white,
+                    elevation: 0,
+                    padding: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  onPressed: _addItem,
+                  child: const Icon(
+                    Icons.add_rounded,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
-
           const EditTripFieldSpacing(height: 16),
-
           Expanded(
             child: Obx(() {
               final items = widget.controller.checklists;
@@ -1368,12 +2587,9 @@ class _ChecklistEditPanelState
               if (items.isEmpty) {
                 return Center(
                   child: Text(
-                    l10n?.editTripNoChecklistItems ??
-                        'No checklist items yet',
+                    l10n?.editTripNoChecklistItems ?? 'No checklist items yet',
                     style: TextStyle(
-                      color: isDark
-                          ? AppColors.slate400
-                          : AppColors.slate500,
+                      color: isDark ? AppColors.slate400 : AppColors.slate500,
                     ),
                   ),
                 );
@@ -1381,8 +2597,7 @@ class _ChecklistEditPanelState
 
               return ListView.separated(
                 itemCount: items.length,
-                separatorBuilder: (_, __) =>
-                const SizedBox(height: 8),
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final item = items[index];
 
@@ -1391,20 +2606,14 @@ class _ChecklistEditPanelState
                       item.id ?? 'checklist_$index',
                     ),
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? AppColors.slate800
-                          : Colors.white,
-                      borderRadius:
-                      BorderRadius.circular(14),
+                      color: isDark ? AppColors.slate800 : Colors.white,
+                      borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: isDark
-                            ? AppColors.slate700
-                            : AppColors.slate300,
+                        color: isDark ? AppColors.slate700 : AppColors.slate300,
                       ),
                     ),
                     child: ListTile(
-                      contentPadding:
-                      const EdgeInsets.symmetric(
+                      contentPadding: const EdgeInsets.symmetric(
                         horizontal: 8,
                       ),
                       leading: Checkbox(
@@ -1412,9 +2621,9 @@ class _ChecklistEditPanelState
                         onChanged: item.id == null
                             ? null
                             : (_) => _toggleItem(
-                          context,
-                          item.id!,
-                        ),
+                                  context,
+                                  item.id!,
+                                ),
                       ),
                       title: Text(
                         item.itemName ?? '',
@@ -1442,11 +2651,26 @@ class _ChecklistEditPanelState
                               item.itemName ?? '',
                             );
                           }
+
+                          if (value == 'delete') {
+                            _deleteItem(
+                              context,
+                              item.id!,
+                            );
+                          }
                         },
                         itemBuilder: (_) => [
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'edit',
-                            child: Text('Edit'),
+                            child: Text(
+                              l10n?.editTripEdit ?? 'Edit',
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'delete',
+                            child: Text(
+                              l10n?.editTripDelete ?? 'Delete',
+                            ),
                           ),
                         ],
                       ),
@@ -1471,12 +2695,10 @@ class AttachmentsEditPanel extends StatefulWidget {
   });
 
   @override
-  State<AttachmentsEditPanel> createState() =>
-      _AttachmentsEditPanelState();
+  State<AttachmentsEditPanel> createState() => _AttachmentsEditPanelState();
 }
 
-class _AttachmentsEditPanelState
-    extends State<AttachmentsEditPanel> {
+class _AttachmentsEditPanelState extends State<AttachmentsEditPanel> {
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _uploadAttachment() async {
@@ -1495,8 +2717,7 @@ class _AttachmentsEditPanelState
       filename: image.name,
     );
 
-    final success =
-    await widget.controller.uploadAttachment(file);
+    final success = await widget.controller.uploadAttachment(file);
 
     if (!mounted) {
       return;
@@ -1508,8 +2729,7 @@ class _AttachmentsEditPanelState
           : (l10n?.error ?? 'Error'),
       success
           ? 'Attachment uploaded'
-          : (l10n?.editTripUpdateFailed ??
-          'Failed to upload attachment'),
+          : (l10n?.editTripUpdateFailed ?? 'Failed to upload attachment'),
       snackPosition: SnackPosition.BOTTOM,
     );
   }
@@ -1517,17 +2737,14 @@ class _AttachmentsEditPanelState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isDark =
-        Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return EditTripFormPanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           EditTripSectionTitle(
-            title:
-            l10n?.editTripSectionAttachments ??
-                'Attachments',
+            title: l10n?.editTripSectionAttachments ?? 'Attachments',
             icon: Icons.attach_file_rounded,
           ),
 
@@ -1538,16 +2755,13 @@ class _AttachmentsEditPanelState
             height: 50,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDark
-                    ? const Color(0xFFF1F5F9)
-                    : AppColors.commentBarBg,
-                foregroundColor: isDark
-                    ? AppColors.darkOnPrimary
-                    : Colors.white,
+                backgroundColor:
+                    isDark ? const Color(0xFFF1F5F9) : AppColors.commentBarBg,
+                foregroundColor:
+                    isDark ? AppColors.darkOnPrimary : Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius:
-                  BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(14),
                 ),
               ),
               onPressed: _uploadAttachment,
@@ -1555,8 +2769,7 @@ class _AttachmentsEditPanelState
                 Icons.upload_file_rounded,
               ),
               label: Text(
-                l10n?.editTripUploadAttachment ??
-                    'Upload Attachment',
+                l10n?.editTripUploadAttachment ?? 'Upload Attachment',
               ),
             ),
           ),
@@ -1565,18 +2778,14 @@ class _AttachmentsEditPanelState
 
           Expanded(
             child: Obx(() {
-              final items =
-                  widget.controller.attachments;
+              final items = widget.controller.attachments;
 
               if (items.isEmpty) {
                 return Center(
                   child: Text(
-                    l10n?.editTripNoAttachments ??
-                        'No attachments yet',
+                    l10n?.editTripNoAttachments ?? 'No attachments yet',
                     style: TextStyle(
-                      color: isDark
-                          ? AppColors.slate400
-                          : AppColors.slate500,
+                      color: isDark ? AppColors.slate400 : AppColors.slate500,
                     ),
                   ),
                 );
@@ -1584,34 +2793,25 @@ class _AttachmentsEditPanelState
 
               return ListView.separated(
                 itemCount: items.length,
-                separatorBuilder: (_, __) =>
-                const SizedBox(height: 8),
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final item = items[index];
 
-                  final isImage =
-                      item.fileType?.startsWith('image/') == true;
+                  final isImage = item.fileType?.startsWith('image/') == true;
 
                   return Container(
                     key: ValueKey(
-                      item.id ??
-                          'attachment_$index',
+                      item.id ?? 'attachment_$index',
                     ),
-                    padding:
-                    const EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 6,
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? AppColors.slate800
-                          : Colors.white,
-                      borderRadius:
-                      BorderRadius.circular(14),
+                      color: isDark ? AppColors.slate800 : Colors.white,
+                      borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: isDark
-                            ? AppColors.slate700
-                            : AppColors.slate300,
+                        color: isDark ? AppColors.slate700 : AppColors.slate300,
                       ),
                     ),
                     child: Row(
@@ -1627,50 +2827,42 @@ class _AttachmentsEditPanelState
                           ),
                           clipBehavior: Clip.antiAlias,
                           child: isImage &&
-                              item.url != null &&
-                              item.url!.isNotEmpty
+                                  item.filePath != null &&
+                                  item.filePath!.isNotEmpty
                               ? Image.network(
-                            item.url!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) {
-                              return Icon(
-                                Icons.broken_image_rounded,
-                                color: isDark
-                                    ? AppColors.slate300
-                                    : AppColors.slate600,
-                              );
-                            },
-                          )
+                                  item.filePath!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) {
+                                    return Icon(
+                                      Icons.broken_image_rounded,
+                                      color: isDark
+                                          ? AppColors.slate300
+                                          : AppColors.slate600,
+                                    );
+                                  },
+                                )
                               : Icon(
-                            Icons.insert_drive_file_rounded,
-                            color: isDark
-                                ? AppColors.slate300
-                                : AppColors.slate600,
-                          ),
+                                  Icons.insert_drive_file_rounded,
+                                  color: isDark
+                                      ? AppColors.slate300
+                                      : AppColors.slate600,
+                                ),
                         ),
-
                         const SizedBox(width: 12),
-
                         Expanded(
                           child: Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                item.originalFileName ??
-                                    'Attachment',
+                                item.originalFileName ?? 'Attachment',
                                 maxLines: 2,
-                                overflow:
-                                TextOverflow.ellipsis,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: isDark
-                                      ? AppColors
-                                      .darkOnSurface
-                                      : AppColors
-                                      .lightOnSurface,
+                                      ? AppColors.darkOnSurface
+                                      : AppColors.lightOnSurface,
                                   fontSize: 15,
-                                  fontWeight:
-                                  FontWeight.w500,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
 

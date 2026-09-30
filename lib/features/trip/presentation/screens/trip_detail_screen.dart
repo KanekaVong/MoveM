@@ -4,6 +4,13 @@ import '../controllers/edit_trip_controller.dart';
 import 'package:get/get.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/edit_trip_components.dart';
+import 'trip_route_screen.dart';
+import 'package:movem/features/groups/data/services/group_service.dart';
+import 'package:movem/features/groups/data/dto/response/group_search_user_response.dart';
+import 'trip_budget_screen.dart';
+import '../controllers/trip_budget_controller.dart';
+import '../../data/repositories/trip_repository_impl.dart';
+import '../../data/services/trip_service.dart';
 
 class TripDetailScreen extends StatefulWidget {
   final String activityId;
@@ -57,6 +64,29 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
         '${_formatDate(trip.deadline)}';
   }
 
+  void _showInviteFriendSheet(TripResponse trip) {
+    final searchController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF151B2A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(28),
+        ),
+      ),
+      builder: (context) {
+        return _InviteFriendSheet(
+          activityId: trip.activityId,
+          searchController: searchController,
+        );
+      },
+    );
+  }
+
+
+ // trip detail build
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -169,7 +199,8 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Large Main Title (e.g. "SUMMER BOYS")
+
+          // Large Main Title ("SUMMER BOYS")
           GestureDetector(
             onTap: () => widget.editTripController.selectEditSection(
               'tripName',
@@ -208,6 +239,20 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                       icon: Icons.account_balance_wallet_rounded,
                       iconColor: Colors.amber,
                       showArrow: true,
+                      onTap: () {
+                        final budgetController = TripBudgetController(
+                          repository: TripRepositoryImpl(
+                            tripService: TripService(),
+                          ),
+                          activityId: trip.activityId,
+                        );
+
+                        Get.to(
+                              () => TripBudgetScreen(
+                            budgetController: budgetController,
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 16),
                     _buildInfoTile(
@@ -291,24 +336,36 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
           const SizedBox(height: 24),
 
           // Routes Header
-          Row(
-            children: [
-              Text(
-                l10n?.editTripRoutes ?? 'ROUTES',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.1,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => TripRouteScreen(
+                    activityId: trip.activityId,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 6),
-              const Icon(
-                Icons.map_outlined,
-                color: Colors.white70,
-                size: 16,
-              ),
-            ],
+              );
+            },
+            child: Row(
+              children: [
+                Text(
+                  l10n?.editTripRoutes ?? 'ROUTES',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                const Icon(
+                  Icons.map_outlined,
+                  color: Colors.white70,
+                  size: 16,
+                ),
+              ],
+            ),
           ),
 
           const SizedBox(height: 12),
@@ -355,7 +412,16 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
         return _buildDurationEditPanel();
 
       case 'members':
-        return _buildMembersEditPanel();
+        return MembersEditPanel(
+          controller: widget.editTripController,
+          onInviteFriend: () {
+            final trip = widget.editTripController.trip.value;
+
+            if (trip != null) {
+              _showInviteFriendSheet(trip);
+            }
+          },
+        );
 
       case 'stops':
         return _buildStopsEditPanel();
@@ -388,10 +454,6 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     );
   }
 
-  Widget _buildMembersEditPanel() {
-    return _buildTemporaryEditPanel('Members');
-  }
-
   Widget _buildStopsEditPanel() {
     return StopsEditPanel(
       key: const ValueKey('stops'),
@@ -417,30 +479,6 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     return AttachmentsEditPanel(
       key: const ValueKey('attachments'),
       controller: widget.editTripController,
-    );
-  }
-
-  Widget _buildTemporaryEditPanel(String title) {
-    return Container(
-      key: ValueKey(title),
-      margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-      padding: const EdgeInsets.all(20),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFF151B2A),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.white12,
-        ),
-      ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
     );
   }
 
@@ -648,4 +686,335 @@ class DashedLinePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+
+class _InviteFriendSheet extends StatefulWidget {
+  final String activityId;
+  final TextEditingController searchController;
+
+  const _InviteFriendSheet({
+    required this.activityId,
+    required this.searchController,
+  });
+
+  @override
+  State<_InviteFriendSheet> createState() => _InviteFriendSheetState();
+}
+
+class _InviteFriendSheetState extends State<_InviteFriendSheet> {
+  final GroupService _groupService = GroupService();
+
+  List<GroupSearchUserResponse> _users = [];
+
+  bool _isSearching = false;
+  bool _isInviting = false;
+
+  Future<void> _searchUsers(String keyword) async {
+    if (keyword.trim().isEmpty) {
+      setState(() {
+        _users = [];
+        _isSearching = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isSearching = true;
+    });
+
+    try {
+      final response = await _groupService.searchUsers(
+        keyword.trim(),
+      );
+
+      final data = response.data;
+
+      List<dynamic> rawUsers = [];
+
+      if (data is List) {
+        rawUsers = data;
+      } else if (data is Map<String, dynamic>) {
+        final users = data['data'] ?? data['users'];
+
+        if (users is List) {
+          rawUsers = users;
+        }
+      }
+
+      final users = rawUsers
+          .whereType<Map>()
+          .map(
+            (json) => GroupSearchUserResponse.fromJson(
+          Map<String, dynamic>.from(json),
+        ),
+      )
+          .toList();
+
+      if (!mounted) return;
+
+      setState(() {
+        _users = users;
+        _isSearching = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _users = [];
+        _isSearching = false;
+      });
+
+      Get.snackbar(
+        'Error',
+        'Failed to search users',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  Future<void> _inviteUser(
+      GroupSearchUserResponse user,
+      ) async {
+    if (_isInviting) return;
+
+    setState(() {
+      _isInviting = true;
+    });
+
+    try {
+      await _groupService.inviteMember(
+        widget.activityId,
+        user.username,
+      );
+
+      if (!mounted) return;
+
+      Get.back();
+
+      Get.snackbar(
+        'Invitation Sent',
+        'Invitation sent to ${user.displayName}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      Get.snackbar(
+        'Invitation Failed',
+        'Could not invite ${user.displayName}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isInviting = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                l10n?.searchFriends ?? 'Search friends',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 6),
+
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                l10n?.searchFriendsHint ??
+                    'Search by username or email',
+                style: const TextStyle(
+                  color: Colors.white60,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            TextField(
+              controller: widget.searchController,
+              autofocus: true,
+              onChanged: _searchUsers,
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+              decoration: InputDecoration(
+                hintText: l10n?.searchFriendsHint ??
+                    'Search by username or email',
+                hintStyle: const TextStyle(
+                  color: Colors.white38,
+                ),
+                prefixIcon: const Icon(
+                  Icons.search_rounded,
+                  color: Colors.white54,
+                ),
+                filled: true,
+                fillColor: Colors.white.withValues(alpha: 0.08),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            if (_isSearching)
+              const Padding(
+                padding: EdgeInsets.all(20),
+                child: CircularProgressIndicator(),
+              )
+            else if (_users.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  l10n?.searchToFindFriends ??
+                      'Search to find friends',
+                  style: const TextStyle(
+                    color: Colors.white38,
+                  ),
+                ),
+              )
+            else
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: _users.length,
+                  separatorBuilder: (_, __) =>
+                  const SizedBox(height: 8),
+                  itemBuilder: (context, index) {
+                    final user = _users[index];
+
+                    return _buildUserTile(user);
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUserTile(
+      GroupSearchUserResponse user,
+      ) {
+    final l10n = AppLocalizations.of(context);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 10,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 22,
+            backgroundColor: Colors.lightBlueAccent.withValues(
+              alpha: 0.15,
+            ),
+            child: Text(
+              user.displayName.isNotEmpty
+                  ? user.displayName[0].toUpperCase()
+                  : '?',
+              style: const TextStyle(
+                color: Colors.lightBlueAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user.displayName,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '@${user.username}',
+                  style: const TextStyle(
+                    color: Colors.white54,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          ElevatedButton(
+            onPressed: _isInviting
+                ? null
+                : () => _inviteUser(user),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.lightBlueAccent,
+              foregroundColor: Colors.black,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 8,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(
+              l10n?.invite ?? 'Invite',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
