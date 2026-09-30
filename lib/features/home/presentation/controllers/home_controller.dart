@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../../../../core/network/api_result.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/fcm_service.dart';
+import '../../../auth/data/device_registration.dart';
 import '../../../../core/storage/user_manager.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../../auth/data/dto/response/user_response.dart';
@@ -35,8 +36,13 @@ class HomeController extends BaseController {
   void onReady() {
     super.onReady();
     if (UserManager().isLoggedIn) {
-      FcmService().requestNotificationPermissions();
+      _registerDevice();
     }
+  }
+
+  Future<void> _registerDevice() async {
+    await FcmService().requestNotificationPermissions();
+    await DeviceRegistration.registerIfLoggedIn();
   }
 
   void loadUserData() {

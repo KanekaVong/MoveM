@@ -7,14 +7,12 @@ class ContactInfoOverlay extends StatelessWidget {
   final ContactType type;
   final String value;
   final VoidCallback onChange;
-  final VoidCallback? onUnlink;
 
   const ContactInfoOverlay({
     super.key,
     required this.type,
     required this.value,
     required this.onChange,
-    this.onUnlink,
   });
 
   @override
@@ -81,13 +79,6 @@ class ContactInfoOverlay extends StatelessWidget {
               label: isEmail ? 'Change email' : 'Change phone number',
               onPressed: onChange,
             ),
-            if (!isEmail && onUnlink != null) ...[
-              const SizedBox(height: 12),
-              AppButton.secondary(
-                label: 'Unlink phone number',
-                onPressed: onUnlink,
-              ),
-            ],
           ],
         ),
       ),

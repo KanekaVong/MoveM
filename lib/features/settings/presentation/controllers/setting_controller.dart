@@ -1,13 +1,11 @@
 import 'package:get/get.dart';
 import '../../../../core/storage/profile_image_store.dart';
-import '../../../../core/utils/app_dialogs.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../../../core/storage/user_manager.dart';
 
 import '../../data/dto/request/update_profile_picture_request.dart';
 import '../../data/dto/request/change_password_request.dart';
 import '../../data/dto/request/update_profile_request.dart';
-import '../../data/services/setting_service.dart';
 import '../../domain/repositories/setting_repository.dart';
 import '../../../auth/data/dto/response/user_response.dart';
 
@@ -16,7 +14,6 @@ import '../../../home/presentation/controllers/home_controller.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import 'settings_controller.dart';
 import 'profile_controller.dart';
-import 'package:movem/core/utils/app_snack.dart';
 
 class SettingController extends BaseController {
   final SettingRepository repository;
@@ -43,10 +40,14 @@ class SettingController extends BaseController {
   Future<UserResponse?> updateProfile(
       UpdateProfileRequest request, {
         bool goBack = true,
+        bool showLoading = true,
+        bool showErrorDialog = true,
       }) async {
     UserResponse? updatedUser;
 
     await executeApi(
+      showLoading: showLoading,
+      showErrorDialog: showErrorDialog,
       apiCall: () => repository.updateProfile(request),
       onSuccess: (data) async {
         updatedUser = data;
@@ -62,32 +63,41 @@ class SettingController extends BaseController {
     return updatedUser;
   }
 
-  /// Uploads [filePath] with POST /uploads/profile-pic, then saves the URL.
-  Future<UserResponse?> uploadAndSaveProfilePicture(String filePath) async {
-    AppDialogs.showLoading();
-    String? url;
-    try {
-      url = await Get.find<SettingService>().uploadProfilePicFile(filePath);
-    } catch (_) {
-      url = null;
-    }
-    if (url != null && url.isNotEmpty) {
-      await ProfileImageStore.remember(url, filePath);
-    }
-    AppDialogs.hideLoading();
-    if (url == null || url.isEmpty) {
-      AppSnack.show('Upload failed', 'Could not upload profile picture.');
-      return null;
-    }
-    return updateProfilePicture(UpdateProfilePictureRequest(profilePic: url));
-  }
-
-  Future<UserResponse?> updateProfilePicture(
-      UpdateProfilePictureRequest request,
-      ) async {
+  /// Uploads [filePath] with POST /api/user/me/profile-picture.
+  /// The response is the updated user, so no second profile update is sent.
+  Future<UserResponse?> uploadAndSaveProfilePicture(
+    String filePath, {
+    bool showLoading = true,
+  }) async {
     UserResponse? updatedUser;
 
     await executeApi(
+      showLoading: showLoading,
+      showErrorDialog: showLoading,
+      apiCall: () => repository.uploadProfilePictureFile(filePath),
+      onSuccess: (data) async {
+        updatedUser = data;
+        final pic = data.profilePic;
+        if (pic != null && pic.isNotEmpty) {
+          await ProfileImageStore.remember(pic, filePath);
+        }
+        await _notifyUserUpdated(data);
+      },
+    );
+
+    return updatedUser;
+  }
+
+  Future<UserResponse?> updateProfilePicture(
+      UpdateProfilePictureRequest request, {
+        bool showLoading = true,
+        bool showErrorDialog = true,
+      }) async {
+    UserResponse? updatedUser;
+
+    await executeApi(
+      showLoading: showLoading,
+      showErrorDialog: showErrorDialog,
       apiCall: () => repository.updateProfilePicture(request),
       onSuccess: (data) async {
         updatedUser = data;

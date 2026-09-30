@@ -17,4 +17,8 @@ abstract class AuthRepository {
   Future<ApiResult<String>> forgotPassword(ForgotPasswordRequest request);
   Future<ApiResult<AuthResponse>> resetPassword(ResetPasswordRequest request);
   Future<ApiResult<void>> logout();
+  Future<ApiResult<void>> registerDevice({
+    required String deviceToken,
+    required String platform,
+  });
 }

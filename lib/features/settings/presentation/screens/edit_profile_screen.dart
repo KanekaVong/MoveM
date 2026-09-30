@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:movem/core/config/app_config.dart';
-import 'package:movem/core/storage/profile_image_store.dart';
 import 'package:movem/core/theme/app_colors.dart';
 import 'package:movem/core/storage/user_manager.dart';
 
@@ -17,7 +16,6 @@ import 'package:movem/shared/widgets/custom_mui_text_field.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 import 'package:movem/core/utils/app_dialogs.dart';
 import '../controllers/setting_controller.dart';
-import '../../data/services/setting_service.dart';
 import 'package:movem/core/utils/app_snack.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -169,19 +167,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Future<String?> _uploadProfileImage(File imageFile) async {
-    try {
-      final url = await Get.find<SettingService>().uploadProfilePicFile(imageFile.path);
-      if (url != null && url.isNotEmpty) {
-        await ProfileImageStore.remember(url, imageFile.path);
-      }
-      return url;
-    } catch (_) {
-      AppSnack.show('Upload failed', 'Could not upload profile picture.');
-      return null;
-    }
-  }
-
   Widget _buildProfileImage() {
     final dark = AppColors.isDark;
     final placeholderBg = dark ? const Color(0xFF162341) : const Color(0xFFE2E8F0);
@@ -319,11 +304,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           gender: genderChanged ? _selectedGender : null,
         );
 
-        final updatedProfile =
-            await _settingController.updateProfile(request, goBack: false);
+        final updatedProfile = await _settingController.updateProfile(
+          request,
+          goBack: false,
+          showLoading: false,
+          showErrorDialog: false,
+        );
 
         if (updatedProfile == null) {
           AppDialogs.hideLoading();
+          AppSnack.show(
+            'Error',
+            _settingController.errorMessage.value.isEmpty
+                ? 'Failed to save profile changes.'
+                : _settingController.errorMessage.value,
+          );
           return;
         }
 
@@ -335,33 +330,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       // --------------------------------------------------
 
       if (profilePictureChanged) {
-        String? profilePicUrl;
+        if (_selectedProfileImage != null) {
+          final uploadedUser = await _settingController.uploadAndSaveProfilePicture(
+            _selectedProfileImage!.path,
+            showLoading: false,
+          );
 
-        if (_removeProfileImage) {
-          profilePicUrl = null;
-        } else if (_selectedProfileImage != null) {
-          profilePicUrl =
-              await _uploadProfileImage(_selectedProfileImage!);
-
-          if (profilePicUrl == null) {
+          if (uploadedUser == null) {
             AppDialogs.hideLoading();
+            AppSnack.show(
+              'Upload failed',
+              _settingController.errorMessage.value.isEmpty
+                  ? 'The server could not save your photo. Please try again later.'
+                  : _settingController.errorMessage.value,
+            );
             return;
           }
+
+          _user = uploadedUser;
+        } else if (_removeProfileImage) {
+          final updatedUser = await _settingController.updateProfilePicture(
+            UpdateProfilePictureRequest(profilePic: null),
+            showLoading: false,
+            showErrorDialog: false,
+          );
+
+          if (updatedUser == null) {
+            AppDialogs.hideLoading();
+            AppSnack.show(
+              'Error',
+              _settingController.errorMessage.value.isEmpty
+                  ? 'Failed to save profile changes.'
+                  : _settingController.errorMessage.value,
+            );
+            return;
+          }
+
+          _user = updatedUser;
         }
-
-        final updatedUser =
-            await _settingController.updateProfilePicture(
-          UpdateProfilePictureRequest(
-            profilePic: profilePicUrl,
-          ),
-        );
-
-        if (updatedUser == null) {
-          AppDialogs.hideLoading();
-          return;
-        }
-
-        _user = updatedUser;
       }
 
       AppDialogs.hideLoading();

@@ -21,7 +21,6 @@ import 'package:movem/features/settings/data/repositories/setting_repository_imp
 import 'package:movem/features/settings/presentation/screens/region_selection_screen.dart';
 import 'package:movem/features/fitness/data/models/achievement_model.dart';
 import 'package:movem/features/settings/presentation/controllers/profile_overview_controller.dart';
-import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/auth_image.dart';
 import 'package:movem/shared/widgets/no_data_component.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
@@ -333,70 +332,6 @@ class ProfileScreen extends StatelessWidget {
                       arguments: ContactType.phone,
                     );
                     Get.forceAppUpdate();
-                  },
-                  onUnlink: () {
-                    Get.back();
-
-                    Get.dialog(
-                      AlertDialog(
-                        backgroundColor: AppColors.cardSurface,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(color: AppColors.borderLight),
-                        ),
-                        title: Text(
-                          AppLocalizations.of(context)!.unlinkPhoneTitle,
-                          style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-                        ),
-                        content: Text(
-                          AppLocalizations.of(context)!.unlinkPhoneConfirm,
-                          style: TextStyle(color: AppColors.textSecondary),
-                        ),
-                        actions: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: AppButton.secondary(
-                                  label: AppLocalizations.of(context)!.cancel,
-                                  height: 46,
-                                  onPressed: () {
-                                    Get.back();
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: AppButton.danger(
-                                  label: AppLocalizations.of(context)!.unlink,
-                                  height: 46,
-                                  onPressed: () async {
-                              Get.back();
-
-                              final settingController =
-                              Get.isRegistered<SettingController>()
-                                  ? Get.find<SettingController>()
-                                  : SettingController(
-                                repository: SettingRepositoryImpl(
-                                  settingService: SettingService(),
-                                ),
-                              );
-
-                              final updatedUser =
-                              await settingController.unlinkPhone();
-
-                              if (updatedUser == null) {
-                                return;
-                              }
-
-                              Get.forceAppUpdate();
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
                   },
                 ),
               );

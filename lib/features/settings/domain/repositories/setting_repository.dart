@@ -9,6 +9,7 @@ import 'package:movem/features/auth/data/dto/response/auth_response.dart';
 abstract class SettingRepository {
   Future<ApiResult<UserResponse>> updateProfile(UpdateProfileRequest request);
   Future<ApiResult<UserResponse>> updateProfilePicture(UpdateProfilePictureRequest request,);
+  Future<ApiResult<UserResponse>> uploadProfilePictureFile(String filePath);
   Future<ApiResult<UserResponse>> unlinkPhone();
   Future<ApiResult<UserResponse>> getCurrentUser();
   Future<ApiResult<String>> requestEmailChange(String email);
