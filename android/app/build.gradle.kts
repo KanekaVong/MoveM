@@ -162,6 +162,22 @@ tasks.matching { it.name == "assembleRelease" }.configureEach {
 // Release was reinstalling an APK built from a cached Dart snapshot, so
 // source changes showed up in dev and not in release. Gradle rerunning the
 // task is not enough: Flutter's own snapshot stamp still skips the compile.
+//
+// Compiling a new libapp.so is also not enough. Flutter only hooks the legacy
+// merge*JniLibFolders task, while AGP 8 packages the APK from
+// merge*NativeLibs -> strip*DebugSymbols -> package*. Those stay up-to-date
+// and the installed APK keeps the previous snapshot.
+val releaseNativePackaging = setOf(
+    "mergeDevReleaseJniLibFolders",
+    "mergeProdReleaseJniLibFolders",
+    "mergeDevReleaseNativeLibs",
+    "mergeProdReleaseNativeLibs",
+    "stripDevReleaseDebugSymbols",
+    "stripProdReleaseDebugSymbols",
+    "packageDevRelease",
+    "packageProdRelease",
+)
+
 tasks.configureEach {
     if (name.startsWith("compileFlutterBuild") && name.endsWith("Release")) {
         outputs.upToDateWhen { false }
@@ -171,5 +187,14 @@ tasks.configureEach {
                 flutterBuild.deleteRecursively()
             }
         }
+    }
+    if (name in releaseNativePackaging) {
+        outputs.upToDateWhen { false }
+    }
+    if (name == "mergeProdReleaseNativeLibs") {
+        dependsOn("copyJniLibsflutterBuildProdRelease")
+    }
+    if (name == "mergeDevReleaseNativeLibs") {
+        dependsOn("copyJniLibsflutterBuildDevRelease")
     }
 }
