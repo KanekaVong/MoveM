@@ -70,7 +70,7 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
         const SizedBox(width: 10),
         Expanded(
           child: Text(
-            item.userName,
+            item.displayName,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -365,15 +365,7 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
     String? initial,
   }) {
     final letter = initial ?? (name.isNotEmpty ? name[0].toUpperCase() : 'M');
-    var resolved = pic;
-    if (resolved != null && resolved.isNotEmpty && !resolved.startsWith('http') && !resolved.startsWith('/')) {
-      resolved = resolved;
-    } else if (resolved != null && resolved.isNotEmpty && !resolved.startsWith('http')) {
-      final base = AppConfig.baseUrl.endsWith('/')
-          ? AppConfig.baseUrl.substring(0, AppConfig.baseUrl.length - 1)
-          : AppConfig.baseUrl;
-      resolved = resolved.startsWith('/') ? '$base$resolved' : '$base/$resolved';
-    }
+    final resolved = pic != null && pic.isNotEmpty ? AppConfig.resolveMediaUrl(pic) : null;
 
     return Container(
       width: size,

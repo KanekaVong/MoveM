@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -79,6 +78,14 @@ class HomeNewsFeed extends GetView<HomeController> {
       decoration: BoxDecoration(
         color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.borderLight, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: AppColors.isDark ? 0.25 : 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       padding: const EdgeInsets.all(14),
       child: Column(
@@ -97,7 +104,7 @@ class HomeNewsFeed extends GetView<HomeController> {
                         SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            item.userName,
+                            item.displayName,
                             style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 16,
@@ -273,13 +280,8 @@ class HomeNewsFeed extends GetView<HomeController> {
 
   Widget _buildUserAvatar(HomeFeedItem item) {
     final initial = item.userName.isNotEmpty ? item.userName[0].toUpperCase() : 'M';
-    var pic = item.userAvatar;
-    if (pic != null && pic.isNotEmpty && !pic.startsWith('http')) {
-      final base = AppConfig.baseUrl.endsWith('/')
-          ? AppConfig.baseUrl.substring(0, AppConfig.baseUrl.length - 1)
-          : AppConfig.baseUrl;
-      pic = pic.startsWith('/') ? '$base$pic' : '$base/$pic';
-    }
+    final avatar = item.userAvatar;
+    final pic = avatar != null && avatar.isNotEmpty ? AppConfig.resolveMediaUrl(avatar) : null;
 
     return Container(
       width: 36,
@@ -290,18 +292,13 @@ class HomeNewsFeed extends GetView<HomeController> {
         border: Border.all(color: AppColors.borderLight, width: 1),
       ),
       clipBehavior: Clip.antiAlias,
-      child: pic != null && pic.isNotEmpty
-          ? (pic.startsWith('http')
-              ? CachedNetworkImage(
-                  imageUrl: pic,
-                  fit: BoxFit.cover,
-                  errorWidget: (_, __, ___) => _buildAvatarInitial(initial),
-                )
-              : Image.file(
-                  File(pic),
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _buildAvatarInitial(initial),
-                ))
+      child: pic != null
+          ? CachedNetworkImage(
+              imageUrl: pic,
+              fit: BoxFit.cover,
+              placeholder: (_, __) => _buildAvatarInitial(initial),
+              errorWidget: (_, __, ___) => _buildAvatarInitial(initial),
+            )
           : _buildAvatarInitial(initial),
     );
   }

@@ -150,10 +150,10 @@ class TaskScreen extends GetView<TaskController> {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: isFiltered ? AppColors.chipSurface : AppColors.cardSurface,
+          color: isFiltered ? AppColors.accentBlue.withValues(alpha: 0.12) : AppColors.cardSurface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isFiltered ? Color(0xFF3B82F6) : AppColors.chipSurface,
+            color: isFiltered ? AppColors.accentBlue : AppColors.chipSurface,
             width: 1.2,
           ),
         ),
@@ -168,14 +168,14 @@ class TaskScreen extends GetView<TaskController> {
                 children: [
                   Icon(
                     Icons.filter_list_rounded,
-                    color: isFiltered ? Color(0xFF60A5FA) : AppColors.textCaption,
+                    color: isFiltered ? AppColors.accentBlue : AppColors.textCaption,
                     size: 16,
                   ),
                   SizedBox(width: 6),
                   Text(
                     isFiltered ? controller.filterSummary : 'Filter',
                     style: TextStyle(
-                      color: isFiltered ? Colors.white : AppColors.textCaption,
+                      color: isFiltered ? AppColors.accentBlue : AppColors.textCaption,
                       fontSize: 12,
                       fontWeight: isFiltered ? FontWeight.bold : FontWeight.w500,
                     ),
@@ -193,12 +193,12 @@ class TaskScreen extends GetView<TaskController> {
                 child: Container(
                   padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
-                    color: Color(0xFF2563EB),
+                    color: AppColors.accentBlue,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.close,
-                    color: AppColors.textPrimary,
+                    color: Colors.white,
                     size: 10,
                   ),
                 ),

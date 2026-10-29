@@ -125,7 +125,8 @@ class HomeController extends BaseController {
       id: 'social_${post.sessionId}',
       sessionId: post.sessionId,
       userName: post.username.isNotEmpty ? post.username : 'MoveM Athlete',
-      userAvatar: post.profilePicture,
+      // The feed API doesn't send profilePicture yet; use our own photo on our posts.
+      userAvatar: post.profilePicture ?? (post.myPost ? profilePicUrl : null),
       title: title,
       caption: post.shareDescription != null && post.shareDescription!.trim().isNotEmpty
           ? '“${post.shareDescription!.trim()}”'

@@ -60,6 +60,9 @@ class HomeFeedItem {
     this.routePoints = const [],
   });
 
+  /// Author name for the card: "You" on the viewer's own posts.
+  String get displayName => myPost ? 'You' : userName;
+
   /// Image shown when the post has no uploaded attachment.
   String get fallbackImage {
     if (workoutType.contains('PUSH')) return AppImages.pushUpCard;
