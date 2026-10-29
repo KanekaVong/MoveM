@@ -10,6 +10,7 @@ import '../controllers/activity_detail_controller.dart';
 import '../widgets/gps_route_painter.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/Formatters.dart';
 
 class ActivityDetailScreen extends GetView<ActivityDetailController> {
   const ActivityDetailScreen({super.key});
@@ -86,7 +87,7 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
   Widget _buildRouteHero(HomeFeedItem item) {
     final distance = item.distanceKm;
     final distanceLabel = distance != null && distance > 0
-        ? (distance >= 1 ? '${distance.round()}KM' : '${distance.toStringAsFixed(1)}KM')
+        ? Formatters.distanceKm(distance)
         : _workoutLabel(item);
 
     return SizedBox(

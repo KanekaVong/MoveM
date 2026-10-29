@@ -169,10 +169,16 @@ class SoloChallengeModel {
     final isPullUps = t == 'PULL_UPS' || t == 'PULL_UP' || n.contains('pull');
     final isPushUp = t == 'PUSH_UP' || n.contains('push');
 
-    final int defaultSets = isRunning ? 1 : (isSquats ? 3 : (isPullUps ? 4 : 4));
-    final int defaultReps = isRunning
+    int defaultSets = isRunning ? 1 : (isSquats ? 3 : (isPullUps ? 4 : 4));
+    int defaultReps = isRunning
         ? (rawTargetValue > 0 ? rawTargetValue : 1)
         : (isSquats ? 15 : (isPullUps ? 5 : 15));
+
+    // The API has no sets/repsPerSet, so split a REPS target across the default sets.
+    if (!isRunning && u == 'REPS' && rawTargetValue > 0) {
+      defaultSets = defaultSets.clamp(1, rawTargetValue);
+      defaultReps = (rawTargetValue / defaultSets).ceil();
+    }
 
     final String defaultHero = isRunning
         ? AppImages.runningActivity

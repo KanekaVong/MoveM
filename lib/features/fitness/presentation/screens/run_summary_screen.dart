@@ -15,7 +15,7 @@ import 'running_tracking_screen.dart';
 import 'solo_challenge_list_screen.dart';
 import '../../../../core/config/google_map_style.dart';
 import '../../../../core/theme/app_colors.dart';
-import 'package:movem/core/utils/app_snack.dart';
+import '../widgets/share_workout.dart';
 
 class RunSummaryScreen extends StatelessWidget {
   final RunSession session;
@@ -28,6 +28,44 @@ class RunSummaryScreen extends StatelessWidget {
     this.summary,
     this.challenge,
   });
+
+  /// A run only counts as completed when it reaches the challenge target.
+  bool _isChallengeCompleted({
+    required double distanceKm,
+    required int steps,
+    required Duration duration,
+  }) {
+    final c = challenge;
+    if (c == null || c.targetValue <= 0) return false;
+    switch (c.targetUnit.toUpperCase()) {
+      case 'KM':
+        return distanceKm >= c.targetValue;
+      case 'STEPS':
+        return steps >= c.targetValue;
+      case 'MINUTES':
+        return duration.inMinutes >= c.targetValue;
+      default:
+        return false;
+    }
+  }
+
+  String _progressText({
+    required String distanceStr,
+    required int steps,
+    required Duration duration,
+  }) {
+    final c = challenge!;
+    switch (c.targetUnit.toUpperCase()) {
+      case 'KM':
+        return '$distanceStr / ${c.targetValue}KM';
+      case 'STEPS':
+        return '$steps / ${c.targetValue} steps';
+      case 'MINUTES':
+        return '${duration.inMinutes} / ${c.targetValue} min';
+      default:
+        return '';
+    }
+  }
 
   String _formatDurationText(Duration duration) {
     final totalSecs = duration.inSeconds;
@@ -85,12 +123,19 @@ class RunSummaryScreen extends StatelessWidget {
       heightCm: profile?.height ?? 0,
     );
 
-    final calories = PaceCalculator.caloriesForRun(
-      distanceKm * 1000,
-      weightKg: profile?.weight ?? 0,
-    );
+    final calories = (summary != null && summary!.caloriesBurned > 0)
+        ? summary!.caloriesBurned.round()
+        : PaceCalculator.caloriesForRun(
+            distanceKm * 1000,
+            weightKg: profile?.weight ?? 0,
+          );
 
     final challengeTitle = challenge?.name ?? 'RUNNING SESSION';
+    final isChallengeCompleted = _isChallengeCompleted(
+      distanceKm: distanceKm,
+      steps: steps,
+      duration: duration,
+    );
     final routePoints = session.points
         .where((p) => p.latitude != 0 || p.longitude != 0)
         .toList();
@@ -242,13 +287,23 @@ class RunSummaryScreen extends StatelessWidget {
                               text: 'CHALLENGE: ${challengeTitle.toUpperCase()} ',
                               style: TextStyle(color: AppColors.textPrimary),
                             ),
-                            const TextSpan(
-                              text: 'COMPLETED 🔥',
-                              style: TextStyle(color: Color(0xFFFFA000)),
+                            TextSpan(
+                              text: isChallengeCompleted ? 'COMPLETED 🔥' : 'FINISHED',
+                              style: TextStyle(
+                                color: isChallengeCompleted ? const Color(0xFFFFA000) : AppColors.textSecondary,
+                              ),
                             ),
                           ],
                         ),
                       ),
+                      if (!isChallengeCompleted && challenge != null && challenge!.targetValue > 0) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          _progressText(distanceStr: distanceStr, steps: steps, duration: duration),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                        ),
+                      ],
 
                       const SizedBox(height: 48),
 
@@ -260,15 +315,7 @@ class RunSummaryScreen extends StatelessWidget {
                             _buildCircleActionButton(
                               icon: Icons.share_outlined,
                               label: 'SHARE',
-                              onTap: () {
-                                AppSnack.show(
-                                  'Share Workout',
-                                  'Sharing $distanceStr running workout details...',
-                                  backgroundColor: AppColors.textPrimary,
-                                  colorText: Colors.white,
-                                  snackPosition: SnackPosition.BOTTOM,
-                                );
-                              },
+                              onTap: () => shareWorkout(summary?.sessionId),
                             ),
 
                             _buildCircleActionButton(

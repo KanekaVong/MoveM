@@ -11,7 +11,7 @@ import '../controllers/fitness_profile_controller.dart';
 import 'solo_challenge_list_screen.dart';
 import 'squat_detection_screen.dart';
 import '../../../../core/theme/app_colors.dart';
-import 'package:movem/core/utils/app_snack.dart';
+import '../widgets/share_workout.dart';
 
 class SquatSummaryScreen extends StatelessWidget {
   final SquatSession session;
@@ -212,15 +212,7 @@ class SquatSummaryScreen extends StatelessWidget {
                       _buildCircleActionButton(
                         icon: Icons.share_outlined,
                         label: 'SHARE',
-                        onTap: () {
-                          AppSnack.show(
-                            'Share Workout',
-                            'Sharing "${challenge.name}" workout summary...',
-                            backgroundColor: AppColors.textPrimary,
-                            colorText: Colors.white,
-                            snackPosition: SnackPosition.BOTTOM,
-                          );
-                        },
+                        onTap: () => shareWorkout(summary?.sessionId),
                       ),
 
                       _buildCircleActionButton(

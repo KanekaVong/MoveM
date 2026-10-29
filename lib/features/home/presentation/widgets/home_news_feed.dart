@@ -12,57 +12,63 @@ import '../screens/activity_detail_screen.dart';
 import 'gps_route_painter.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/Formatters.dart';
 
+/// Feed section of the home scroll view, as slivers: the "News Feed" label
+/// stays pinned at the top while the cards scroll under it.
 class HomeNewsFeed extends GetView<HomeController> {
   const HomeNewsFeed({super.key});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n?.newsFeed ?? 'News Feed',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.2,
+    return SliverMainAxisGroup(
+      slivers: [
+        PinnedHeaderSliver(
+          child: Container(
+            color: AppColors.pageBackground,
+            padding: const EdgeInsets.only(top: 4, bottom: 14),
+            child: Text(
+              l10n?.newsFeed ?? 'News Feed',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.2,
+              ),
+            ),
           ),
         ),
-        const SizedBox(height: 14),
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: controller.fetchSocialFeed,
-            color: AppColors.accentBlue,
-            backgroundColor: AppColors.cardSurface,
-            child: Obx(() {
-              final items = controller.feedItems;
-              if (items.isEmpty) {
-                return ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: [
-                    NoDataComponent(
-                      compact: true,
-                      title: l10n?.noActivityYet ?? 'No activity yet',
-                      subtitle: l10n?.feedEmptySub ??
-                          'Workouts and updates from your circle will show up here.',
-                    ),
-                  ],
-                );
-              }
-
-              return ListView.separated(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.only(bottom: 120),
-                itemCount: items.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 16),
-                itemBuilder: (context, index) => _buildFeedCard(items[index]),
+        Obx(() {
+          final items = controller.feedItems;
+          if (items.isEmpty) {
+            if (controller.isFeedLoading.value) {
+              return const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 48),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
               );
-            }),
-          ),
-        ),
+            }
+            return SliverToBoxAdapter(
+              child: NoDataComponent(
+                compact: true,
+                title: l10n?.noActivityYet ?? 'No activity yet',
+                subtitle: l10n?.feedEmptySub ??
+                    'Workouts and updates from your circle will show up here.',
+              ),
+            );
+          }
+
+          return SliverPadding(
+            padding: const EdgeInsets.only(bottom: 120),
+            sliver: SliverList.separated(
+              itemCount: items.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              itemBuilder: (context, index) => _buildFeedCard(items[index]),
+            ),
+          );
+        }),
       ],
     );
   }
@@ -194,7 +200,7 @@ class HomeNewsFeed extends GetView<HomeController> {
     if (item.hasGpsRoute) {
       final distance = item.distanceKm;
       final distanceLabel = distance != null && distance > 0
-          ? (distance >= 1.0 ? '${distance.toStringAsFixed(0)}KM' : '${distance.toStringAsFixed(1)}KM')
+          ? Formatters.distanceKm(distance)
           : 'RUN';
 
       return Container(
@@ -204,19 +210,26 @@ class HomeNewsFeed extends GetView<HomeController> {
           color: const Color(0xFFE6EBF3),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: CustomPaint(
-          painter: GpsRoutePainter(routePoints: item.routePoints),
-          child: Center(
-            child: Text(
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+        child: Column(
+          children: [
+            Expanded(
+              child: CustomPaint(
+                size: Size.infinite,
+                painter: GpsRoutePainter(routePoints: item.routePoints),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
               distanceLabel,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: AppColors.textPrimary,
                 fontSize: 17,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.6,
               ),
             ),
-          ),
+          ],
         ),
       );
     }

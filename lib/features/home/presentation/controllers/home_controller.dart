@@ -14,12 +14,15 @@ import '../../../friends/presentation/bindings/friends_binding.dart';
 import '../../../friends/presentation/screens/add_friends_screen.dart';
 import '../../../main_nav/presentation/controllers/main_nav_controller.dart';
 import '../../domain/models/home_feed_item.dart';
+import '../../../../core/utils/Formatters.dart';
 
 class HomeController extends BaseController {
   final FitnessWorkoutRepository workoutRepository = FitnessWorkoutRepository();
 
   final Rx<UserResponse?> currentUser = Rx<UserResponse?>(null);
   final RxList<HomeFeedItem> feedItems = <HomeFeedItem>[].obs;
+  // True until the first feed request finishes, so the empty state isn't flashed.
+  final RxBool isFeedLoading = true.obs;
 
   final RxString dailyQuote =
       '“Success is stumbling from failure to failure with no loss of enthusiasm” - Winston Churchill'.obs;
@@ -77,16 +80,20 @@ class HomeController extends BaseController {
   Future<void> fetchDashboard() => fetchSocialFeed();
 
   Future<void> fetchSocialFeed() async {
-    final result = await workoutRepository.getWorkoutSocialFeed();
-    if (result is ApiSuccess<List<SharedWorkoutPostResponse>>) {
-      final posts = result.data;
-      if (posts.isNotEmpty) {
-        final socialItems = posts.map(_convertSocialPostToFeedItem).toList();
-        feedItems.assignAll(socialItems);
-        return;
+    try {
+      final result = await workoutRepository.getWorkoutSocialFeed();
+      if (result is ApiSuccess<List<SharedWorkoutPostResponse>>) {
+        final posts = result.data;
+        if (posts.isNotEmpty) {
+          final socialItems = posts.map(_convertSocialPostToFeedItem).toList();
+          feedItems.assignAll(socialItems);
+          return;
+        }
       }
+      feedItems.clear();
+    } finally {
+      isFeedLoading.value = false;
     }
-    feedItems.clear();
   }
 
   HomeFeedItem _convertSocialPostToFeedItem(SharedWorkoutPostResponse post) {
@@ -97,7 +104,7 @@ class HomeController extends BaseController {
     String title;
     if (isRunning) {
       title = post.distance > 0
-          ? 'Completed a ${_formatDistanceKm(post.distance)} Run! 🔥'
+          ? 'Completed a ${Formatters.distanceKm(post.distance)} Run! 🔥'
           : 'Completed a Run! 🔥';
     } else if (workoutType.contains('PUSH')) {
       title = 'Completed a PushUp Challenge 🔥';
@@ -146,23 +153,17 @@ class HomeController extends BaseController {
     );
   }
 
-  String _formatDistanceKm(double distance) {
-    if (distance >= 1) {
-      return '${distance.round()}KM';
-    }
-    return '${distance.toStringAsFixed(1)}KM';
-  }
-
   String? _formatFeedDuration(int seconds) {
     if (seconds <= 0) return null;
     final hours = seconds ~/ 3600;
-    final mins = ((seconds % 3600) / 60).round();
+    final mins = (seconds % 3600) ~/ 60;
+    final secs = seconds % 60;
     if (hours > 0) {
       if (mins > 0) return '${hours}Hr ${mins}Mins';
       return '${hours}Hr';
     }
-    if (mins > 0) return '${mins}Mins';
-    return '${seconds}s';
+    if (mins > 0) return secs > 0 ? '${mins}m ${secs}s' : '${mins}Mins';
+    return '${secs}s';
   }
 
   String? _formatAveragePace(int durationSeconds, double distanceKm) {

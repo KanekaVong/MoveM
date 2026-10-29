@@ -122,7 +122,7 @@ class CreateTaskController extends BaseController {
       description: description,
       startActivity: deadlineStr,
       deadline: deadlineStr,
-      checklists: const [],
+      checklists: checklists,
       priority: priority.value,
       isRecurring: recurring,
       recurringType: recurring ? repeatFrequency.value?.toUpperCase() : null,
@@ -137,12 +137,6 @@ class CreateTaskController extends BaseController {
       onSuccess: (data) async {
         Get.back(result: true);
         AppSnack.show(_l10n?.success ?? 'Done', _l10n?.taskCreatedSuccess ?? 'Task created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
-
-        if (checklists.isNotEmpty) {
-          for (var item in checklists) {
-            repository.addChecklistItem(data.activityId, item);
-          }
-        }
 
         if (data.reminders != null && data.reminders!.isNotEmpty) {
           for (final reminder in data.reminders!) {

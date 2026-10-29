@@ -17,6 +17,7 @@ import '../../domain/push_up_angle_calculator.dart';
 import '../../domain/push_up_state_machine.dart';
 import '../screens/push_up_summary_screen.dart';
 import 'achievement_notice_controller.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class PushUpDetectorController extends GetxController {
   final SoloChallengeModel challenge;
@@ -439,6 +440,14 @@ class PushUpDetectorController extends GetxController {
           AchievementNoticeController.ensure().enqueue(finishRes.data!.currentAchievements);
         }
       } catch (_) {}
+    }
+
+    if (summaryModel == null) {
+      AppSnack.show(
+        'Not saved',
+        'Workout couldn\'t be saved to the server. Check your connection.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
 
     Get.off(

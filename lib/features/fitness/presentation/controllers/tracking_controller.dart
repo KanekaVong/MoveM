@@ -415,6 +415,14 @@ class TrackingController extends GetxController {
       } catch (_) {}
     }
 
+    if (summaryModel == null) {
+      AppSnack.show(
+        'Not saved',
+        'Workout couldn\'t be saved to the server. Check your connection.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+
     await saveRun();
     return summaryModel;
   }
