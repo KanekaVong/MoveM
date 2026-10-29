@@ -116,7 +116,9 @@ class HomeController extends BaseController {
 
     String? imageUrl;
     if (post.attachments.isNotEmpty) {
-      imageUrl = post.attachments.first.url ?? post.attachments.first.filePath;
+      final attachment = post.attachments.first;
+      // The API's `url` can repeat the storage prefix; `filePath` is already a full URL.
+      imageUrl = attachment.filePath.startsWith('http') ? attachment.filePath : (attachment.url ?? attachment.filePath);
     }
 
     return HomeFeedItem(

@@ -1,9 +1,7 @@
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/config/app_config.dart';
-import '../../../../core/utils/app_images.dart';
 import '../../../task/data/dto/response/comment_response.dart';
 import '../../domain/models/home_feed_item.dart';
 import '../controllers/activity_detail_controller.dart';
@@ -92,7 +90,7 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
 
     return SizedBox(
       height: 250,
-      child: item.hasGpsRoute
+      child: item.hasGpsRoute && (item.imageUrl == null || item.imageUrl!.isEmpty)
           ? CustomPaint(
               painter: GpsRoutePainter(
                 routePoints: item.routePoints,
@@ -114,10 +112,8 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
           : ClipRRect(
               borderRadius: BorderRadius.circular(18),
               child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-                  ? (item.imageUrl!.startsWith('http')
-                      ? CachedNetworkImage(imageUrl: item.imageUrl!, fit: BoxFit.cover)
-                      : Image.file(File(item.imageUrl!), fit: BoxFit.cover))
-                  : Image.asset(AppImages.taskScreenBackground, fit: BoxFit.cover),
+                  ? CachedNetworkImage(imageUrl: AppConfig.resolveMediaUrl(item.imageUrl!), fit: BoxFit.cover)
+                  : Image.asset(item.fallbackImage, fit: BoxFit.cover),
             ),
     );
   }
@@ -385,6 +381,7 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(radius),
+        border: Border.all(color: const Color(0x1AFFFFFF), width: 1),
       ),
       clipBehavior: Clip.antiAlias,
       child: resolved != null && resolved.isNotEmpty
@@ -399,11 +396,11 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
 
   Widget _initialBox(String letter) {
     return Container(
-      color: const Color(0xFF334155),
+      color: const Color(0x2E5B8CFF),
       alignment: Alignment.center,
       child: Text(
         letter,
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+        style: const TextStyle(color: Color(0xFF5B8CFF), fontWeight: FontWeight.w800),
       ),
     );
   }

@@ -604,11 +604,12 @@ class TaskDetailScreen extends StatelessWidget {
 
   Widget _buildBottomButton(BuildContext context, TaskResponse task, TaskDetailController controller) {
     final isCompleted = task.status == 'COMPLETE';
+    final isOverdue = !isCompleted && task.isPastDeadline;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
       child: AppButton(
-        label: isCompleted ? 'Completed' : 'Mark as Complete',
-        onPressed: isCompleted ? null : () => controller.markAsComplete(),
+        label: isCompleted ? 'Completed' : (isOverdue ? 'Deadline Passed' : 'Mark as Complete'),
+        onPressed: isCompleted || isOverdue ? null : () => controller.markAsComplete(),
       ),
     );
   }

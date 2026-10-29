@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import '../../../../core/network/api_result.dart';
 import '../../../../core/network/dio_client.dart';
@@ -254,6 +255,26 @@ class FitnessWorkoutRepository {
         return ApiSuccess(list);
       }
       return ApiSuccess([]);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } on ApiException catch (e) {
+      return ApiError(e);
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  /// Uploads an image (e.g. the route map snapshot) as a workout attachment.
+  Future<ApiResult<bool>> uploadWorkoutAttachment(int sessionId, Uint8List bytes, String fileName) async {
+    try {
+      await _dioClient.dio.post(
+        FitnessEndpoints.workoutAttachments(sessionId),
+        data: FormData.fromMap({
+          'file': MultipartFile.fromBytes(bytes, filename: fileName),
+        }),
+        options: Options(contentType: 'multipart/form-data'),
+      );
+      return ApiSuccess(true);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {

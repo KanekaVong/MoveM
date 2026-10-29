@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/app_images.dart';
 import '../../domain/models/home_feed_item.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/activity_detail_controller.dart';
@@ -197,7 +196,8 @@ class HomeNewsFeed extends GetView<HomeController> {
   }
 
   Widget _buildRightMedia(HomeFeedItem item) {
-    if (item.hasGpsRoute) {
+    final hasImage = item.imageUrl != null && item.imageUrl!.isNotEmpty;
+    if (item.hasGpsRoute && !hasImage) {
       final distance = item.distanceKm;
       final distanceLabel = distance != null && distance > 0
           ? Formatters.distanceKm(distance)
@@ -207,7 +207,7 @@ class HomeNewsFeed extends GetView<HomeController> {
         width: 128,
         height: 128,
         decoration: BoxDecoration(
-          color: const Color(0xFFE6EBF3),
+          color: AppColors.isDark ? AppColors.chipSurface : const Color(0xFFE6EBF3),
           borderRadius: BorderRadius.circular(16),
         ),
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
@@ -242,19 +242,13 @@ class HomeNewsFeed extends GetView<HomeController> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15),
-        child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-            ? (item.imageUrl!.startsWith('http')
-                ? CachedNetworkImage(
-                    imageUrl: item.imageUrl!,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => Image.asset(AppImages.taskScreenBackground, fit: BoxFit.cover),
-                  )
-                : Image.file(
-                    File(item.imageUrl!),
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Image.asset(AppImages.taskScreenBackground, fit: BoxFit.cover),
-                  ))
-            : Image.asset(AppImages.taskScreenBackground, fit: BoxFit.cover),
+        child: hasImage
+            ? CachedNetworkImage(
+                imageUrl: AppConfig.resolveMediaUrl(item.imageUrl!),
+                fit: BoxFit.cover,
+                errorWidget: (_, __, ___) => Image.asset(item.fallbackImage, fit: BoxFit.cover),
+              )
+            : Image.asset(item.fallbackImage, fit: BoxFit.cover),
       ),
     );
   }
@@ -291,12 +285,9 @@ class HomeNewsFeed extends GetView<HomeController> {
       width: 36,
       height: 36,
       decoration: BoxDecoration(
-        color: const Color(0xFFE5E7EB),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: const Color(0xFFD1D5DB),
-          width: 1,
-        ),
+        color: AppColors.chipSurface,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.borderLight, width: 1),
       ),
       clipBehavior: Clip.antiAlias,
       child: pic != null && pic.isNotEmpty
@@ -317,14 +308,14 @@ class HomeNewsFeed extends GetView<HomeController> {
 
   Widget _buildAvatarInitial(String initial) {
     return Container(
-      color: const Color(0xFF1E293B),
+      color: AppColors.isDark ? AppColors.accentBlue.withValues(alpha: 0.18) : const Color(0xFF1E293B),
       child: Center(
         child: Text(
           initial,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
+          style: TextStyle(
+            color: AppColors.isDark ? AppColors.accentBlue : Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
           ),
         ),
       ),

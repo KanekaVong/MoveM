@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,8 +22,9 @@ class RunSummaryScreen extends StatelessWidget {
   final RunSession session;
   final FitnessWorkoutSummaryModel? summary;
   final SoloChallengeModel? challenge;
+  final _RouteMapHandle _mapHandle = _RouteMapHandle();
 
-  const RunSummaryScreen({
+  RunSummaryScreen({
     super.key,
     required this.session,
     this.summary,
@@ -208,7 +210,7 @@ class RunSummaryScreen extends StatelessWidget {
                             ? CustomPaint(
                                 painter: RoutePolygonPainter(points: session.points),
                               )
-                            : _WorkoutRouteMap(points: routePoints),
+                            : _WorkoutRouteMap(points: routePoints, handle: _mapHandle),
                       ),
 
                       const SizedBox(height: 16),
@@ -315,7 +317,10 @@ class RunSummaryScreen extends StatelessWidget {
                             _buildCircleActionButton(
                               icon: Icons.share_outlined,
                               label: 'SHARE',
-                              onTap: () => shareWorkout(summary?.sessionId),
+                              onTap: () => shareWorkout(
+                                summary?.sessionId,
+                                captureImage: _mapHandle.snapshot,
+                              ),
                             ),
 
                             _buildCircleActionButton(
@@ -585,10 +590,24 @@ class RoutePolygonPainter extends CustomPainter {
       oldDelegate.points.length != points.length;
 }
 
+/// Lets the summary screen snapshot the route map when sharing.
+class _RouteMapHandle {
+  GoogleMapController? controller;
+
+  Future<Uint8List?> snapshot() async {
+    try {
+      return await controller?.takeSnapshot();
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
 class _WorkoutRouteMap extends StatefulWidget {
   final List<TrackPoint> points;
+  final _RouteMapHandle? handle;
 
-  const _WorkoutRouteMap({required this.points});
+  const _WorkoutRouteMap({required this.points, this.handle});
 
   @override
   State<_WorkoutRouteMap> createState() => _WorkoutRouteMapState();
@@ -602,7 +621,14 @@ class _WorkoutRouteMapState extends State<_WorkoutRouteMap> {
       .toList();
 
   @override
+  void didUpdateWidget(covariant _WorkoutRouteMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    widget.handle?.controller = _controller;
+  }
+
+  @override
   void dispose() {
+    if (widget.handle?.controller == _controller) widget.handle?.controller = null;
     _controller?.dispose();
     super.dispose();
   }
@@ -674,6 +700,7 @@ class _WorkoutRouteMapState extends State<_WorkoutRouteMap> {
       },
       onMapCreated: (controller) async {
         _controller = controller;
+        widget.handle?.controller = controller;
         await Future<void>.delayed(const Duration(milliseconds: 250));
         if (!mounted) return;
         await _fit(controller);

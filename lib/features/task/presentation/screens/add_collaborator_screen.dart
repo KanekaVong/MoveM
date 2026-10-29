@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/add_collaborator_controller.dart';
@@ -101,12 +103,13 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
                               children: [
                                 if (friend.profilePic.isNotEmpty)
                                   ClipOval(
-                                    child: Image.network(
-                                      friend.profilePic,
+                                    child: CachedNetworkImage(
+                                      imageUrl: AppConfig.resolveMediaUrl(friend.profilePic),
                                       width: 40,
                                       height: 40,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => _buildAvatarPlaceholder(initial),
+                                      placeholder: (_, __) => _buildAvatarPlaceholder(initial),
+                                      errorWidget: (_, __, ___) => _buildAvatarPlaceholder(initial),
                                     ),
                                   )
                                 else
@@ -218,7 +221,7 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
   Widget _buildAvatarPlaceholder(String initial) {
     return CircleAvatar(
       radius: 20,
-      backgroundColor: AppColors.cardSurface,
+      backgroundColor: AppColors.chipSurface,
       child: Text(
         initial,
         style: TextStyle(

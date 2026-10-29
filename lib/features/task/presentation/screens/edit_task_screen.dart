@@ -32,6 +32,10 @@ class EditTaskScreen extends GetView<EditTaskController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    _buildTitleSection(),
+                    SizedBox(height: 12),
+                    Container(height: 0.5, color: AppColors.textPrimary.withValues(alpha: 0.12)),
+                    SizedBox(height: 12),
                     _buildDeadlinesSection(context),
                     SizedBox(height: 12),
                     Container(height: 0.5, color: AppColors.textPrimary.withOpacity(0.12)),
@@ -59,6 +63,39 @@ class EditTaskScreen extends GetView<EditTaskController> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildTitleSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'TITLE',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
+        ),
+        SizedBox(height: 6),
+        TextField(
+          controller: controller.titleController,
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            isDense: true,
+            contentPadding: EdgeInsets.zero,
+            hintText: 'Task title',
+            hintStyle: TextStyle(color: AppColors.textCaption),
+          ),
+        ),
+      ],
     );
   }
 
@@ -215,7 +252,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
           GestureDetector(
             onTap: () => controller.cycleRepeat(),
             child: Obx(() => Text(
-              controller.repeatFrequency.value?.toUpperCase() ?? (controller.isRecurring.value ? 'DAILY' : 'DAILY'),
+              controller.repeatFrequency.value?.toUpperCase() ?? 'NONE',
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 12,
@@ -262,51 +299,29 @@ class EditTaskScreen extends GetView<EditTaskController> {
   Widget _buildLabels(BuildContext context) {
     return Obx(() {
       final selected = controller.selectedLabel.value;
-      return Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          GestureDetector(
-            onTap: () => _showLabelPicker(context),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              decoration: BoxDecoration(
-                color: const Color(0xFF68B684),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                selected != null && selected.name.toLowerCase().contains('homework')
-                    ? selected.name
-                    : 'Scool Homework',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+      Color chipColor = AppColors.chipSurface;
+      if (selected != null) {
+        try {
+          chipColor = Color(int.parse(selected.color.replaceFirst('#', '0xFF')));
+        } catch (_) {}
+      }
+      return GestureDetector(
+        onTap: () => _showLabelPicker(context),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          decoration: BoxDecoration(
+            color: selected != null ? chipColor.withValues(alpha: 0.85) : chipColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            selected?.name ?? 'Select Label',
+            style: TextStyle(
+              color: selected != null ? Colors.white : AppColors.textSecondary,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          GestureDetector(
-            onTap: () => _showLabelPicker(context),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              decoration: BoxDecoration(
-                color: const Color(0xFFD4A76A),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                selected != null && !selected.name.toLowerCase().contains('homework')
-                    ? selected.name
-                    : 'Final Assignment',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       );
     });
   }

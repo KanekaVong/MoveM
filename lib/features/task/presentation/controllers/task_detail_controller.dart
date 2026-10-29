@@ -56,7 +56,7 @@ class TaskDetailController extends BaseController {
 
   Future<void> markAsComplete() async {
     final currentTask = task.value;
-    if (currentTask == null) return;
+    if (currentTask == null || currentTask.isPastDeadline) return;
 
     await executeApi<TaskResponse>(
       apiCall: () => repository.markTaskComplete(currentTask.activityId),
