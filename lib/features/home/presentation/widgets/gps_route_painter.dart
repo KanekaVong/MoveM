@@ -8,23 +8,27 @@ class GpsRoutePainter extends CustomPainter {
   final double strokeWidth;
   final List<FeedRoutePoint> routePoints;
 
+  /// Route line and glow color. Pass a darker shade on light backgrounds.
+  final Color lineColor;
+
   const GpsRoutePainter({
     this.colorfulDots = false,
     this.strokeWidth = 2.0,
     this.routePoints = const [],
+    this.lineColor = const Color(0xFFFBBF24),
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = const Color(0xFFFBBF24)
+      ..color = lineColor
       ..strokeWidth = strokeWidth
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 
     final glowPaint = Paint()
-      ..color = const Color(0xFFFBBF24).withValues(alpha: 0.22)
+      ..color = lineColor.withValues(alpha: 0.22)
       ..strokeWidth = strokeWidth + 2.5
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
@@ -123,6 +127,7 @@ class GpsRoutePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant GpsRoutePainter oldDelegate) {
     return oldDelegate.colorfulDots != colorfulDots ||
+        oldDelegate.lineColor != lineColor ||
         oldDelegate.strokeWidth != strokeWidth ||
         oldDelegate.routePoints.length != routePoints.length ||
         (routePoints.isNotEmpty &&
