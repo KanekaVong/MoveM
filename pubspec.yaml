@@ -37,6 +37,8 @@ dependencies:
   timezone: ^0.11.0
   cached_network_image: ^3.3.1
   shimmer: ^3.0.0
+  pinput: ^6.0.2
+  clock: ^1.1.1
   logger: ^2.7.0
   qr_flutter: ^4.1.0
   gal: ^2.3.3

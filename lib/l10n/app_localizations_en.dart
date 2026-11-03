@@ -140,6 +140,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resendCode => 'Resend Code';
 
   @override
+  String get didntGetCode => 'Didn\'t get the code?';
+
+  @override
+  String resendCodeIn(String time) {
+    return 'Resend in $time';
+  }
+
+  @override
   String get verifyBtn => 'Verify';
 
   @override

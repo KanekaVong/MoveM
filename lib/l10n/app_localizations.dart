@@ -356,6 +356,18 @@ abstract class AppLocalizations {
   /// **'Resend Code'**
   String get resendCode;
 
+  /// No description provided for @didntGetCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t get the code?'**
+  String get didntGetCode;
+
+  /// No description provided for @resendCodeIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend in {time}'**
+  String resendCodeIn(String time);
+
   /// No description provided for @verifyBtn.
   ///
   /// In en, this message translates to:

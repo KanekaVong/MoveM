@@ -140,6 +140,14 @@ class AppLocalizationsKm extends AppLocalizations {
   String get resendCode => 'ផ្ញើលេខកូដម្ដងទៀត';
 
   @override
+  String get didntGetCode => 'មិនបានទទួលលេខកូដ?';
+
+  @override
+  String resendCodeIn(String time) {
+    return 'ផ្ញើម្ដងទៀតក្នុង $time';
+  }
+
+  @override
   String get verifyBtn => 'ផ្ទៀងផ្ទាត់';
 
   @override

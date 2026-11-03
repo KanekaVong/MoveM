@@ -51,6 +51,15 @@
   "verifyOtpTitle": "VERIFY OTP",
   "otpCodeLabel": "OTP CODE",
   "resendCode": "Resend Code",
+  "didntGetCode": "Didn't get the code?",
+  "resendCodeIn": "Resend in {time}",
+  "@resendCodeIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "verifyBtn": "Verify",
   "resetPasswordTitle": "RESET PASSWORD",
   "newPassword": "NEW PASSWORD",
