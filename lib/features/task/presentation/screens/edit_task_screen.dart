@@ -571,13 +571,13 @@ class EditTaskScreen extends GetView<EditTaskController> {
               fileName = att.originalFileName.isNotEmpty
                   ? att.originalFileName
                   : att.filePath.split('/').last;
-              rawUrl = att.url ?? '';
+              rawUrl = AttachmentResponse.displayUrlOf(att);
             } else if (att is Map) {
               final orig = att['originalFileName'] ?? att['fileName'];
               fileName = (orig != null && orig.toString().isNotEmpty)
                   ? orig.toString()
                   : (att['filePath']?.toString() ?? '').split('/').last;
-              rawUrl = att['url']?.toString() ?? '';
+              rawUrl = AttachmentResponse.displayUrlOf(att);
             }
             if (fileName.isEmpty) fileName = tr.attachment;
 
@@ -782,7 +782,8 @@ class EditTaskScreen extends GetView<EditTaskController> {
                   leading: Icon(Icons.photo_library, color: Color(0xFF3B82F6)),
                   title: Text(tr.chooseFromGallery, style: TextStyle(color: AppColors.textPrimary)),
                   onTap: () {
-                    Get.back();
+                    // Close this sheet itself; Get.back() doesn't track Flutter's modal sheets.
+                    Navigator.of(context).pop();
                     controller.pickAttachment(ImageSource.gallery);
                   },
                 ),
@@ -790,7 +791,8 @@ class EditTaskScreen extends GetView<EditTaskController> {
                   leading: Icon(Icons.camera_alt, color: Color(0xFF68B684)),
                   title: Text(tr.takeAPhoto, style: TextStyle(color: AppColors.textPrimary)),
                   onTap: () {
-                    Get.back();
+                    // Close this sheet itself; Get.back() doesn't track Flutter's modal sheets.
+                    Navigator.of(context).pop();
                     controller.pickAttachment(ImageSource.camera);
                   },
                 ),

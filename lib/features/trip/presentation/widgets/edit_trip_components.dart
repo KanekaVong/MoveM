@@ -19,6 +19,7 @@ import 'package:flutter/gestures.dart';
 import 'package:movem/features/trip/data/services/google_places_service.dart';
 import 'package:movem/core/utils/app_snack.dart';
 import 'package:movem/core/utils/l10n.dart';
+import 'package:movem/shared/widgets/picker_theme.dart';
 
 /// Reusable edit form container.
 class EditTripFormPanel extends StatelessWidget {
@@ -500,6 +501,7 @@ class _DurationEditPanelState extends State<DurationEditPanel> {
 
     final selectedDate = await showDatePicker(
       context: context,
+      builder: pickerThemeBuilder,
       initialDate: current,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
@@ -511,6 +513,7 @@ class _DurationEditPanelState extends State<DurationEditPanel> {
 
     final selectedTime = await showTimePicker(
       context: context,
+      builder: pickerThemeBuilder,
       initialTime: TimeOfDay.fromDateTime(current),
     );
 
@@ -540,6 +543,7 @@ class _DurationEditPanelState extends State<DurationEditPanel> {
 
     final selectedDate = await showDatePicker(
       context: context,
+      builder: pickerThemeBuilder,
       initialDate: current,
       firstDate: _startActivity ?? DateTime(2020),
       lastDate: DateTime(2100),
@@ -551,6 +555,7 @@ class _DurationEditPanelState extends State<DurationEditPanel> {
 
     final selectedTime = await showTimePicker(
       context: context,
+      builder: pickerThemeBuilder,
       initialTime: TimeOfDay.fromDateTime(current),
     );
 

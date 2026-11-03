@@ -3628,4 +3628,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String paceValueShort(Object pace) {
     return '$pace /km';
   }
+
+  @override
+  String attachmentsNotUploaded(Object count) {
+    return '$count attachment change(s) could not be saved.';
+  }
+
+  @override
+  String invitesNotSent(Object count) {
+    return '$count invite(s) could not be sent.';
+  }
 }

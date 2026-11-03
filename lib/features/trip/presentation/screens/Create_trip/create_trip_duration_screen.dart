@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../controllers/create_trip_controller.dart';
 import 'create_trip_stop_screen.dart';
 import 'package:movem/features/trip/presentation/widgets/create_trip_component.dart';
+import 'package:movem/shared/widgets/picker_theme.dart';
 
 class CreateTripDurationScreen extends StatefulWidget {
   const CreateTripDurationScreen({
@@ -72,6 +73,7 @@ class _CreateTripDurationScreenState
 
     final range = await showDateRangePicker(
       context: context,
+      builder: pickerThemeBuilder,
       firstDate: now,
       lastDate: DateTime(now.year + 5),
       initialDateRange:
@@ -88,6 +90,7 @@ class _CreateTripDurationScreenState
 
     final startTime = await showTimePicker(
       context: context,
+      builder: pickerThemeBuilder,
       initialTime: _startTime,
     );
 
@@ -95,6 +98,7 @@ class _CreateTripDurationScreenState
 
     final endTime = await showTimePicker(
       context: context,
+      builder: pickerThemeBuilder,
       initialTime: _endTime,
     );
 

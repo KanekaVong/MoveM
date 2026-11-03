@@ -1234,5 +1234,7 @@
   "kcalValue": "{count} កាឡូរី",
   "you": "អ្នក",
   "itemDeleted": "បានលុប {name}",
-  "paceValueShort": "{pace} /គ.ម"
+  "paceValueShort": "{pace} /គ.ម",
+  "attachmentsNotUploaded": "មានការកែឯកសារភ្ជាប់ {count} មិនអាចរក្សាទុកបានទេ។",
+  "invitesNotSent": "មានការអញ្ជើញ {count} មិនអាចផ្ញើបានទេ។"
 }

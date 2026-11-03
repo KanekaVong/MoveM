@@ -25,6 +25,7 @@ import 'package:movem/shared/widgets/auth_image.dart';
 import 'package:movem/shared/widgets/no_data_component.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/shared/widgets/picker_theme.dart';
 
 
 class ProfileScreen extends StatelessWidget {
@@ -84,6 +85,7 @@ class ProfileScreen extends StatelessWidget {
 
     final pickedDate = await showDatePicker(
       context: context,
+      builder: pickerThemeBuilder,
       firstDate: DateTime(1900),
       lastDate: lastAllowedDate,
       initialDate: initialDate,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/network/api_result.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/services/notification_scheduler_service.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../domain/repositories/task_repository.dart';
@@ -16,6 +15,7 @@ import '../../data/repositories/task_repository_impl.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:movem/core/utils/app_snack.dart';
 import 'package:movem/core/utils/l10n.dart';
+import 'package:movem/shared/widgets/picker_theme.dart';
 
 class CreateTaskController extends BaseController {
   AppLocalizations? get _l10n {
@@ -184,19 +184,7 @@ class CreateTaskController extends BaseController {
       initialDate: initialDate,
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.accentBlue,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: AppColors.textPrimary,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: pickerThemeBuilder,
     );
 
     if (pickedDate != null) {
@@ -209,19 +197,7 @@ class CreateTaskController extends BaseController {
     final pickedTime = await showTimePicker(
       context: context,
       initialTime: initialTime,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.accentBlue,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: AppColors.textPrimary,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: pickerThemeBuilder,
     );
 
     if (pickedTime != null) {
@@ -231,7 +207,7 @@ class CreateTaskController extends BaseController {
 
   String get formattedDeadlineDate {
     if (selectedDate.value == null) return tr.notSet;
-    return DateFormat('d MMMM yyyy').format(selectedDate.value!);
+    return formatDayMonthYear(selectedDate.value!);
   }
 
   String get formattedDeadlineTime {

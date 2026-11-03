@@ -1,3 +1,5 @@
+import '../../../../../core/config/app_config.dart';
+
 class AttachmentResponse {
   final int id;
   final String originalFileName;
@@ -43,5 +45,27 @@ class AttachmentResponse {
       'createdAt': createdAt,
       'url': url,
     };
+  }
+
+  /// Link to show for an attachment ([AttachmentResponse] or raw JSON map).
+  ///
+  /// The API's `url` repeats the storage prefix and doesn't load; `filePath`
+  /// is already a full URL. Relative paths are resolved against the server.
+  static String displayUrlOf(dynamic attachment) {
+    String filePath = '';
+    String url = '';
+    if (attachment is AttachmentResponse) {
+      filePath = attachment.filePath;
+      url = attachment.url ?? '';
+    } else if (attachment is Map) {
+      filePath = attachment['filePath']?.toString() ?? '';
+      url = attachment['url']?.toString() ?? '';
+    } else if (attachment != null) {
+      url = attachment.toString();
+    }
+    if (filePath.startsWith('http')) return filePath;
+    if (url.startsWith('http')) return url;
+    final path = filePath.isNotEmpty ? filePath : url;
+    return path.isEmpty ? '' : AppConfig.resolveMediaUrl(path);
   }
 }

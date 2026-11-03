@@ -1,6 +1,8 @@
 import 'checklist_response.dart';
 import 'reminder_response.dart';
 import 'label_response.dart';
+import '../../../../../core/utils/server_time.dart';
+import '../../../../../core/storage/user_manager.dart';
 
 class TaskResponse {
   final String activityId;
@@ -47,8 +49,8 @@ class TaskResponse {
       activityName: json['activityName'] ?? '',
       description: json['description'],
       status: json['status'],
-      startActivity: json['startActivity'],
-      deadline: json['deadline'],
+      startActivity: asServerUtc(json['startActivity']),
+      deadline: asServerUtc(json['deadline']),
       totalChecklistItems: json['totalChecklistItems'] ?? 0,
       completedChecklistItems: json['completedChecklistItems'] ?? 0,
       checklistProgress: (json['checklistProgress'] ?? 0.0).toDouble(),
@@ -78,6 +80,22 @@ class TaskResponse {
   }
 
   bool get isComplete => status == 'COMPLETE';
+
+  /// Collaborators other than the signed-in user. The API lists the owner
+  /// (and you) among the members, but you shouldn't see or remove yourself.
+  List<dynamic> get otherCollaborators {
+    final me = UserManager();
+    final myId = me.userId;
+    final myName = me.userName?.toLowerCase();
+    return (collaborators ?? []).where((c) {
+      if (c is! Map) return true;
+      final id = c['userId']?.toString();
+      final name = c['username']?.toString().toLowerCase();
+      if (myId != null && id != null && id == myId) return false;
+      if (myName != null && name != null && name == myName) return false;
+      return true;
+    }).toList();
+  }
 
   bool get isPastDeadline {
     if (deadline == null || deadline!.isEmpty) return false;

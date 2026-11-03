@@ -13,6 +13,7 @@ import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
 import 'package:movem/core/utils/l10n.dart';
+import '../../data/dto/response/attachment_response.dart';
 
 class TaskDetailScreen extends StatelessWidget {
   final String activityId;
@@ -190,7 +191,7 @@ class TaskDetailScreen extends StatelessWidget {
     final hasChecklists = task.checklists != null && task.checklists!.isNotEmpty;
     final hasRepeat = task.recurring == true || (task.recurringType != null && task.recurringType!.isNotEmpty);
     final hasReminders = task.reminders != null && task.reminders!.isNotEmpty;
-    final hasCollaborators = task.collaborators != null && task.collaborators!.isNotEmpty;
+    final hasCollaborators = task.otherCollaborators.isNotEmpty;
     final hasAttachments = task.attachments != null && task.attachments!.isNotEmpty;
 
     if (!hasLabels && !hasChecklists && !hasRepeat && !hasReminders && !hasCollaborators && !hasAttachments) {
@@ -209,7 +210,7 @@ class TaskDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              tr.editTripChecklists,
+              tr.checklistLabel,
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 13,
@@ -448,7 +449,7 @@ class TaskDetailScreen extends StatelessWidget {
   }
 
   Widget _buildCollaboratorsSection(TaskResponse task) {
-    final taskCollaborators = task.collaborators ?? [];
+    final taskCollaborators = task.otherCollaborators;
     if (taskCollaborators.isEmpty) {
       return SizedBox.shrink();
     }
@@ -514,13 +515,13 @@ class TaskDetailScreen extends StatelessWidget {
       String url = '';
         String fileName = tr.attachment;
         if (attachment is Map) {
-          url = attachment['url']?.toString() ?? '';
+          url = AttachmentResponse.displayUrlOf(attachment);
           final orig = attachment['originalFileName'] ?? attachment['fileName'];
           fileName = (orig != null && orig.toString().isNotEmpty)
               ? orig.toString()
               : (attachment['filePath']?.toString() ?? '').split('/').last;
         } else {
-          url = attachment.toString();
+          url = AttachmentResponse.displayUrlOf(attachment);
           fileName = url.split('/').last;
         }
         if (fileName.isEmpty) fileName = tr.attachment;

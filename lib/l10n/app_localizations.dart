@@ -6853,6 +6853,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{pace} /km'**
   String paceValueShort(Object pace);
+
+  /// No description provided for @attachmentsNotUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} attachment change(s) could not be saved.'**
+  String attachmentsNotUploaded(Object count);
+
+  /// No description provided for @invitesNotSent.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} invite(s) could not be sent.'**
+  String invitesNotSent(Object count);
 }
 
 class _AppLocalizationsDelegate
