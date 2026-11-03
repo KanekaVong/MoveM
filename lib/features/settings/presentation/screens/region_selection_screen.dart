@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class RegionSelectionScreen extends StatefulWidget {
   final String? currentRegion;
@@ -313,11 +314,12 @@ class _RegionSelectionScreenState
       ),
       body: SafeArea(
         child: _isLoading
-            ? Center(
-          child: CircularProgressIndicator(
-            color: const Color(0xFF3B82F6),
-          ),
-        )
+            ? SkeletonListView(
+                itemCount: 8,
+                spacing: 22,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                itemBuilder: (_, __) => AppShimmer(dark: isDark, child: const SkeletonLines(lines: 1)),
+              )
             : Padding(
           padding: const EdgeInsets.fromLTRB(
             24,

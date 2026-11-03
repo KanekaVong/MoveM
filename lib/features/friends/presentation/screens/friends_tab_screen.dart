@@ -10,6 +10,7 @@ import '../controllers/friends_controller.dart';
 import 'public_user_profile_screen.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class FriendsTabScreen extends GetView<FriendsController> {
   final int initialIndex;
@@ -95,6 +96,9 @@ class FriendsTabScreen extends GetView<FriendsController> {
   }
 
   Widget _buildMyFriendsTab(AppLocalizations? l10n) {
+    if (controller.friends.isEmpty && controller.isLoadingFriends.value) {
+      return SkeletonListView.tiles(itemCount: 7, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12));
+    }
     if (controller.friends.isEmpty) {
       return NoDataComponent(
         title: l10n?.noFriendsYet ?? 'No friends yet',
@@ -136,6 +140,9 @@ class FriendsTabScreen extends GetView<FriendsController> {
   }
 
   Widget _buildRequestsTab(AppLocalizations? l10n) {
+    if (controller.incomingRequests.isEmpty && controller.isLoadingRequests.value) {
+      return SkeletonListView.tiles(itemCount: 4, trailing: true, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12));
+    }
     if (controller.incomingRequests.isEmpty) {
       return NoDataComponent(
         title: l10n?.noFriendRequests ?? 'No friend requests',
@@ -172,6 +179,9 @@ class FriendsTabScreen extends GetView<FriendsController> {
   }
 
   Widget _buildMyRequestsTab(AppLocalizations? l10n) {
+    if (controller.outgoingRequests.isEmpty && controller.isLoadingOutgoing.value) {
+      return SkeletonListView.tiles(itemCount: 4, trailing: true, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12));
+    }
     if (controller.outgoingRequests.isEmpty) {
       return NoDataComponent(
         title: l10n?.noRequestsSent ?? 'No requests sent',
@@ -212,6 +222,9 @@ class FriendsTabScreen extends GetView<FriendsController> {
     final isSearching = controller.searchQuery.value.trim().isNotEmpty;
     final list = isSearching ? controller.searchResults : controller.suggestedFriends;
 
+    if (list.isEmpty && !isSearching && controller.isLoadingSuggestions.value) {
+      return SkeletonListView.tiles(itemCount: 6, trailing: true, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12));
+    }
     if (list.isEmpty) {
       return NoDataComponent(
         title: isSearching

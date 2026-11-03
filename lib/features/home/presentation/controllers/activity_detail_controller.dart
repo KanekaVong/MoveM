@@ -33,6 +33,7 @@ class ActivityDetailController extends BaseController {
   late final Rx<HomeFeedItem> item = initialItem.obs;
   final RxList<CommentResponse> comments = <CommentResponse>[].obs;
   final RxBool isSending = false.obs;
+  final RxBool isLoadingComments = true.obs;
   final TextEditingController textController = TextEditingController();
   final FocusNode inputFocusNode = FocusNode();
 
@@ -52,12 +53,16 @@ class ActivityDetailController extends BaseController {
   }
 
   Future<void> loadComments() async {
-    if (item.value.sessionId == null) return;
+    if (item.value.sessionId == null) {
+      isLoadingComments.value = false;
+      return;
+    }
     final result = await commentRepository.getComments(commentsActivityId, page: 0, size: 50);
     if (result is ApiSuccess<PageCommentResponse>) {
       comments.assignAll(result.data.content);
       _syncCommentCount();
     }
+    isLoadingComments.value = false;
   }
 
   Future<void> toggleKudos() async {

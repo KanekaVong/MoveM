@@ -8,6 +8,7 @@ import '../../../friends/presentation/controllers/friends_controller.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class InvitePeopleScreen extends StatefulWidget {
   final Set<int>? initialSelectedIds;
@@ -161,10 +162,8 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                         fontWeight: FontWeight.bold)),
                 SizedBox(height: 12),
                 Expanded(
-                  child: _friendsController.isLoading
-                      ? Center(
-                          child: CircularProgressIndicator(
-                              color: Colors.blueAccent))
+                  child: _friendsController.isLoadingFriends.value && _friendsController.friends.isEmpty
+                      ? SkeletonListView.tiles(itemCount: 6, trailing: true, padding: const EdgeInsets.symmetric(vertical: 8))
                       : allPeople.isEmpty
                           ? NoDataComponent(
                               title: l10n?.noFriendsFoundInvite ?? 'No friends found',

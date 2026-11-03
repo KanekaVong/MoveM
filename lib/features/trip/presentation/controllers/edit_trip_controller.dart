@@ -27,6 +27,10 @@ class EditTripController extends BaseController {
 
   // Reactive State
   final Rx<TripResponse?> trip = Rx<TripResponse?>(null);
+  // Set when the trip itself fails to load, so the screen can offer a retry
+  // instead of loading forever. Separate from errorMessage, which other
+  // actions also write.
+  final RxnString tripLoadError = RxnString();
 
   final RxList<TripMemberResponse> members = <TripMemberResponse>[].obs;
 
@@ -89,6 +93,7 @@ class EditTripController extends BaseController {
   }
 
   Future<void> _loadTrip() async {
+    tripLoadError.value = null;
     final result = await tripRepository.getTripDetail(activityId);
 
     if (result is ApiSuccess<TripResponse>) {
@@ -98,6 +103,7 @@ class EditTripController extends BaseController {
       checklists.assignAll(result.data.checklists);
     } else if (result is ApiError<TripResponse>) {
       errorMessage.value = result.exception.message;
+      tripLoadError.value = result.exception.message;
     }
   }
 

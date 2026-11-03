@@ -9,6 +9,7 @@ import '../widgets/gps_route_painter.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/Formatters.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class ActivityDetailScreen extends GetView<ActivityDetailController> {
   const ActivityDetailScreen({super.key});
@@ -51,6 +52,11 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
                     const SizedBox(height: 24),
                     _buildSocialRow(item),
                     const SizedBox(height: 16),
+                    if (controller.isLoadingComments.value && controller.comments.isEmpty && item.commentCount > 0)
+                      for (var i = 0; i < item.commentCount.clamp(1, 3); i++) ...[
+                        const SkeletonTile(avatarSize: 36, dark: true),
+                        const SizedBox(height: 10),
+                      ],
                     ...controller.comments.map(_buildCommentBubble),
                   ],
                 );

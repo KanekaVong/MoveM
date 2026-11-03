@@ -13,6 +13,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class TaskScreen extends GetView<TaskController> {
   const TaskScreen({super.key});
@@ -793,14 +794,29 @@ class TaskScreen extends GetView<TaskController> {
       if (controller.isLoading && controller.tasks.isEmpty) {
         return Container(
           color: AppColors.pageBackground,
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              SizedBox(height: 80),
-              Center(
-                child: CircularProgressIndicator(color: Color(0xFF3B82F6)),
+          child: SkeletonListView(
+            itemCount: 4,
+            padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 160.0),
+            itemBuilder: (_, __) => SkeletonCard(
+              radius: 20,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Row(
+                    children: [
+                      Expanded(child: SkeletonLines(lines: 2)),
+                      SizedBox(width: 12),
+                      SkeletonBox(width: 44, height: 44, radius: 12),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  SkeletonBox(height: 6),
+                  SizedBox(height: 10),
+                  SkeletonBox(width: 110, height: 10),
+                ],
               ),
-            ],
+            ),
           ),
         );
       }

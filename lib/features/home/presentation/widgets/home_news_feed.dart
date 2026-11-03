@@ -11,9 +11,8 @@ import 'gps_route_painter.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/Formatters.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
-/// Feed section of the home scroll view, as slivers: the "News Feed" label
-/// stays pinned at the top while the cards scroll under it.
 class HomeNewsFeed extends GetView<HomeController> {
   const HomeNewsFeed({super.key});
 
@@ -42,9 +41,14 @@ class HomeNewsFeed extends GetView<HomeController> {
           if (items.isEmpty) {
             if (controller.isFeedLoading.value) {
               return const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 48),
-                  child: Center(child: CircularProgressIndicator()),
+                child: Column(
+                  children: [
+                    SkeletonMediaCard(mediaSize: 128),
+                    SizedBox(height: 16),
+                    SkeletonMediaCard(mediaSize: 128),
+                    SizedBox(height: 16),
+                    SkeletonMediaCard(mediaSize: 128),
+                  ],
                 ),
               );
             }

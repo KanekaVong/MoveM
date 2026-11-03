@@ -7,6 +7,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../controllers/add_collaborator_controller.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
   const AddCollaboratorScreen({super.key});
@@ -48,9 +49,12 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
             ),
             Expanded(
               child: Obx(() {
-                if (controller.isLoading) {
-                  return Center(
-                    child: CircularProgressIndicator(color: Color(0xFF4B9D62)),
+                if (controller.isLoading && controller.friends.isEmpty) {
+                  return SkeletonListView.tiles(
+                    itemCount: 6,
+                    avatarSize: 40,
+                    trailing: true,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   );
                 }
 

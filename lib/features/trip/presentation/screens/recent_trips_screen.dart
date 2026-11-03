@@ -9,6 +9,7 @@ import 'package:movem/features/trip/presentation/controllers/edit_trip_controlle
 import 'package:movem/features/trip/presentation/controllers/trip_controller.dart';
 import 'package:movem/features/trip/presentation/screens/trip_detail_screen.dart';
 import 'package:movem/l10n/app_localizations.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 enum TripSortOption {
   dateNewest,
@@ -43,7 +44,7 @@ class _RecentTripScreenState extends State<RecentTripScreen> {
   }
 
   Future<void> _loadTrips({
-    bool showLoading = true,
+    bool showLoading = false,
   }) async {
     await widget.tripController.getMyTrips(
       showLoading: showLoading,
@@ -223,7 +224,13 @@ class _RecentTripScreenState extends State<RecentTripScreen> {
             const SizedBox(height: 10),
             Expanded(
               child: !_hasLoadedOnce
-                  ? const SizedBox.shrink()
+                  ? SkeletonListView(
+                      itemCount: 4,
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      itemBuilder: (_, __) => const AppShimmer(
+                        child: SkeletonBox(height: 150, radius: 24),
+                      ),
+                    )
                   : _trips.isEmpty
                   ? Center(
                 child: Text(

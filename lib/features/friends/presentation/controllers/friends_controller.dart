@@ -26,6 +26,12 @@ class FriendsController extends BaseController {
   final RxList<FriendRequestResponse> incomingRequests = <FriendRequestResponse>[].obs;
   final RxList<FriendRequestResponse> outgoingRequests = <FriendRequestResponse>[].obs;
   final RxString searchQuery = ''.obs;
+  // True until each list's first load finishes, so screens show a shimmer
+  // instead of flashing their empty state.
+  final RxBool isLoadingFriends = true.obs;
+  final RxBool isLoadingSuggestions = true.obs;
+  final RxBool isLoadingRequests = true.obs;
+  final RxBool isLoadingOutgoing = true.obs;
   final Rx<UserResponse?> currentUser = Rx<UserResponse?>(null);
 
   @override
@@ -74,6 +80,7 @@ class FriendsController extends BaseController {
       showLoading: false,
       showErrorDialog: false,
     );
+    isLoadingFriends.value = false;
   }
 
   Future<void> getSuggestedFriends() async {
@@ -85,6 +92,7 @@ class FriendsController extends BaseController {
       showLoading: false,
       showErrorDialog: false,
     );
+    isLoadingSuggestions.value = false;
   }
 
   Future<void> searchFriends(String keyword) async {
@@ -112,6 +120,7 @@ class FriendsController extends BaseController {
       showLoading: false,
       showErrorDialog: false,
     );
+    isLoadingRequests.value = false;
   }
 
   Future<void> getOutgoingRequests() async {
@@ -123,6 +132,7 @@ class FriendsController extends BaseController {
       showLoading: false,
       showErrorDialog: false,
     );
+    isLoadingOutgoing.value = false;
   }
 
   Future<void> acceptRequest(int requestId) async {

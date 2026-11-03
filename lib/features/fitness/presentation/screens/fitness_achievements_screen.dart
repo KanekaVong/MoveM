@@ -6,6 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class FitnessAchievementsScreen extends StatelessWidget {
   const FitnessAchievementsScreen({super.key});
@@ -19,7 +20,7 @@ class FitnessAchievementsScreen extends StatelessWidget {
       appBar: TopToolBar(title: AppLocalizations.of(context)?.achievementsBadges ?? 'Achievements & Badges'),
       body: Obx(() {
         if (controller.isLoadingAchievements.value && controller.achievements.isEmpty) {
-          return Center(child: CircularProgressIndicator(color: Colors.blueAccent));
+          return const SkeletonGrid(crossAxisCount: 3, itemCount: 12);
         }
 
         final earnedCount = controller.earnedCount;

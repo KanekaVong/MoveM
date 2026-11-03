@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:movem/features/friends/data/dto/response/friend_response.dart';
 import 'package:movem/features/friends/domain/repositories/friends_repository.dart';
 import '../../../../../core/network/api_result.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 
 
@@ -405,7 +406,18 @@ class _CreateTripFriendsScreenState
         child: SizedBox(height: 8),
       ),
 
-      if (friends.isEmpty)
+      if (friends.isEmpty && _isLoadingFriends)
+        SliverToBoxAdapter(
+          child: Column(
+            children: [
+              for (var i = 0; i < 4; i++) ...[
+                SkeletonTile(dark: isDark),
+                const SizedBox(height: 12),
+              ],
+            ],
+          ),
+        )
+      else if (friends.isEmpty)
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(

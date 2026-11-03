@@ -11,6 +11,7 @@ import 'trip_budget_screen.dart';
 import '../controllers/trip_budget_controller.dart';
 import '../../data/repositories/trip_repository_impl.dart';
 import '../../data/services/trip_service.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class TripDetailScreen extends StatefulWidget {
   final String activityId;
@@ -134,9 +135,11 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                         widget.editTripController.trip.value;
 
                     if (trip == null) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      final loadError = widget.editTripController.tripLoadError.value;
+                      if (loadError != null && !widget.editTripController.isEditLoading.value) {
+                        return _buildLoadError(loadError);
+                      }
+                      return const SkeletonDetail(showHero: true, dark: true);
                     }
 
                     final isEditing =
@@ -479,6 +482,37 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     return AttachmentsEditPanel(
       key: const ValueKey('attachments'),
       controller: widget.editTripController,
+    );
+  }
+
+  Widget _buildLoadError(String message) {
+    final l10n = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.cloud_off_rounded, color: Color(0xFF94A3B8), size: 48),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 20),
+            OutlinedButton.icon(
+              onPressed: widget.editTripController.loadEditTripData,
+              icon: const Icon(Icons.refresh_rounded),
+              label: Text(l10n?.retry ?? 'Retry'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+                side: const BorderSide(color: Color(0x66FFFFFF)),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

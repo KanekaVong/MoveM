@@ -11,6 +11,7 @@ import 'task_comment_screen.dart';
 import 'task_activity_feed_screen.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class TaskDetailScreen extends StatelessWidget {
   final String activityId;
@@ -27,9 +28,7 @@ class TaskDetailScreen extends StatelessWidget {
       body: SafeArea(
         child: Obx(() {
               if (controller.isLoading && controller.task.value == null) {
-                return Center(
-                  child: CircularProgressIndicator(color: AppColors.taskBluePrimary),
-                );
+                return const SkeletonDetail();
               }
 
               final task = controller.task.value;

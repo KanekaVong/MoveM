@@ -14,6 +14,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class ClubDetailScreen extends StatefulWidget {
   final FitnessClubModel club;
@@ -401,6 +402,12 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
         const SizedBox(height: 16),
         Obx(() {
           final challenges = _controller.customClubChallenges;
+          if (challenges.isEmpty && _controller.isLoadingClubDetails.value) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: SkeletonMediaCard(mediaSize: 72, lines: 3),
+            );
+          }
           if (challenges.isEmpty) return const SizedBox.shrink();
           return ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -451,11 +458,14 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
           if (_controller.isLoadingClubDetails.value &&
               recommended.isEmpty &&
               catalog.isEmpty) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: Text(
-                l10n?.loadingChallenges ?? 'Loading challenges...',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            return const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  SkeletonMediaCard(mediaSize: 72, lines: 3),
+                  SizedBox(height: 14),
+                  SkeletonMediaCard(mediaSize: 72, lines: 3),
+                ],
               ),
             );
           }

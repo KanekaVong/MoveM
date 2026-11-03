@@ -10,6 +10,7 @@ import '../../../../shared/widgets/no_data_component.dart';
 import '../widgets/loading_more_label.dart';
 import '../../data/repositories/fitness_challenge_repository.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class SoloChallengeListScreen extends StatefulWidget {
   final FitnessChallengeRepository? repository;
@@ -267,11 +268,10 @@ class _SoloChallengeListScreenState extends State<SoloChallengeListScreen> {
                 final hasMore = visible.length < filtered.length;
 
                 if (isLoading && challenges.isEmpty) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.accentBlue,
-                      strokeWidth: 2.5,
-                    ),
+                  return SkeletonListView(
+                    itemCount: 6,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    itemBuilder: (_, __) => const SkeletonMediaCard(mediaFirst: true, mediaSize: 76, lines: 2),
                   );
                 }
 

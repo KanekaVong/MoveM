@@ -12,6 +12,7 @@ import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class PublicUserProfileScreen extends StatefulWidget {
   final String? userId;
@@ -73,9 +74,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         child: Obx(() {
           final user = controller.profile.value;
           if (user == null) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.blueAccent),
-            );
+            return const SkeletonProfile();
           }
 
           return Column(

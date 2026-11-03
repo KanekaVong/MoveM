@@ -16,6 +16,7 @@ import 'package:movem/features/trip/presentation/widgets/recent_trip_card_stack.
 import 'package:movem/features/trip/presentation/widgets/trip_hero_section.dart';
 import 'package:movem/l10n/app_localizations.dart';
 import 'package:movem/shared/widgets/no_data_component.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class TripScreen extends StatefulWidget {
   const TripScreen({super.key});
@@ -73,7 +74,7 @@ class _TripScreenState extends State<TripScreen> {
   }
 
   Future<void> _loadTrips({
-    bool showLoading = true,
+    bool showLoading = false,
   }) async {
     await _tripController.getMyTrips(
       showLoading: showLoading,
@@ -212,7 +213,11 @@ class _TripScreenState extends State<TripScreen> {
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              if (trips.isEmpty)
+                              if (trips.isEmpty && _tripController.isLoadingTrips.value)
+                                const AppShimmer(
+                                  child: SkeletonBox(height: 190, radius: 24),
+                                )
+                              else if (trips.isEmpty)
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 20,

@@ -8,6 +8,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class WorkoutHistoryScreen extends StatelessWidget {
   const WorkoutHistoryScreen({super.key});
@@ -22,9 +23,7 @@ class WorkoutHistoryScreen extends StatelessWidget {
       appBar: TopToolBar(title: l10n?.workoutHistory ?? 'Workout History'),
       body: Obx(() {
         if (controller.isLoading.value && controller.items.isEmpty) {
-          return Center(
-            child: CircularProgressIndicator(color: Color(0xFF3B82F6)),
-          );
+          return SkeletonListView.tiles(itemCount: 7, circleAvatar: false);
         }
 
         if (controller.errorMessage.isNotEmpty && controller.items.isEmpty) {

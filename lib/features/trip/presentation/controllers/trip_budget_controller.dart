@@ -26,6 +26,9 @@ class TripBudgetController extends BaseController {
   final budgets = <TripBudgetResponse>[].obs;
   final expenses = <TripExpenseResponse>[].obs;
   final totalBudget = 0.0.obs;
+  // True until the first load finishes, so the screens show a shimmer.
+  final isLoadingBudget = true.obs;
+  final isLoadingExpenses = true.obs;
 
   final RxSet<int> splitBillCreatedExpenseIds = <int>{}.obs;
   final RxMap<int, String> splitModes = <int, String>{}.obs;
@@ -49,7 +52,9 @@ class TripBudgetController extends BaseController {
         totalBudget.value = result.totalBudget ?? 0;
         budgets.assignAll(result.budgets);
       },
+      showLoading: false,
     );
+    isLoadingBudget.value = false;
   }
 
   Future<void> loadExpenses() async {
@@ -63,7 +68,9 @@ class TripBudgetController extends BaseController {
 
         expenses.assignAll(result);
       },
+      showLoading: false,
     );
+    isLoadingExpenses.value = false;
   }
 
   TripExpenseResponse? getLatestExpenseForBudget(int? budgetId) {
