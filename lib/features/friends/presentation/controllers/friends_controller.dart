@@ -7,8 +7,16 @@ import '../../../auth/data/dto/response/user_response.dart';
 import '../../domain/repositories/friends_repository.dart';
 import '../../data/dto/response/friend_response.dart';
 import '../../data/dto/response/friend_request_response.dart';
+import '../../../../l10n/app_localizations.dart';
+import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class FriendsController extends BaseController {
+  AppLocalizations? get _l10n {
+    final ctx = Get.context;
+    return ctx == null ? null : AppLocalizations.of(ctx);
+  }
+
   final FriendsRepository repository;
 
   FriendsController({required this.repository});
@@ -19,6 +27,12 @@ class FriendsController extends BaseController {
   final RxList<FriendRequestResponse> incomingRequests = <FriendRequestResponse>[].obs;
   final RxList<FriendRequestResponse> outgoingRequests = <FriendRequestResponse>[].obs;
   final RxString searchQuery = ''.obs;
+  // True until each list's first load finishes, so screens show a shimmer
+  // instead of flashing their empty state.
+  final RxBool isLoadingFriends = true.obs;
+  final RxBool isLoadingSuggestions = true.obs;
+  final RxBool isLoadingRequests = true.obs;
+  final RxBool isLoadingOutgoing = true.obs;
   final Rx<UserResponse?> currentUser = Rx<UserResponse?>(null);
 
   @override
@@ -38,7 +52,7 @@ class FriendsController extends BaseController {
         .where((v) => v != null && v.trim().isNotEmpty)
         .join(' ');
     if (fullName.isNotEmpty) return fullName;
-    return u?.username.isNotEmpty == true ? u!.username : 'Your Profile';
+    return u?.username.isNotEmpty == true ? u!.username : tr.yourProfile;
   }
 
   String get profileUsername => currentUser.value?.username.isNotEmpty == true ? currentUser.value!.username : 'user';
@@ -48,7 +62,7 @@ class FriendsController extends BaseController {
   void copyProfileLink() {
     final link = 'https://movem.app/user/@$profileUsername';
     Clipboard.setData(ClipboardData(text: link));
-    Get.snackbar('Copied', 'Profile link copied to clipboard', backgroundColor: const Color(0xFF48A45B), colorText: Colors.white);
+    AppSnack.show(_l10n?.copied ?? 'Copied', _l10n?.copiedProfileLink ?? 'Profile link copied to clipboard', backgroundColor: const Color(0xFF48A45B), colorText: Colors.white);
   }
 
   void loadInitialData() {
@@ -67,6 +81,7 @@ class FriendsController extends BaseController {
       showLoading: false,
       showErrorDialog: false,
     );
+    isLoadingFriends.value = false;
   }
 
   Future<void> getSuggestedFriends() async {
@@ -78,6 +93,7 @@ class FriendsController extends BaseController {
       showLoading: false,
       showErrorDialog: false,
     );
+    isLoadingSuggestions.value = false;
   }
 
   Future<void> searchFriends(String keyword) async {
@@ -105,6 +121,7 @@ class FriendsController extends BaseController {
       showLoading: false,
       showErrorDialog: false,
     );
+    isLoadingRequests.value = false;
   }
 
   Future<void> getOutgoingRequests() async {
@@ -116,6 +133,7 @@ class FriendsController extends BaseController {
       showLoading: false,
       showErrorDialog: false,
     );
+    isLoadingOutgoing.value = false;
   }
 
   Future<void> acceptRequest(int requestId) async {
@@ -209,7 +227,7 @@ class FriendsController extends BaseController {
         },
       );
     } catch (e) {
-      Get.snackbar('Error', 'Unable to cancel request. Please try again later.');
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.unableToCancelFriendRequest ?? 'Unable to cancel request. Please try again later.');
     }
   }
 

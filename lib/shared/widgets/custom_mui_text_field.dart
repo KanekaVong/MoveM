@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
 
 class CustomMuiTextField extends StatelessWidget {
   final String label;
@@ -6,6 +7,7 @@ class CustomMuiTextField extends StatelessWidget {
   final String? initialValue;
   final ValueChanged<String>? onChanged;
   final bool readOnly;
+  final bool obscureText;
   final VoidCallback? onTap;
   final int? maxLength;
   final bool showRemainingCount;
@@ -20,6 +22,7 @@ class CustomMuiTextField extends StatelessWidget {
     this.initialValue,
     this.onChanged,
     this.readOnly = false,
+    this.obscureText = false,
     this.onTap,
     this.maxLength,
     this.showRemainingCount = false,
@@ -30,15 +33,19 @@ class CustomMuiTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Standard MUI Input Decoration matching your design
+    final dark = AppColors.isDark;
+    final labelColor = dark ? Colors.white54 : AppColors.textSecondary;
+    final valueColor = dark ? const Color(0xFFE8EDF5) : AppColors.textPrimary;
+    final borderColor = dark ? Colors.white.withValues(alpha: 0.2) : AppColors.borderMuted;
+    final focusColor = dark ? Colors.white : AppColors.accentBlue;
     final decoration = InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(
-        color: Colors.white54,
+      labelStyle: TextStyle(
+        color: labelColor,
         fontSize: 15,
       ),
-      floatingLabelStyle: const TextStyle(
-        color: Colors.white,
+      floatingLabelStyle: TextStyle(
+        color: dark ? Colors.white : AppColors.accentBlue,
         fontSize: 14,
         fontWeight: FontWeight.w500,
       ),
@@ -47,14 +54,14 @@ class CustomMuiTextField extends StatelessWidget {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(
-          color: Colors.white.withOpacity(0.2),
+          color: borderColor,
           width: 1,
         ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(
-          color: Colors.white,
+        borderSide: BorderSide(
+          color: focusColor,
           width: 1.5,
         ),
       ),
@@ -81,15 +88,17 @@ class CustomMuiTextField extends StatelessWidget {
       initialValue: initialValue,
       onChanged: onChanged,
       readOnly: readOnly,
+      obscureText: obscureText,
       onTap: onTap,
       maxLength: maxLength,
       keyboardType: keyboardType,
       validator: validator,
-      style: const TextStyle(color: Colors.white, fontSize: 15),
+      cursorColor: dark ? Colors.white : AppColors.accentBlue,
+      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+      style: TextStyle(color: valueColor, fontSize: 15),
       decoration: decoration,
     );
 
-    // If remaining count is needed (e.g., Bio field)
     if (maxLength != null && showRemainingCount && controller != null) {
       return Stack(
         alignment: Alignment.centerRight,
@@ -103,8 +112,8 @@ class CustomMuiTextField extends StatelessWidget {
                 final remaining = maxLength! - value.text.length;
                 return Text(
                   '$remaining',
-                  style: const TextStyle(
-                    color: Colors.white38,
+                  style: TextStyle(
+                    color: AppColors.textCaption,
                     fontSize: 12,
                   ),
                 );

@@ -6,6 +6,7 @@ class UpdateProfileRequest {
   final String? gender;
   final String? dateOfBirth;
   final String? cityProvince;
+  final String? phone;
 
   UpdateProfileRequest({
     this.firstname,
@@ -15,6 +16,7 @@ class UpdateProfileRequest {
     this.gender,
     this.dateOfBirth,
     this.cityProvince,
+    this.phone,
   });
 
   Map<String, dynamic> toJson() {
@@ -26,6 +28,7 @@ class UpdateProfileRequest {
     if (gender != null) json['gender'] = gender;
     if (dateOfBirth != null) json['dateOfBirth'] = dateOfBirth;
     if (cityProvince != null) json['cityProvince'] = cityProvince;
+    if (phone != null) json['phone'] = phone;
     return json;
   }
 }

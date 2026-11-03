@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import 'skeletons.dart';
+
 class CustomImage extends StatelessWidget {
   final String imageUrl;
   final double? width;
@@ -22,7 +24,9 @@ class CustomImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
-      placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+      placeholder: (context, url) => AppShimmer(
+        child: SkeletonBox(width: width, height: height ?? 120, radius: 0),
+      ),
       errorWidget: (context, url, error) => const Icon(Icons.error),
     );
   }

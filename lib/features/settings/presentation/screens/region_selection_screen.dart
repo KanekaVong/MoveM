@@ -3,6 +3,10 @@ import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:movem/shared/widgets/app_button.dart';
+import 'package:movem/shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class RegionSelectionScreen extends StatefulWidget {
   final String? currentRegion;
@@ -73,8 +77,6 @@ class _RegionSelectionScreenState
         });
       }
     } catch (e) {
-      debugPrint('Failed to load location data: $e');
-
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -305,35 +307,20 @@ class _RegionSelectionScreenState
       backgroundColor: isDark
           ? const Color(0xFF0F172A)
           : const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: isDark
-            ? const Color(0xFF0F172A)
-            : const Color(0xFFF8FAFC),
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: _primaryTextColor(context),
-            size: 18,
-          ),
-        ),
-        title: Text(
-          'Region',
-          style: TextStyle(
-            color: _primaryTextColor(context),
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+      appBar: TopToolBar(
+        title: tr.region,
+        backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+        foregroundColor: isDark ? Colors.white : const Color(0xFF0F172A),
+        onBack: () => Navigator.of(context).pop(),
       ),
       body: SafeArea(
         child: _isLoading
-            ? Center(
-          child: CircularProgressIndicator(
-            color: const Color(0xFF3B82F6),
-          ),
-        )
+            ? SkeletonListView(
+                itemCount: 8,
+                spacing: 22,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                itemBuilder: (_, __) => AppShimmer(dark: isDark, child: const SkeletonLines(lines: 1)),
+              )
             : Padding(
           padding: const EdgeInsets.fromLTRB(
             24,
@@ -346,7 +333,7 @@ class _RegionSelectionScreenState
             CrossAxisAlignment.start,
             children: [
               Text(
-                'Choose your region',
+                tr.chooseRegion,
                 style: TextStyle(
                   color: _primaryTextColor(context),
                   fontSize: 24,
@@ -357,7 +344,7 @@ class _RegionSelectionScreenState
               const SizedBox(height: 8),
 
               Text(
-                'Select your country and province, state, or region.',
+                tr.chooseRegionSub,
                 style: TextStyle(
                   color: _secondaryTextColor(context),
                   fontSize: 13,
@@ -383,7 +370,7 @@ class _RegionSelectionScreenState
                   CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Country',
+                      tr.country,
                       style: TextStyle(
                         color: _primaryTextColor(context),
                         fontSize: 13,
@@ -395,10 +382,10 @@ class _RegionSelectionScreenState
 
                     _buildPicker<String>(
                       context: context,
-                      hint: 'Select country',
+                      hint: tr.selectCountry,
                       items: _countryNames,
                       selectedItem: _selectedCountry,
-                      searchHint: 'Search country...',
+                      searchHint: tr.searchCountry,
                       enabled: true,
                       itemAsString: (country) =>
                           _countryDisplayName(country),
@@ -418,7 +405,7 @@ class _RegionSelectionScreenState
                     const SizedBox(height: 20),
 
                     Text(
-                      'Region / State / Province',
+                      tr.regionStateProvince,
                       style: TextStyle(
                         color: _primaryTextColor(context),
                         fontSize: 13,
@@ -430,10 +417,10 @@ class _RegionSelectionScreenState
 
                     _buildPicker<String>(
                       context: context,
-                      hint: 'Select region',
+                      hint: tr.selectRegionLower,
                       items: _regionNames,
                       selectedItem: _selectedRegion,
-                      searchHint: 'Search region...',
+                      searchHint: tr.searchRegion,
                       enabled: _selectedCountry != null &&
                           _regionNames.isNotEmpty,
                       itemAsString: (region) => region,
@@ -449,45 +436,18 @@ class _RegionSelectionScreenState
 
               const Spacer(),
 
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: _selectedRegion == null ||
-                      _selectedRegion!
-                          .trim()
-                          .isEmpty
-                      ? null
-                      : () {
-                    Navigator.of(context).pop(
-                      _selectedRegion!.trim(),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                    const Color(0xFF3B82F6),
-                    disabledBackgroundColor: isDark
-                        ? const Color(0xFF263657)
-                        : const Color(0xFFE2E8F0),
-                    foregroundColor: Colors.white,
-                    disabledForegroundColor:
-                    isDark
-                        ? const Color(0xFF68758C)
-                        : const Color(0xFF94A3B8),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Save',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+              AppButton(
+                label: tr.save,
+                onPressed: _selectedRegion == null ||
+                    _selectedRegion!
+                        .trim()
+                        .isEmpty
+                    ? null
+                    : () {
+                  Navigator.of(context).pop(
+                    _selectedRegion!.trim(),
+                  );
+                },
               ),
             ],
           ),

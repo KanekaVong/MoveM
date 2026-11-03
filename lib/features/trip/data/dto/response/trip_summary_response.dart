@@ -1,3 +1,5 @@
+import 'trip_cover_photo_response.dart';
+
 class TripSummaryResponse {
   final String activityId;
   final String activityName;
@@ -9,6 +11,7 @@ class TripSummaryResponse {
   final int? memberCount;
   final double? totalAllocatedBudget;
   final double? totalSpent;
+  final TripCoverPhotoResponse? coverPhoto;
 
   TripSummaryResponse({
     required this.activityId,
@@ -21,6 +24,7 @@ class TripSummaryResponse {
     this.memberCount,
     this.totalAllocatedBudget,
     this.totalSpent,
+    this.coverPhoto,
   });
 
   factory TripSummaryResponse.fromJson(Map<String, dynamic> json) {
@@ -44,6 +48,13 @@ class TripSummaryResponse {
           : null,
       totalSpent: json['totalSpent'] != null
           ? double.tryParse(json['totalSpent'].toString())
+          : null,
+      coverPhoto: json['coverPhoto'] != null
+          ? TripCoverPhotoResponse.fromJson(
+        Map<String, dynamic>.from(
+          json['coverPhoto'],
+        ),
+      )
           : null,
     );
   }

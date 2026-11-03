@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class NotchedCard extends StatelessWidget {
   final Widget child;
@@ -6,10 +7,10 @@ class NotchedCard extends StatelessWidget {
   final VoidCallback? onActionTap;
   final IconData actionIcon;
   final Color actionIconColor;
-  final Color actionButtonBg;
+  final Color? actionButtonBg;
   final Color actionButtonBorderColor;
   final double actionButtonSize;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final Color? borderColor;
   final double borderWidth;
   final double cornerRadius;
@@ -22,10 +23,10 @@ class NotchedCard extends StatelessWidget {
     this.onActionTap,
     this.actionIcon = Icons.play_arrow_rounded,
     this.actionIconColor = Colors.white,
-    this.actionButtonBg = const Color(0xFF0D172A),
+    this.actionButtonBg,
     this.actionButtonBorderColor = const Color(0xFF38BDF8),
     this.actionButtonSize = 36.0,
-    this.backgroundColor = const Color(0xFF0F1B36),
+    this.backgroundColor,
     this.borderColor,
     this.borderWidth = 1.0,
     this.cornerRadius = 20.0,
@@ -42,7 +43,7 @@ class NotchedCard extends StatelessWidget {
           onTap: onTap,
           child: CustomPaint(
             painter: _NotchedCardPainter(
-              backgroundColor: backgroundColor,
+              backgroundColor: backgroundColor ?? AppColors.cardSurface,
               borderColor: borderColor,
               borderWidth: borderWidth,
               cornerRadius: cornerRadius,
@@ -71,7 +72,7 @@ class NotchedCard extends StatelessWidget {
               height: actionButtonSize,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: actionButtonBg,
+                color: actionButtonBg ?? AppColors.accentBlue,
                 border: Border.all(
                   color: actionButtonBorderColor,
                   width: 1.5,
@@ -168,15 +169,12 @@ Path _buildNotchedPath(Size size, double r, double notchSize) {
   final w = size.width;
   final h = size.height;
 
-  // Top-left corner
   path.moveTo(0, r);
   path.arcToPoint(Offset(r, 0), radius: Radius.circular(r));
 
-  // Top edge towards notch
   final notchStartX = w - notchSize;
   path.lineTo(notchStartX, 0);
 
-  // Smooth scoop notch at top-right
   path.cubicTo(
     notchStartX + (notchSize * 0.3),
     0,
@@ -194,15 +192,12 @@ Path _buildNotchedPath(Size size, double r, double notchSize) {
     notchSize + 2,
   );
 
-  // Right edge down to bottom-right corner
   path.lineTo(w, h - r);
   path.arcToPoint(Offset(w - r, h), radius: Radius.circular(r));
 
-  // Bottom edge
   path.lineTo(r, h);
   path.arcToPoint(Offset(0, h - r), radius: Radius.circular(r));
 
-  // Left edge back up
   path.lineTo(0, r);
   path.close();
 

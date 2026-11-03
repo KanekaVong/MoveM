@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
-
-import 'package:movem/features/trip/presentation/screens/trip_welcome_screen.dart';
-import 'package:movem/features/trip/presentation/controllers/trip_controller.dart';
-import 'package:movem/features/trip/data/services/trip_service.dart';
+import 'package:get/get.dart';
+import 'dart:ui';
+import 'package:movem/core/routes/app_routes.dart';
+import 'package:movem/features/groups/data/repositories/group_repository_impl.dart';
+import 'package:movem/features/groups/data/services/group_service.dart';
 import 'package:movem/features/trip/data/repositories/trip_repository_impl.dart';
-
-import 'package:movem/features/trip/presentation/models/create_trip_draft.dart';
-import 'package:movem/features/trip/presentation/screens/create_trip/create_trip_name_screen.dart';
-
-import '../../../../core/storage/user_manager.dart';
-import '../../data/dto/response/trip_summary_response.dart';
+import 'package:movem/features/trip/data/services/trip_service.dart';
+import 'package:movem/features/trip/presentation/bindings/create_trip_binding.dart';
+import 'package:movem/features/trip/presentation/controllers/trip_controller.dart';
+import 'package:movem/features/trip/presentation/controllers/trip_invitation_controller.dart';
+import 'package:movem/features/trip/presentation/screens/Create_trip/create_trip_name_screen.dart';
+import 'package:movem/features/trip/presentation/screens/recent_trips_screen.dart';
+import 'package:movem/features/trip/presentation/screens/trip_welcome_screen.dart';
+import 'package:movem/features/trip/presentation/widgets/recent_trip_card_stack.dart';
+import 'package:movem/features/trip/presentation/widgets/trip_hero_section.dart';
+import 'package:movem/l10n/app_localizations.dart';
+import 'package:movem/shared/widgets/no_data_component.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class TripScreen extends StatefulWidget {
   const TripScreen({super.key});
@@ -20,8 +27,8 @@ class TripScreen extends StatefulWidget {
 
 class _TripScreenState extends State<TripScreen> {
   late final TripController _tripController;
+  late final TripInvitationController _invitationController;
 
-  bool _isLoading = true;
   bool _showWelcome = false;
 
   @override
@@ -34,35 +41,48 @@ class _TripScreenState extends State<TripScreen> {
       ),
     );
 
+    if (Get.isRegistered<TripInvitationController>()) {
+      _invitationController = Get.find<TripInvitationController>();
+    } else {
+      _invitationController = Get.put(
+        TripInvitationController(
+          groupRepository: GroupRepositoryImpl(
+            groupService: GroupService(),
+          ),
+        ),
+      );
+    }
+
+    _invitationController.loadInvitations();
+
     _checkTripWelcome();
   }
 
   Future<void> _checkTripWelcome() async {
-    final shouldShow =
-    await _tripController.shouldShowWelcome();
+    final shouldShow = await _tripController.shouldShowWelcome();
 
     if (!mounted) return;
 
     if (shouldShow) {
       setState(() {
         _showWelcome = true;
-        _isLoading = false;
       });
-
       return;
     }
 
     await _loadTrips();
   }
 
-  Future<void> _loadTrips() async {
-    await _tripController.getMyTrips();
+  Future<void> _loadTrips({
+    bool showLoading = false,
+  }) async {
+    await _tripController.getMyTrips(
+      showLoading: showLoading,
+    );
 
     if (!mounted) return;
 
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() {});
   }
 
   Future<void> _completeWelcome() async {
@@ -72,18 +92,20 @@ class _TripScreenState extends State<TripScreen> {
 
     setState(() {
       _showWelcome = false;
-      _isLoading = true;
     });
 
     await _loadTrips();
   }
 
-  Future<void> _openCreateTrip() async {
+  void _openTripInvitations() {
+    Get.toNamed(AppRoutes.tripInvitations);
+  }
+
+  Future<void> _openRecentTrips() async {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => CreateTripNameScreen(
-          draft: CreateTripDraft(),
+        builder: (_) => RecentTripScreen(
           tripController: _tripController,
         ),
       ),
@@ -91,25 +113,26 @@ class _TripScreenState extends State<TripScreen> {
 
     if (!mounted) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    await _loadTrips();
+  }
+
+  Future<void> _openCreateTrip() async {
+    await Get.to(
+      () => const CreateTripNameScreen(),
+      binding: CreateTripBinding(),
+    );
+
+    if (!mounted) return;
 
     await _loadTrips();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: Color(0xFF0B101D),
-        body: Center(
-          child: CircularProgressIndicator(
-            color: Colors.white,
-          ),
-        ),
-      );
-    }
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final onSurface = theme.colorScheme.onSurface;
 
     if (_showWelcome) {
       return TripWelcomeScreen(
@@ -117,517 +140,203 @@ class _TripScreenState extends State<TripScreen> {
       );
     }
 
-    final user = UserManager().getUser();
-    final trips = _tripController.recentTrips;
-
     return Scaffold(
-      backgroundColor: const Color(0xFF0B101D),
-      body: SafeArea(
-        top: false,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ==================================================
-              // HERO / TOP IMAGE SECTION
-              // ==================================================
-              SizedBox(
-                height:
-                MediaQuery.of(context).size.height * 0.68,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(42),
-                    bottomRight: Radius.circular(42),
-                  ),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      // Background image
-                      Image.asset(
-                        'assets/images/everest_bg.png',
-                        fit: BoxFit.cover,
-                      ),
-
-                      // Dark overlay
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withOpacity(0.35),
-                              Colors.black.withOpacity(0.15),
-                              const Color(0xFF0B101D)
-                                  .withOpacity(0.35),
-                            ],
-                            stops: const [
-                              0.0,
-                              0.45,
-                              1.0,
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      // Hero content
-                      SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(
-                            24,
-                            20,
-                            24,
-                            32,
-                          ),
-                          child: Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                            children: [
-                              // ----------------------------------
-                              // HEADER
-                              // ----------------------------------
-                              Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                                children: [
-                                  RichText(
-                                    text: TextSpan(
-                                      style: const TextStyle(
-                                        fontSize: 22,
-                                        color: Colors.white,
-                                      ),
-                                      children: [
-                                        const TextSpan(
-                                          text: 'Hi, ',
-                                        ),
-                                        TextSpan(
-                                          text: user?.firstName
-                                              ?.isNotEmpty ==
-                                              true
-                                              ? user!.firstName!
-                                              : user?.username ??
-                                              'User',
-                                          style:
-                                          const TextStyle(
-                                            fontWeight:
-                                            FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  CircleAvatar(
-                                    radius: 20,
-                                    backgroundColor:
-                                    Colors.grey.shade700,
-                                    backgroundImage:
-                                    user?.profilePic !=
-                                        null &&
-                                        user!.profilePic!
-                                            .isNotEmpty
-                                        ? NetworkImage(
-                                      user.profilePic!,
-                                    )
-                                        : null,
-                                    child: user?.profilePic ==
-                                        null ||
-                                        user!.profilePic!
-                                            .isEmpty
-                                        ? const Icon(
-                                      Icons.person,
-                                      color: Colors.white,
-                                    )
-                                        : null,
-                                  ),
-                                ],
-                              ),
-
-                              const SizedBox(height: 80),
-
-                              // ----------------------------------
-                              // MAIN TITLE
-                              // ----------------------------------
-                              const Text(
-                                'WHAT’S\nYOUR\nNEXT\nPLAN?',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 38,
-                                  fontWeight: FontWeight.w900,
-                                  height: 1.02,
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-
-                              const SizedBox(height: 60),
-
-                              // ----------------------------------
-                              // SUBTITLE + BUTTON
-                              // ----------------------------------
-                              Align(
-                                alignment:
-                                Alignment.centerRight,
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.end,
-                                  children: [
-                                    const Text(
-                                      'ENHANCE YOUR\n'
-                                          'JOURNEY WITH US.',
-                                      textAlign: TextAlign.right,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight:
-                                        FontWeight.bold,
-                                        letterSpacing: 0.8,
-                                        height: 1.2,
-                                      ),
-                                    ),
-
-                                    const SizedBox(height: 22),
-
-                                    Center(
-                                      child: OutlinedButton(
-                                        onPressed:
-                                        _openCreateTrip,
-                                        style: OutlinedButton
-                                            .styleFrom(
-                                          backgroundColor:
-                                          const Color(
-                                            0xFF1E2638,
-                                          ).withOpacity(0.85),
-                                          side:
-                                          const BorderSide(
-                                            color: Color(
-                                              0xFF384358,
-                                            ),
-                                          ),
-                                          padding:
-                                          const EdgeInsets
-                                              .symmetric(
-                                            horizontal: 24,
-                                            vertical: 14,
-                                          ),
-                                          shape:
-                                          RoundedRectangleBorder(
-                                            borderRadius:
-                                            BorderRadius
-                                                .circular(
-                                              30,
-                                            ),
-                                          ),
-                                        ),
-                                        child: const Text(
-                                          'PLAN YOUR JOURNEY',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12,
-                                            fontWeight:
-                                            FontWeight.bold,
-                                            letterSpacing: 1.2,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: Stack(
+        children: [
+          SafeArea(
+            top: false,
+            child: RefreshIndicator(
+              color: theme.colorScheme.primary,
+              displacement: 80,
+              onRefresh: () => _loadTrips(
+                showLoading: false,
               ),
-
-              // ==================================================
-              // SPACE BETWEEN HERO AND RECENT TRIPS
-              // ==================================================
-              const SizedBox(height: 28),
-
-              // ==================================================
-              // RECENT TRIPS
-              // ==================================================
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                ),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
-                  crossAxisAlignment:
-                  CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'RECENT TRIPS »',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    if (trips.isEmpty)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 40,
+                    Stack(
+                      children: [
+                        TripHeroSection(
+                          onCreateTrip: _openCreateTrip,
                         ),
-                        child: Center(
-                          child: Text(
-                            'No recent trips yet.',
-                            style: TextStyle(
-                              color: Colors.white54,
-                              fontSize: 14,
+                        if (!isDark)
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            bottom: -2,
+                            height: 130,
+                            child: IgnorePointer(
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      theme.scaffoldBackgroundColor.withValues(alpha: 0.0),
+                                      theme.scaffoldBackgroundColor.withValues(alpha: 0.5),
+                                      theme.scaffoldBackgroundColor.withValues(alpha: 0.85),
+                                      theme.scaffoldBackgroundColor,
+                                      theme.scaffoldBackgroundColor,
+                                    ],
+                                    stops: const [0.0, 0.35, 0.65, 0.85, 1.0],
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                    else
-                      _buildTripStack(trips),
+                      ],
+                    ),
+                    Obx(
+                      () {
+                        final trips = _tripController.recentTrips;
 
-                    const SizedBox(height: 30),
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: _openRecentTrips,
+                                child: Text(
+                                  '${l10n.recentTrips.toUpperCase()} »',
+                                  style: TextStyle(
+                                    color: onSurface,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              if (trips.isEmpty && _tripController.isLoadingTrips.value)
+                                const AppShimmer(
+                                  child: SkeletonBox(height: 190, radius: 24),
+                                )
+                              else if (trips.isEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 20,
+                                  ),
+                                  child: NoDataComponent(
+                                    title: l10n.noRecentTripsYet,
+                                    compact: true,
+                                  ),
+                                )
+                              else
+                                RecentTripCardStack(
+                                  trips: List.from(trips),
+                                  tripController: _tripController,
+                                  onTripDeleted: _loadTrips,
+                                  onTripUpdated: () {
+                                    _loadTrips(
+                                      showLoading: false,
+                                    );
+                                  },
+                                ),
+                              const SizedBox(height: 30),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ============================================================
-  // TRIP STACK
-  // ============================================================
-
-  Widget _buildTripStack(
-      List<TripSummaryResponse> trips,
-      ) {
-    final visibleTrips = trips.take(5).toList();
-
-    return SizedBox(
-      height: 280,
-      child: Stack(
-        children: [
-          for (int i = 0;
-          i < visibleTrips.length;
-          i++)
-            _buildDynamicTripCard(
-              trip: visibleTrips[i],
-              index: i,
-              total: visibleTrips.length,
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDynamicTripCard({
-    required TripSummaryResponse trip,
-    required int index,
-    required int total,
-  }) {
-    final isActive = index == total - 1;
-    final top = index * 35.0;
-
-    if (!isActive) {
-      return Positioned(
-        top: top,
-        left: 0,
-        right: 0,
-        child: Container(
-          height: 50,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 10,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.grey.shade800.withOpacity(
-              0.45 + (index * 0.08),
-            ),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.15),
-              width: 1,
             ),
           ),
-          child: Text(
-            trip.activityName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.1,
-            ),
-          ),
-        ),
-      );
-    }
-
-    return _buildActiveTripCard(
-      top: top,
-      trip: trip,
-    );
-  }
-
-  Widget _buildActiveTripCard({
-    required double top,
-    required TripSummaryResponse trip,
-  }) {
-    return Positioned(
-      top: top,
-      left: 0,
-      right: 0,
-      child: Container(
-        height: 140,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: const Color(0xFF1E2638),
-          border: Border.all(
-            color: Colors.white.withOpacity(0.15),
-            width: 1,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment:
-          MainAxisAlignment.spaceBetween,
-          crossAxisAlignment:
-          CrossAxisAlignment.end,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
-                mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    trip.activityName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.1,
-                    ),
-                  ),
-
-                  Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                    children: [
-                      if (trip.startActivity != null)
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons
-                                  .calendar_today_outlined,
-                              color: Colors.white,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              _formatDate(
-                                trip.startActivity!,
-                              ),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+          Obx(
+            () => Positioned(
+              top: MediaQuery.of(context).padding.top + 8,
+              right: 20,
+              child: GestureDetector(
+                onTap: _openTripInvitations,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    ClipOval(
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(
+                          sigmaX: 10,
+                          sigmaY: 10,
                         ),
-
-                      const SizedBox(height: 4),
-
-                      Row(
-                        children: [
-                          Text(
-                            '${trip.memberCount ?? 0}',
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isDark
+                                ? Colors.black.withValues(alpha: 0.28)
+                                : Colors.white.withValues(alpha: 0.35),
+                            border: Border.all(
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.35)
+                                  : Colors.white.withValues(alpha: 0.60),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(
+                                  alpha: isDark ? 0.18 : 0.10,
+                                ),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.mail_outline_rounded,
+                            color:
+                                isDark ? Colors.white : const Color(0xFF1E293B),
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (_invitationController.invitations.isNotEmpty)
+                      Positioned(
+                        top: -4,
+                        right: -4,
+                        child: Container(
+                          constraints: const BoxConstraints(
+                            minWidth: 18,
+                            minHeight: 18,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.redAccent,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: theme.scaffoldBackgroundColor,
+                              width: 2,
+                            ),
+                          ),
+                          child: Text(
+                            _invitationController.invitations.length > 99
+                                ? '99+'
+                                : _invitationController.invitations.length
+                                    .toString(),
+                            textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 12,
+                              fontSize: 9,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(width: 2),
-                          const Icon(
-                            Icons.people_outline,
-                            color: Colors.white,
-                            size: 14,
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 4),
-
-                      Text(
-                        'Total Spent: '
-                            '${trip.totalSpent ?? 0}\$',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.3),
-              ),
-              child: IconButton(
-                onPressed: () {
-                  // TODO:
-                  // Open trip details using trip.activityId
-                },
-                icon: const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: Colors.white,
-                  size: 18,
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${_monthName(date.month)}, '
-        '${date.day}, '
-        '${date.year}';
-  }
-
-  String _monthName(int month) {
-    const months = [
-      '',
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-
-    return months[month];
   }
 }

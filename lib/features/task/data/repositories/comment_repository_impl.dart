@@ -15,6 +15,23 @@ class CommentRepositoryImpl implements CommentRepository {
   Future<ApiResult<PageCommentResponse>> getComments(String activityId, {int page = 0, int size = 30}) async {
     try {
       final response = await _service.getComments(activityId, page: page, size: size);
+      if (response.data is List) {
+        final comments = (response.data as List)
+            .whereType<Map>()
+            .map((item) => CommentResponse.fromJson(Map<String, dynamic>.from(item)))
+            .toList();
+        return ApiSuccess(PageCommentResponse(
+          totalElements: comments.length,
+          totalPages: 1,
+          first: true,
+          last: true,
+          size: comments.length,
+          number: 0,
+          numberOfElements: comments.length,
+          empty: comments.isEmpty,
+          content: comments,
+        ));
+      }
       final pageResponse = PageCommentResponse.fromJson(response.data);
       return ApiSuccess(pageResponse);
     } on DioException catch (e) {

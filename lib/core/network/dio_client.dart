@@ -25,13 +25,23 @@ class DioClient {
     );
 
     _dio = Dio(options);
+    _dio.transformer = SyncTransformer(
+      jsonDecodeCallback: _safeJsonDecode,
+    );
 
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          final token = await LocalStorage().getSecureString('access_token');
-          if (token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
+          final apiHost = Uri.parse(AppConfig.baseUrl).host;
+          final requestHost = options.uri.host;
+          final isOurApi = requestHost.isEmpty || requestHost == apiHost;
+          if (isOurApi) {
+            final token = await LocalStorage().getSecureString('access_token');
+            if (token != null) {
+              options.headers['Authorization'] = 'Bearer $token';
+            }
+          } else {
+            options.headers.remove('Authorization');
           }
           if (options.data is FormData) {
             options.headers.remove('Content-Type');
@@ -42,7 +52,9 @@ class DioClient {
           return handler.next(response);
         },
         onError: (DioException e, handler) {
-          log('*** DioException [${e.response?.statusCode}] ***\nURI: ${e.requestOptions.uri}\nResponse Body: ${e.response?.data}\nError: ${e.error}\nMessage: ${e.message}', name: 'DIO-ERR');
+          if (kDebugMode) {
+            log('DioException [${e.response?.statusCode}] ${e.requestOptions.uri}: ${e.message}', name: 'DIO-ERR');
+          }
           return handler.next(e);
         },
       ),
@@ -82,4 +94,14 @@ class DioClient {
   }
 
   Dio get dio => _dio;
+}
+
+dynamic _safeJsonDecode(String text) {
+  final trimmed = text.trim();
+  if (trimmed.isEmpty) return null;
+  try {
+    return jsonDecode(trimmed);
+  } catch (_) {
+    return trimmed;
+  }
 }

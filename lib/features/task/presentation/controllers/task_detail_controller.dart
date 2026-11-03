@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/services/notification_scheduler_service.dart';
 import '../../../../shared/base/base_controller.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../data/dto/response/task_response.dart';
 import '../../data/dto/response/checklist_response.dart';
 import '../../data/services/task_service.dart';
 import '../../data/repositories/task_repository_impl.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class TaskDetailController extends BaseController {
+  AppLocalizations? get _l10n {
+    final ctx = Get.context;
+    return ctx == null ? null : AppLocalizations.of(ctx);
+  }
+
   final TaskRepository repository = TaskRepositoryImpl(TaskService());
   final String activityId;
 
@@ -37,7 +44,7 @@ class TaskDetailController extends BaseController {
     isAttachmentsExpanded.value = !isAttachmentsExpanded.value;
   }
 
-  Future<void> fetchTaskDetail({bool showLoading = true}) async {
+  Future<void> fetchTaskDetail({bool showLoading = false}) async {
     await executeApi<TaskResponse>(
       apiCall: () => repository.getTaskDetail(activityId),
       showLoading: showLoading,
@@ -49,7 +56,7 @@ class TaskDetailController extends BaseController {
 
   Future<void> markAsComplete() async {
     final currentTask = task.value;
-    if (currentTask == null) return;
+    if (currentTask == null || currentTask.isPastDeadline) return;
 
     await executeApi<TaskResponse>(
       apiCall: () => repository.markTaskComplete(currentTask.activityId),
@@ -58,13 +65,14 @@ class TaskDetailController extends BaseController {
         task.value = data;
         await NotificationSchedulerService().cancelRemindersForTask(currentTask.activityId);
         Get.back(result: true);
-        Get.snackbar('Success', 'Task marked as complete!', backgroundColor: Colors.green, colorText: Colors.white);
+        AppSnack.show(_l10n?.success ?? 'Done', _l10n?.taskMarkedComplete ?? 'Task marked as complete!', backgroundColor: Colors.green, colorText: Colors.white);
       },
     );
   }
 
   Future<void> toggleChecklistItem(int checklistId, bool currentStatus) async {
     if (task.value == null) return;
+    if (task.value!.isComplete || task.value!.isPastDeadline) return;
 
     final currentTask = task.value!;
 

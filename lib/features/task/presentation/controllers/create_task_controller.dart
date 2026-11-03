@@ -12,8 +12,17 @@ import '../../data/local/models/task_reminder_local.dart';
 import '../../data/local/task_local_repository.dart';
 import '../../data/services/task_service.dart';
 import '../../data/repositories/task_repository_impl.dart';
+import '../../../../l10n/app_localizations.dart';
+import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
+import 'package:movem/shared/widgets/picker_theme.dart';
 
 class CreateTaskController extends BaseController {
+  AppLocalizations? get _l10n {
+    final ctx = Get.context;
+    return ctx == null ? null : AppLocalizations.of(ctx);
+  }
+
   final TaskRepository repository = TaskRepositoryImpl(TaskService());
   final TaskLocalRepository localRepository = TaskLocalRepository();
   final NotificationSchedulerService schedulerService = NotificationSchedulerService();
@@ -69,7 +78,7 @@ class CreateTaskController extends BaseController {
         availableLabels.add(data);
         selectedLabel.value = data;
         Get.back();
-        Get.snackbar('Success', 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        AppSnack.show(_l10n?.success ?? 'Done', _l10n?.labelCreatedSuccess ?? 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
       },
     );
   }
@@ -83,7 +92,7 @@ class CreateTaskController extends BaseController {
 
   Future<void> submitTask() async {
     if (titleController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.taskTitleEmpty ?? 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
@@ -103,7 +112,7 @@ class CreateTaskController extends BaseController {
     List<Map<String, dynamic>>? remindersArray;
     if (remindersEnabled.value && deadlineStr != null) {
       remindersArray = [
-        {"remindAt": deadlineStr, "type": "DUE_DATE"}
+        {"remindAt": deadlineStr, "type": "CUSTOM"}
       ];
     }
 
@@ -114,7 +123,7 @@ class CreateTaskController extends BaseController {
       description: description,
       startActivity: deadlineStr,
       deadline: deadlineStr,
-      checklists: const [],
+      checklists: checklists,
       priority: priority.value,
       isRecurring: recurring,
       recurringType: recurring ? repeatFrequency.value?.toUpperCase() : null,
@@ -128,13 +137,7 @@ class CreateTaskController extends BaseController {
       apiCall: () => repository.createTask(request),
       onSuccess: (data) async {
         Get.back(result: true);
-        Get.snackbar('Success', 'Task created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
-
-        if (checklists.isNotEmpty) {
-          for (var item in checklists) {
-            repository.addChecklistItem(data.activityId, item);
-          }
-        }
+        AppSnack.show(_l10n?.success ?? 'Done', _l10n?.taskCreatedSuccess ?? 'Task created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
 
         if (data.reminders != null && data.reminders!.isNotEmpty) {
           for (final reminder in data.reminders!) {
@@ -181,19 +184,7 @@ class CreateTaskController extends BaseController {
       initialDate: initialDate,
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF3B82F6),
-              onPrimary: Colors.white,
-              surface: Color(0xFF131B2F),
-              onSurface: Colors.white,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: pickerThemeBuilder,
     );
 
     if (pickedDate != null) {
@@ -206,19 +197,7 @@ class CreateTaskController extends BaseController {
     final pickedTime = await showTimePicker(
       context: context,
       initialTime: initialTime,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF3B82F6),
-              onPrimary: Colors.white,
-              surface: Color(0xFF131B2F),
-              onSurface: Colors.white,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: pickerThemeBuilder,
     );
 
     if (pickedTime != null) {
@@ -227,15 +206,15 @@ class CreateTaskController extends BaseController {
   }
 
   String get formattedDeadlineDate {
-    if (selectedDate.value == null) return 'Not set';
-    return DateFormat('d MMMM yyyy').format(selectedDate.value!);
+    if (selectedDate.value == null) return tr.notSet;
+    return formatDayMonthYear(selectedDate.value!);
   }
 
   String get formattedDeadlineTime {
-    if (selectedTime.value == null) return 'Not set';
+    if (selectedTime.value == null) return tr.notSet;
     final now = DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, selectedTime.value!.hour, selectedTime.value!.minute);
-    return DateFormat('hh:mm a').format(dt);
+    return DateFormat(timePattern('hh:mm a')).format(dt);
   }
 
   void addChecklistItem() {

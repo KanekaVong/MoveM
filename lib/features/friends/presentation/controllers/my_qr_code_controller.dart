@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import '../../../../core/storage/user_manager.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../../auth/data/dto/response/user_response.dart';
+import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class MyQrCodeController extends BaseController {
   final GlobalKey qrCardKey = GlobalKey();
@@ -46,7 +48,7 @@ class MyQrCodeController extends BaseController {
       final boundary = qrCardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
       if (boundary == null) {
         isSaving.value = false;
-        Get.snackbar('Error', 'Unable to capture QR code image');
+        AppSnack.show(tr.errorTitle, tr.qrCaptureFailed);
         return;
       }
 
@@ -54,7 +56,7 @@ class MyQrCodeController extends BaseController {
       final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       if (byteData == null) {
         isSaving.value = false;
-        Get.snackbar('Error', 'Failed to convert QR code to image');
+        AppSnack.show(tr.errorTitle, tr.qrConvertFailed);
         return;
       }
 
@@ -65,7 +67,7 @@ class MyQrCodeController extends BaseController {
         final granted = await Gal.requestAccess();
         if (!granted) {
           isSaving.value = false;
-          Get.snackbar('Permission Denied', 'Please allow photo access to save the QR code');
+          AppSnack.show(tr.permissionNeededTitle, tr.allowPhotoAccessQr);
           return;
         }
       }
@@ -74,7 +76,7 @@ class MyQrCodeController extends BaseController {
 
       isSaving.value = false;
       Get.rawSnackbar(
-        message: 'QR code saved',
+        message: tr.qrSavedToast,
         backgroundColor: const Color(0xFF48A45B),
         snackPosition: SnackPosition.BOTTOM,
         duration: const Duration(seconds: 2),
@@ -83,15 +85,15 @@ class MyQrCodeController extends BaseController {
       );
     } catch (e) {
       isSaving.value = false;
-      Get.snackbar('Error', 'Failed to save QR code to Photos');
+      AppSnack.show(tr.errorTitle, tr.qrSaveFailed);
     }
   }
 
   void shareQr() {
     Clipboard.setData(ClipboardData(text: qrData));
-    Get.snackbar(
-      'Shared',
-      'Profile link copied to clipboard: $qrData',
+    AppSnack.show(
+      tr.shared,
+      tr.profileLinkCopiedWithLink(qrData),
       backgroundColor: const Color(0xFF3B82F6),
       colorText: Colors.white,
       snackPosition: SnackPosition.BOTTOM,

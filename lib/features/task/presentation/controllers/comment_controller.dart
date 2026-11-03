@@ -1,7 +1,9 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/network/api_result.dart';
 import '../../../../core/storage/user_manager.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../../auth/data/dto/response/user_response.dart';
 import '../../data/dto/response/comment_response.dart';
@@ -9,6 +11,8 @@ import '../../data/dto/response/page_comment_response.dart';
 import '../../data/repositories/comment_repository_impl.dart';
 import '../../data/services/comment_service.dart';
 import '../../domain/repositories/comment_repository.dart';
+import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class CommentController extends BaseController {
   final String activityId;
@@ -28,9 +32,6 @@ class CommentController extends BaseController {
   final Rx<CommentResponse?> editingComment = Rx<CommentResponse?>(null);
 
   bool get isEditing => editingComment.value != null;
-
-  int _currentPage = 0;
-  bool _hasMore = true;
 
   @override
   void onInit() {
@@ -84,7 +85,6 @@ class CommentController extends BaseController {
   }
 
   Future<void> fetchComments({bool showLoading = true}) async {
-    _currentPage = 0;
     if (showLoading) {
       state.value = ViewState.loading;
     }
@@ -93,18 +93,16 @@ class CommentController extends BaseController {
 
     if (result is ApiSuccess<PageCommentResponse>) {
       final pageData = result.data;
-      // Sort oldest to newest (top to bottom like Telegram chat)
       final items = List<CommentResponse>.from(pageData.content);
       items.sort((a, b) => a.createdAt.compareTo(b.createdAt));
       comments.assignAll(items);
-      _hasMore = !pageData.last;
       state.value = ViewState.success;
       _scrollToBottom();
     } else if (result is ApiError<PageCommentResponse>) {
       state.value = ViewState.error;
       errorMessage.value = result.exception.message;
-      Get.snackbar(
-        'Error',
+      AppSnack.show(
+        tr.errorTitle,
         result.exception.message,
         backgroundColor: Colors.red.withOpacity(0.85),
         colorText: Colors.white,
@@ -127,9 +125,9 @@ class CommentController extends BaseController {
       comments.add(result.data);
       _scrollToBottom();
     } else if (result is ApiError<CommentResponse>) {
-      textController.text = text; // Restore input on failure
-      Get.snackbar(
-        'Failed to Send',
+      textController.text = text;
+      AppSnack.show(
+        tr.failedToSend,
         result.exception.message,
         backgroundColor: Colors.red.withOpacity(0.85),
         colorText: Colors.white,
@@ -159,16 +157,16 @@ class CommentController extends BaseController {
         comments[index] = result.data;
       }
       cancelEditing();
-      Get.snackbar(
-        'Updated',
-        'Comment updated successfully',
+      AppSnack.show(
+        tr.updatedTitle,
+        tr.commentUpdated,
         backgroundColor: Colors.green.withOpacity(0.85),
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
     } else if (result is ApiError<CommentResponse>) {
-      Get.snackbar(
-        'Update Failed',
+      AppSnack.show(
+        tr.updateFailed,
         result.exception.message,
         backgroundColor: Colors.red.withOpacity(0.85),
         colorText: Colors.white,
@@ -184,16 +182,16 @@ class CommentController extends BaseController {
     final result = await repository.deleteComment(commentId);
     if (result is ApiSuccess<void>) {
       comments.removeWhere((c) => c.id == commentId);
-      Get.snackbar(
-        'Deleted',
-        'Comment deleted successfully',
-        backgroundColor: Colors.black87,
+      AppSnack.show(
+        tr.taskStatusDeleted,
+        tr.commentDeleted,
+        backgroundColor: AppColors.textPrimary,
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
     } else if (result is ApiError<void>) {
-      Get.snackbar(
-        'Error',
+      AppSnack.show(
+        tr.errorTitle,
         result.exception.message,
         backgroundColor: Colors.red.withOpacity(0.85),
         colorText: Colors.white,
@@ -231,13 +229,13 @@ class CommentController extends BaseController {
       final date = DateTime.parse(dateStr).toLocal();
       final now = DateTime.now();
       if (date.year == now.year && date.month == now.month && date.day == now.day) {
-        return 'Today';
+        return tr.today;
       }
       final yesterday = now.subtract(const Duration(days: 1));
       if (date.year == yesterday.year && date.month == yesterday.month && date.day == yesterday.day) {
-        return 'Yesterday';
+        return tr.yesterday;
       }
-      return '${_getMonthName(date.month)} ${date.day}, ${date.year}';
+      return DateFormat('MMMM d, y').format(date);
     } catch (_) {
       return dateStr;
     }
@@ -246,23 +244,10 @@ class CommentController extends BaseController {
   String formatTime(String dateStr) {
     try {
       final date = DateTime.parse(dateStr).toLocal();
-      final hour = date.hour == 0 ? 12 : (date.hour > 12 ? date.hour - 12 : date.hour);
-      final minute = date.minute.toString().padLeft(2, '0');
-      final period = date.hour >= 12 ? 'PM' : 'AM';
-      return '$hour:$minute $period';
+      return DateFormat(timePattern('h:mm a')).format(date);
     } catch (_) {
       return dateStr;
     }
   }
 
-  String _getMonthName(int month) {
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    if (month >= 1 && month <= 12) {
-      return months[month - 1];
-    }
-    return '';
-  }
 }

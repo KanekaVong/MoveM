@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/invite_friend_controller.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class InviteFriendScreen extends StatelessWidget {
   const InviteFriendScreen({super.key});
@@ -206,8 +207,8 @@ class InviteFriendScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 4),
-        const Text(
-          'MOVE WITH PURPOSE',
+        Text(
+          tr.moveWithPurpose,
           style: TextStyle(
             color: AppColors.slate800,
             fontSize: 14,

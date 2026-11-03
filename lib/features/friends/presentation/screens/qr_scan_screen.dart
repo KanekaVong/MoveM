@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../controllers/qr_scan_controller.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class QrScanScreen extends GetView<QrScanController> {
   const QrScanScreen({super.key});
@@ -28,7 +29,7 @@ class QrScanScreen extends GetView<QrScanController> {
                   child: Text(
                     controller.scanStatus.value.isNotEmpty
                         ? controller.scanStatus.value
-                        : 'Starting Camera...',
+                        : tr.cameraStarting,
                     style: const TextStyle(color: AppColors.taskTextMuted, fontSize: 14),
                   ),
                 ),

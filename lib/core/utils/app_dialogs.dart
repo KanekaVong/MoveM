@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../shared/widgets/app_button.dart';
 import '../theme/app_colors.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class AppDialogs {
   static void showLoading() {
@@ -18,14 +20,19 @@ class AppDialogs {
   }
 
   static void hideLoading() {
-    if (Get.isDialogOpen ?? false) {
-      Get.back();
+    if (!(Get.isDialogOpen ?? false)) return;
+    // Get.back() closes a snackbar and returns, which leaves this dialog up.
+    final navigator = Get.key.currentState;
+    if (navigator != null && navigator.canPop()) {
+      navigator.pop();
+      return;
     }
+    Get.back();
   }
 
   static void showError(String message, {VoidCallback? onConfirm}) {
     showSingleActionDialog(
-      title: 'Error',
+      title: tr.errorTitle,
       message: message,
       onConfirm: onConfirm,
     );
@@ -34,7 +41,7 @@ class AppDialogs {
   static void showSingleActionDialog({
     required String title,
     required String message,
-    String buttonText = 'OK',
+    String? buttonText,
     VoidCallback? onConfirm,
   }) {
     Get.dialog(
@@ -43,14 +50,15 @@ class AppDialogs {
         content: Text(message, textAlign: TextAlign.center),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
-          TextButton(
+          AppButton(
+            label: buttonText ?? tr.ok,
+            height: 46,
             onPressed: () {
               Get.back();
               if (onConfirm != null) {
                 onConfirm();
               }
             },
-            child: Text(buttonText),
           ),
         ],
       ),
@@ -61,8 +69,8 @@ class AppDialogs {
   static void showMultiActionDialog({
     required String title,
     required String message,
-    String confirmText = 'Confirm',
-    String cancelText = 'Cancel',
+    String? confirmText,
+    String? cancelText,
     required VoidCallback onConfirm,
     VoidCallback? onCancel,
   }) {
@@ -72,21 +80,32 @@ class AppDialogs {
         content: Text(message, textAlign: TextAlign.start),
         actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
-          TextButton(
-            onPressed: () {
-              Get.back();
-              if (onCancel != null) {
-                onCancel();
-              }
-            },
-            child: Text(cancelText),
-          ),
-          TextButton(
-            onPressed: () {
-              Get.back();
-              onConfirm();
-            },
-            child: Text(confirmText),
+          Row(
+            children: [
+              Expanded(
+                child: AppButton.secondary(
+                  label: cancelText ?? tr.cancel,
+                  height: 46,
+                  onPressed: () {
+                    Get.back();
+                    if (onCancel != null) {
+                      onCancel();
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: AppButton(
+                  label: confirmText ?? tr.confirm,
+                  height: 46,
+                  onPressed: () {
+                    Get.back();
+                    onConfirm();
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),

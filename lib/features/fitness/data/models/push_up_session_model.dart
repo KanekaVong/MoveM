@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 enum PushUpFormQuality {
   excellent, // < 85 deg
@@ -25,14 +26,16 @@ class PushUpRepData {
     this.confidence = 1.0,
   });
 
+  bool get isGoodForm => formQuality != PushUpFormQuality.shallow;
+
   String get formQualityLabel {
     switch (formQuality) {
       case PushUpFormQuality.excellent:
-        return 'Excellent';
+        return tr.formExcellent;
       case PushUpFormQuality.good:
-        return 'Good';
+        return tr.formGood;
       case PushUpFormQuality.shallow:
-        return 'Shallow';
+        return tr.formShallow;
     }
   }
 
@@ -114,10 +117,10 @@ class PushUpSession {
 
   String get formRating {
     final avg = averageFormAngle;
-    if (reps.isEmpty) return 'No Reps';
-    if (avg < 85) return 'Excellent Form 🏆';
-    if (avg <= 95) return 'Good Form 💪';
-    return 'Work on Depth ⚠️';
+    if (reps.isEmpty) return tr.formNoReps;
+    if (avg < 85) return tr.formRatingExcellent;
+    if (avg <= 95) return tr.formRatingGood;
+    return tr.formRatingWorkOnDepth;
   }
 
   PushUpRepData? get bestRep {

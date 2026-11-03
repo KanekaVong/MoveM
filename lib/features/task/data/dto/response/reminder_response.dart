@@ -1,3 +1,5 @@
+import '../../../../../core/utils/server_time.dart';
+
 class ReminderResponse {
   final int id;
   final String remindAt;
@@ -14,7 +16,7 @@ class ReminderResponse {
   factory ReminderResponse.fromJson(Map<String, dynamic> json) {
     return ReminderResponse(
       id: json['id'] ?? 0,
-      remindAt: json['remindAt'] ?? '',
+      remindAt: asServerUtc(json['remindAt']) ?? '',
       type: json['type'] ?? '',
       sent: json['sent'] ?? false,
     );

@@ -4,19 +4,28 @@ import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:movem/core/routes/app_routes.dart';
+import 'package:movem/core/config/app_config.dart';
 import 'package:movem/core/storage/user_manager.dart';
+import 'package:movem/core/theme/app_colors.dart';
+import 'package:movem/l10n/app_localizations.dart';
 import 'package:movem/features/auth/data/dto/response/user_response.dart';
 import 'package:movem/features/settings/presentation/models/contact_type.dart';
 import 'package:movem/features/settings/presentation/screens/contact_info_overlay.dart';
-import 'package:movem/features/settings/presentation/screens/change_contact_screen.dart';
-import 'package:movem/features/settings/presentation/bindings/setting_binding.dart';
 import 'package:movem/features/settings/presentation/controllers/setting_controller.dart';
 import 'package:movem/features/settings/data/dto/request/update_profile_request.dart';
 import 'package:movem/features/settings/data/services/setting_service.dart';
 import 'package:movem/features/settings/data/repositories/setting_repository_impl.dart';
 
 import 'package:movem/features/settings/presentation/screens/region_selection_screen.dart';
+import 'package:movem/features/fitness/data/models/achievement_model.dart';
+import 'package:movem/features/settings/presentation/controllers/profile_overview_controller.dart';
+import 'package:movem/shared/widgets/auth_image.dart';
+import 'package:movem/shared/widgets/no_data_component.dart';
+import 'package:movem/shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/shared/widgets/picker_theme.dart';
 
 
 class ProfileScreen extends StatelessWidget {
@@ -76,10 +85,11 @@ class ProfileScreen extends StatelessWidget {
 
     final pickedDate = await showDatePicker(
       context: context,
+      builder: pickerThemeBuilder,
       firstDate: DateTime(1900),
       lastDate: lastAllowedDate,
       initialDate: initialDate,
-      helpText: 'Select Date Of Birth',
+      helpText: AppLocalizations.of(context)!.selectDateOfBirth,
     );
 
     if (pickedDate == null) {
@@ -106,144 +116,60 @@ class ProfileScreen extends StatelessWidget {
     Get.forceAppUpdate();
   }
 
-  Future<void> _pickRegion(
-      BuildContext context,
-      UserResponse? user,
-      ) async {
-    String? selectedRegion;
-
-    await showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF131D38),
-          title: const Text(
-            'Select Region',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: SizedBox(
-            width: double.maxFinite,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
-                  color: Colors.white70,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () async {
-                if (selectedRegion == null ||
-                    selectedRegion!.trim().isEmpty) {
-                  return;
-                }
-
-                Navigator.of(dialogContext).pop(
-                  selectedRegion,
-                );
-              },
-              child: const Text(
-                'Save',
-                style: TextStyle(
-                  color: Color(0xFF5394FF),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    ).then((result) async {
-      if (result == null) {
-        return;
-      }
-
-      final region = result as String;
-
-      final settingController = Get.isRegistered<SettingController>()
-          ? Get.find<SettingController>()
-          : SettingController(
-        repository: SettingRepositoryImpl(
-          settingService: SettingService(),
-        ),
-      );
-
-      final updatedUser = await settingController.updateProfile(
-        UpdateProfileRequest(
-          cityProvince: region,
-        ),
-        goBack: false,
-      );
-
-      if (updatedUser == null) {
-        return;
-      }
-
-      Get.forceAppUpdate();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final UserResponse? user = UserManager().getUser();
-    print('ProfileScreen: Retrieved user from UserManager: ${user?.toJson() ?? "null"}');
+    final overview = Get.isRegistered<ProfileOverviewController>()
+        ? Get.find<ProfileOverviewController>()
+        : Get.put(ProfileOverviewController());
 
+    final l10n = AppLocalizations.of(context)!;
+    final pageColor = AppColors.pageBackground;
+    final onPage = AppColors.textPrimary;
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: pageColor,
+      appBar: TopToolBar(
+        title: l10n.yourProfile,
+        backgroundColor: pageColor,
+        foregroundColor: onPage,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          clipBehavior: Clip.none,
+          child: Stack(
+            clipBehavior: Clip.none,
             children: [
-              Row(
-                children: [
-                  InkWell(
-                    onTap: () => Get.back(),
-                    borderRadius: BorderRadius.circular(30),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 4.0),
-                      child: Row(
-                        children: const [
-                          Icon(
-                            Icons.arrow_back_ios,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            'Your Profile',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+              const Positioned(
+                top: 60,
+                right: -140,
+                child: _AmbientGlow(color: Color(0xFF3C66C0), size: 320),
               ),
+              const Positioned(
+                top: 420,
+                left: -160,
+                child: _AmbientGlow(color: Color(0xFF6D4AFF), size: 300),
+              ),
+              const Positioned(
+                top: 820,
+                right: -120,
+                child: _AmbientGlow(color: Color(0xFF0EA5E9), size: 280),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
               _buildProfileSection(context, user),
               const SizedBox(height: 32),
               _buildPersonalInformation(context, user),
               const SizedBox(height: 32),
-              _buildMyActivities(),
+              _buildMyActivities(context, overview),
               const SizedBox(height: 32),
-              _buildAchievements(),
+              _buildAchievements(context, overview),
               const SizedBox(height: 32),
-              _buildBottomStats(),
-              const SizedBox(height: 100)
+              _buildBottomStats(context, overview),
+                  const SizedBox(height: 100)
+                ],
+              ),
             ],
           ),
         ),
@@ -258,7 +184,7 @@ class ProfileScreen extends StatelessWidget {
     ].where((value) => value != null && value.trim().isNotEmpty).join(' ');
 
     final displayName =
-        fullName.isNotEmpty ? fullName : (user?.username ?? 'Unknown User');
+        fullName.isNotEmpty ? fullName : (user?.username ?? AppLocalizations.of(context)!.unknownUser);
 
     return Row(
       children: [
@@ -274,8 +200,8 @@ class ProfileScreen extends StatelessWidget {
                     child: Text(
                       displayName,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
@@ -291,24 +217,26 @@ class ProfileScreen extends StatelessWidget {
                     child: GestureDetector(
                       onTap: () {
                         if (user != null) {
-                          Get.toNamed(AppRoutes.editProfile);
+                          Get.toNamed(AppRoutes.editProfile)?.then((_) {
+                            Get.forceAppUpdate();
+                          });
                         }
                       },
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: const [
+                        children: [
                           Text(
-                            'Edit',
+                            AppLocalizations.of(context)!.editProfile,
                             style: TextStyle(
-                              color: Color(0xFF5394FF),
+                              color: AppColors.isDark ? Colors.white : AppColors.accentBlue,
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Icon(
                             Icons.edit,
-                            color: Color(0xFF5394FF),
+                            color: AppColors.isDark ? Colors.white : AppColors.accentBlue,
                             size: 10,
                           ),
                         ],
@@ -338,12 +266,12 @@ class ProfileScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Text(
-              'Personal Information',
+              AppLocalizations.of(context)!.personalInfo,
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -351,24 +279,26 @@ class ProfileScreen extends StatelessWidget {
           ),
           _buildInfoTile(
             icon: Icons.email_outlined,
-            title: 'Email',
-            subtitle: _displayValue(user?.email),
+            title: AppLocalizations.of(context)!.email,
+            subtitle: _displayValue(context, user?.email),
             onTap: () {
-              if (user?.email == null || user!.email!.isEmpty) {
+              final email = user?.email;
+              if (email == null || email.isEmpty) {
                 return;
               }
 
               Get.dialog(
                 ContactInfoOverlay(
                   type: ContactType.email,
-                  value: user.email!,
-                  onChange: () {
+                  value: email,
+                  onChange: () async {
                     Get.back();
 
-                    Get.toNamed(
+                    await Get.toNamed(
                       AppRoutes.changeContact,
                       arguments: ContactType.email,
                     );
+                    Get.forceAppUpdate();
                   },
                 ),
               );
@@ -377,17 +307,18 @@ class ProfileScreen extends StatelessWidget {
           _buildDivider(),
           _buildInfoTile(
             icon: Icons.phone_outlined,
-            title: 'Phone Number',
-            subtitle: _displayValue(user?.phone),
-            onTap: () {
+            title: AppLocalizations.of(context)!.phoneNumber,
+            subtitle: _displayValue(context, user?.phone),
+            onTap: () async {
               final phone = user?.phone;
 
               // User has no phone linked yet
               if (phone == null || phone.isEmpty) {
-                Get.toNamed(
+                await Get.toNamed(
                   AppRoutes.changeContact,
                   arguments: ContactType.phone,
                 );
+                Get.forceAppUpdate();
                 return;
               }
 
@@ -396,70 +327,14 @@ class ProfileScreen extends StatelessWidget {
                 ContactInfoOverlay(
                   type: ContactType.phone,
                   value: phone,
-                  onChange: () {
+                  onChange: () async {
                     Get.back();
 
-                    Get.toNamed(
+                    await Get.toNamed(
                       AppRoutes.changeContact,
                       arguments: ContactType.phone,
                     );
-                  },
-                  onUnlink: () {
-                    Get.back();
-
-                    Get.dialog(
-                      AlertDialog(
-                        backgroundColor: const Color(0xFF131D38),
-                        title: const Text(
-                          'Unlink phone number?',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        content: const Text(
-                          'Are you sure you want to unlink your phone number from your account?',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Get.back();
-                            },
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () async {
-                              Get.back();
-
-                              final settingController =
-                              Get.isRegistered<SettingController>()
-                                  ? Get.find<SettingController>()
-                                  : SettingController(
-                                repository: SettingRepositoryImpl(
-                                  settingService: SettingService(),
-                                ),
-                              );
-
-                              final updatedUser =
-                              await settingController.unlinkPhone();
-
-                              if (updatedUser == null) {
-                                return;
-                              }
-
-                              Get.forceAppUpdate();
-                            },
-                            child: const Text(
-                              'Unlink',
-                              style: TextStyle(
-                                color: Colors.redAccent,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
+                    Get.forceAppUpdate();
                   },
                 ),
               );
@@ -468,15 +343,15 @@ class ProfileScreen extends StatelessWidget {
           _buildDivider(),
           _buildInfoTile(
             icon: Icons.calendar_today_outlined,
-            title: 'Date Of Birth',
-            subtitle: _displayDateOfBirth(user?.dateOfBirth),
+            title: AppLocalizations.of(context)!.dateOfBirth,
+            subtitle: _displayDateOfBirth(context, user?.dateOfBirth),
             onTap: () => _pickDateOfBirth(context, user),
           ),
           _buildDivider(),
           _buildInfoTile(
             icon: Icons.location_on_outlined,
-            title: 'Location',
-            subtitle: _displayValue(user?.cityProvince),
+            title: AppLocalizations.of(context)!.location,
+            subtitle: _displayValue(context, user?.cityProvince),
             showDivider: false,
             onTap: () async {
               final selectedRegion = await Get.to<String>(
@@ -525,17 +400,17 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  String _displayValue(String? value) {
+  String _displayValue(BuildContext context, String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Not Set Up';
+      return AppLocalizations.of(context)!.notSetUp;
     }
 
     return value;
   }
 
-  String _displayDateOfBirth(String? value) {
+  String _displayDateOfBirth(BuildContext context, String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Not Set Up';
+      return AppLocalizations.of(context)!.notSetUp;
     }
 
     try {
@@ -547,38 +422,68 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildProfileImage(UserResponse? user) {
-    final profilePic = user?.profilePic;
+    final stored = user?.profilePic;
+    final profilePic = stored == null || stored.isEmpty ? null : AppConfig.resolveMediaUrl(stored);
 
-    return Container(
-      width: 80,
-      height: 80,
+    return GestureDetector(
+      onTap: _changeProfilePhoto,
+      child: Container(
+      width: 84,
+      height: 84,
+      padding: const EdgeInsets.all(2.5),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(
-          color: const Color(0xFF1E293B),
-          width: 2,
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF8FB4FF), Color(0xFF3C66C0), Color(0xFF1B2A55)],
         ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF3C66C0).withValues(alpha: 0.45),
+            blurRadius: 22,
+            spreadRadius: -4,
+          ),
+        ],
       ),
-      child: ClipOval(
+      child: Container(
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Color(0xFF162341),
+        ),
+        child: ClipOval(
         child: profilePic != null && profilePic.isNotEmpty
-            ? Image.network(
-                profilePic,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) {
-                  return const Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 40,
-                  );
-                },
+            ? AuthImage(
+                url: profilePic,
+                fallback: const Icon(Icons.person, color: Colors.white, size: 40),
               )
             : const Icon(
                 Icons.person,
                 color: Colors.white,
                 size: 40,
               ),
+        ),
       ),
+    ),
     );
+  }
+
+  Future<void> _changeProfilePhoto() async {
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1200,
+      maxHeight: 1200,
+      imageQuality: 85,
+    );
+    if (picked == null) return;
+
+    final setting = Get.isRegistered<SettingController>()
+        ? Get.find<SettingController>()
+        : SettingController(
+            repository: SettingRepositoryImpl(settingService: SettingService()),
+          );
+    final updated = await setting.uploadAndSaveProfilePicture(picked.path);
+    if (updated != null) Get.forceAppUpdate();
   }
 
   Widget _buildInfoTile({
@@ -605,7 +510,7 @@ class ProfileScreen extends StatelessWidget {
               alignment: Alignment.center,
               child: Icon(
                 icon,
-                color: const Color(0xFF3B82F6),
+                color: AppColors.accentBlue,
                 size: 16,
               ),
             ),
@@ -616,8 +521,8 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
@@ -625,17 +530,17 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      color: Color(0xFFA0AAB2),
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
                       fontSize: 12,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.chevron_right,
-              color: Colors.white,
+              color: AppColors.textSecondary,
               size: 24,
             ),
           ],
@@ -649,82 +554,77 @@ class ProfileScreen extends StatelessWidget {
       padding: const EdgeInsets.only(left: 64.0, right: 16.0),
       child: Container(
         height: 1,
-        color: const Color(0xFF1E293B),
+        color: AppColors.borderLight,
       ),
     );
   }
 
-  Widget _buildMyActivities() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text(
-              'My Activities',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+  Widget _buildMyActivities(BuildContext context, ProfileOverviewController overview) {
+    return Obx(() {
+      final days = overview.daysUntilTrip.value;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            AppLocalizations.of(context)!.myActivities,
+            style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          if (overview.isLoading.value && overview.taskStats.value == null && overview.fitness.value == null)
+            const AppShimmer(
+              child: Row(
+                children: [
+                  Expanded(child: SkeletonBox(height: 160, radius: 20)),
+                  SizedBox(width: 12),
+                  Expanded(child: SkeletonBox(height: 160, radius: 20)),
+                  SizedBox(width: 12),
+                  Expanded(child: SkeletonBox(height: 160, radius: 20)),
+                ],
               ),
-            ),
-            Text(
-              'View All >',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+            )
+          else
+          Row(
+            children: [
+              Expanded(
+                child: _buildActivityCard(
+                  icon: Icons.check,
+                  title: AppLocalizations.of(context)!.taskCompleted,
+                  value: '${overview.completedTasks}',
+                  total: '${overview.taskTotal}',
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=600&auto=format&fit=crop',
+                  progress: overview.taskProgress,
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildActivityCard(
-                icon: Icons.check,
-                title: 'Task Completed',
-                value: '0',
-                total: '0',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=600&auto=format&fit=crop',
-                // Desk laptop
-                progress: 0.0,
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActivityCard(
+                  icon: Icons.directions_run,
+                  title: AppLocalizations.of(context)!.steps,
+                  value: '${overview.stepsToday}',
+                  total: '${overview.stepGoal}',
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=600&auto=format&fit=crop',
+                  progress: overview.stepProgress,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActivityCard(
-                icon: Icons.directions_run,
-                // Close to running shoe
-                title: 'Steps',
-                value: '0',
-                total: '5000',
-                imageUrl:
-                    'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=600&auto=format&fit=crop',
-                // Running
-                progress: 0.0,
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActivityCard(
+                  icon: Icons.flight,
+                  title: AppLocalizations.of(context)!.daysUntilYourTrip,
+                  value: days == null ? '—' : '$days',
+                  total: null,
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop',
+                  progress: days == null ? 0 : (days == 0 ? 1 : 0.35),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActivityCard(
-                icon: Icons.flight,
-                title: 'Days Until Your Trip',
-                value: '0',
-                total: null,
-                imageUrl:
-                    'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=600&auto=format&fit=crop',
-                // Travel mountain
-                progress: 0.0,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
+            ],
+          ),
+        ],
+      );
+    });
   }
 
 
@@ -744,15 +644,22 @@ class ProfileScreen extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              // Fit inside the glass card inner radius
-              child: Image(
-                image: CachedNetworkImageProvider(imageUrl),
-                fit: BoxFit.cover,
-                colorBlendMode: BlendMode.darken,
-                color: const Color(0xFF0F172A)
-                    .withValues(alpha: 0.6), // Darken the image
+            Image(
+              image: CachedNetworkImageProvider(imageUrl),
+              fit: BoxFit.cover,
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    const Color(0xFF0F172A).withValues(alpha: 0.25),
+                    const Color(0xFF0F172A).withValues(alpha: 0.55),
+                    const Color(0xFF0B1224).withValues(alpha: 0.95),
+                  ],
+                  stops: const [0, 0.45, 1],
+                ),
               ),
             ),
             Padding(
@@ -760,17 +667,12 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3B82F6).withValues(alpha: 0.2),
-                      // Light blue tint
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                          color:
-                              const Color(0xFF3B82F6).withValues(alpha: 0.5)),
-                    ),
-                    child: Icon(icon, color: const Color(0xFF3B82F6), size: 20),
+                  GlassContainer(
+                    width: 36,
+                    height: 36,
+                    borderRadius: 11,
+                    alignment: Alignment.center,
+                    child: Icon(icon, color: Colors.white, size: 19),
                   ),
                   const Spacer(),
                   Row(
@@ -813,30 +715,29 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   // Progress Bar
                   Container(
-                    height: 4,
+                    height: 5,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E293B),
-                      borderRadius: BorderRadius.circular(2),
+                      color: Colors.white.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(3),
                     ),
-                    child: Row(
-                      children: [
-                        if (progress > 0)
-                          Expanded(
-                            flex: (progress * 100).toInt(),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF3B82F6),
-                                borderRadius: BorderRadius.circular(2),
-                              ),
+                    alignment: Alignment.centerLeft,
+                    child: FractionallySizedBox(
+                      widthFactor: progress.clamp(0.0, 1.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(3),
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF5B86E5), Color(0xFF8FB4FF)],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF5B86E5).withValues(alpha: 0.6),
+                              blurRadius: 6,
                             ),
-                          ),
-                        if (progress < 1)
-                          Expanded(
-                            flex: 100 - (progress * 100).toInt(),
-                            child: const SizedBox(),
-                          ),
-                      ],
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -848,76 +749,93 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAchievements() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text(
-              'Achievements',
-              style: TextStyle(
-                color: Color(0xFFEAB308), // Yellow
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+  Widget _buildAchievements(BuildContext context, ProfileOverviewController overview) {
+    return Obx(() {
+      final items = overview.achievements;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                AppLocalizations.of(context)!.achievements,
+                style: TextStyle(color: Color(0xFFEAB308), fontSize: 16, fontWeight: FontWeight.bold),
               ),
-            ),
-            Text(
-              'View All',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        SettingsCard(
-          padding: const EdgeInsets.symmetric(vertical: 40),
-          child: const Center(
-            child: Text(
-              'No Achievements Yet',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-            ),
+              if (items.length > 6)
+                GestureDetector(
+                  onTap: () => Get.to(() => _AllAchievementsScreen(items: items.toList())),
+                  child: Text(
+                    AppLocalizations.of(context)!.viewAll,
+                    style: TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+                ),
+            ],
           ),
-        ),
-      ],
-    );
+          const SizedBox(height: 16),
+          if (overview.isLoading.value && items.isEmpty)
+            const SizedBox(
+              height: 140,
+              child: AppShimmer(
+                child: Row(
+                  children: [
+                    Expanded(child: SkeletonBox(height: 140, radius: 16)),
+                    SizedBox(width: 12),
+                    Expanded(child: SkeletonBox(height: 140, radius: 16)),
+                    SizedBox(width: 12),
+                    Expanded(child: SkeletonBox(height: 140, radius: 16)),
+                  ],
+                ),
+              ),
+            )
+          else if (items.isEmpty)
+            SettingsCard(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: NoDataComponent(compact: true, title: AppLocalizations.of(context)!.noAchievementsYet),
+            )
+          else
+            SizedBox(
+              height: 132,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: items.length > 6 ? 6 : items.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (_, index) => _AchievementTile(item: items[index]),
+              ),
+            ),
+        ],
+      );
+    });
   }
 
-  Widget _buildBottomStats() {
-    return SettingsCard(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildStatColumn(Icons.assignment_outlined, '0', 'Task Completed'),
-          _buildVerticalDivider(),
-          _buildStatColumn(Icons.fitness_center, '0', 'Task Completed'),
-          _buildVerticalDivider(),
-          _buildStatColumn(Icons.beach_access_outlined, '0', 'Task Completed'),
-          _buildVerticalDivider(),
-          _buildStatColumn(Icons.star_outline, '0', 'Task Completed'),
-        ],
-      ),
-    );
+  Widget _buildBottomStats(BuildContext context, ProfileOverviewController overview) {
+    return Obx(() => SettingsCard(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildStatColumn(Icons.assignment_outlined, '${overview.completedTasks}', AppLocalizations.of(context)!.tasksStat),
+              _buildVerticalDivider(),
+              _buildStatColumn(Icons.fitness_center, '${overview.totalWorkouts}', AppLocalizations.of(context)!.workoutsStat),
+              _buildVerticalDivider(),
+              _buildStatColumn(Icons.beach_access_outlined, '${overview.completedTrips.value}', AppLocalizations.of(context)!.tripsStat),
+              _buildVerticalDivider(),
+              _buildStatColumn(Icons.star_outline, '${overview.achievementCount.value}', AppLocalizations.of(context)!.badgesStat),
+            ],
+          ),
+        ));
   }
 
   Widget _buildStatColumn(IconData icon, String value, String title) {
     return Expanded(
       child: Column(
         children: [
-          Icon(icon, color: const Color(0xFF3B82F6), size: 24),
+          Icon(icon, color: AppColors.accentBlue, size: 24),
           const SizedBox(height: 12),
           Text(
             value,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: AppColors.textPrimary,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
@@ -926,8 +844,8 @@ class ProfileScreen extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Color(0xFFA0AAB2),
+            style: TextStyle(
+              color: AppColors.textSecondary,
               fontSize: 10,
             ),
           ),
@@ -940,7 +858,7 @@ class ProfileScreen extends StatelessWidget {
     return Container(
       width: 1,
       height: 40,
-      color: const Color(0xFF1E293B),
+      color: AppColors.borderLight,
     );
   }
 }
@@ -948,42 +866,57 @@ class ProfileScreen extends StatelessWidget {
 class SettingsCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
+  final double radius;
 
   const SettingsCard({
     super.key,
     required this.child,
     this.padding,
+    this.radius = 18,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(7),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0), // Frost 4
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(7),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withValues(alpha: 0.2), // Light reflection
-                Colors.white.withValues(alpha: 0.0),
-                Colors.black.withValues(alpha: 0.2), // Depth shadow
-              ],
-              stops: const [0.0, 0.3, 1.0],
-            ),
+    final borderRadius = BorderRadius.circular(radius);
+    final dark = AppColors.isDark;
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: borderRadius,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: dark ? 0.35 : 0.08),
+            offset: const Offset(0, 12),
+            blurRadius: 28,
+            spreadRadius: -8,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(1.0), // 3D edge depth
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+          child: CustomPaint(
+            foregroundPainter: _GlassRimPainter(radius: radius, light: !dark),
             child: Container(
               padding: padding,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6), // 7 - 1 (padding)
-                color: const Color(0xFF162341)
-                    .withValues(alpha: 0.60), // Exact fill from Figma
+                borderRadius: borderRadius,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: dark
+                      ? [
+                          const Color(0xFF1E2C52).withValues(alpha: 0.72),
+                          const Color(0xFF162341).withValues(alpha: 0.55),
+                          const Color(0xFF101A33).withValues(alpha: 0.65),
+                        ]
+                      : [
+                          Colors.white.withValues(alpha: 0.92),
+                          const Color(0xFFF7F9FC).withValues(alpha: 0.88),
+                          const Color(0xFFEEF3FA).withValues(alpha: 0.9),
+                        ],
+                ),
               ),
               child: child,
             ),
@@ -1014,40 +947,220 @@ class GlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(borderRadius);
+    final dark = AppColors.isDark;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
+      borderRadius: radius,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
-        child: Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(borderRadius),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withValues(alpha: 0.3),
-                Colors.white.withValues(alpha: 0.0),
-                Colors.black.withValues(alpha: 0.2),
-              ],
-              stops: const [0.0, 0.3, 1.0],
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(1.0),
-            child: Container(
-              padding: padding,
-              alignment: alignment,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(
-                    borderRadius > 0 ? borderRadius - 1 : 0),
-                color: const Color(0xFF3C66C0).withValues(alpha: 0.40),
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: CustomPaint(
+          foregroundPainter: _GlassRimPainter(radius: borderRadius, strength: 1.2, light: !dark),
+          child: Container(
+            width: width,
+            height: height,
+            padding: padding,
+            alignment: alignment,
+            decoration: BoxDecoration(
+              borderRadius: radius,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: dark
+                    ? [
+                        const Color(0xFF5B86E5).withValues(alpha: 0.45),
+                        const Color(0xFF3C66C0).withValues(alpha: 0.28),
+                      ]
+                    : [
+                        const Color(0xFF5B86E5).withValues(alpha: 0.18),
+                        const Color(0xFF3C66C0).withValues(alpha: 0.08),
+                      ],
               ),
-              child: child,
             ),
+            child: child,
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Light-catching rim plus a soft top sheen, so glass reads on flat backgrounds.
+class _GlassRimPainter extends CustomPainter {
+  const _GlassRimPainter({required this.radius, this.strength = 1, this.light = false});
+
+  final double radius;
+  final double strength;
+  final bool light;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final rrect = RRect.fromRectAndRadius(rect.deflate(0.5), Radius.circular(radius));
+
+    final sheen = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.center,
+        colors: [
+          Colors.white.withValues(alpha: 0.10 * strength),
+          Colors.white.withValues(alpha: 0),
+        ],
+      ).createShader(rect);
+    canvas.drawRRect(rrect, sheen);
+
+    final rim = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..shader = LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: light
+            ? [
+                const Color(0xFF3B6FE8).withValues(alpha: 0.28 * strength),
+                const Color(0xFF111827).withValues(alpha: 0.08),
+                const Color(0xFF3B6FE8).withValues(alpha: 0.16 * strength),
+              ]
+            : [
+                Colors.white.withValues(alpha: (0.38 * strength).clamp(0, 1)),
+                Colors.white.withValues(alpha: 0.06),
+                const Color(0xFF5B86E5).withValues(alpha: 0.30 * strength),
+              ],
+        stops: const [0, 0.45, 1],
+      ).createShader(rect);
+    canvas.drawRRect(rrect, rim);
+  }
+
+  @override
+  bool shouldRepaint(_GlassRimPainter old) =>
+      old.radius != radius || old.strength != strength || old.light != light;
+}
+
+class _AmbientGlow extends StatelessWidget {
+  const _AmbientGlow({required this.color, required this.size});
+
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(
+            colors: [
+              color.withValues(alpha: AppColors.isDark ? 0.35 : 0.16),
+              color.withValues(alpha: 0),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+IconData _achievementIcon(String name) {
+  final key = name.toLowerCase();
+  if (key.contains('step')) return Icons.directions_walk;
+  if (key.contains('km') || key.contains('distance')) return Icons.route;
+  if (key.contains('streak') || key.contains('day')) return Icons.local_fire_department;
+  if (key.contains('challenge')) return Icons.flag;
+  if (key.contains('kudos') ||
+      key.contains('social') ||
+      key.contains('cheer') ||
+      key.contains('crowd') ||
+      key.contains('community')) {
+    return Icons.favorite;
+  }
+  if (key.contains('workout') || key.contains('fitness')) return Icons.fitness_center;
+  return Icons.emoji_events;
+}
+
+class _AchievementTile extends StatelessWidget {
+  const _AchievementTile({required this.item, this.wide = false});
+
+  final AchievementModel item;
+  final bool wide;
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = (item.progressPercentage > 1
+            ? item.progressPercentage / 100
+            : item.progressPercentage)
+        .clamp(0.0, 1.0);
+    final icon = item.icon.startsWith('http')
+        ? ClipOval(
+            child: Image.network(item.icon, width: 36, height: 36, fit: BoxFit.cover),
+          )
+        : Icon(
+            _achievementIcon(item.icon),
+            color: item.earned ? const Color(0xFFEAB308) : AppColors.textCaption,
+            size: 28,
+          );
+
+    return SizedBox(
+      width: wide ? double.infinity : 108,
+      child: SettingsCard(
+        padding: const EdgeInsets.all(10),
+        radius: 14,
+        child: Column(
+          crossAxisAlignment: wide ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+          children: [
+            icon,
+            const SizedBox(height: 8),
+            Text(
+              item.name,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: wide ? TextAlign.start : TextAlign.center,
+              style: TextStyle(color: AppColors.textPrimary, fontSize: 11, fontWeight: FontWeight.w700),
+            ),
+            if (wide && item.description.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                item.description,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 11),
+              ),
+            ],
+            const SizedBox(height: 6),
+            LinearProgressIndicator(
+              value: item.earned ? 1 : progress,
+              minHeight: 4,
+              backgroundColor: AppColors.borderLight,
+              color: const Color(0xFFEAB308),
+              borderRadius: BorderRadius.circular(3),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AllAchievementsScreen extends StatelessWidget {
+  const _AllAchievementsScreen({required this.items});
+
+  final List<AchievementModel> items;
+
+  @override
+  Widget build(BuildContext context) {
+    final pageColor = AppColors.pageBackground;
+    return Scaffold(
+      backgroundColor: pageColor,
+      appBar: TopToolBar(
+        title: AppLocalizations.of(context)!.achievements,
+        backgroundColor: pageColor,
+        foregroundColor: AppColors.textPrimary,
+      ),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(20),
+        itemCount: items.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (_, index) => _AchievementTile(item: items[index], wide: true),
       ),
     );
   }

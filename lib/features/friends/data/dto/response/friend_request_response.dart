@@ -5,6 +5,7 @@ class FriendRequestResponse {
   final String senderProfilePic;
   final int receiverId;
   final String receiverUsername;
+  final String receiverProfilePic;
   final String status;
   final String createdAt;
 
@@ -15,6 +16,7 @@ class FriendRequestResponse {
     required this.senderProfilePic,
     required this.receiverId,
     required this.receiverUsername,
+    this.receiverProfilePic = '',
     required this.status,
     required this.createdAt,
   });
@@ -24,9 +26,10 @@ class FriendRequestResponse {
       requestId: json['requestId'] ?? json['id'] ?? 0,
       senderId: json['senderId'] ?? 0,
       senderUsername: json['senderUsername'] ?? '',
-      senderProfilePic: json['senderProfilePic'] ?? '',
+      senderProfilePic: json['senderProfilePic'] ?? json['senderAvatar'] ?? '',
       receiverId: json['receiverId'] ?? 0,
       receiverUsername: json['receiverUsername'] ?? '',
+      receiverProfilePic: json['receiverProfilePic'] ?? json['receiverAvatar'] ?? '',
       status: json['status'] ?? '',
       createdAt: json['createdAt'] ?? '',
     );

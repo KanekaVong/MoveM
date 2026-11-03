@@ -1,10 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/fitness_profile_controller.dart';
+import 'setup_goal_screen.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/app_button.dart';
+import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class FitnessOnboardingScreen extends StatefulWidget {
   final FitnessProfileController controller;
-  const FitnessOnboardingScreen({super.key, required this.controller});
+
+  /// When true the screen edits an existing profile: values are prefilled and
+  /// saving returns to the caller instead of continuing to the goal setup.
+  final bool isEditing;
+
+  const FitnessOnboardingScreen({
+    super.key,
+    required this.controller,
+    this.isEditing = false,
+  });
 
   @override
   State<FitnessOnboardingScreen> createState() => _FitnessOnboardingScreenState();
@@ -20,10 +35,27 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
   bool _isKg = true;
   final TextEditingController _weightController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isEditing) {
+      final profile = widget.controller.profile.value;
+      if (profile != null) {
+        if (profile.height > 0) _heightController.text = _formatNumber(profile.height);
+        if (profile.weight > 0) _weightController.text = _formatNumber(profile.weight);
+      }
+    }
+  }
+
+  String _formatNumber(double value) {
+    return value % 1 == 0 ? value.toInt().toString() : value.toStringAsFixed(1);
+  }
+
   void _nextPage() async {
+    final l10n = AppLocalizations.of(context);
     if (_currentPage == 0) {
       if (_heightController.text.isEmpty) {
-        Get.snackbar('Error', 'Please enter your height');
+        AppSnack.show(l10n?.errorTitle ?? 'Error', l10n?.pleaseEnterHeight ?? 'Please enter your height');
         return;
       }
       double h = double.tryParse(_heightController.text) ?? 0.0;
@@ -38,7 +70,7 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
       );
     } else if (_currentPage == 1) {
       if (_weightController.text.isEmpty) {
-        Get.snackbar('Error', 'Please enter your weight');
+        AppSnack.show(l10n?.errorTitle ?? 'Error', l10n?.pleaseEnterWeight ?? 'Please enter your weight');
         return;
       }
       double w = double.tryParse(_weightController.text) ?? 0.0;
@@ -47,45 +79,52 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
       }
       widget.controller.setWeight(w);
 
+      if (widget.isEditing) {
+        final saved = await widget.controller.saveBodyMetrics(
+          widget.controller.inputHeight.value,
+          w,
+        );
+        if (saved) {
+          Get.back(result: true);
+          AppSnack.show(
+            l10n?.savedTitle ?? 'Saved',
+            l10n?.profileUpdated ?? 'Fitness profile updated.',
+            backgroundColor: const Color(0xFF166534),
+            colorText: Colors.white,
+          );
+        }
+        return;
+      }
+
       await widget.controller.saveProfile();
+      if (widget.controller.hasProfile.value) {
+        Get.off(() => const SetupGoalScreen());
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
-      body: SingleChildScrollView(
+      backgroundColor: AppColors.pageBackground,
+      body: SafeArea(
+        child: SingleChildScrollView(
         child: Column(
           children: [
-
-            Container(
-              height: 200,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: SafeArea(
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                    onPressed: () {
-                      if (_currentPage > 0) {
-                        _pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      } else {
-                        Get.back();
-                      }
-                    },
-                  ),
-                ),
+            Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
+                onPressed: () {
+                  if (_currentPage > 0) {
+                    _pageController.previousPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    Get.back();
+                  }
+                },
               ),
             ),
 
@@ -93,9 +132,9 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 children: [
-                  const Text(
-                    'Your details',
-                    style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                  Text(
+                    widget.isEditing ? tr.editYourDetails : tr.yourDetails,
+                    style: TextStyle(color: AppColors.textPrimary, fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -103,8 +142,10 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
                       Expanded(child: _buildProgressIndicator(_currentPage >= 0)),
                       const SizedBox(width: 8),
                       Expanded(child: _buildProgressIndicator(_currentPage >= 1)),
-                      const SizedBox(width: 8),
-                      Expanded(child: _buildProgressIndicator(false)),
+                      if (!widget.isEditing) ...[
+                        const SizedBox(width: 8),
+                        Expanded(child: _buildProgressIndicator(false)),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 32),
@@ -128,28 +169,20 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
 
                   Padding(
                     padding: const EdgeInsets.only(bottom: 32.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _nextPage,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3B82F6),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          _currentPage == 0 ? 'Next' : 'Submit',
-                          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)
-                        ),
-                      ),
+                    child: AppButton(
+                      onPressed: _nextPage,
+                      label: _currentPage == 0
+                          ? (AppLocalizations.of(context)?.next ?? 'Next')
+                          : (widget.isEditing
+                              ? (AppLocalizations.of(context)?.save ?? 'Save')
+                              : (AppLocalizations.of(context)?.submit ?? 'Submit')),
                     ),
                   ),
                 ],
               ),
             ),
           ],
+        ),
         ),
       ),
     );
@@ -159,7 +192,7 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
     return Container(
       height: 4,
       decoration: BoxDecoration(
-        color: isActive ? const Color(0xFF3B82F6) : const Color(0xFF1E293B),
+        color: isActive ? Color(0xFF3B82F6) : AppColors.chipSurface,
         borderRadius: BorderRadius.circular(2),
       ),
     );
@@ -168,11 +201,11 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
   Widget _buildHeightStep() {
     return Column(
       children: [
-        const Text(
-          "What's your height?",
-          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+        Text(
+          tr.heightQuestion,
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32),
         _buildToggleContainer(
           leftText: 'cm',
           rightText: 'ft',
@@ -180,14 +213,14 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
           onLeftTap: () => setState(() => _isCm = true),
           onRightTap: () => setState(() => _isCm = false),
         ),
-        const SizedBox(height: 64),
+        SizedBox(height: 64),
         Container(
           width: 200,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           decoration: BoxDecoration(
-            color: const Color(0xFF131B2F),
+            color: AppColors.cardSurface,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.1)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -197,19 +230,19 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
                 child: TextField(
                   controller: _heightController,
                   keyboardType: TextInputType.number,
-                  style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: AppColors.textPrimary, fontSize: 32, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: '--',
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                    hintStyle: TextStyle(color: AppColors.textPrimary.withValues(alpha: 0.3)),
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 _isCm ? 'cm' : 'ft',
-                style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(color: AppColors.textPrimary, fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -221,26 +254,26 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
   Widget _buildWeightStep() {
     return Column(
       children: [
-        const Text(
-          "What's your current weight ?",
-          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+        Text(
+          tr.weightQuestion,
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32),
         _buildToggleContainer(
           leftText: 'kg',
-          rightText: 'Lbs',
+          rightText: tr.lbsUnit,
           isLeftActive: _isKg,
           onLeftTap: () => setState(() => _isKg = true),
           onRightTap: () => setState(() => _isKg = false),
         ),
-        const SizedBox(height: 64),
+        SizedBox(height: 64),
         Container(
           width: 200,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           decoration: BoxDecoration(
-            color: const Color(0xFF131B2F),
+            color: AppColors.cardSurface,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.1)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -250,19 +283,19 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
                 child: TextField(
                   controller: _weightController,
                   keyboardType: TextInputType.number,
-                  style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: AppColors.textPrimary, fontSize: 32, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: '--',
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                    hintStyle: TextStyle(color: AppColors.textPrimary.withValues(alpha: 0.3)),
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
-                _isKg ? 'kg' : 'Lbs',
-                style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                _isKg ? tr.kgUnit : tr.lbsUnit,
+                style: TextStyle(color: AppColors.textPrimary, fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -280,9 +313,9 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF131B2F),
+        color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.1)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -292,12 +325,15 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               decoration: BoxDecoration(
-                color: isLeftActive ? const Color(0xFF2E394E) : Colors.transparent,
+                color: isLeftActive ? AppColors.accentBlue : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 leftText,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: isLeftActive ? Colors.white : AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -306,12 +342,15 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               decoration: BoxDecoration(
-                color: !isLeftActive ? const Color(0xFF2E394E) : Colors.transparent,
+                color: !isLeftActive ? AppColors.accentBlue : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 rightText,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: !isLeftActive ? Colors.white : AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

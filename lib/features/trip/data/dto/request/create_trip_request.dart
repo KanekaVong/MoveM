@@ -1,8 +1,14 @@
+import 'checklist_item_request.dart';
+import 'packing_item_request.dart';
+import 'stop_request.dart';
+
 class CreateTripRequest {
   final String activityName;
   final String? description;
+
   final String startActivity;
   final String? deadline;
+
   final String? locationName;
   final String? locationAddress;
   final double? lat;
@@ -10,9 +16,12 @@ class CreateTripRequest {
   final String? googlePlaceId;
   final String? coordinates;
   final String? destination;
-  final String? flightNumber;
-  final String? hotelName;
-  final String? parentActivityId;
+
+  final double totalBudget;
+
+  final List<ChecklistItemRequest> checklistItems;
+  final List<StopRequest> stops;
+  final List<PackingItemRequest> packingItems;
 
   CreateTripRequest({
     required this.activityName,
@@ -26,9 +35,10 @@ class CreateTripRequest {
     this.googlePlaceId,
     this.coordinates,
     this.destination,
-    this.flightNumber,
-    this.hotelName,
-    this.parentActivityId,
+    this.totalBudget = 0,
+    this.checklistItems = const [],
+    this.stops = const [],
+    this.packingItems = const [],
   });
 
   Map<String, dynamic> toJson() {
@@ -44,9 +54,19 @@ class CreateTripRequest {
       'googlePlaceId': googlePlaceId,
       'coordinates': coordinates,
       'destination': destination,
-      'flightNumber': flightNumber,
-      'hotelName': hotelName,
-      'parentActivityId': parentActivityId,
+      'totalBudget': totalBudget,
+
+      'checklistItems': checklistItems
+          .map((item) => item.toJson())
+          .toList(),
+
+      'stops': stops
+          .map((stop) => stop.toJson())
+          .toList(),
+
+      'packingItems': packingItems
+          .map((item) => item.toJson())
+          .toList(),
     };
   }
 }

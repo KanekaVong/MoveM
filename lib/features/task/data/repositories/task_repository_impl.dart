@@ -6,6 +6,8 @@ import '../dto/request/create_task_request.dart';
 import '../dto/response/task_response.dart';
 import '../dto/response/label_response.dart';
 import '../dto/response/attachment_response.dart';
+import '../dto/response/activity_feed_item_response.dart';
+import '../dto/response/page_activity_feed_response.dart';
 import '../services/task_service.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
@@ -60,8 +62,7 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<ApiResult<List<TaskResponse>>> getTasks({Map<String, dynamic>? queryParameters}) async {
     try {
       final response = await _service.getTasks(queryParameters: queryParameters);
-      final List<dynamic> data = response.data;
-      final tasks = data.map((json) => TaskResponse.fromJson(json)).toList();
+      final tasks = _parseTaskList(response.data);
       return ApiSuccess(tasks);
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
@@ -204,5 +205,66 @@ class TaskRepositoryImpl implements TaskRepository {
     } catch (e) {
       return ApiError(ApiException(message: e.toString()));
     }
+  }
+
+  @override
+  Future<ApiResult<void>> deleteAttachment(int attachmentId) async {
+    try {
+      await _service.deleteAttachment(attachmentId);
+      return const ApiSuccess(null);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<ApiResult<PageActivityFeedResponse>> getActivityFeed(
+    String activityId, {
+    int page = 0,
+    int size = 20,
+  }) async {
+    try {
+      final response = await _service.getActivityFeed(activityId, page: page, size: size);
+      final data = response.data;
+      if (data is List) {
+        final items = data
+            .whereType<Map>()
+            .map((item) => ActivityFeedItemResponse.fromJson(Map<String, dynamic>.from(item)))
+            .toList();
+        return ApiSuccess(PageActivityFeedResponse.fromList(items));
+      }
+      if (data is Map<String, dynamic>) {
+        return ApiSuccess(PageActivityFeedResponse.fromJson(data));
+      }
+      if (data is Map) {
+        return ApiSuccess(PageActivityFeedResponse.fromJson(Map<String, dynamic>.from(data)));
+      }
+      return ApiSuccess(PageActivityFeedResponse.fromList(const []));
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  List<TaskResponse> _parseTaskList(dynamic data) {
+    List<dynamic> raw = const [];
+    if (data is List) {
+      raw = data;
+    } else if (data is Map) {
+      for (final key in ['content', 'data', 'items', 'tasks', 'results']) {
+        if (data[key] is List) {
+          raw = data[key] as List;
+          break;
+        }
+      }
+    }
+
+    return raw
+        .whereType<Map>()
+        .map((item) => TaskResponse.fromJson(Map<String, dynamic>.from(item)))
+        .toList();
   }
 }

@@ -4,6 +4,10 @@ import '../../../../core/network/dio_client.dart';
 class FriendsService {
   final Dio dio = DioClient().dio;
 
+  Future<Response> getUserById(String userId) async {
+    return await dio.get('users/$userId');
+  }
+
   Future<Response> getFriends() async {
     return await dio.get('friends');
   }

@@ -1,23 +1,35 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../../../core/network/api_result.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../data/models/push_up_session_model.dart';
 import '../../data/models/solo_challenge_model.dart';
+import '../../data/models/workout_model.dart';
+import '../../data/repositories/fitness_workout_repository.dart';
 import '../../domain/push_up_angle_calculator.dart';
 import '../../domain/push_up_state_machine.dart';
 import '../screens/push_up_summary_screen.dart';
+import 'achievement_notice_controller.dart';
+import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class PushUpDetectorController extends GetxController {
   final SoloChallengeModel challenge;
 
-  PushUpDetectorController({required this.challenge});
+  final FitnessWorkoutRepository _workoutRepo;
+  int? remoteSessionId;
+
+  PushUpDetectorController({
+    required this.challenge,
+    FitnessWorkoutRepository? workoutRepo,
+  }) : _workoutRepo = workoutRepo ?? FitnessWorkoutRepository();
 
   CameraController? cameraController;
   PoseDetector? _poseDetector;
@@ -30,19 +42,22 @@ class PushUpDetectorController extends GetxController {
 
   final detectedPoses = <Pose>[].obs;
   final currentElbowAngle = 175.0.obs;
-  final currentFeedback = 'Get in push-up position'.obs;
+  final currentFeedback = tr.cueGetInPushUpPosition.obs;
   final currentState = PushUpState.up.obs;
   final completedReps = 0.obs;
   final currentSet = 1.obs;
   final durationSeconds = 0.obs;
   final isPaused = false.obs;
+  final isFinishing = false.obs;
 
   late final PushUpStateMachine _stateMachine;
   late final PushUpSession currentSession;
   Timer? _durationTimer;
   int _lastFrameProcessTimestamp = 0;
+  final List<double> _angleWindow = [];
   List<CameraDescription> _availableCameras = [];
   int _selectedCameraIndex = 0;
+  Future<ApiResult<FitnessWorkoutSessionModel>>? _startWorkoutFuture;
 
   @override
   void onInit() {
@@ -55,15 +70,24 @@ class PushUpDetectorController extends GetxController {
       startTime: DateTime.now(),
     );
 
+    _startWorkoutFuture = _workoutRepo.startWorkout(StartWorkoutRequest(
+      workoutType: 'PUSH_UP',
+      soloChallengeId: challenge.id > 0 ? challenge.id : null,
+    ));
+    _startWorkoutFuture!.then((res) {
+      if (res.isSuccess && res.data != null) {
+        remoteSessionId = res.data!.sessionId;
+      }
+    });
+
     _stateMachine = PushUpStateMachine(
-      upThreshold: 155.0,
-      downThreshold: 90.0,
+      upThreshold: 150.0,
+      downThreshold: 110.0,
       onRepCompleted: (rep) {
         completedReps.value = _stateMachine.completedReps;
         currentSession.reps.add(rep);
         currentSession.totalReps = completedReps.value;
 
-        // Check set completion
         if (completedReps.value % challenge.repsPerSet == 0 &&
             completedReps.value > 0) {
           _onSetCompleted();
@@ -106,11 +130,10 @@ class PushUpDetectorController extends GetxController {
         _availableCameras = await availableCameras();
 
         if (_availableCameras.isEmpty) {
-          _enableSimulationMode('No cameras detected on device');
+          _enableSimulationMode(tr.noCamerasOnDevice);
           return;
         }
 
-        // Prefer front camera
         _selectedCameraIndex = _availableCameras.indexWhere(
           (c) => c.lensDirection == CameraLensDirection.front,
         );
@@ -120,10 +143,10 @@ class PushUpDetectorController extends GetxController {
       } else {
         hasPermission.value = false;
         permissionDenied.value = true;
-        _enableSimulationMode('Camera permission not granted');
+        _enableSimulationMode(tr.cameraPermissionNotGranted);
       }
     } catch (e) {
-      _enableSimulationMode('Camera initialization error: $e');
+      _enableSimulationMode(tr.cameraInitFailed);
     }
   }
 
@@ -147,17 +170,14 @@ class PushUpDetectorController extends GetxController {
         }
       });
     } catch (e) {
-      _enableSimulationMode('Failed to stream camera: $e');
+      _enableSimulationMode(tr.cameraInitFailed);
     }
   }
 
   void _enableSimulationMode(String reason) {
-    if (kDebugMode) {
-      print('Switching to Simulation Mode: $reason');
-    }
     isSimulationMode.value = true;
     isCameraInitialized.value = true;
-    currentFeedback.value = 'Simulation Mode Active • Tap screen to count rep';
+    currentFeedback.value = tr.simulationModePushUp;
   }
 
   Future<void> switchCamera() async {
@@ -176,7 +196,6 @@ class PushUpDetectorController extends GetxController {
 
   void _processCameraImage(CameraImage image, CameraDescription camera) async {
     final now = DateTime.now().millisecondsSinceEpoch;
-    // Throttle ML frame processing to ~15 fps (every 65ms) to preserve UI performance
     if (isProcessingFrame.value || now - _lastFrameProcessTimestamp < 65) {
       return;
     }
@@ -197,7 +216,6 @@ class PushUpDetectorController extends GetxController {
       if (poses.isNotEmpty) {
         final pose = poses.first;
 
-        // Calculate left arm angle
         final leftShoulder = pose.landmarks[PoseLandmarkType.leftShoulder];
         final leftElbow = pose.landmarks[PoseLandmarkType.leftElbow];
         final leftWrist = pose.landmarks[PoseLandmarkType.leftWrist];
@@ -206,9 +224,9 @@ class PushUpDetectorController extends GetxController {
           shoulder: leftShoulder,
           elbow: leftElbow,
           wrist: leftWrist,
+          minLikelihood: 0.3,
         );
 
-        // Calculate right arm angle
         final rightShoulder = pose.landmarks[PoseLandmarkType.rightShoulder];
         final rightElbow = pose.landmarks[PoseLandmarkType.rightElbow];
         final rightWrist = pose.landmarks[PoseLandmarkType.rightWrist];
@@ -217,6 +235,7 @@ class PushUpDetectorController extends GetxController {
           shoulder: rightShoulder,
           elbow: rightElbow,
           wrist: rightWrist,
+          minLikelihood: 0.3,
         );
 
         double? activeAngle;
@@ -246,17 +265,20 @@ class PushUpDetectorController extends GetxController {
         }
 
         if (activeAngle != null) {
-          _stateMachine.processAngle(activeAngle, confidence: confidence);
+          _angleWindow.add(activeAngle);
+          if (_angleWindow.length > 3) {
+            _angleWindow.removeAt(0);
+          }
+          final smoothed = _angleWindow.reduce((a, b) => a + b) / _angleWindow.length;
+          _stateMachine.processAngle(smoothed, confidence: confidence);
         } else {
-          currentFeedback.value = 'Position shoulders and arms in frame';
+          currentFeedback.value = tr.cueShouldersInFrame;
         }
       } else {
-        currentFeedback.value = 'No person detected in frame';
+        currentFeedback.value = tr.noPersonInFrame;
       }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error processing frame: $e');
-      }
+    } catch (_) {
+      currentFeedback.value = tr.adjustPosition;
     } finally {
       isProcessingFrame.value = false;
     }
@@ -296,7 +318,21 @@ class PushUpDetectorController extends GetxController {
 
       if (image.planes.isEmpty) return null;
 
-      // Handle byte consolidation
+      // NV21 on Android is already a single packed plane. Concatenating the
+      // extra planes corrupts the frame, so the pose joints never move enough
+      // to count a rep.
+      if (image.planes.length == 1) {
+        return InputImage.fromBytes(
+          bytes: image.planes[0].bytes,
+          metadata: InputImageMetadata(
+            size: Size(image.width.toDouble(), image.height.toDouble()),
+            rotation: rotation,
+            format: format,
+            bytesPerRow: image.planes[0].bytesPerRow,
+          ),
+        );
+      }
+
       final WriteBuffer allBytes = WriteBuffer();
       for (final Plane plane in image.planes) {
         allBytes.putUint8List(plane.bytes);
@@ -317,11 +353,9 @@ class PushUpDetectorController extends GetxController {
     }
   }
 
-  /// Manual rep trigger (for simulation or tap-to-count)
   void simulateRep() {
     if (isPaused.value) return;
 
-    // Simulate down angle then up
     _stateMachine.processAngle(80.0, confidence: 1.0);
     _stateMachine.processAngle(165.0, confidence: 1.0);
   }
@@ -345,34 +379,28 @@ class PushUpDetectorController extends GetxController {
             borderRadius: BorderRadius.circular(20),
             side: const BorderSide(color: Color(0xFF38BDF8), width: 1.5),
           ),
-          title: const Row(
+          title: Row(
             children: [
               Icon(Icons.check_circle, color: Color(0xFF38BDF8), size: 28),
               SizedBox(width: 10),
               Text(
-                'Set Completed!',
+                tr.setCompleted,
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ],
           ),
           content: Text(
-            'Awesome form! You completed Set ${currentSet.value} of ${challenge.sets}. Ready for the next set?',
+            tr.setCompletedBody(currentSet.value, challenge.sets),
             style: const TextStyle(color: Colors.white70, fontSize: 14),
           ),
           actions: [
-            TextButton(
+            AppButton(
+              label: tr.startNextSet,
               onPressed: () {
                 Get.back();
                 currentSet.value++;
               },
-              child: const Text(
-                'Start Next Set',
-                style: TextStyle(
-                  color: Color(0xFF38BDF8),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
+              height: 46,
             ),
           ],
         ),
@@ -383,15 +411,52 @@ class PushUpDetectorController extends GetxController {
     }
   }
 
-  void finishWorkout({bool completedNormally = false}) {
+  void finishWorkout({bool completedNormally = false}) async {
+    if (isFinishing.value) return;
+    isFinishing.value = true;
     _durationTimer?.cancel();
     currentSession.endTime = DateTime.now();
     currentSession.totalReps = completedReps.value;
     currentSession.isCompleted = completedNormally ||
         completedReps.value >= (challenge.repsPerSet * challenge.sets);
 
+    FitnessWorkoutSummaryModel? summaryModel;
+
+    if (_startWorkoutFuture != null) {
+      await _startWorkoutFuture;
+    }
+
+    if (remoteSessionId != null) {
+      try {
+        final finishRes = await _workoutRepo.finishWorkout(
+          remoteSessionId!,
+          FinishWorkoutRequest(
+            durationSeconds: durationSeconds.value,
+            steps: completedReps.value,
+            distance: 0.0,
+          ),
+        );
+        if (finishRes.isSuccess && finishRes.data != null) {
+          summaryModel = finishRes.data!.toSummaryModel();
+          AchievementNoticeController.ensure().enqueue(finishRes.data!.currentAchievements);
+        }
+      } catch (_) {}
+    }
+
+    if (summaryModel == null) {
+      AppSnack.show(
+        tr.notSaved,
+        tr.workoutNotSaved,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+
     Get.off(
-      () => PushUpSummaryScreen(session: currentSession, challenge: challenge),
+      () => PushUpSummaryScreen(
+        session: currentSession,
+        challenge: challenge,
+        summary: summaryModel,
+      ),
       transition: Transition.fadeIn,
     );
   }

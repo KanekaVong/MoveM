@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 import '../../../../core/network/api_result.dart';
 import '../../../../core/services/notification_scheduler_service.dart';
+import '../../../../core/utils/app_dialogs.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../data/dto/request/update_task_request.dart';
@@ -15,12 +17,25 @@ import '../../data/local/models/task_reminder_local.dart';
 import '../../data/local/task_local_repository.dart';
 import '../../data/services/task_service.dart';
 import '../../data/repositories/task_repository_impl.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../groups/domain/repositories/group_repository.dart';
+import '../../../groups/data/repositories/group_repository_impl.dart';
+import '../../../groups/data/services/group_service.dart';
+import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
+import 'package:movem/shared/widgets/picker_theme.dart';
 
 class EditTaskController extends BaseController {
+  AppLocalizations? get _l10n {
+    final ctx = Get.context;
+    return ctx == null ? null : AppLocalizations.of(ctx);
+  }
   final TaskRepository repository = TaskRepositoryImpl(TaskService());
+  final GroupRepository groupRepository = GroupRepositoryImpl(groupService: GroupService());
   final TaskLocalRepository localRepository = TaskLocalRepository();
   final NotificationSchedulerService schedulerService = NotificationSchedulerService();
   final ImagePicker _picker = ImagePicker();
+  final Logger _logger = Logger();
 
   late TaskResponse initialTask;
 
@@ -43,7 +58,10 @@ class EditTaskController extends BaseController {
 
   final RxList<XFile> pickedAttachments = <XFile>[].obs;
   final RxList<dynamic> existingAttachments = <dynamic>[].obs;
+  final List<int> attachmentsToDelete = [];
   final RxList<dynamic> collaborators = <dynamic>[].obs;
+  final List<dynamic> newCollaboratorsToInvite = [];
+  final List<int> collaboratorsToRemove = [];
   final RxBool isUploadingAttachment = false.obs;
 
   @override
@@ -51,11 +69,20 @@ class EditTaskController extends BaseController {
     super.onInit();
     if (Get.arguments is TaskResponse) {
       initialTask = Get.arguments as TaskResponse;
+      if (initialTask.isComplete || initialTask.isPastDeadline) {
+        Get.back();
+        AppSnack.show(
+          _l10n?.errorTitle ?? 'Locked',
+          _l10n?.cannotEditAfterDeadline ?? 'This task cannot be edited after the deadline.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
       _populateInitialData();
-      _loadLabels();
     } else {
       Get.back();
-      Get.snackbar('Error', 'No task data provided', backgroundColor: Colors.red, colorText: Colors.white);
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.noTaskData ?? 'No task data provided', backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
 
@@ -71,8 +98,10 @@ class EditTaskController extends BaseController {
 
   void _populateInitialData() {
     titleController.text = initialTask.activityName;
-    if (initialTask.description != null) {
+    if (initialTask.description != null && initialTask.description!.isNotEmpty) {
       descriptionController.text = initialTask.description!;
+    } else {
+      descriptionController.text = '';
     }
 
     if (initialTask.deadline != null) {
@@ -81,31 +110,48 @@ class EditTaskController extends BaseController {
         selectedDate.value = parsed.toLocal();
         selectedTime.value = TimeOfDay(hour: parsed.toLocal().hour, minute: parsed.toLocal().minute);
       }
+    } else {
+      selectedDate.value = DateTime.now();
     }
 
     if (initialTask.priority != null) {
       priority.value = initialTask.priority!;
+    } else {
+      priority.value = 'LOW';
     }
 
     isRecurring.value = initialTask.recurring;
-    repeatFrequency.value = initialTask.recurringType;
+    repeatFrequency.value = initialTask.recurring ? initialTask.recurringType : null;
     remindersEnabled.value = (initialTask.reminders != null && initialTask.reminders!.isNotEmpty);
 
-    if (initialTask.checklists != null) {
+    if (initialTask.checklists != null && initialTask.checklists!.isNotEmpty) {
       for (var c in initialTask.checklists!) {
         checklists.add({
           'id': c.id,
           'controller': TextEditingController(text: c.itemName),
+          'completed': c.completed,
         });
       }
     }
 
-    if (initialTask.attachments != null) {
+    if (initialTask.attachments != null && initialTask.attachments!.isNotEmpty) {
       existingAttachments.addAll(initialTask.attachments!);
     }
 
-    if (initialTask.collaborators != null) {
-      collaborators.addAll(initialTask.collaborators!);
+    if (initialTask.otherCollaborators.isNotEmpty) {
+      collaborators.assignAll(initialTask.otherCollaborators.map((c) {
+        if (c is Map) {
+          final displayName = '${c['firstname'] ?? ''} ${c['lastname'] ?? ''}'.trim();
+          return {
+            'userId': c['userId'],
+            'username': c['username'] ?? '',
+            'name': displayName.isNotEmpty ? displayName : (c['name'] ?? c['displayName'] ?? c['username'] ?? 'User'),
+            'profilePic': c['profilePic'],
+            'role': c['role'],
+          };
+        }
+        return c;
+      }).toList());
     }
 
     if (initialTask.labels != null && initialTask.labels!.isNotEmpty) {
@@ -113,17 +159,10 @@ class EditTaskController extends BaseController {
     }
   }
 
-  Future<void> _loadLabels() async {
+  Future<void> loadLabels() async {
     final result = await repository.getLabels();
     if (result is ApiSuccess<List<LabelResponse>>) {
       availableLabels.assignAll(result.data);
-      if (initialTask.labels != null && initialTask.labels!.isNotEmpty) {
-        final currentId = initialTask.labels!.first.id;
-        final match = result.data.firstWhereOrNull((l) => l.id == currentId);
-        if (match != null) {
-          selectedLabel.value = match;
-        }
-      }
     }
   }
 
@@ -139,7 +178,7 @@ class EditTaskController extends BaseController {
         availableLabels.add(data);
         selectedLabel.value = data;
         Get.back();
-        Get.snackbar('Success', 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        AppSnack.show(_l10n?.success ?? 'Done', _l10n?.labelCreatedSuccess ?? 'Label created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
       },
     );
   }
@@ -155,35 +194,10 @@ class EditTaskController extends BaseController {
     try {
       final image = await _picker.pickImage(source: source);
       if (image != null) {
-        isUploadingAttachment.value = true;
-        final result = await repository.uploadTaskAttachment(initialTask.activityId, image.path);
-        isUploadingAttachment.value = false;
-        if (result is ApiSuccess<AttachmentResponse>) {
-          final uploaded = result.data;
-          existingAttachments.add({
-            'id': uploaded.id,
-            'filePath': uploaded.filePath,
-            'originalFileName': uploaded.originalFileName,
-            'fileUrl': uploaded.filePath,
-            'url': uploaded.filePath,
-          });
-          Get.snackbar(
-            'Success',
-            'Attachment uploaded successfully!',
-            backgroundColor: Colors.green,
-            colorText: Colors.white,
-          );
-        } else if (result is ApiError<AttachmentResponse>) {
-          Get.snackbar(
-            'Upload Failed',
-            result.exception.message,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
-        }
+        pickedAttachments.add(image);
       }
-    } catch (e) {
-      isUploadingAttachment.value = false;
+    } catch (e, stack) {
+      _logger.e('Failed to pick image from device: $e', error: e, stackTrace: stack);
     }
   }
 
@@ -195,83 +209,166 @@ class EditTaskController extends BaseController {
 
   void removeExistingAttachment(int index) {
     if (index >= 0 && index < existingAttachments.length) {
+      final item = existingAttachments[index];
+      int? attId;
+      if (item is Map && item['id'] != null) {
+        attId = item['id'] is int ? item['id'] : int.tryParse(item['id'].toString());
+      } else if (item is AttachmentResponse) {
+        attId = item.id;
+      }
+      if (attId != null) {
+        attachmentsToDelete.add(attId);
+      }
       existingAttachments.removeAt(index);
     }
   }
 
-  void addCollaborator(String name) {
-    if (name.trim().isNotEmpty) {
-      collaborators.add({'username': name.trim(), 'name': name.trim()});
+  void addCollaborator(dynamic user) {
+    final exists = collaborators.any((c) {
+      if (c is Map && user is Map) {
+        if (c['userId'] != null && user['userId'] != null) {
+          return c['userId'] == user['userId'];
+        }
+        if (c['username'] != null && user['username'] != null) {
+          return c['username'].toString().toLowerCase() == user['username'].toString().toLowerCase();
+        }
+      }
+      return c == user;
+    });
+
+    if (!exists) {
+      collaborators.add(user);
+      newCollaboratorsToInvite.add(user);
     }
   }
 
   void removeCollaborator(int index) {
-    if (index >= 0 && index < collaborators.length) {
-      collaborators.removeAt(index);
+    if (index < 0 || index >= collaborators.length) return;
+    final item = collaborators[index];
+
+    if (newCollaboratorsToInvite.contains(item)) {
+      newCollaboratorsToInvite.remove(item);
+    } else {
+      final dynamic rawId = item is Map ? item['userId'] : null;
+      final int? memberId = rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '');
+      if (memberId != null && memberId > 0) {
+        collaboratorsToRemove.add(memberId);
+      }
     }
+
+    collaborators.removeAt(index);
   }
 
   Future<void> saveChanges() async {
-    if (initialTask.status == 'COMPLETE') {
-      Get.snackbar('Cannot Edit', 'Completed tasks cannot be modified.', backgroundColor: Colors.orange, colorText: Colors.white);
+    if (initialTask.isComplete || initialTask.isPastDeadline) {
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.cannotEditAfterDeadline ?? 'This task cannot be modified after the deadline.', backgroundColor: Colors.orange, colorText: Colors.white);
       return;
     }
 
     if (titleController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.taskTitleEmpty ?? 'Task title cannot be empty', backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
-    final String activityName = titleController.text.trim();
-    final String description = descriptionController.text.trim();
+    AppDialogs.showLoading();
+    var failedUploads = 0;
+    var failedInvites = 0;
 
-    final deadlineDt = combinedDeadline;
-    String? deadlineStr;
-    if (deadlineDt != null) {
-      deadlineStr = deadlineDt.toUtc().toIso8601String();
-    }
-
-    final bool recurring = repeatFrequency.value != null;
-
-    final List<int> attachmentIds = [];
-    for (var att in existingAttachments) {
-      if (att is Map && att['id'] != null) {
-        final id = att['id'];
-        if (id is int) {
-          attachmentIds.add(id);
-        } else if (id is String) {
-          final parsed = int.tryParse(id);
-          if (parsed != null) attachmentIds.add(parsed);
+    try {
+      if (pickedAttachments.isNotEmpty) {
+        for (int i = 0; i < pickedAttachments.length; i++) {
+          final file = pickedAttachments[i];
+          final uploadResult = await repository.uploadTaskAttachment(initialTask.activityId, file.path);
+          if (uploadResult is ApiError) {
+            failedUploads++;
+            _logger.e('Failed to upload task attachment: ${uploadResult.exception?.message}');
+          }
         }
-      } else if (att is AttachmentResponse) {
-        attachmentIds.add(att.id);
       }
-    }
 
-    final request = UpdateTaskRequest(
-      activityName: activityName,
-      description: description.isEmpty ? null : description,
-      startActivity: deadlineStr,
-      deadline: deadlineStr,
-      priority: priority.value,
-      status: initialTask.status ?? 'PENDING',
-      isRecurring: recurring,
-      recurringType: recurring ? repeatFrequency.value?.toUpperCase() : null,
-      recurringInterval: recurring ? 0 : null,
-      recurringEndDate: recurring && deadlineDt != null ? DateFormat('yyyy-MM-dd').format(deadlineDt) : null,
-      labelIds: selectedLabel.value != null ? [selectedLabel.value!.id] : [],
-      attachmentIds: attachmentIds.isNotEmpty ? attachmentIds : null,
-    );
+      if (attachmentsToDelete.isNotEmpty) {
+        for (final attId in attachmentsToDelete) {
+          final deleteResult = await repository.deleteAttachment(attId);
+          if (deleteResult is ApiError) failedUploads++;
+        }
+      }
 
-    await executeApi<TaskResponse>(
-      apiCall: () => repository.updateTask(initialTask.activityId, request.toJson()),
-      onSuccess: (data) {
+      if (newCollaboratorsToInvite.isNotEmpty) {
+        for (final c in newCollaboratorsToInvite) {
+          String identifier = '';
+          if (c is Map) {
+            identifier = (c['username'] ?? c['email'] ?? c['name'] ?? '').toString().trim();
+          } else if (c is String) {
+            identifier = c.trim();
+          }
+          if (identifier.isNotEmpty) {
+            final inviteResult = await groupRepository.inviteMember(initialTask.activityId, identifier);
+            if (inviteResult is ApiError) failedInvites++;
+          }
+        }
+      }
+
+      if (collaboratorsToRemove.isNotEmpty) {
+        for (final memberId in collaboratorsToRemove) {
+          await groupRepository.removeMember(initialTask.activityId, memberId);
+        }
+      }
+
+      final String activityName = titleController.text.trim();
+      final String description = descriptionController.text.trim();
+
+      final deadlineDt = combinedDeadline;
+      String? deadlineStr;
+      if (deadlineDt != null) {
+        deadlineStr = deadlineDt.toUtc().toIso8601String();
+      }
+
+      final bool recurring = repeatFrequency.value != null;
+
+      final request = UpdateTaskRequest(
+        activityName: activityName,
+        description: description.isEmpty ? null : description,
+        startActivity: deadlineStr,
+        deadline: deadlineStr,
+        priority: priority.value,
+        status: initialTask.status ?? 'PENDING',
+        isRecurring: recurring,
+        recurringType: recurring ? repeatFrequency.value?.toUpperCase() : null,
+        recurringInterval: recurring ? 0 : null,
+        recurringEndDate: recurring && deadlineDt != null ? DateFormat('yyyy-MM-dd').format(deadlineDt) : null,
+        labelIds: selectedLabel.value != null ? [selectedLabel.value!.id] : [],
+      );
+
+      final updateResult = await repository.updateTask(initialTask.activityId, request.toJson());
+      AppDialogs.hideLoading();
+
+      if (updateResult is ApiSuccess<TaskResponse>) {
+        final data = updateResult.data;
         Get.back(result: true);
-        Get.snackbar('Success', 'Task updated successfully!', backgroundColor: Colors.green, colorText: Colors.white);
-
+        if (failedUploads > 0 || failedInvites > 0) {
+          // The task saved, but say what didn't go through instead of a plain success.
+          AppSnack.show(
+            tr.taskUpdatedSuccess,
+            [
+              if (failedUploads > 0) tr.attachmentsNotUploaded(failedUploads),
+              if (failedInvites > 0) tr.invitesNotSent(failedInvites),
+            ].join('\n'),
+            backgroundColor: Colors.orange,
+            colorText: Colors.white,
+          );
+        } else {
+          AppSnack.show(_l10n?.success ?? 'Done', _l10n?.taskUpdatedSuccess ?? 'Task updated successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        }
         _processBackgroundUpdates(data.activityId, activityName, description);
-      },
-    );
+      } else if (updateResult is ApiError<TaskResponse>) {
+        _logger.e('Update task failed: ${updateResult.exception.message}');
+        AppSnack.show(_l10n?.updateFailedTitle ?? 'Update Failed', updateResult.exception.message, backgroundColor: Colors.red, colorText: Colors.white);
+      }
+    } catch (e, stack) {
+      AppDialogs.hideLoading();
+      _logger.e('Unexpected error during saveChanges: $e', error: e, stackTrace: stack);
+      AppSnack.show(_l10n?.errorTitle ?? 'Error', _l10n?.unexpectedError ?? 'Something went wrong. Try again.', backgroundColor: Colors.red, colorText: Colors.white);
+    }
   }
 
   void _processBackgroundUpdates(String activityId, String title, String description) async {
@@ -294,7 +391,7 @@ class EditTaskController extends BaseController {
       final remindAtUtc = deadlineDt.toUtc().toIso8601String();
       final result = await repository.addReminder(activityId, {
         "remindAt": remindAtUtc,
-        "type": "DUE_DATE"
+        "type": "CUSTOM"
       });
 
       if (result is ApiSuccess<ReminderResponse>) {
@@ -333,19 +430,7 @@ class EditTaskController extends BaseController {
       initialDate: initialDate,
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF3B82F6),
-              onPrimary: Colors.white,
-              surface: Color(0xFF131B2F),
-              onSurface: Colors.white,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: pickerThemeBuilder,
     );
 
     if (pickedDate != null) {
@@ -358,19 +443,7 @@ class EditTaskController extends BaseController {
     final pickedTime = await showTimePicker(
       context: context,
       initialTime: initialTime,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF3B82F6),
-              onPrimary: Colors.white,
-              surface: Color(0xFF131B2F),
-              onSurface: Colors.white,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: pickerThemeBuilder,
     );
 
     if (pickedTime != null) {
@@ -379,15 +452,47 @@ class EditTaskController extends BaseController {
   }
 
   String get formattedDeadlineDate {
-    if (selectedDate.value == null) return 'Not set';
-    return DateFormat('d MMMM yyyy').format(selectedDate.value!);
+    if (selectedDate.value == null) return tr.notSet;
+    return formatDayMonthYear(selectedDate.value!);
+  }
+
+  String get formattedReminderDate {
+    // Show the saved reminder like the detail screen does; fall back to the
+    // deadline (where a new reminder would go) when there isn't one yet.
+    // Read selectedDate first: the Obx showing this needs an observable read.
+    final deadline = selectedDate.value;
+    final reminders = initialTask.reminders;
+    final saved = reminders != null && reminders.isNotEmpty ? DateTime.tryParse(reminders.first.remindAt) : null;
+    final date = saved?.toLocal() ?? deadline;
+    if (date == null) return tr.notSet;
+    return formatDayMonthYear(date, padDay: true).toUpperCase();
+  }
+
+  void cyclePriority() {
+    const list = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
+    final idx = list.indexOf(priority.value.toUpperCase());
+    priority.value = list[(idx + 1) % list.length];
+  }
+
+  void cycleRepeat() {
+    const list = ['NONE', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'];
+    final current = repeatFrequency.value?.toUpperCase() ?? 'NONE';
+    final idx = list.indexOf(current);
+    final next = list[(idx + 1) % list.length];
+    if (next == 'NONE') {
+      repeatFrequency.value = null;
+      isRecurring.value = false;
+    } else {
+      repeatFrequency.value = next;
+      isRecurring.value = true;
+    }
   }
 
   String get formattedDeadlineTime {
-    if (selectedTime.value == null) return 'Not set';
+    if (selectedTime.value == null) return tr.notSet;
     final now = DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, selectedTime.value!.hour, selectedTime.value!.minute);
-    return DateFormat('hh:mm a').format(dt);
+    return DateFormat(timePattern('hh:mm a')).format(dt);
   }
 
   void addChecklistItem() {

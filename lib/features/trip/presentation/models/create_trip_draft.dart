@@ -1,4 +1,5 @@
 import 'create_trip_stop_draft.dart';
+import 'package:movem/features/friends/data/dto/response/friend_response.dart';
 
 class CreateTripDraft {
   String? activityName;
@@ -18,6 +19,8 @@ class CreateTripDraft {
 
   List<CreateTripStopDraft> stops = [];
 
-  List<dynamic> friends = [];
+  List<FriendResponse> friends = [];
   List<String> packingItems = [];
+  List<String> checklistItems = [];
+
 }

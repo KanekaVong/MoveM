@@ -1,3 +1,5 @@
+import 'package:movem/core/utils/l10n.dart';
+
 class FitnessGoalModel {
   final int id;
   final int userId;
@@ -61,16 +63,16 @@ class FitnessGoalModel {
     switch (workoutLevel.toUpperCase()) {
       case 'NOVICE_LEVEL':
       case 'NOVICE':
-        return 'Beginner';
+        return tr.levelBeginner;
       case 'INTERMEDIATE_LEVEL':
       case 'INTERMEDIATE':
-        return 'Intermediate';
+        return tr.levelIntermediate;
       case 'ADVANCED_LEVEL':
       case 'ADVANCED':
-        return 'Advanced';
+        return tr.levelAdvanced;
       case 'ELITE_LEVEL':
       case 'ELITE':
-        return 'Elite';
+        return tr.levelElite;
       default:
         if (workoutLevel.isNotEmpty) {
           return workoutLevel
@@ -80,7 +82,7 @@ class FitnessGoalModel {
               .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}' : '')
               .join(' ');
         }
-        return 'Beginner';
+        return tr.levelBeginner;
     }
   }
 
@@ -119,15 +121,19 @@ class FitnessProfileModel {
   bool get hasGoal => fitnessGoal != null && (fitnessGoal!.targetWeight > 0 || fitnessGoal!.workoutLevel.isNotEmpty);
 
   factory FitnessProfileModel.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic>? goalJson;
+    final rawGoal = json['fitnessGoal'];
+    if (rawGoal is Map) {
+      goalJson = Map<String, dynamic>.from(rawGoal);
+    }
+
     return FitnessProfileModel(
       userId: json['userId'] ?? 0,
       height: (json['height'] as num?)?.toDouble() ?? 0.0,
       weight: (json['weight'] as num?)?.toDouble() ?? 0.0,
       bmi: (json['bmi'] as num?)?.toDouble() ?? 0.0,
-      fitnessGoal: json['fitnessGoal'] != null && json['fitnessGoal'] is Map<String, dynamic>
-          ? FitnessGoalModel.fromJson(json['fitnessGoal'])
-          : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt']) : null,
+      fitnessGoal: goalJson != null ? FitnessGoalModel.fromJson(goalJson) : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt'].toString()) : null,
     );
   }
 

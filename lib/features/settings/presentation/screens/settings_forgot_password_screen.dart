@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:movem/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:movem/shared/widgets/app_button.dart';
+import 'package:movem/shared/widgets/top_tool_bar.dart';
+import 'package:movem/core/theme/app_colors.dart';
+import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class SettingsForgotPasswordScreen extends StatefulWidget {
   const SettingsForgotPasswordScreen({super.key});
@@ -17,17 +22,10 @@ class _SettingsForgotPasswordScreenState
     extends State<SettingsForgotPasswordScreen> {
   final AuthController controller = Get.find<AuthController>();
 
-  final TextEditingController _emailController =
-  TextEditingController();
-
-  final TextEditingController _otpController =
-  TextEditingController();
-
-  final TextEditingController _newPasswordController =
-  TextEditingController();
-
-  final TextEditingController _confirmPasswordController =
-  TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _otpController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   Timer? _timer;
 
@@ -61,7 +59,7 @@ class _SettingsForgotPasswordScreenState
 
     _timer = Timer.periodic(
       const Duration(seconds: 1),
-          (timer) {
+      (timer) {
         if (_secondsLeft > 0) {
           setState(() {
             _secondsLeft--;
@@ -82,9 +80,9 @@ class _SettingsForgotPasswordScreenState
     final email = _emailController.text.trim();
 
     if (email.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter your email.',
+      AppSnack.show(
+        tr.errorTitle,
+        tr.pleaseEnterYourEmail,
       );
       return;
     }
@@ -97,32 +95,44 @@ class _SettingsForgotPasswordScreenState
     final email = _emailController.text.trim();
     final otp = _otpController.text.trim();
     final newPassword = _newPasswordController.text;
-    final confirmPassword =
-        _confirmPasswordController.text;
+    final confirmPassword = _confirmPasswordController.text;
 
-    if (email.isEmpty ||
-        otp.isEmpty ||
-        newPassword.isEmpty ||
-        confirmPassword.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please fill in all fields.',
+    if (email.isEmpty) {
+      AppSnack.show(
+        tr.errorTitle,
+        tr.pleaseEnterYourEmail,
+      );
+      return;
+    }
+
+    if (otp.isEmpty) {
+      AppSnack.show(
+        tr.errorTitle,
+        tr.pleaseEnterOtp,
+      );
+      return;
+    }
+
+    if (newPassword.isEmpty) {
+      AppSnack.show(
+        tr.errorTitle,
+        tr.pleaseEnterNewPassword,
       );
       return;
     }
 
     if (newPassword.length < 8) {
-      Get.snackbar(
-        'Error',
-        'Password must be at least 8 characters.',
+      AppSnack.show(
+        tr.errorTitle,
+        tr.passwordMin8,
       );
       return;
     }
 
     if (newPassword != confirmPassword) {
-      Get.snackbar(
-        'Error',
-        'Passwords do not match.',
+      AppSnack.show(
+        tr.errorTitle,
+        tr.passwordsDoNotMatch,
       );
       return;
     }
@@ -140,12 +150,12 @@ class _SettingsForgotPasswordScreenState
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(
-        color: Color(0xFF8793A8),
+      hintStyle: TextStyle(
+        color: AppColors.textCaption,
         fontSize: 14,
       ),
       filled: true,
-      fillColor: const Color(0xFF162341),
+      fillColor: AppColors.cardSurface,
       suffixIcon: suffixIcon,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 16,
@@ -153,14 +163,14 @@ class _SettingsForgotPasswordScreenState
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(
-          color: Color(0xFF263657),
+        borderSide: BorderSide(
+          color: AppColors.borderLight,
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(
-          color: Color(0xFF263657),
+        borderSide: BorderSide(
+          color: AppColors.borderLight,
         ),
       ),
       focusedBorder: OutlineInputBorder(
@@ -176,8 +186,8 @@ class _SettingsForgotPasswordScreenState
   Widget _buildLabel(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        color: Colors.white,
+      style: TextStyle(
+        color: AppColors.textPrimary,
         fontSize: 13,
         fontWeight: FontWeight.w600,
       ),
@@ -187,26 +197,9 @@ class _SettingsForgotPasswordScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0F172A),
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.white,
-            size: 18,
-          ),
-        ),
-        title: const Text(
-          'Forgot Password',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+      backgroundColor: AppColors.pageBackground,
+      appBar: TopToolBar(
+        title: tr.forgotPasswordTitle,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -219,72 +212,59 @@ class _SettingsForgotPasswordScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Reset your password',
+              Text(
+                tr.resetYourPassword,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
               const SizedBox(height: 8),
-
-              const Text(
-                'Enter your email and use the OTP sent to you to create a new password.',
+              Text(
+                tr.resetPasswordSub,
                 style: TextStyle(
-                  color: Color(0xFFA0AAB2),
+                  color: AppColors.textSecondary,
                   fontSize: 13,
                   height: 1.5,
                 ),
               ),
-
               const SizedBox(height: 30),
-
-              _buildLabel('Email'),
-
+              _buildLabel(tr.email),
               const SizedBox(height: 8),
-
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: AppColors.textPrimary,
                   fontSize: 14,
                 ),
                 decoration: _inputDecoration(
-                  hint: 'Enter your email',
+                  hint: tr.emailHint,
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              _buildLabel('OTP Code'),
-
+              _buildLabel(tr.otpCodeField),
               const SizedBox(height: 8),
-
               TextField(
                 controller: _otpController,
                 keyboardType: TextInputType.number,
                 maxLength: 6,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: AppColors.textPrimary,
                   fontSize: 14,
                 ),
                 decoration: _inputDecoration(
-                  hint: 'Enter 6-digit OTP',
+                  hint: tr.enter6DigitOtp,
                   suffixIcon: TextButton(
-                    onPressed:
-                    _isTimerActive ? null : _sendOtp,
+                    onPressed: _isTimerActive ? null : _sendOtp,
                     child: Text(
                       _isTimerActive
                           ? '$_secondsLeft s'
-                          : (_timerFinished
-                          ? 'Resend'
-                          : 'Send OTP'),
+                          : (_timerFinished ? tr.resend : tr.sendOtp),
                       style: TextStyle(
                         color: _isTimerActive
-                            ? const Color(0xFF68758C)
+                            ? AppColors.textCaption
                             : const Color(0xFF5394FF),
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
@@ -293,116 +273,80 @@ class _SettingsForgotPasswordScreenState
                   ),
                 ),
               ),
-
               const SizedBox(height: 6),
-
-              const Text(
-                'The OTP expires according to your account security settings.',
+              Text(
+                tr.otpExpiryNote,
                 style: TextStyle(
-                  color: Color(0xFF68758C),
+                  color: AppColors.textCaption,
                   fontSize: 11,
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              _buildLabel('New Password'),
-
+              _buildLabel(tr.newPasswordTitle),
               const SizedBox(height: 8),
-
               TextField(
                 controller: _newPasswordController,
                 obscureText: _newPasswordObscured,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: AppColors.textPrimary,
                   fontSize: 14,
                 ),
                 decoration: _inputDecoration(
-                  hint: 'Enter new password',
+                  hint: tr.newPasswordHint,
                   suffixIcon: IconButton(
                     onPressed: () {
                       setState(() {
-                        _newPasswordObscured =
-                        !_newPasswordObscured;
+                        _newPasswordObscured = !_newPasswordObscured;
                       });
                     },
                     icon: Icon(
                       _newPasswordObscured
                           ? Icons.visibility_off_outlined
                           : Icons.visibility_outlined,
-                      color: Colors.white70,
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              _buildLabel('Confirm New Password'),
-
+              _buildLabel(tr.confirmNewPassword),
               const SizedBox(height: 8),
-
               TextField(
                 controller: _confirmPasswordController,
                 obscureText: _confirmPasswordObscured,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: AppColors.textPrimary,
                   fontSize: 14,
                 ),
                 decoration: _inputDecoration(
-                  hint: 'Confirm new password',
+                  hint: tr.confirmNewPasswordHint,
                   suffixIcon: IconButton(
                     onPressed: () {
                       setState(() {
-                        _confirmPasswordObscured =
-                        !_confirmPasswordObscured;
+                        _confirmPasswordObscured = !_confirmPasswordObscured;
                       });
                     },
                     icon: Icon(
                       _confirmPasswordObscured
                           ? Icons.visibility_off_outlined
                           : Icons.visibility_outlined,
-                      color: Colors.white70,
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ),
               ),
-
               const SizedBox(height: 12),
-
-              const Text(
-                'Password must be at least 8 characters.',
+              Text(
+                tr.passwordMin8,
                 style: TextStyle(
-                  color: Color(0xFF68758C),
+                  color: AppColors.textCaption,
                   fontSize: 11,
                 ),
               ),
-
               const SizedBox(height: 30),
-
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: _resetPassword,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                    const Color(0xFF3B82F6),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Reset Password',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+              AppButton(
+                label: tr.resetPasswordAction,
+                onPressed: _resetPassword,
               ),
             ],
           ),

@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../../controllers/create_trip_controller.dart';
 import 'create_trip_location_screen.dart';
-
-import 'package:movem/features/trip/presentation/models/create_trip_draft.dart';
-import '../../controllers/trip_controller.dart';
+import '../../widgets/create_trip_component.dart';
+import 'package:movem/l10n/app_localizations.dart';
 
 class CreateTripNameScreen extends StatefulWidget {
-  final CreateTripDraft draft;
-  final TripController tripController;
-
   const CreateTripNameScreen({
     super.key,
-    required this.draft,
-    required this.tripController,
   });
 
   @override
@@ -20,6 +16,9 @@ class CreateTripNameScreen extends StatefulWidget {
 }
 
 class _CreateTripNameScreenState extends State<CreateTripNameScreen> {
+
+  final CreateTripController controller = Get.find<CreateTripController>();
+
   late final TextEditingController _tripNameController;
 
   @override
@@ -27,7 +26,7 @@ class _CreateTripNameScreenState extends State<CreateTripNameScreen> {
     super.initState();
 
     _tripNameController = TextEditingController(
-      text: widget.draft.activityName ?? '',
+      text: controller.draft.value.activityName ?? '',
     );
   }
 
@@ -42,45 +41,46 @@ class _CreateTripNameScreenState extends State<CreateTripNameScreen> {
 
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your trip name.'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.tripNameRequired,
+          ),
         ),
       );
       return;
     }
 
-    widget.draft.activityName = name;
+    controller.setActivityName(name);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => CreateTripLocationScreen(
-          draft: widget.draft,
-          tripController: widget.tripController,
-        ),
-      ),
+    Get.to(
+          () => const CreateTripLocationScreen(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final mediaQuery = MediaQuery.of(context);
+    final screenHeight = mediaQuery.size.height;
+    final keyboardHeight = mediaQuery.viewInsets.bottom;
+    final keyboardOpen = keyboardHeight > 0;
 
-    // Image ends here.
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
+
     final imageHeight = screenHeight * 0.50;
 
-    // Form panel begins slightly BEFORE image ends,
-    // creating the overlap effect.
-    final formTop = screenHeight * 0.43;
+    final formTop = keyboardOpen ? screenHeight * 0.15 : screenHeight * 0.43;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0B101D),
+      resizeToAvoidBottomInset: false,
+      backgroundColor: isDark
+          ? CreateTripColors.darkBackground
+          : CreateTripColors.lightBackground,
       body: Stack(
         children: [
-          // ==================================================
-          // BACKGROUND IMAGE
-          // ==================================================
+          // bg img
           Positioned(
             top: 0,
             left: 0,
@@ -98,16 +98,15 @@ class _CreateTripNameScreenState extends State<CreateTripNameScreen> {
                     'assets/images/create_new_trip_bg.png',
                     fit: BoxFit.cover,
                   ),
-
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Colors.black.withOpacity(0.45),
+                          Colors.black.withValues(alpha: 0.45),
                           Colors.transparent,
-                          Colors.black.withOpacity(0.15),
+                          Colors.black.withValues(alpha: 0.15),
                         ],
                       ),
                     ),
@@ -117,194 +116,86 @@ class _CreateTripNameScreenState extends State<CreateTripNameScreen> {
             ),
           ),
 
-          // ==================================================
-          // HEADER + STEP INDICATOR
-          // ==================================================
+          // header + step indicator
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                20,
-                14,
-                20,
-                0,
-              ),
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
               child: Column(
                 children: [
-                  // Header
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: const Icon(
-                          Icons.chevron_left_rounded,
-                          color: Colors.white,
-                          size: 32,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Create New Trip',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
+                  CreateTripHeader(
+                    title: l10n.createNewTrip,
+                    onBack: () => Navigator.pop(context),
                   ),
-
-                  const SizedBox(height: 18),
-
-                  // Step indicator
-                  Row(
-                    children: [
-                      _buildStep(active: true),
-                      const SizedBox(width: 6),
-                      _buildStep(active: false),
-                      const SizedBox(width: 6),
-                      _buildStep(active: false),
-                      const SizedBox(width: 6),
-                      _buildStep(active: false),
-                      const SizedBox(width: 6),
-                      _buildStep(active: false),
-                    ],
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Current step name
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'NAME',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ),
+                  const SizedBox(height: 8),
+                  const CreateTripStepIndicator(activeIndex: 0),
                 ],
               ),
             ),
           ),
 
-          // ==================================================
-          // FORM PANEL
-          // ==================================================
-          Positioned(
+          // form panel
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
             top: formTop,
             left: 0,
             right: 0,
-            bottom: 0,
-            child: Container(
-              width: screenWidth,
-              decoration: const BoxDecoration(
-                color: Color(0xFF0B101D),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32),
-                  topRight: Radius.circular(32),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black45,
-                    blurRadius: 18,
-                    offset: Offset(0, -6),
+            bottom: keyboardHeight,
+            child: CreateTripFormPanel(
+              bottomAction: Obx(() {
+                final name = controller.draft.value.activityName?.trim() ?? '';
+                return CreateTripBottomButton(
+                  text: l10n.continueButton,
+                  onPressed: name.isEmpty ? null : _continue,
+                );
+              }),
+              children: [
+                Text(
+                  l10n.tripNameTitle,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : CreateTripColors.lightText,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    height: 1.1,
                   ),
-                ],
-              ),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(
-                  24,
-                  30,
-                  24,
-                  32,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Question
-                    const Text(
-                      "What's the Trip Called?",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                        height: 1.1,
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    // Hint
-                    const Text(
-                      'Give your adventure a name',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 13,
-                      ),
-                    ),
-
-                    const SizedBox(height: 28),
-
-                    // Input
-                    TextField(
-                      controller: _tripNameController,
-                      textInputAction: TextInputAction.done,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Enter trip name',
-                        hintStyle: const TextStyle(
-                          color: Colors.white30,
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFF171E2D),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding:
-                        const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 17,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // Continue
-                    SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: _continue,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                            BorderRadius.circular(28),
-                          ),
-                        ),
-                        child: const Text(
-                          'CONTINUE',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 8),
+                Text(
+                  l10n.tripNameSubtitle,
+                  style: TextStyle(
+                    color: isDark ? Colors.white54 : const Color(0xFF6B7280),
+                    fontSize: 13,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 28),
+                TextField(
+                  controller: _tripNameController,
+                  onChanged: controller.setActivityName,
+                  textInputAction: TextInputAction.done,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : CreateTripColors.lightText,
+                    fontSize: 14,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: l10n.tripNameHint,
+                    hintStyle: TextStyle(
+                      color: isDark ? Colors.white30 : const Color(0xFF9CA3AF),
+                    ),
+                    filled: true,
+                    fillColor: isDark
+                        ? const Color(0xFF171E2D)
+                        : const Color(0xFFF1F3F6),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 17,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -312,19 +203,6 @@ class _CreateTripNameScreenState extends State<CreateTripNameScreen> {
     );
   }
 
-  Widget _buildStep({
-    required bool active,
-  }) {
-    return Expanded(
-      child: Container(
-        height: 3,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: active
-              ? Colors.white
-              : Colors.white24,
-        ),
-      ),
-    );
-  }
+
+
 }

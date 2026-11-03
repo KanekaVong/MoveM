@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import '../../features/task/data/local/models/task_reminder_local.dart';
 import '../../features/task/data/local/task_local_repository.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class NotificationSchedulerService {
   static final NotificationSchedulerService _instance =
@@ -17,11 +17,11 @@ class NotificationSchedulerService {
 
   bool _isInitialized = false;
 
-  static const AndroidNotificationChannel taskReminderChannel =
+  static final AndroidNotificationChannel taskReminderChannel =
       AndroidNotificationChannel(
     'task_reminder_channel',
-    'Task Reminders',
-    description: 'Notifications for task deadlines and upcoming reminders',
+    tr.notifChannelTaskReminders,
+    description: tr.notifChannelTaskRemindersDesc,
     importance: Importance.max,
     playSound: true,
     enableVibration: true,
@@ -58,11 +58,11 @@ class NotificationSchedulerService {
 
       final scheduledDate = tz.TZDateTime.from(remindAt, tz.local);
 
-      const androidDetails = AndroidNotificationDetails(
+      final androidDetails = AndroidNotificationDetails(
         'task_reminder_channel',
-        'Task Reminders',
+        tr.notifChannelTaskReminders,
         channelDescription:
-            'Notifications for task deadlines and upcoming reminders',
+            tr.notifChannelTaskRemindersDesc,
         importance: Importance.max,
         priority: Priority.high,
         icon: '@mipmap/ic_launcher',
@@ -76,7 +76,7 @@ class NotificationSchedulerService {
         presentSound: true,
       );
 
-      const details = NotificationDetails(
+      final details = NotificationDetails(
         android: androidDetails,
         iOS: iosDetails,
       );
@@ -90,10 +90,10 @@ class NotificationSchedulerService {
       try {
         await _localNotifications.zonedSchedule(
           id: id,
-          title: 'Task Reminder: $title',
+          title: tr.taskReminderTitle(title),
           body: description != null && description.isNotEmpty
               ? description
-              : "Don't forget to complete your task!",
+              : tr.taskReminderBody,
           scheduledDate: scheduledDate,
           notificationDetails: details,
           androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -102,10 +102,10 @@ class NotificationSchedulerService {
       } catch (_) {
         await _localNotifications.zonedSchedule(
           id: id,
-          title: 'Task Reminder: $title',
+          title: tr.taskReminderTitle(title),
           body: description != null && description.isNotEmpty
               ? description
-              : "Don't forget to complete your task!",
+              : tr.taskReminderBody,
           scheduledDate: scheduledDate,
           notificationDetails: details,
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,

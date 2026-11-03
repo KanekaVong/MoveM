@@ -10,6 +10,7 @@ import '../dto/request/update_profile_request.dart';
 import '../services/setting_service.dart';
 import '../../../auth/data/dto/response/user_response.dart';
 import '../../../auth/data/dto/response/auth_response.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class SettingRepositoryImpl implements SettingRepository {
   final SettingService settingService;
@@ -17,14 +18,21 @@ class SettingRepositoryImpl implements SettingRepository {
   SettingRepositoryImpl({required this.settingService});
 
   UserResponse? _parseUserResponse(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      return UserResponse.fromJson(data);
+    if (data == null) return null;
+    if (data is Map) {
+      if (data.containsKey('data') && data['data'] is Map) {
+        return UserResponse.fromJson(Map<String, dynamic>.from(data['data']));
+      }
+      return UserResponse.fromJson(Map<String, dynamic>.from(data));
     }
     if (data is String) {
       try {
         final decoded = jsonDecode(data);
-        if (decoded is Map<String, dynamic>) {
-          return UserResponse.fromJson(decoded);
+        if (decoded is Map) {
+          if (decoded.containsKey('data') && decoded['data'] is Map) {
+            return UserResponse.fromJson(Map<String, dynamic>.from(decoded['data']));
+          }
+          return UserResponse.fromJson(Map<String, dynamic>.from(decoded));
         }
       } catch (_) {}
     }
@@ -46,7 +54,7 @@ class SettingRepositoryImpl implements SettingRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid update profile response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -75,7 +83,7 @@ class SettingRepositoryImpl implements SettingRepository {
       return ApiError(
         ApiException(
           message:
-          'Invalid profile picture response from server.',
+          tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -86,6 +94,28 @@ class SettingRepositoryImpl implements SettingRepository {
       return ApiError(
         ApiException(message: e.toString()),
       );
+    }
+  }
+
+  @override
+  Future<ApiResult<UserResponse>> uploadProfilePictureFile(String filePath) async {
+    try {
+      final response = await settingService.uploadProfilePictureFile(filePath);
+      final user = _parseUserResponse(response.data);
+
+      if (user != null) {
+        return ApiSuccess(user);
+      }
+
+      return ApiError(
+        ApiException(
+          message: tr.serverBadResponse,
+        ),
+      );
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
     }
   }
 
@@ -102,7 +132,7 @@ class SettingRepositoryImpl implements SettingRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid unlink phone response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -129,7 +159,7 @@ class SettingRepositoryImpl implements SettingRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid email change response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -152,7 +182,7 @@ class SettingRepositoryImpl implements SettingRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid email verification response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -177,36 +207,13 @@ class SettingRepositoryImpl implements SettingRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid resend code response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
       return ApiError(ApiException(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<ApiResult<UserResponse>> verifyPhone(
-      String firebaseIdToken,
-      ) async {
-    try {
-      final response = await settingService.verifyPhone(
-        firebaseIdToken,
-      );
-
-      final user = UserResponse.fromJson(
-        response.data as Map<String, dynamic>,
-      );
-
-      return ApiSuccess(user);
-    } on DioException catch (e) {
-      return ApiError(ApiException.fromDioError(e));
-    } catch (e) {
-      return ApiError(
-        ApiException(message: e.toString()),
-      );
     }
   }
 
@@ -241,7 +248,7 @@ class SettingRepositoryImpl implements SettingRepository {
       final response = await settingService.getCurrentUser();
       final user = _parseUserResponse(response.data);
       if (user != null) return ApiSuccess(user);
-      return ApiError(ApiException(message: 'Invalid get current user response from server.'));
+      return ApiError(ApiException(message: tr.serverBadResponse));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {

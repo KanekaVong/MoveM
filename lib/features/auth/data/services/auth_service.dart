@@ -8,7 +8,9 @@ import '../dto/request/email_verify_request.dart';
 import '../../../../core/network/dio_client.dart';
 
 class AuthService {
-  final Dio dio = DioClient().dio;
+  final Dio dio;
+
+  AuthService({Dio? dio}) : dio = dio ?? DioClient().dio;
 
   Future<Response> login(LoginRequest request) async {
     return await dio.post(
@@ -71,6 +73,19 @@ class AuthService {
       'auth/resend-login-otp',
       data: {'username': username},
       options: Options(responseType: ResponseType.plain),
+    );
+  }
+
+  Future<Response> registerDevice({
+    required String deviceToken,
+    required String platform,
+  }) {
+    return dio.post(
+      'auth/device',
+      data: {
+        'deviceToken': deviceToken,
+        'platform': platform,
+      },
     );
   }
 

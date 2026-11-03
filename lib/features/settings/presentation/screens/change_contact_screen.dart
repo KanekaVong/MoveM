@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import '../models/contact_type.dart';
-import 'verify_contact_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:movem/core/routes/app_routes.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import '../controllers/setting_controller.dart';
 
-import 'package:movem/features/settings/data/services/firebase_phone_service.dart';
+import 'package:movem/core/storage/user_manager.dart';
+import 'package:movem/core/theme/app_colors.dart';
+import '../../data/dto/request/update_profile_request.dart';
+import 'package:movem/shared/widgets/app_button.dart';
+import 'package:movem/shared/widgets/top_tool_bar.dart';
+import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class ChangeContactScreen extends StatefulWidget {
   final ContactType type;
@@ -25,14 +30,22 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
 
   late final TextEditingController _contactController;
   late final SettingController _settingController;
-  final FirebasePhoneService _firebasePhoneService = FirebasePhoneService();
 
   String _completePhoneNumber = '';
 
   @override
   void initState() {
     super.initState();
-    _contactController = TextEditingController();
+    final user = UserManager().getUser();
+    String initialText = '';
+    if (widget.type == ContactType.email) {
+      initialText = user?.email ?? '';
+    } else {
+      final phone = user?.phone ?? '';
+      initialText = phone.startsWith('+855') ? phone.substring(4) : phone;
+      _completePhoneNumber = phone;
+    }
+    _contactController = TextEditingController(text: initialText);
     _settingController = Get.find<SettingController>();
   }
 
@@ -45,26 +58,21 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
   @override
   Widget build(BuildContext context) {
     final isEmail = widget.type == ContactType.email;
+    final dark = AppColors.isDark;
+    final pageColor = AppColors.pageBackground;
+    final fg = AppColors.textPrimary;
+    final textColor = dark ? Colors.white : AppColors.textPrimary;
+    final hintColor = dark ? Colors.white54 : AppColors.textSecondary;
+    final borderColor = dark ? Colors.white24 : AppColors.borderMuted;
+    final focusBorderColor = dark ? Colors.white : AppColors.accentBlue;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0B132B),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0B132B),
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-        ),
-        title: const Text(
-          'Your Profile',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-          ),
-        ),
+      backgroundColor: pageColor,
+      appBar: TopToolBar(
+        title: tr.yourProfile,
+        backgroundColor: pageColor,
+        foregroundColor: fg,
+        onBack: () => Navigator.of(context).pop(),
       ),
       body: SafeArea(
         child: Padding(
@@ -77,7 +85,7 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
                   isEmail
                       ? Icons.email_outlined
                       : Icons.phone_outlined,
-                  color: Colors.white,
+                  color: dark ? Colors.white : AppColors.accentBlue,
                   size: 48,
                 ),
               ),
@@ -86,9 +94,9 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
 
               Center(
                 child: Text(
-                  isEmail ? 'Change email' : 'Add phone',
-                  style: const TextStyle(
-                    color: Colors.white,
+                  isEmail ? tr.changeEmail : tr.addPhone,
+                  style: TextStyle(
+                    color: fg,
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
@@ -101,70 +109,77 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
                   ? TextField(
                 controller: _contactController,
                 keyboardType: TextInputType.emailAddress,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: textColor,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Email address',
-                  hintStyle: const TextStyle(
-                    color: Colors.white54,
+                  hintText: tr.emailAddress,
+                  hintStyle: TextStyle(
+                    color: hintColor,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Colors.white24,
+                    borderSide: BorderSide(
+                      color: borderColor,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Colors.white54,
+                    borderSide: BorderSide(
+                      color: focusBorderColor,
+                      width: 1.5,
                     ),
                   ),
                 ),
               )
-                  :IntlPhoneField(
+                  : IntlPhoneField(
                 controller: _contactController,
                 initialCountryCode: 'KH',
-                dropdownTextStyle: const TextStyle(
-                  color: Colors.white,
+                disableLengthCheck: true,
+                dropdownTextStyle: TextStyle(
+                  color: textColor,
                 ),
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: textColor,
                 ),
-                cursorColor: Colors.white,
+                cursorColor: focusBorderColor,
                 keyboardType: TextInputType.phone,
 
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
                 ],
 
                 decoration: InputDecoration(
-                  hintText: 'Phone number',
-                  hintStyle: const TextStyle(
-                    color: Colors.white54,
+                  counterText: '',
+                  hintText: tr.phoneNumberLower,
+                  hintStyle: TextStyle(
+                    color: hintColor,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Colors.white24,
+                    borderSide: BorderSide(
+                      color: borderColor,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Colors.white54,
+                    borderSide: BorderSide(
+                      color: focusBorderColor,
+                      width: 1.5,
                     ),
                   ),
                 ),
 
-                dropdownIcon: const Icon(
+                dropdownIcon: Icon(
                   Icons.arrow_drop_down,
-                  color: Colors.white54,
+                  color: hintColor,
                 ),
 
                 onChanged: (phone) {
-                  _completePhoneNumber = phone.completeNumber;
+                  final raw = phone.number.trim();
+                  final clean = raw.startsWith('0') ? raw.substring(1) : raw;
+                  _completePhoneNumber = '${phone.countryCode}$clean';
                 },
               ),
 
@@ -172,10 +187,10 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
 
               Text(
                 isEmail
-                    ? 'Your email address is linked to your account and remains private. If updated, your previous address may be kept for account recovery.'
-                    : 'We will send a verification code via SMS to confirm your identity. Please check your SMS and enter the code on the next screen.',
-                style: const TextStyle(
-                  color: Colors.white54,
+                    ? tr.emailPrivacyNote
+                    : tr.phoneUpdateNote,
+                style: TextStyle(
+                  color: hintColor,
                   fontSize: 13,
                   height: 1.5,
                 ),
@@ -183,21 +198,35 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
 
               const Spacer(),
 
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
+              AppButton(
+                  label: tr.change,
                   onPressed: () async {
-                    final value = widget.type == ContactType.email
-                        ? _contactController.text.trim()
-                        : _completePhoneNumber;
-
-                    debugPrint('Phone sent to Firebase: $value');
+                    String value;
+                    if (widget.type == ContactType.email) {
+                      value = _contactController.text.trim();
+                    } else {
+                      if (_completePhoneNumber.isNotEmpty) {
+                        value = _completePhoneNumber.trim();
+                      } else {
+                        final raw = _contactController.text.trim();
+                        final clean = raw.startsWith('0') ? raw.substring(1) : raw;
+                        value = clean.isNotEmpty ? '+855$clean' : '';
+                      }
+                    }
 
                     if (value.isEmpty) {
+                      AppSnack.show(
+                        tr.requiredField,
+                        widget.type == ContactType.email
+                            ? tr.pleaseEnterEmail
+                            : tr.pleaseEnterValidPhone,
+                        backgroundColor: Colors.redAccent,
+                        colorText: Colors.white,
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
                       return;
                     }
 
-                    // EMAIL
                     if (widget.type == ContactType.email) {
                       final success =
                       await _settingController.requestEmailChange(value);
@@ -217,41 +246,25 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
                       return;
                     }
 
-                    // PHONE
                     if (widget.type == ContactType.phone) {
-                      try {
-                        final verificationId =
-                        await _firebasePhoneService.sendVerificationCode(
-                          phoneNumber: value,
+                      final updatedUser = await _settingController.updateProfile(
+                        UpdateProfileRequest(phone: value),
+                        goBack: false,
+                      );
+
+                      if (updatedUser != null && mounted) {
+                        Get.back();
+                        AppSnack.show(
+                          tr.editTripUpdateSuccess,
+                          tr.phoneUpdated,
+                          backgroundColor: Colors.green,
+                          colorText: Colors.white,
+                          snackPosition: SnackPosition.BOTTOM,
                         );
-
-                        if (!mounted) {
-                          return;
-                        }
-
-                        Get.toNamed(
-                          AppRoutes.verifyContact,
-                          arguments: {
-                            'type': widget.type,
-                            'value': value,
-                            'verificationId': verificationId,
-                          },
-                        );
-                      } catch (e) {
-                        debugPrint(
-                          'Firebase phone verification error: $e',
-                        );
-
-                        if (!mounted) {
-                          return;
-                        }
-
-                        // Show your existing error message here.
                       }
+                      return;
                     }
                   },
-                  child: const Text('Continue'),
-                ),
               ),
             ],
           ),

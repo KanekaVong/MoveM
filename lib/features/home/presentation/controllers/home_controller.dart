@@ -1,36 +1,52 @@
 import 'package:get/get.dart';
+import '../../../../core/network/api_result.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/services/fcm_service.dart';
+import '../../../auth/data/device_registration.dart';
 import '../../../../core/storage/user_manager.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../../auth/data/dto/response/user_response.dart';
+import '../../../fitness/data/models/workout_model.dart';
+import '../../../fitness/data/repositories/fitness_workout_repository.dart';
+import '../../../fitness/presentation/screens/fitness_club_screen.dart';
+import '../../../fitness/presentation/screens/solo_challenge_list_screen.dart';
 import '../../../friends/presentation/bindings/friends_binding.dart';
 import '../../../friends/presentation/screens/add_friends_screen.dart';
 import '../../../main_nav/presentation/controllers/main_nav_controller.dart';
-import '../../data/dto/response/dashboard_response.dart';
-import '../../data/repositories/home_repository_impl.dart';
-import '../../data/services/home_service.dart';
-import '../../domain/repositories/home_repository.dart';
+import '../../domain/models/home_feed_item.dart';
+import '../../../../core/utils/Formatters.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class HomeController extends BaseController {
-  final HomeRepository repository = HomeRepositoryImpl(HomeService());
+  final FitnessWorkoutRepository workoutRepository = FitnessWorkoutRepository();
 
-  final Rx<DashboardResponse?> dashboardData = Rx<DashboardResponse?>(null);
   final Rx<UserResponse?> currentUser = Rx<UserResponse?>(null);
+  final RxList<HomeFeedItem> feedItems = <HomeFeedItem>[].obs;
+  // True until the first feed request finishes, so the empty state isn't flashed.
+  final RxBool isFeedLoading = true.obs;
+
+  // Getters, so they follow the current language.
+  String get dailyQuote => tr.homeDailyQuote;
+  List<String> get sloganWords => [tr.homeSloganMove, tr.homeSloganExplore, tr.homeSloganAchieve];
 
   @override
   void onInit() {
     super.onInit();
     loadUserData();
-    fetchDashboard();
+    fetchSocialFeed();
   }
 
   @override
   void onReady() {
     super.onReady();
     if (UserManager().isLoggedIn) {
-      FcmService().requestNotificationPermissions();
+      _registerDevice();
     }
+  }
+
+  Future<void> _registerDevice() async {
+    await FcmService().requestNotificationPermissions();
+    await DeviceRegistration.registerIfLoggedIn();
   }
 
   void loadUserData() {
@@ -40,16 +56,17 @@ class HomeController extends BaseController {
   String get greetingName {
     final user = currentUser.value;
     final fullName = [user?.firstName, user?.lastName]
-        .where((v) => v != null && v.trim().isNotEmpty)
+        .whereType<String>()
+        .where((v) => v.trim().isNotEmpty)
         .join(' ')
         .trim();
     if (fullName.isNotEmpty) {
       return fullName;
     }
-    if (user?.username != null && user!.username.trim().isNotEmpty) {
-      return user!.username.trim();
+    if (user != null && user.username.trim().isNotEmpty) {
+      return user.username.trim();
     }
-    return 'MoveM User';
+    return tr.homeMovemUser;
   }
 
   String get userInitial {
@@ -59,22 +76,141 @@ class HomeController extends BaseController {
 
   String? get profilePicUrl => currentUser.value?.profilePic;
 
-  String get recentActivityMessage {
-    final activities = dashboardData.value?.recentActivities;
-    if (activities != null && activities.isNotEmpty) {
-      return activities.first.message ?? 'Stay Active Today!';
+  String get recentActivityMessage => tr.stayActiveToday;
+
+  Future<void> fetchDashboard() => fetchSocialFeed();
+
+  Future<void> fetchSocialFeed() async {
+    try {
+      final result = await workoutRepository.getWorkoutSocialFeed();
+      if (result is ApiSuccess<List<SharedWorkoutPostResponse>>) {
+        final posts = result.data;
+        if (posts.isNotEmpty) {
+          final socialItems = posts.map(_convertSocialPostToFeedItem).toList();
+          feedItems.assignAll(socialItems);
+          return;
+        }
+      }
+      feedItems.clear();
+    } finally {
+      isFeedLoading.value = false;
     }
-    return 'Stay Active Today!';
   }
 
-  Future<void> fetchDashboard() async {
-    await executeApi<DashboardResponse>(
-      apiCall: () => repository.getDashboard(),
-      onSuccess: (data) {
-        dashboardData.value = data;
-      },
-      showLoading: false,
+  HomeFeedItem _convertSocialPostToFeedItem(SharedWorkoutPostResponse post) {
+    final workoutType = post.workoutType.toUpperCase();
+    final isRunning = workoutType.contains('RUN');
+    final durationStr = _formatFeedDuration(post.durationSeconds);
+
+    String title;
+    if (isRunning) {
+      title = post.distance > 0
+          ? tr.feedCompletedRunDistance(Formatters.distanceKm(post.distance))
+          : tr.feedCompletedRun;
+    } else if (workoutType.contains('PUSH')) {
+      title = tr.feedCompletedPushUp;
+    } else if (workoutType.contains('SQUAT')) {
+      title = tr.feedCompletedSquat;
+    } else {
+      title = tr.feedCompletedWorkout(post.workoutType);
+    }
+
+    String? imageUrl;
+    if (post.attachments.isNotEmpty) {
+      final attachment = post.attachments.first;
+      // The API's `url` can repeat the storage prefix; `filePath` is already a full URL.
+      imageUrl = attachment.filePath.startsWith('http') ? attachment.filePath : (attachment.url ?? attachment.filePath);
+    }
+
+    return HomeFeedItem(
+      id: 'social_${post.sessionId}',
+      sessionId: post.sessionId,
+      userName: post.username.isNotEmpty ? post.username : tr.homeMovemAthlete,
+      // The feed API doesn't send profilePicture yet; use our own photo on our posts.
+      userAvatar: post.profilePicture ?? (post.myPost ? profilePicUrl : null),
+      title: title,
+      caption: post.shareDescription != null && post.shareDescription!.trim().isNotEmpty
+          ? '“${post.shareDescription!.trim()}”'
+          : null,
+      imageUrl: imageUrl,
+      duration: durationStr,
+      calories: post.caloriesBurned > 0 ? tr.caloriesValue(post.caloriesBurned.round()) : null,
+      steps: post.steps > 0 ? tr.stepsValue(post.steps) : null,
+      distanceKm: post.distance > 0 ? post.distance : null,
+      workoutType: workoutType,
+      hasGpsRoute: post.points.length >= 2 || (isRunning && post.distance > 0),
+      createdAt: post.finishedAt,
+      kudosCount: post.kudosCount,
+      myKudos: post.myKudos,
+      commentCount: post.commentCount,
+      myPost: post.myPost,
+      durationSeconds: post.durationSeconds,
+      stepsCount: post.steps,
+      caloriesCount: post.caloriesBurned.round(),
+      averagePace: post.averagePace?.isNotEmpty == true
+          ? post.averagePace
+          : _formatAveragePace(post.durationSeconds, post.distance),
+      challengeName: post.challengeName ?? _fallbackChallengeName(workoutType, post.distance),
+      routePoints: post.points
+          .map((point) => FeedRoutePoint(latitude: point.latitude, longitude: point.longitude))
+          .toList(),
     );
+  }
+
+  String? _formatFeedDuration(int seconds) {
+    if (seconds <= 0) return null;
+    final hours = seconds ~/ 3600;
+    final mins = (seconds % 3600) ~/ 60;
+    final secs = seconds % 60;
+    if (hours > 0) {
+      if (mins > 0) return tr.durHoursMins(hours, mins);
+      return tr.durHours(hours);
+    }
+    if (mins > 0) return secs > 0 ? tr.durMinsSecs(mins, secs) : tr.durMins(mins);
+    return tr.durSecs(secs);
+  }
+
+  String? _formatAveragePace(int durationSeconds, double distanceKm) {
+    if (durationSeconds <= 0 || distanceKm <= 0) return null;
+    final paceMin = (durationSeconds / 60) / distanceKm;
+    if (paceMin.isNaN || paceMin.isInfinite) return null;
+    final minutes = paceMin.floor();
+    final seconds = ((paceMin - minutes) * 60).round();
+    return tr.paceValue('$minutes:$seconds');
+  }
+
+  String? _fallbackChallengeName(String workoutType, double distanceKm) {
+    if (workoutType.contains('RUN') && distanceKm > 0) {
+      final km = distanceKm >= 1 ? distanceKm.round() : distanceKm;
+      return tr.runSprintName(km);
+    }
+    return null;
+  }
+
+  Future<void> toggleKudos(HomeFeedItem item) async {
+    if (item.sessionId == null) return;
+    final index = feedItems.indexWhere((f) => f.id == item.id);
+    if (index == -1) return;
+
+    final willLike = !item.myKudos;
+    final updatedKudosCount = willLike ? item.kudosCount + 1 : (item.kudosCount > 0 ? item.kudosCount - 1 : 0);
+
+    feedItems[index] = item.copyWith(
+      myKudos: willLike,
+      kudosCount: updatedKudosCount,
+    );
+
+    if (willLike) {
+      final res = await workoutRepository.giveKudos(item.sessionId!);
+      if (res is! ApiSuccess<bool>) {
+        feedItems[index] = item;
+      }
+    } else {
+      final res = await workoutRepository.removeKudos(item.sessionId!);
+      if (res is! ApiSuccess<bool>) {
+        feedItems[index] = item;
+      }
+    }
   }
 
   void onNotificationTap() {
@@ -87,15 +223,17 @@ class HomeController extends BaseController {
     });
   }
 
+  void onAddFriendsTap() {
+    Get.to(() => const AddFriendsScreen(), binding: FriendsBinding());
+  }
+
+  void onChallengeTap() {
+    Get.to(() => const SoloChallengeListScreen());
+  }
+
   void onAddTaskTap() {
     if (Get.isRegistered<MainNavController>()) {
       Get.find<MainNavController>().changeTab(1);
-    }
-  }
-
-  void onLogWorkoutTap() {
-    if (Get.isRegistered<MainNavController>()) {
-      Get.find<MainNavController>().changeTab(2);
     }
   }
 
@@ -105,7 +243,7 @@ class HomeController extends BaseController {
     }
   }
 
-  void onAddFriendsTap() {
-    Get.to(() => const AddFriendsScreen(), binding: FriendsBinding());
+  void onFitnessClubTap() {
+    Get.to(() => const FitnessClubScreen());
   }
 }

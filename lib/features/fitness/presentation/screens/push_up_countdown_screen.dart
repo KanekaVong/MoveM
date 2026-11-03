@@ -2,8 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../../shared/widgets/app_button.dart';
 import '../../data/models/solo_challenge_model.dart';
 import 'push_up_detection_screen.dart';
+import 'running_tracking_screen.dart';
+import 'squat_detection_screen.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class PushUpCountdownScreen extends StatefulWidget {
   final SoloChallengeModel challenge;
@@ -56,11 +60,30 @@ class _PushUpCountdownScreenState extends State<PushUpCountdownScreen>
 
   void _proceedToWorkout() {
     _timer?.cancel();
-    Get.off(
-      () => PushUpDetectionScreen(challenge: widget.challenge),
-      transition: Transition.fadeIn,
-      duration: const Duration(milliseconds: 400),
-    );
+    final t = widget.challenge.type.toUpperCase();
+    final n = widget.challenge.name.toLowerCase();
+    final u = widget.challenge.targetUnit.toUpperCase();
+    final isRunning = t == 'RUNNING' || n.contains('run') || n.contains('sprint') || u == 'KM' || u == 'STEPS';
+
+    if (isRunning) {
+      Get.off(
+        () => RunningTrackingScreen(challenge: widget.challenge),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 400),
+      );
+    } else if (t == 'SQUATS' || ((t == 'BODYWEIGHT' || t == 'STRENGTH_TRAINING') && n.contains('squat')) || n.contains('squat')) {
+      Get.off(
+        () => SquatDetectionScreen(challenge: widget.challenge),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 400),
+      );
+    } else {
+      Get.off(
+        () => PushUpDetectionScreen(challenge: widget.challenge),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 400),
+      );
+    }
   }
 
   @override
@@ -72,20 +95,22 @@ class _PushUpCountdownScreenState extends State<PushUpCountdownScreen>
 
   @override
   Widget build(BuildContext context) {
+    final t = widget.challenge.type.toUpperCase();
+    final n = widget.challenge.name.toLowerCase();
+    final isRunning = t == 'RUNNING' || n.contains('run') || n.contains('sprint');
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background Image
           Image.asset(
-            AppImages.pushupExerciseBg,
+            isRunning ? AppImages.runningActivity : AppImages.pushupExerciseBg,
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => Container(
               color: const Color(0xFF0F172A),
             ),
           ),
 
-          // Subtle gradient overlay for readability
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -100,7 +125,6 @@ class _PushUpCountdownScreenState extends State<PushUpCountdownScreen>
             ),
           ),
 
-          // Top Bar with Back Button
           SafeArea(
             child: Align(
               alignment: Alignment.topLeft,
@@ -135,7 +159,6 @@ class _PushUpCountdownScreenState extends State<PushUpCountdownScreen>
             ),
           ),
 
-          // Center Countdown Widget
           Center(
             child: ScaleTransition(
               scale: _scaleAnimation,
@@ -172,43 +195,15 @@ class _PushUpCountdownScreenState extends State<PushUpCountdownScreen>
             ),
           ),
 
-          // Bottom "Skip" Button
           Positioned(
             left: 24,
             right: 24,
-            bottom: 40,
+            bottom: 24 + MediaQuery.paddingOf(context).bottom,
             child: SafeArea(
-              child: GestureDetector(
-                onTap: _proceedToWorkout,
-                child: Container(
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF8E95A5).withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.35),
-                      width: 1.2,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Skip',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                ),
+              child: AppButton.secondary(
+                label: tr.skip,
+                onPressed: _proceedToWorkout,
+                height: 48,
               ),
             ),
           ),

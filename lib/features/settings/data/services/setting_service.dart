@@ -9,7 +9,7 @@ class SettingService {
   final Dio _dio = DioClient().dio;
 
   Future<Response> updateProfile(UpdateProfileRequest request) {
-    return _dio.patch('users/me', data: request.toJson());
+    return _dio.patch('user/me', data: request.toJson());
   }
 
   Future<Response> unlinkPhone() {
@@ -26,6 +26,18 @@ class SettingService {
     return _dio.patch(
       'users/me/profile-picture',
       data: request.toJson(),
+    );
+  }
+
+  /// POST /api/user/me/profile-picture with multipart field `file`.
+  /// The response is the updated user, including `profilePic`.
+  Future<Response> uploadProfilePictureFile(String filePath) async {
+    final fileName = filePath.split('/').last;
+    return _dio.post(
+      'user/me/profile-picture',
+      data: FormData.fromMap({
+        'file': await MultipartFile.fromFile(filePath, filename: fileName),
+      }),
     );
   }
 
@@ -47,15 +59,6 @@ class SettingService {
 
   Future<Response> resendEmailChangeCode() {
     return _dio.post('users/me/resend-email-change');
-  }
-
-  Future<Response> verifyPhone(String firebaseIdToken) {
-    return _dio.post(
-      'users/me/verify-phone',
-      data: {
-        'firebaseIdToken': firebaseIdToken,
-      },
-    );
   }
 
   Future<Response> changePassword(

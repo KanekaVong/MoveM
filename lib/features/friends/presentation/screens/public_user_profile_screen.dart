@@ -1,0 +1,446 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../data/dto/response/friend_response.dart';
+import '../../data/dto/response/public_user_profile_response.dart';
+import '../../data/services/friends_service.dart';
+import '../../data/repositories/friends_repository_impl.dart';
+import '../../domain/repositories/friends_repository.dart';
+import '../controllers/public_user_profile_controller.dart';
+import '../../../../shared/widgets/app_button.dart';
+import '../../../../shared/widgets/no_data_component.dart';
+import '../../../../shared/widgets/top_tool_bar.dart';
+import '../../../../l10n/app_localizations.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
+
+class PublicUserProfileScreen extends StatefulWidget {
+  final String? userId;
+  final PublicUserProfileResponse? initialProfile;
+
+  const PublicUserProfileScreen({
+    super.key,
+    this.userId,
+    this.initialProfile,
+  });
+
+  @override
+  State<PublicUserProfileScreen> createState() => _PublicUserProfileScreenState();
+}
+
+class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
+  late final String? _tag;
+  late final PublicUserProfileController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final effectiveId = widget.userId ?? widget.initialProfile?.id ?? '';
+    _tag = effectiveId.isNotEmpty ? effectiveId : null;
+
+    if (_tag != null && Get.isRegistered<PublicUserProfileController>(tag: _tag)) {
+      controller = Get.find<PublicUserProfileController>(tag: _tag);
+    } else if (_tag == null && Get.isRegistered<PublicUserProfileController>()) {
+      controller = Get.find<PublicUserProfileController>();
+    } else {
+      final FriendsRepository repo = Get.isRegistered<FriendsRepository>()
+          ? Get.find<FriendsRepository>()
+          : FriendsRepositoryImpl(friendsService: FriendsService());
+      controller = Get.put(
+        PublicUserProfileController(
+          repository: repo,
+          userId: effectiveId,
+          initialProfile: widget.initialProfile,
+        ),
+        tag: _tag,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_tag != null && Get.isRegistered<PublicUserProfileController>(tag: _tag)) {
+      Get.delete<PublicUserProfileController>(tag: _tag, force: true);
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.pageBackground,
+      appBar: TopToolBar(title: AppLocalizations.of(context)?.profileTitle ?? 'Profile'),
+      body: SafeArea(
+        child: Obx(() {
+          final user = controller.profile.value;
+          if (user == null) {
+            return const SkeletonProfile();
+          }
+
+          return Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                  child: Column(
+                    children: [
+                      _buildProfileCard(user),
+                      const SizedBox(height: 14),
+                      _buildAchievementsCard(user),
+                      const SizedBox(height: 14),
+                      _buildMutualFriendsCard(user),
+                    ],
+                  ),
+                ),
+              ),
+              if (!controller.isOwnProfile) _buildActionButton(user),
+            ],
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildProfileCard(PublicUserProfileResponse user) {
+    final initial = user.displayName.isNotEmpty ? user.displayName[0].toUpperCase() : 'U';
+    final bio = (user.bio ?? '').trim();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 18),
+      decoration: BoxDecoration(
+        color: AppColors.cardSurface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.borderLight),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 128,
+            height: 128,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.blueAccent, width: 3),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(3),
+              child: ClipOval(
+                child: (user.profilePic != null && user.profilePic!.isNotEmpty)
+                    ? CachedNetworkImage(
+                        imageUrl: user.profilePic!,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) => _avatarPlaceholder(initial),
+                        errorWidget: (_, __, ___) => _avatarPlaceholder(initial),
+                      )
+                    : _avatarPlaceholder(initial),
+              ),
+            ),
+          ),
+          SizedBox(height: 16),
+          Text(
+            user.displayName,
+            style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 26,
+              fontWeight: FontWeight.w800,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 4),
+          Text(
+            '@${user.username}',
+            style: TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 14,
+            ),
+          ),
+          if (bio.isNotEmpty) ...[
+            SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.chipSurface,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                bio,
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 22),
+          Row(
+            children: [
+              _buildStatColumn(
+                icon: Icons.check_circle,
+                iconColor: const Color(0xFF22D3EE),
+                value: '${user.taskCompleted}',
+                label: tr.taskCompleted,
+              ),
+              _buildStatDivider(),
+              _buildStatColumn(
+                icon: Icons.directions_run,
+                iconColor: const Color(0xFFF97316),
+                value: '${user.challengesCompleted}',
+                label: tr.challengesCompleted,
+              ),
+              _buildStatDivider(),
+              _buildStatColumn(
+                icon: Icons.flight,
+                iconColor: const Color(0xFFA78BFA),
+                value: '${user.tripPlans}',
+                label: tr.tripPlans,
+              ),
+            ],
+          ),
+          SizedBox(height: 18),
+          Row(
+            children: [
+              Icon(Icons.people_alt_outlined, color: AppColors.textPrimary, size: 20),
+              SizedBox(width: 8),
+              Text(
+                '${user.friendsCount}',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(width: 6),
+              Text(
+                tr.friendsTitle,
+                style: TextStyle(
+                  color: AppColors.blueAccent,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              Icon(Icons.chevron_right, color: AppColors.textCaption, size: 22),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatColumn({
+    required IconData icon,
+    required Color iconColor,
+    required String value,
+    required String label,
+  }) {
+    return Expanded(
+      child: Column(
+        children: [
+          Icon(icon, color: iconColor, size: 26),
+          SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatDivider() {
+    return Container(
+      width: 1,
+      height: 56,
+      color: AppColors.borderLight,
+    );
+  }
+
+  Widget _buildAchievementsCard(PublicUserProfileResponse user) {
+    return _sectionCard(
+      title: Text.rich(
+        TextSpan(
+          text: tr.recentAchievementsLead,
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w700),
+          children: [
+            TextSpan(
+              text: tr.achievementsBadges,
+              style: TextStyle(color: Color(0xFFEAB308)),
+            ),
+          ],
+        ),
+      ),
+      child: user.recentAchievements.isEmpty
+          ? NoDataComponent(
+              compact: true,
+              title: AppLocalizations.of(Get.context!)?.noAchievementsYet ?? 'No Achievements Yet',
+            )
+          : SizedBox(
+              height: 72,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: user.recentAchievements.length,
+                separatorBuilder: (_, __) => SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final item = user.recentAchievements[index];
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.emoji_events, color: Color(0xFFEAB308), size: 28),
+                      SizedBox(height: 6),
+                      SizedBox(
+                        width: 72,
+                        child: Text(
+                          item.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: AppColors.textPrimary, fontSize: 11),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+    );
+  }
+
+  Widget _buildMutualFriendsCard(PublicUserProfileResponse user) {
+    return _sectionCard(
+      title: Text.rich(
+        TextSpan(
+          text: tr.mutualFriendsLead,
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w700),
+          children: [
+            TextSpan(
+              text: tr.friendsTitle,
+              style: TextStyle(color: AppColors.blueAccent),
+            ),
+          ],
+        ),
+      ),
+      child: user.mutualFriends.isEmpty
+          ? NoDataComponent(
+              compact: true,
+              title: AppLocalizations.of(Get.context!)?.noMutuals ?? 'No Mutuals',
+            )
+          : SizedBox(
+              height: 56,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: user.mutualFriends.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (context, index) {
+                  return _mutualAvatar(user.mutualFriends[index]);
+                },
+              ),
+            ),
+    );
+  }
+
+  Widget _mutualAvatar(FriendResponse friend) {
+    final name = '${friend.firstname} ${friend.lastname}'.trim().isNotEmpty
+        ? '${friend.firstname} ${friend.lastname}'.trim()
+        : friend.username;
+    final initial = name.isNotEmpty ? name[0].toUpperCase() : 'U';
+    return GestureDetector(
+      onTap: () {
+        Get.to(
+          () => PublicUserProfileScreen(
+            userId: friend.userId.toString(),
+            initialProfile: PublicUserProfileResponse(
+              id: friend.userId.toString(),
+              username: friend.username,
+              firstname: friend.firstname,
+              lastname: friend.lastname,
+              profilePic: friend.profilePic,
+              friendStatus: friend.friendStatus,
+            ),
+          ),
+        );
+      },
+      child: ClipOval(
+        child: SizedBox(
+          width: 44,
+          height: 44,
+          child: friend.profilePic.isNotEmpty
+              ? CachedNetworkImage(
+                  imageUrl: friend.profilePic,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => _avatarPlaceholder(initial),
+                  errorWidget: (_, __, ___) => _avatarPlaceholder(initial),
+                )
+              : _avatarPlaceholder(initial),
+        ),
+      ),
+    );
+  }
+
+  Widget _sectionCard({required Widget title, required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(18, 14, 18, 8),
+      decoration: BoxDecoration(
+        color: AppColors.cardSurface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.borderLight),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          title,
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton(PublicUserProfileResponse user) {
+    final isPending = user.isRequestPending;
+    final isFriend = user.isFriend;
+    final isIncoming = controller.isIncomingRequest;
+    final l10n = AppLocalizations.of(Get.context!);
+    final label = isFriend
+        ? (l10n?.friends ?? 'Friends')
+        : (isIncoming
+            ? (l10n?.accept ?? 'Accept')
+            : (isPending ? tr.requestSent : (l10n?.addFriend ?? 'Add Friend')));
+    final enabled = !isFriend && (isIncoming || !isPending);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+      child: AppButton(
+        label: label,
+        onPressed: !enabled
+            ? null
+            : (isIncoming ? controller.acceptIncomingRequest : controller.sendFriendRequest),
+      ),
+    );
+  }
+
+  Widget _avatarPlaceholder(String initial) {
+    return Container(
+      color: AppColors.chipSurface,
+      alignment: Alignment.center,
+      child: Text(
+        initial,
+        style: TextStyle(color: AppColors.accentBlue, fontSize: 36, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+}

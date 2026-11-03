@@ -17,10 +17,10 @@ class FriendResponse {
 
   factory FriendResponse.fromJson(Map<String, dynamic> json) {
     return FriendResponse(
-      userId: json['userId'] ?? 0,
+      userId: json['userId'] ?? json['id'] ?? 0,
       username: json['username'] ?? '',
-      firstname: json['firstname'] ?? '',
-      lastname: json['lastname'] ?? '',
+      firstname: json['firstname'] ?? json['firstName'] ?? '',
+      lastname: json['lastname'] ?? json['lastName'] ?? '',
       profilePic: json['profilePic'] ?? '',
       friendStatus: json['friendStatus'],
     );

@@ -1,309 +1,275 @@
+import 'dart:async';
+
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../controllers/auth_controller.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../../shared/widgets/glass_button.dart';
-import '../../../../shared/widgets/glass_container.dart';
+import '../widgets/auth_glass_button.dart';
+import '../widgets/auth_layout.dart';
+import '../widgets/auth_otp_input.dart';
 
-class VerifyOtpScreen extends GetView<AuthController> {
-  VerifyOtpScreen({super.key});
+class VerifyOtpScreen extends StatefulWidget {
+  const VerifyOtpScreen({super.key});
 
+  @override
+  State<VerifyOtpScreen> createState() => _VerifyOtpScreenState();
+}
+
+class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
+  static const int _otpLength = 6;
+  static const int _resendCooldown = 60; // 1 minute
+
+  final AuthController controller = Get.find<AuthController>();
   final TextEditingController _otpController = TextEditingController();
+  final FocusNode _otpFocus = FocusNode();
+
+  late final String identifier = Get.arguments?['identifier'] ?? '';
+  late final String mode = Get.arguments?['mode'] ?? 'login';
+
+  /// Shown in the "sent to" text: the account email when known, since a
+  /// login can use a username. API calls still use [identifier].
+  late final String sentTo = _sentToTarget();
+
+  Timer? _resendTimer;
+  DateTime _resendAvailableAt = clock.now();
+  int _secondsLeft = 0;
+  bool _submitting = false;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // A code was sent just before this screen opened.
+    _startResendCooldown();
+  }
+
+  @override
+  void dispose() {
+    _resendTimer?.cancel();
+    _otpController.dispose();
+    _otpFocus.dispose();
+    super.dispose();
+  }
+
+  String _sentToTarget() {
+    final email = Get.arguments?['email']?.toString().trim() ?? '';
+    if (email.isNotEmpty) return email;
+    final name = identifier.trim();
+    // Login by username: the server doesn't return the email yet, so assume
+    // Gmail. Leave real emails and phone numbers as they are.
+    final isPhone = RegExp(r'^\+?[\d\s-]+$').hasMatch(name);
+    if (name.isEmpty || name.contains('@') || isPhone) return name;
+    return '$name@gmail.com';
+  }
+
+  /// Counts down to a fixed deadline rather than decrementing, so the
+  /// countdown stays right after the app has been in the background.
+  /// Safe to call from initState: it doesn't call setState directly.
+  void _startResendCooldown() {
+    _resendTimer?.cancel();
+    _resendAvailableAt = clock.now().add(const Duration(seconds: _resendCooldown));
+    _secondsLeft = _resendCooldown;
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
+  }
+
+  void _tick() {
+    if (!mounted) return _resendTimer?.cancel();
+    final left = (_resendAvailableAt.difference(clock.now()).inMilliseconds / 1000).ceil();
+    setState(() => _secondsLeft = left.clamp(0, _resendCooldown));
+    if (_secondsLeft == 0) _resendTimer?.cancel();
+  }
+
+  void _stopResendCooldown() {
+    _resendTimer?.cancel();
+    setState(() => _secondsLeft = 0);
+  }
+
+  Future<void> _submit() async {
+    final otp = _otpController.text.trim();
+    // Ignore partial codes and a second submit while one is in flight
+    // (auto-submit on the last digit can race with the Verify button).
+    if (otp.length < _otpLength || _submitting || controller.isLoading) return;
+
+    setState(() => _submitting = true);
+    try {
+      if (mode == 'email') {
+        await controller.verifyEmail(identifier.trim(), otp);
+      } else {
+        await controller.verifyOtp(identifier.trim(), otp);
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+    if (!mounted) return;
+
+    setState(() {
+      // On success the controller navigates away; still here with an error
+      // means the code was rejected, so flag the boxes and let them retype.
+      _hasError = controller.hasError;
+    });
+    // The boxes stay focused, so the user can type the new code straight
+    // after closing the error dialog.
+    if (_hasError) _otpController.clear();
+  }
+
+  Future<void> _resend() async {
+    _otpController.clear();
+    setState(() {
+      _hasError = false;
+      _startResendCooldown();
+    });
+    if (mode == 'email') {
+      await controller.resendVerificationCode(identifier);
+    } else {
+      await controller.resendLoginOtp(identifier);
+    }
+    // No code went out, so don't make them wait to retry.
+    if (mounted && controller.hasError) _stopResendCooldown();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final String identifier = Get.arguments?['identifier'] ?? '';
-    final String mode = Get.arguments?['mode'] ?? 'login';
     final l10n = AppLocalizations.of(context);
+    final sentToText = l10n?.otpSentTo(sentTo) ?? 'Enter the code we sent to\n$sentTo';
 
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF001743),
-              Color(0xFF0F3784),
-              Color(0xFF3271E8),
-            ],
-            stops: [0.0, 0.52, 1.0],
-          ),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 30.0, bottom: 25.0),
-                  child: Column(
-                    children: [
-                      _buildGradientText('MOVEM:', 36, true, letterSpacing: 3.0),
-                      const SizedBox(height: 10),
-                      _buildGradientText('YOUR LIFE, IN MOTION.', 20, false, letterSpacing: 1.5),
-                    ],
-                  ),
-                ),
-              ),
-
-              Positioned.fill(
-                child: CustomScrollView(
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                  slivers: [
-                    const SliverToBoxAdapter(
-                      child: SizedBox(height: 130),
-                    ),
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Container(
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFAFAFA),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(30),
-                            topRight: Radius.circular(30),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 8,
-                              offset: Offset(0, -3),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(30),
-                            topRight: Radius.circular(30),
-                          ),
-                          child: Stack(
-                            children: [
-                              Positioned(top: 40, right: 30, child: _buildStarIcon()),
-                              Positioned(top: 70, left: 40, child: _buildStarIcon(size: 20)),
-                              Positioned(bottom: 120, left: 10, child: _buildStarIcon(size: 40)),
-                              Positioned(bottom: 20, right: 80, child: _buildStarIcon(size: 30)),
-                              Positioned(bottom: 10, left: -20, child: _buildStarIcon(size: 80, opacity: 0.1)),
-                              Positioned(top: 150, right: -20, child: _buildStarIcon(size: 100, opacity: 0.1)),
-
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.arrow_back, color: Color(0xFF4C8DB3)),
-                                          onPressed: () => Get.back(),
-                                        ),
-                                        Expanded(
-                                          child: Center(
-                                            child: _buildGradientText(
-                                              l10n?.verifyOtpTitle ?? 'VERIFY OTP',
-                                              26,
-                                              true,
-                                              colors: [
-                                                Colors.white,
-                                                const Color(0xFF86C8E6),
-                                                const Color(0xFF4081AB)
-                                              ],
-                                              stops: const [0.0, 0.4, 1.0],
-                                              letterSpacing: 1.5,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 48),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Center(
-                                      child: Text(
-                                        'Enter the code sent to your email\nassociated with "$identifier"',
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: Color(0xFFA0AAB2),
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 40),
-
-                                    _buildInputField(
-                                      label: l10n?.otpCodeLabel ?? 'OTP CODE',
-                                      hint: l10n?.otpCodeLabel ?? 'Enter 6-digit OTP',
-                                      controller: _otpController,
-                                      keyboardType: TextInputType.number,
-                                    ),
-                                    const SizedBox(height: 40),
-
-                                    Center(
-                                      child: GlassButton(
-                                        text: l10n?.verifyBtn ?? 'Verify',
-                                        onPressed: () {
-                                          final otp = _otpController.text.trim();
-                                          if (otp.isNotEmpty) {
-                                            if (mode == 'email') {
-                                              controller.verifyEmail(identifier.trim(), otp);
-                                            } else {
-                                              controller.verifyOtp(identifier.trim(), otp);
-                                            }
-                                          }
-                                        },
-                                      ),
-                                    ),
-
-                                    const SizedBox(height: 20),
-
-                                    Center(
-                                      child: TextButton(
-                                        onPressed: () {
-                                          if (mode == 'email') {
-                                            controller.resendVerificationCode(identifier);
-                                          } else {
-                                            controller.resendLoginOtp(identifier);
-                                          }
-                                        },
-                                        child: Text(
-                                          l10n?.resendCode ?? 'Resend Code',
-                                          style: const TextStyle(color: Color(0xFF4C8DB3), fontWeight: FontWeight.w600),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 20),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGradientText(
-    String text,
-    double fontSize,
-    bool isBold, {
-    List<Color>? colors,
-    List<double>? stops,
-    double letterSpacing = 1.0,
-    bool isItalic = true,
-  }) {
-    final textStyle = TextStyle(
-      fontSize: fontSize,
-      fontWeight: isBold ? FontWeight.w900 : FontWeight.w400,
-      fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
-      letterSpacing: letterSpacing,
-    );
-
-    return Stack(
+    return AuthLayout(
+      title: l10n?.verifyOtpTitle ?? 'VERIFY OTP',
+      onBack: () => Get.back(),
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: Text(
-            text,
-            style: textStyle.copyWith(
-              color: Colors.transparent,
-              shadows: [
-                Shadow(
-                  color: const Color(0xFF4C8DB3).withValues(alpha: 0.3),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-          ),
-        ),
-        ShaderMask(
-          blendMode: BlendMode.srcIn,
-          shaderCallback: (bounds) => LinearGradient(
-            colors: colors ?? [Colors.white, const Color(0xFF90CDEC)],
-            stops: stops,
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ).createShader(bounds),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: Text(
-              text,
-              style: textStyle,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInputField({
-    required String label,
-    required String hint,
-    required TextEditingController controller,
-    bool obscureText = false,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildGradientText(
-          label,
-          14,
-          true,
-          colors: [const Color(0xFF91C5E2), const Color(0xFF4C8DB3)],
-          letterSpacing: 1.0,
+        _SentToText(text: sentToText, identifier: sentTo),
+        const SizedBox(height: 28),
+        AuthOtpInput(
+          label: l10n?.otpCodeLabel ?? 'OTP CODE',
+          controller: _otpController,
+          focusNode: _otpFocus,
+          length: _otpLength,
+          hasError: _hasError,
+          onChanged: (value) {
+            // Clearing the boxes after a wrong code also fires this with an
+            // empty value; keep the error until they actually type.
+            if (_hasError && value.isNotEmpty) setState(() => _hasError = false);
+          },
+          onCompleted: (_) => _submit(),
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF91C5E2).withValues(alpha: 0.6),
-                offset: const Offset(0, 2),
-                blurRadius: 0,
-              ),
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
+        ValueListenableBuilder<TextEditingValue>(
+          valueListenable: _otpController,
+          builder: (context, value, _) => AuthGlassButton(
+            label: l10n?.verifyAction ?? 'Verify',
+            isLoading: _submitting,
+            onPressed: value.text.length == _otpLength ? _submit : null,
           ),
-          child: TextField(
-            controller: controller,
-            obscureText: obscureText,
-            keyboardType: keyboardType,
-            style: const TextStyle(color: Color(0xFF031645), fontSize: 12),
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: const TextStyle(
-                color: Color(0xFFA0AAB2),
-                fontSize: 12,
-              ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            ),
-          ),
+        ),
+        const SizedBox(height: 18),
+        _ResendRow(
+          prompt: l10n?.didntGetCode ?? "Didn't get the code?",
+          action: l10n?.resendCode ?? 'Resend Code',
+          countdown: _secondsLeft > 0
+              ? (l10n?.resendCodeIn(_formatSeconds(_secondsLeft)) ?? 'Resend in ${_formatSeconds(_secondsLeft)}')
+              : null,
+          onResend: _resend,
         ),
       ],
     );
   }
 
-  Widget _buildStarIcon({double size = 24, double opacity = 0.4}) {
-    return const SizedBox.shrink();
+  static String _formatSeconds(int seconds) =>
+      '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
+}
+
+/// The "sent to" message with the email or phone number in bold.
+class _SentToText extends StatelessWidget {
+  const _SentToText({required this.text, required this.identifier});
+
+  final String text;
+  final String identifier;
+
+  @override
+  Widget build(BuildContext context) {
+    final base = GoogleFonts.robotoCondensed(
+      color: AuthColors.hint,
+      fontSize: 16,
+      height: 1.4,
+    );
+    final at = identifier.isEmpty ? -1 : text.lastIndexOf(identifier);
+
+    return Text.rich(
+      at < 0
+          ? TextSpan(text: text)
+          : TextSpan(children: [
+              TextSpan(text: text.substring(0, at)),
+              TextSpan(
+                text: identifier,
+                style: base.copyWith(
+                  color: AuthColors.headerNavy,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              TextSpan(text: text.substring(at + identifier.length)),
+            ]),
+      textAlign: TextAlign.start,
+      style: base,
+    );
   }
 }
 
+/// "Didn't get the code?" with a countdown, then a Resend link once it ends.
+class _ResendRow extends StatelessWidget {
+  const _ResendRow({
+    required this.prompt,
+    required this.action,
+    required this.countdown,
+    required this.onResend,
+  });
+
+  final String prompt;
+  final String action;
+  final String? countdown;
+  final VoidCallback onResend;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = GoogleFonts.robotoCondensed(fontSize: 15, color: AuthColors.hint);
+
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Text('$prompt ', style: style),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: countdown != null
+              ? Padding(
+                  key: const ValueKey('countdown'),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    countdown!,
+                    style: style.copyWith(
+                      color: AuthColors.headerNavy.withValues(alpha: 0.7),
+                      fontWeight: FontWeight.w600,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                )
+              : InkWell(
+                  key: const ValueKey('resend'),
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: onResend,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                    child: Text(
+                      action,
+                      style: style.copyWith(
+                        color: AuthColors.brandBlue,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+        ),
+      ],
+    );
+  }
+}

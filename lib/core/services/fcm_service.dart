@@ -8,6 +8,7 @@ import '../../features/task/presentation/screens/task_detail_screen.dart';
 import '../../firebase_options.dart';
 import '../routes/app_routes.dart';
 import '../storage/user_manager.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -18,10 +19,10 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   } catch (_) {}
 }
 
-const AndroidNotificationChannel highImportanceChannel = AndroidNotificationChannel(
+final AndroidNotificationChannel highImportanceChannel = AndroidNotificationChannel(
   'high_importance_channel',
-  'High Importance Notifications',
-  description: 'This channel is used for important notifications and alerts.',
+  tr.notifChannelImportant,
+  description: tr.notifChannelImportantDesc,
   importance: Importance.max,
   playSound: true,
   enableVibration: true,
@@ -37,6 +38,9 @@ class FcmService {
       FlutterLocalNotificationsPlugin();
 
   bool _isInitialized = false;
+
+  /// Called after a new Firebase token is stored. Set from app startup.
+  Future<void> Function()? onTokenSaved;
 
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -82,6 +86,7 @@ class FcmService {
 
       _messaging.onTokenRefresh.listen((newToken) async {
         await UserManager().saveFcmToken(newToken);
+        await onTokenSaved?.call();
       });
 
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {

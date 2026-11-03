@@ -11,6 +11,8 @@ import '../../data/dto/response/invite_response.dart';
 import '../../data/repositories/invite_repository_impl.dart';
 import '../../data/services/invite_service.dart';
 import '../../domain/repositories/invite_repository.dart';
+import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class InviteFriendController extends BaseController {
   final InviteRepository repository;
@@ -75,9 +77,9 @@ class InviteFriendController extends BaseController {
 
   void copyInviteLink() {
     Clipboard.setData(ClipboardData(text: inviteLink.value));
-    Get.snackbar(
-      'Copied',
-      'Invite link copied to clipboard',
+    AppSnack.show(
+      tr.copied,
+      tr.inviteLinkCopied,
       backgroundColor: const Color(0xFF1E293B).withOpacity(0.9),
       colorText: Colors.white,
       duration: const Duration(seconds: 2),
@@ -89,9 +91,9 @@ class InviteFriendController extends BaseController {
 
   void copyToken() {
     Clipboard.setData(ClipboardData(text: inviteToken.value));
-    Get.snackbar(
-      'Copied',
-      'Invite token copied to clipboard',
+    AppSnack.show(
+      tr.copied,
+      tr.inviteTokenCopied,
       backgroundColor: const Color(0xFF1E293B).withOpacity(0.9),
       colorText: Colors.white,
       duration: const Duration(seconds: 2),
@@ -103,7 +105,7 @@ class InviteFriendController extends BaseController {
 
   Future<void> shareVia(String platform) async {
     final link = inviteLink.value;
-    final message = 'Join me on MoveM! Move with purpose. Use my invite link: $link';
+    final message = tr.inviteShareMessage(link);
 
     switch (platform.toLowerCase()) {
       case 'telegram':

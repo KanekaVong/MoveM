@@ -1,4 +1,7 @@
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -7,6 +10,7 @@ import 'firebase_options.dart';
 import 'core/config/app_config.dart';
 import 'core/config/app_environment.dart';
 import 'core/services/fcm_service.dart';
+import 'features/auth/data/device_registration.dart';
 import 'core/services/notification_scheduler_service.dart';
 import 'core/storage/app_database.dart';
 import 'core/utils/Constants.dart';
@@ -18,7 +22,11 @@ import 'core/storage/local_storage.dart';
 import 'core/storage/user_manager.dart';
 
 void main() async {
-  await mainCommon(environment: Environment.dev);
+  final flavor = appFlavor;
+  final environment = (flavor == 'prod' || flavor == 'release')
+      ? Environment.release
+      : Environment.dev;
+  await mainCommon(environment: environment);
 }
 
 Future<void> mainCommon({required Environment environment}) async {
@@ -29,34 +37,26 @@ Future<void> mainCommon({required Environment environment}) async {
 
   try {
     await AppDatabase().init();
-  } catch (e) {
-    if (AppConfig.enableDetailedLogging) {
-      debugPrint('⚠️ Error initializing AppDatabase: $e');
-    }
-  }
+  } catch (_) {}
 
   try {
     await NotificationSchedulerService().initialize();
     await NotificationSchedulerService().rescheduleAllPendingReminders();
-  } catch (e) {
-    if (AppConfig.enableDetailedLogging) {
-      debugPrint('⚠️ Error initializing NotificationSchedulerService: $e');
-    }
-  }
+  } catch (_) {}
 
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    FcmService().onTokenSaved = DeviceRegistration.registerIfLoggedIn;
     await FcmService().initialize();
-  } catch (e) {
-    if (AppConfig.enableDetailedLogging) {
-      debugPrint('⚠️ Error initializing Firebase: $e');
-    }
-  }
+  } catch (_) {}
 
   final savedLocale = Locale(UserManager().languageCode);
+  // Month and weekday names in DateFormat follow the app language.
+  await initializeDateFormatting();
+  Intl.defaultLocale = savedLocale.languageCode;
   final savedTheme = UserManager().themeMode;
 
   ThemeMode initialThemeMode;
@@ -96,6 +96,27 @@ class MyApp extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       initialRoute: UserManager().isLoggedIn ? AppRoutes.main : AppRoutes.login,
       getPages: AppPages.pages,
+      builder: (context, child) {
+        final media = MediaQuery.of(context);
+        return MediaQuery(
+          data: media.copyWith(textScaler: TextScaler.noScaling),
+          child: Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: (event) {
+            final focus = FocusManager.instance.primaryFocus;
+            if (focus == null || focus.context == null) return;
+            final renderObject = focus.context!.findRenderObject();
+            if (renderObject is! RenderBox) return;
+            final local = renderObject.globalToLocal(event.position);
+            final bounds = Offset.zero & renderObject.size;
+            if (!bounds.contains(local)) {
+              focus.unfocus();
+            }
+          },
+          child: child ?? const SizedBox.shrink(),
+        ),
+        );
+      },
     );
   }
 }

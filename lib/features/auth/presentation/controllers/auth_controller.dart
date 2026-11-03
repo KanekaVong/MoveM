@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../../data/device_registration.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../data/dto/request/login_request.dart';
 import '../../data/dto/request/register_request.dart';
@@ -9,13 +10,13 @@ import '../../data/dto/request/forgot_password_request.dart';
 import '../../data/dto/request/reset_password_request.dart';
 import '../../data/dto/response/user_response.dart';
 import '../../domain/repositories/auth_repository.dart';
-import 'package:movem/features/settings/presentation/screens/add_account_verify_otp_screen.dart';
 
 import '../../../../core/utils/app_dialogs.dart';
-import '/../core/storage/user_manager.dart';
-import '../../../../core/storage/saved_account.dart';
-import '../bindings/auth_binding.dart';
-
+import '../../../../core/storage/user_manager.dart';
+import '../../../home/presentation/controllers/home_controller.dart';
+import '../../../settings/presentation/controllers/settings_controller.dart';
+import '../../../settings/presentation/controllers/profile_controller.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class AuthController extends BaseController {
   final AuthRepository repository;
@@ -24,7 +25,7 @@ class AuthController extends BaseController {
 
   final Rxn<UserResponse> currentUser = Rxn<UserResponse>();
 
-  Future<void> login(String username, String password, {bool isAddingAccount = false,}) async {
+  Future<void> login(String username, String password) async {
     final deviceId = await UserManager().getOrCreateDeviceId();
     final savedTrustToken = await UserManager().getTrustToken();
     final trimmedUsername = username.trim();
@@ -39,29 +40,14 @@ class AuthController extends BaseController {
         ),
       ),
       onSuccess: (data) async {
-
         if (data.isFullyLoggedIn) {
           if (data.user == null ||
               data.accessToken == null ||
               data.trustToken == null) {
             AppDialogs.showError(
-              'Invalid login response from server.',
+              tr.serverBadResponse,
             );
             return;
-          }
-
-          //duplicate-account ADD check
-          if (isAddingAccount) {
-            final alreadySaved = await UserManager().isAccountSaved(
-              data.user!.id,
-            );
-
-            if (alreadySaved) {
-              AppDialogs.showError(
-                'This account is already added to this device.',
-              );
-              return;
-            }
           }
 
           await UserManager().saveUser(data.user!);
@@ -77,17 +63,7 @@ class AuthController extends BaseController {
             data.user!.username,
           );
 
-          // Save the newly added account.
-          if (isAddingAccount) {
-            await UserManager().saveAccount(
-              SavedAccount(
-                accessToken: data.accessToken!,
-                trustToken: data.trustToken!,
-                user: data.user!,
-              ),
-            );
-          }
-
+          DeviceRegistration.registerIfLoggedIn();
           Get.offAllNamed(AppRoutes.main);
           return;
         }
@@ -95,58 +71,33 @@ class AuthController extends BaseController {
         // Login OTP required
         if (data.message != null &&
             data.message!.toLowerCase().contains('otp')) {
-          if (isAddingAccount) {
-            Get.to(
-                  () => const AddAccountVerifyOtpScreen(),
-              binding: AuthBinding(),
-              arguments: {
-                'mode': 'otp',
-                'identifier': trimmedUsername,
-                'isAddingAccount': true,
-              },
-            );
-          } else {
-            Get.offNamed(
-              AppRoutes.verifyOtp,
-              arguments: {
-                'mode': 'otp',
-                'identifier': username,
-                'isAddingAccount': false,
-              },
-            );
-          }
+          Get.offNamed(
+            AppRoutes.verifyOtp,
+            arguments: {
+              'mode': 'otp',
+              'identifier': trimmedUsername,
+              'email': data.email ?? _savedEmailFor(trimmedUsername),
+            },
+          );
           return;
         }
 
         // Unexpected successful response
         AppDialogs.showError(
-          data.message ?? 'Unexpected login response from server.',
+          data.message ?? tr.serverBadResponse,
         );
       },
       showErrorDialog: false,
       onError: (e) {
         if (e.statusCode == 403 &&
             e.message.toLowerCase().contains('verify')) {
-          if (isAddingAccount) {
-            Get.to(
-                  () => const AddAccountVerifyOtpScreen(),
-              binding: AuthBinding(),
-              arguments: {
-                'mode': 'email',
-                'identifier': e.email ?? trimmedUsername,
-                'isAddingAccount': true,
-              },
-            );
-          } else {
-            Get.offNamed(
-              AppRoutes.verifyOtp,
-              arguments: {
-                'mode': 'email',
-                'identifier': e.email,
-                'isAddingAccount': false,
-              },
-            );
-          }
+          Get.offNamed(
+            AppRoutes.verifyOtp,
+            arguments: {
+              'mode': 'email',
+              'identifier': e.email ?? trimmedUsername,
+            },
+          );
         } else {
           AppDialogs.showError(e.message);
         }
@@ -154,11 +105,23 @@ class AuthController extends BaseController {
     );
   }
 
-  Future<void> verifyOtp(String username, String otp, {bool isAddingAccount = false,}) async {
+  /// Email of the account last signed in on this device, if [username]
+  /// (or its email) matches it. Used to show where the login OTP went.
+  String? _savedEmailFor(String username) {
+    final saved = UserManager().getUser();
+    if (saved == null || saved.email.isEmpty) return null;
+    final name = username.toLowerCase();
+    if (saved.username.toLowerCase() == name || saved.email.toLowerCase() == name) {
+      return saved.email;
+    }
+    return null;
+  }
 
+  Future<void> verifyOtp(String username, String otp) async {
     final deviceId = await UserManager().getOrCreateDeviceId();
 
     await executeApi(
+      handleUnauthorized: false,
       apiCall: () => repository.verifyOtp(
         OtpRequest(username: username.trim(), otp: otp.trim(), deviceId: deviceId),
       ),
@@ -167,23 +130,9 @@ class AuthController extends BaseController {
 
         if (data.user == null || data.accessToken == null || data.trustToken == null) {
           AppDialogs.showError(
-            'Invalid OTP verification response from server.',
+            tr.serverBadResponse,
           );
           return;
-        }
-
-        //duplicate-account ADD check
-        if (isAddingAccount) {
-          final alreadySaved = await UserManager().isAccountSaved(
-            data.user!.id,
-          );
-
-          if (alreadySaved) {
-            AppDialogs.showError(
-              'This account is already added to this device.',
-            );
-            return;
-          }
         }
 
         // Save the newly verified account as the active account.
@@ -191,24 +140,13 @@ class AuthController extends BaseController {
         await UserManager().saveToken(data.accessToken!);
         await UserManager().saveTrustToken(data.trustToken!);
         await UserManager().setLogged(true);
-        await UserManager().saveUserId(data.user!.id.toString(),);
-        await UserManager().saveUserName(data.user!.username,);
-
-        // If this is Add Account, save the newly authenticated
-        // account into the saved-account list.
-        if (isAddingAccount) {
-          await UserManager().saveAccount(
-            SavedAccount(
-              accessToken: data.accessToken!,
-              trustToken: data.trustToken!,
-              user: data.user!,
-            ),
-          );
-        }
+        await UserManager().saveUserId(data.user!.id.toString());
+        await UserManager().saveUserName(data.user!.username);
+        DeviceRegistration.registerIfLoggedIn();
 
         AppDialogs.showSingleActionDialog(
-          title: 'Verified',
-          message: 'OTP Verified Successfully!',
+          title: tr.authVerifiedTitle,
+          message: tr.authOtpVerified,
           onConfirm: () => Get.offAllNamed(AppRoutes.main),
         );
       },
@@ -220,8 +158,8 @@ class AuthController extends BaseController {
       apiCall: () => repository.resendLoginOtp(username.trim()),
       onSuccess: (data) {
         AppDialogs.showSingleActionDialog(
-          title: 'Code Sent',
-          message: 'A new code has been sent to your email.',
+          title: tr.authCodeSentTitle,
+          message: tr.authNewCodeSent,
         );
       },
     );
@@ -232,9 +170,7 @@ class AuthController extends BaseController {
       String username,
       String password,
       String firstname,
-      String lastname, {
-        bool isAddingAccount = false,
-      }) async {
+      String lastname) async {
     await executeApi(
       apiCall: () => repository.register(
         RegisterRequest(
@@ -246,34 +182,22 @@ class AuthController extends BaseController {
         ),
       ),
       onSuccess: (data) {
-        if (isAddingAccount) {
-          Get.to(
-                () => const AddAccountVerifyOtpScreen(),
-            binding: AuthBinding(),
-            arguments: {
-              'mode': 'email',
-              'identifier': email.trim(),
-              'isAddingAccount': true,
-            },
-          );
-        } else {
-          Get.offNamed(
-            AppRoutes.verifyOtp,
-            arguments: {
-              'mode': 'email',
-              'identifier': email,
-              'isAddingAccount': false,
-            },
-          );
-        }
+        Get.offNamed(
+          AppRoutes.verifyOtp,
+          arguments: {
+            'mode': 'email',
+            'identifier': email.trim(),
+          },
+        );
       },
     );
   }
 
-  Future<void> verifyEmail(String email, String code, {bool isAddingAccount = false,}) async {
+  Future<void> verifyEmail(String email, String code) async {
     final deviceId = await UserManager().getOrCreateDeviceId();
 
     await executeApi(
+      handleUnauthorized: false,
       apiCall: () => repository.verifyEmail(
         EmailVerifyRequest(email: email.trim(), code: code.trim(), deviceId: deviceId),
       ),
@@ -284,23 +208,9 @@ class AuthController extends BaseController {
             data.accessToken == null ||
             data.trustToken == null) {
           AppDialogs.showError(
-            'Invalid email verification response from server.',
+            tr.serverBadResponse,
           );
           return;
-        }
-
-        //duplicate-account ADD check
-        if (isAddingAccount) {
-          final alreadySaved = await UserManager().isAccountSaved(
-            data.user!.id,
-          );
-
-          if (alreadySaved) {
-            AppDialogs.showError(
-              'This account is already added to this device.',
-            );
-            return;
-          }
         }
 
         // Make the verified account the active account.
@@ -316,22 +226,11 @@ class AuthController extends BaseController {
         await UserManager().saveUserName(
           data.user!.username,
         );
-
-        // When registration comes from Add Account,
-        // also store the new account in saved_accounts.
-        if (isAddingAccount) {
-          await UserManager().saveAccount(
-            SavedAccount(
-              accessToken: data.accessToken!,
-              trustToken: data.trustToken!,
-              user: data.user!,
-            ),
-          );
-        }
+        DeviceRegistration.registerIfLoggedIn();
 
         AppDialogs.showSingleActionDialog(
-          title: 'Verified',
-          message: 'Email Verified Successfully!',
+          title: tr.authVerifiedTitle,
+          message: tr.authEmailVerified,
           onConfirm: () => Get.offAllNamed(AppRoutes.main),
         );
       },
@@ -343,17 +242,29 @@ class AuthController extends BaseController {
       apiCall: () => repository.resendVerification(email),
       onSuccess: (data) {
         AppDialogs.showSingleActionDialog(
-          title: 'Code Sent',
-          message: 'A new verification code has been sent to your email.',
+          title: tr.authCodeSentTitle,
+          message: tr.authNewVerificationCodeSent,
         );
       },
     );
   }
 
-  void logout() async {
-    await repository.logout();
+  Future<void> logout() async {
+    try {
+      await repository.logout();
+    } catch (_) {}
     await UserManager().clearSession();
+    DeviceRegistration.reset();
     currentUser.value = null;
+    if (Get.isRegistered<HomeController>()) {
+      Get.find<HomeController>().currentUser.value = null;
+    }
+    if (Get.isRegistered<SettingsController>()) {
+      Get.find<SettingsController>().user.value = null;
+    }
+    if (Get.isRegistered<ProfileController>()) {
+      Get.find<ProfileController>().user.value = null;
+    }
     Get.offAllNamed(AppRoutes.login);
   }
 
@@ -364,8 +275,8 @@ class AuthController extends BaseController {
       ),
       onSuccess: (data) {
         AppDialogs.showSingleActionDialog(
-          title: 'OTP Sent',
-          message: 'An OTP has been sent to $email.',
+          title: tr.authOtpSentTitle,
+          message: tr.authOtpSentTo(email),
         );
       },
     );
@@ -396,8 +307,8 @@ class AuthController extends BaseController {
         }
 
         AppDialogs.showSingleActionDialog(
-          title: 'Password Reset',
-          message: 'Your password has been reset successfully.',
+          title: tr.authPasswordResetTitle,
+          message: tr.authPasswordResetDone,
           onConfirm: () {
             Get.back();
             Get.offAllNamed(AppRoutes.main);

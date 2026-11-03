@@ -9,6 +9,7 @@ import '../../../task/presentation/screens/task_comment_screen.dart';
 import '../../../task/presentation/screens/task_detail_screen.dart';
 import '../../data/dto/response/notification_response.dart';
 import '../../domain/repositories/notification_repository.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class NotificationController extends GetxController {
   final NotificationRepository repository;
@@ -65,7 +66,7 @@ class NotificationController extends GetxController {
       if (refId.isNotEmpty) {
         Get.to(() => TaskCommentScreen(
               activityId: refId,
-              taskTitle: notification.title ?? 'Task Details',
+              taskTitle: notification.title ?? tr.taskDetails,
             ));
       } else {
         _switchToTab(1); // Task tab

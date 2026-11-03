@@ -2,6 +2,13 @@ import 'api_exceptions.dart';
 
 sealed class ApiResult<T> {
   const ApiResult();
+
+  bool get isSuccess => this is ApiSuccess<T>;
+  bool get isError => this is ApiError<T>;
+  bool get isLoading => this is ApiLoading<T>;
+
+  T? get data => this is ApiSuccess<T> ? (this as ApiSuccess<T>).data : null;
+  ApiException? get exception => this is ApiError<T> ? (this as ApiError<T>).exception : null;
 }
 
 class ApiLoading<T> extends ApiResult<T> {

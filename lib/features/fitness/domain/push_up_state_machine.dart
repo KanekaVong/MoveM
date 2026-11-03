@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import '../data/models/push_up_session_model.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 enum PushUpState {
   up,
@@ -47,13 +48,13 @@ class PushUpStateMachine {
         _state = PushUpState.down;
         _downPhaseStartTime = now;
         _minAngleInCurrentRep = angle;
-        onStateChanged?.call(_state, angle, 'Good depth! Now push up!');
+        onStateChanged?.call(_state, angle, tr.cueGoodDepthPushUp);
       } else {
         // Still in UP state
         onStateChanged?.call(
           _state,
           angle,
-          angle < 120 ? 'Lower down...' : 'Get ready to lower',
+          angle < 120 ? tr.cueLowerDown : tr.cueGetReadyToLower,
         );
       }
     } else if (_state == PushUpState.down) {
@@ -102,14 +103,14 @@ class PushUpStateMachine {
           _state,
           angle,
           quality == PushUpFormQuality.excellent
-              ? 'Excellent Rep! 🏆'
-              : 'Rep #$_completedReps Complete!',
+              ? tr.cueExcellentRep
+              : tr.cueRepComplete(_completedReps),
         );
       } else {
         onStateChanged?.call(
           _state,
           angle,
-          'Push all the way up!',
+          tr.cuePushAllTheWayUp,
         );
       }
     }

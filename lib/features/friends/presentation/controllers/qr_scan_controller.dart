@@ -1,15 +1,20 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:camera/camera.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../../../../core/network/api_result.dart';
+import 'package:zxing2/qrcode.dart';
 import '../../../../shared/base/base_controller.dart';
-import '../../data/dto/response/friend_response.dart';
 import '../../data/repositories/friends_repository_impl.dart';
 import '../../data/services/friends_service.dart';
 import '../../domain/repositories/friends_repository.dart';
+import 'public_user_profile_controller.dart';
+import '../screens/public_user_profile_screen.dart';
+import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class QrScanController extends BaseController {
   final FriendsRepository friendsRepository = FriendsRepositoryImpl(friendsService: FriendsService());
@@ -20,6 +25,10 @@ class QrScanController extends BaseController {
   final RxBool isTorchOn = false.obs;
   final RxBool isProcessing = false.obs;
   final RxString scanStatus = ''.obs;
+  bool _isProcessingFrame = false;
+  bool _pauseScanning = false;
+  bool _isClosed = false;
+  Timer? _liveScanTimer;
 
   @override
   void onInit() {
@@ -29,21 +38,49 @@ class QrScanController extends BaseController {
 
   @override
   void onClose() {
-    cameraController?.dispose();
+    _isClosed = true;
+    _pauseScanning = true;
+    _stopLiveScan();
+    final controller = cameraController;
+    cameraController = null;
+    isCameraInitialized.value = false;
+    unawaited(_disposeCamera(controller));
     super.onClose();
+  }
+
+  Future<void> _disposeCamera(CameraController? controller) async {
+    var waited = 0;
+    while (_isProcessingFrame && waited < 30) {
+      await Future.delayed(const Duration(milliseconds: 50));
+      waited++;
+    }
+    if (controller == null) return;
+    try {
+      await controller.dispose();
+    } catch (_) {}
+  }
+
+  bool get _canUseCamera {
+    final controller = cameraController;
+    return !_isClosed &&
+        controller != null &&
+        controller.value.isInitialized &&
+        !controller.value.isTakingPicture;
   }
 
   Future<void> _initCamera() async {
     try {
       final status = await Permission.camera.request();
+      if (_isClosed) return;
       if (!status.isGranted) {
-        scanStatus.value = 'Camera permission required';
+        scanStatus.value = tr.cameraPermissionRequired;
         return;
       }
 
       final cameras = await availableCameras();
+      if (_isClosed) return;
       if (cameras.isEmpty) {
-        scanStatus.value = 'No camera found';
+        scanStatus.value = tr.noCameraFound;
         return;
       }
 
@@ -52,21 +89,43 @@ class QrScanController extends BaseController {
         orElse: () => cameras.first,
       );
 
-      cameraController = CameraController(
+      final controller = CameraController(
         backCamera,
-        ResolutionPreset.high,
+        ResolutionPreset.medium,
         enableAudio: false,
       );
+      cameraController = controller;
 
-      await cameraController!.initialize();
+      await controller.initialize();
+      if (_isClosed) {
+        cameraController = null;
+        await _disposeCamera(controller);
+        return;
+      }
       isCameraInitialized.value = true;
-    } catch (e) {
-      scanStatus.value = 'Unable to initialize camera';
+      _startLiveScan();
+    } catch (_) {
+      if (_isClosed) return;
+      scanStatus.value = tr.cameraInitFailed;
     }
   }
 
+  void _startLiveScan() {
+    if (_isClosed || _pauseScanning) return;
+    _liveScanTimer?.cancel();
+    _liveScanTimer = Timer.periodic(const Duration(milliseconds: 1400), (_) {
+      if (_isClosed || _pauseScanning) return;
+      _captureAndDecode();
+    });
+  }
+
+  void _stopLiveScan() {
+    _liveScanTimer?.cancel();
+    _liveScanTimer = null;
+  }
+
   Future<void> toggleTorch() async {
-    if (cameraController == null || !cameraController!.value.isInitialized) return;
+    if (!_canUseCamera) return;
 
     try {
       if (isTorchOn.value) {
@@ -80,150 +139,180 @@ class QrScanController extends BaseController {
   }
 
   Future<void> pickImageFromGallery() async {
+    if (isProcessing.value || _pauseScanning) {
+      return;
+    }
+
+    _pauseScanning = true;
+    _stopLiveScan();
+
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        handleQrPayload(image.name.split('.').first);
+      if (image == null) {
+        return;
       }
+
+      final file = File(image.path);
+      final exists = await file.exists();
+      if (!exists) {
+        AppSnack.show(tr.errorTitle, tr.couldNotOpenImage);
+        return;
+      }
+
+      final payload = await _decodeQrFromFile(file);
+      if (payload == null || payload.isEmpty) {
+        AppSnack.show(tr.invalidQr, tr.noQrInImage);
+        return;
+      }
+
+      await handleQrPayload(payload);
     } catch (_) {
-      Get.snackbar('Error', 'Unable to pick image from gallery');
+      AppSnack.show(tr.errorTitle, tr.qrGalleryScanFailed);
+    } finally {
+      if (!_isClosed && !isProcessing.value) {
+        _pauseScanning = false;
+        _startLiveScan();
+      }
+    }
+  }
+
+  Future<void> _captureAndDecode() async {
+    if (_isClosed || isProcessing.value || _isProcessingFrame || _pauseScanning) return;
+    final controller = cameraController;
+    if (controller == null || !controller.value.isInitialized || controller.value.isTakingPicture) {
+      return;
+    }
+
+    _isProcessingFrame = true;
+    try {
+      if (_isClosed || cameraController != controller) return;
+      final shot = await controller.takePicture();
+      if (_isClosed) {
+        try {
+          await File(shot.path).delete();
+        } catch (_) {}
+        return;
+      }
+      final payload = await _decodeQrFromFile(File(shot.path));
+      try {
+        await File(shot.path).delete();
+      } catch (_) {}
+      if (_isClosed) return;
+      if (payload != null && payload.isNotEmpty) {
+        await handleQrPayload(payload);
+      }
+    } catch (e) {
+      if (_isClosed) return;
+    } finally {
+      _isProcessingFrame = false;
+    }
+  }
+
+  Future<String?> _decodeQrFromFile(File file) async {
+    final bytes = await file.readAsBytes();
+    return _decodeQrFromBytes(bytes);
+  }
+
+  String? _decodeQrFromBytes(Uint8List bytes) {
+    final decoded = img.decodeImage(bytes);
+    if (decoded == null) {
+      return null;
+    }
+
+    var image = decoded;
+    const maxSide = 1200;
+    if (image.width > maxSide || image.height > maxSide) {
+      image = img.copyResize(
+        image,
+        width: image.width >= image.height ? maxSide : null,
+        height: image.height > image.width ? maxSide : null,
+      );
+    }
+
+    final source = RGBLuminanceSource(
+      image.width,
+      image.height,
+      image.convert(numChannels: 4).getBytes(order: img.ChannelOrder.abgr).buffer.asInt32List(),
+    );
+    final reader = QRCodeReader();
+
+    try {
+      final result = reader.decode(BinaryBitmap(HybridBinarizer(source)));
+      return result.text;
+    } catch (_) {
+      try {
+        final inverted = reader.decode(BinaryBitmap(HybridBinarizer(InvertedLuminanceSource(source))));
+        return inverted.text;
+      } catch (_) {
+        return null;
+      }
     }
   }
 
   Future<void> handleQrPayload(String rawContent) async {
-    if (isProcessing.value) return;
+    if (_isClosed || isProcessing.value) {
+      return;
+    }
     isProcessing.value = true;
+    _pauseScanning = true;
+    _stopLiveScan();
 
+    final userId = _extractUserId(rawContent);
+    if (userId == null || userId.isEmpty) {
+      isProcessing.value = false;
+      if (!_isClosed) {
+        _pauseScanning = false;
+        _startLiveScan();
+      }
+      AppSnack.show(tr.invalidQr, tr.noUserInQr);
+      return;
+    }
+
+    await executeApi(
+      apiCall: () => friendsRepository.getUserById(userId),
+      onSuccess: (profile) async {
+        Get.off(
+          () => const PublicUserProfileScreen(),
+          binding: BindingsBuilder(() {
+            Get.put(PublicUserProfileController(
+              repository: friendsRepository,
+              userId: profile.id.isNotEmpty ? profile.id : userId,
+              initialProfile: profile,
+            ));
+          }),
+        );
+        Future.microtask(() {
+          if (Get.isRegistered<QrScanController>()) {
+            Get.delete<QrScanController>(force: true);
+          }
+        });
+      },
+      onError: (e) async {
+        isProcessing.value = false;
+        if (!_isClosed) {
+          _pauseScanning = false;
+          _startLiveScan();
+        }
+      },
+    );
+  }
+
+  String? _extractUserId(String rawContent) {
     final sanitized = rawContent.trim();
-    String query = sanitized;
+    if (sanitized.isEmpty) return null;
 
+    String query = sanitized;
     if (sanitized.contains('movem://user/')) {
       query = sanitized.split('movem://user/').last.split('?').first.trim();
     } else if (sanitized.contains('movem.app/user/')) {
       query = sanitized.split('movem.app/user/').last.split('?').first.trim();
+    } else if (sanitized.contains('/user/')) {
+      query = sanitized.split('/user/').last.split('?').first.split('/').first.trim();
     } else if (sanitized.startsWith('@')) {
       query = sanitized.substring(1).trim();
     }
 
-    if (query.isEmpty) {
-      isProcessing.value = false;
-      Get.snackbar('Invalid QR', 'No valid user found in QR code');
-      return;
-    }
-
-    FriendResponse? foundUser;
-    final result = await friendsRepository.searchFriends(query);
-    if (result is ApiSuccess<List<FriendResponse>> && result.data.isNotEmpty) {
-      foundUser = result.data.firstWhere(
-        (u) => u.userId.toString() == query || u.username.toLowerCase() == query.toLowerCase(),
-        orElse: () => result.data.first,
-      );
-    }
-
-    final displayName = foundUser != null
-        ? '${foundUser.firstname} ${foundUser.lastname}'.trim().isNotEmpty
-            ? '${foundUser.firstname} ${foundUser.lastname}'.trim()
-            : foundUser.username
-        : query;
-    final username = foundUser?.username ?? query;
-    final profilePic = foundUser?.profilePic;
-    final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U';
-
-    Get.dialog(
-      Dialog(
-        backgroundColor: const Color(0xFF131B2F),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: Color(0xFF1E293B)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xFF334155),
-                ),
-                child: ClipOval(
-                  child: (profilePic != null && profilePic.isNotEmpty)
-                      ? CachedNetworkImage(
-                          imageUrl: profilePic,
-                          fit: BoxFit.cover,
-                          placeholder: (_, __) => Center(
-                            child: Text(initial, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-                          ),
-                          errorWidget: (_, __, ___) => Center(
-                            child: Text(initial, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-                          ),
-                        )
-                      : Center(
-                          child: Text(initial, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-                        ),
-                ),
-              ),
-              const SizedBox(height: 14),
-              Text(
-                displayName,
-                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '@$username',
-                style: const TextStyle(color: Color(0xFFA0AAB2), fontSize: 13),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        Get.back();
-                        isProcessing.value = false;
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFF334155)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: const Text('Cancel', style: TextStyle(color: Colors.white70)),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        Get.back();
-                        await _sendFriendRequest(username);
-                        isProcessing.value = false;
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF48A45B),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: const Text('Add Friend', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _sendFriendRequest(String username) async {
-    await executeApi(
-      apiCall: () => friendsRepository.sendFriendRequest(username),
-      onSuccess: (data) {
-        Get.snackbar('Success', 'Friend request sent to @$username', backgroundColor: const Color(0xFF48A45B), colorText: Colors.white);
-      },
-    );
+    query = query.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '');
+    return query.isEmpty ? null : query;
   }
 }

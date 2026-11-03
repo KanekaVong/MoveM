@@ -8,6 +8,7 @@ class FriendRequestTile extends StatelessWidget {
   final String username;
   final VoidCallback onAccept;
   final VoidCallback onReject;
+  final VoidCallback? onTap;
 
   const FriendRequestTile({
     super.key,
@@ -16,6 +17,7 @@ class FriendRequestTile extends StatelessWidget {
     required this.username,
     required this.onAccept,
     required this.onReject,
+    this.onTap,
   });
 
   @override
@@ -26,36 +28,54 @@ class FriendRequestTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Row(
         children: [
-          ClipOval(
-            child: SizedBox(
-              width: 40,
-              height: 40,
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => _buildPlaceholder(initial),
-                errorWidget: (context, url, error) => _buildPlaceholder(initial),
+          Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onTap,
+              child: Row(
+                children: [
+                  ClipOval(
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => _buildPlaceholder(initial),
+                        errorWidget: (context, url, error) => _buildPlaceholder(initial),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          username,
+                          style: TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 10,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  username,
-                  style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
+          const SizedBox(width: 8),
           Row(
             children: [
               GestureDetector(
@@ -63,8 +83,8 @@ class FriendRequestTile extends StatelessWidget {
                 child: Container(
                   width: 32,
                   height: 32,
-                  decoration: const BoxDecoration(
-                    color: AppColors.slate800,
+                  decoration: BoxDecoration(
+                    color: AppColors.chipSurface,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.close, color: AppColors.blueAccent, size: 16),
@@ -76,11 +96,11 @@ class FriendRequestTile extends StatelessWidget {
                 child: Container(
                   width: 32,
                   height: 32,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.blueAccent,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.check, color: Colors.white, size: 16),
+                  child: Icon(Icons.check, color: Colors.white, size: 16),
                 ),
               ),
             ],
@@ -93,11 +113,11 @@ class FriendRequestTile extends StatelessWidget {
   Widget _buildPlaceholder(String initial) {
     return CircleAvatar(
       radius: 20,
-      backgroundColor: AppColors.slate700,
+      backgroundColor: AppColors.chipSurface,
       child: Text(
         initial,
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: AppColors.textPrimary,
           fontWeight: FontWeight.bold,
           fontSize: 14,
         ),

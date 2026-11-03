@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class ApiException implements Exception {
   final String message;
@@ -11,27 +12,38 @@ class ApiException implements Exception {
   factory ApiException.fromDioError(DioException dioError) {
     switch (dioError.type) {
       case DioExceptionType.cancel:
-        return ApiException(message: "Request to API server was cancelled");
+        return ApiException(message: tr.apiRequestCancelled);
       case DioExceptionType.connectionTimeout:
-        return ApiException(message: "Connection timeout with API server");
+        return ApiException(message: tr.apiTimeout);
       case DioExceptionType.receiveTimeout:
-        return ApiException(message: "Receive timeout in connection with API server");
+        return ApiException(message: tr.apiTimeout);
       case DioExceptionType.sendTimeout:
-        return ApiException(message: "Send timeout in connection with API server");
+        return ApiException(message: tr.apiTimeout);
       case DioExceptionType.connectionError:
-        return ApiException(message: "No Internet Connection");
+        return ApiException(message: tr.apiNoInternet);
       case DioExceptionType.badResponse:
         return ApiException._handleError(
           dioError.response?.statusCode,
           dioError.response?.data,
         );
+      case DioExceptionType.unknown:
+        if (dioError.response != null && dioError.response?.data != null) {
+          return ApiException._handleError(
+            dioError.response?.statusCode,
+            dioError.response?.data,
+          );
+        }
+        if (dioError.error is FormatException) {
+          return ApiException(message: tr.serverBadResponse);
+        }
+        return ApiException(message: tr.unexpectedError);
       default:
-        return ApiException(message: "Something went wrong");
+        return ApiException(message: tr.unexpectedError);
     }
   }
 
   factory ApiException._handleError(int? statusCode, dynamic data) {
-    String defaultMessage = "Unexpected error occurred";
+    String? defaultMessage;
     String? email;
     if (data != null) {
       if (data is Map<String, dynamic> && data.containsKey('message')) {
@@ -43,6 +55,8 @@ class ApiException implements Exception {
           if (decoded is Map<String, dynamic> && decoded.containsKey('message')) {
             defaultMessage = decoded['message'].toString();
             email = decoded['email']?.toString();
+          } else if (decoded is String && decoded.trim().isNotEmpty) {
+            defaultMessage = decoded.trim();
           } else {
             defaultMessage = _cleanBackendError(data);
           }
@@ -52,21 +66,22 @@ class ApiException implements Exception {
       }
     }
 
-    bool hasCustomMessage = defaultMessage != "Unexpected error occurred";
+    final serverMessage = defaultMessage;
+    final message = serverMessage ?? tr.unexpectedError;
 
     switch (statusCode) {
       case 400:
-        return ApiException(message: defaultMessage, statusCode: 400, email: email);
+        return ApiException(message: message, statusCode: 400, email: email);
       case 401:
-        return ApiException(message: hasCustomMessage ? defaultMessage : "Unauthorized: Please login again.", statusCode: 401);
+        return ApiException(message: serverMessage ?? tr.apiUnauthorized, statusCode: 401);
       case 403:
-        return ApiException(message: hasCustomMessage ? defaultMessage : "Forbidden: You don't have access.", statusCode: 403, email: email);
+        return ApiException(message: serverMessage ?? tr.apiForbidden, statusCode: 403, email: email);
       case 404:
-        return ApiException(message: hasCustomMessage ? defaultMessage : "Resource not found", statusCode: 404);
+        return ApiException(message: serverMessage ?? tr.apiNotFound, statusCode: 404);
       case 500:
-        return ApiException(message: hasCustomMessage ? defaultMessage : "Internal server error", statusCode: 500);
+        return ApiException(message: serverMessage ?? tr.apiServerError, statusCode: 500);
       default:
-        return ApiException(message: defaultMessage, statusCode: statusCode, email: email);
+        return ApiException(message: message, statusCode: statusCode, email: email);
     }
   }
 
@@ -77,7 +92,7 @@ class ApiException implements Exception {
       if (match != null) {
         final value = match.group(1);
         final key = match.group(2)?.split('.').last;
-        return "The $key '$value' is already taken. Please try another one.";
+        return tr.apiAlreadyTaken(key ?? '', value ?? '');
       }
     }
     return rawMessage;

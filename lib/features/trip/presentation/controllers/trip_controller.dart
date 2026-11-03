@@ -5,17 +5,25 @@ import '../../../../core/utils/app_dialogs.dart';
 import '../../data/dto/response/trip_summary_response.dart';
 import '../../domain/repositories/trip_repository.dart';
 import '../../data/dto/request/create_trip_request.dart';
+import '../../data/dto/response/trip_response.dart';
+import 'package:get/get.dart';
+import 'package:dio/dio.dart' as dio;
+import 'package:dio/dio.dart' as dio;
+import 'package:image_picker/image_picker.dart';
 
 class TripController extends BaseController {
-  static const String _tripWelcomeSeenKey = 'trip_welcome_seen';
+  // True while the recent trips list loads, so screens can show a shimmer.
+  final RxBool isLoadingTrips = true.obs;
 
+  static const String _tripWelcomeSeenKey = 'trip_welcome_seen';
+  TripResponse? selectedTrip;
   final TripRepository repository;
 
   TripController({
     required this.repository,
   });
 
-  final List<TripSummaryResponse> recentTrips = [];
+  final RxList<TripSummaryResponse> recentTrips = <TripSummaryResponse>[].obs;
 
   Future<bool> shouldShowWelcome() async {
     final prefs = await SharedPreferences.getInstance();
@@ -29,36 +37,139 @@ class TripController extends BaseController {
     await prefs.setBool(_tripWelcomeSeenKey, true);
   }
 
-  Future<void> getMyTrips() async {
+  Future<void> getMyTrips({
+    bool showLoading = false,
+  }) async {
+    isLoadingTrips.value = true;
     await executeApi(
       apiCall: () => repository.getMyTrips(),
       onSuccess: (data) {
         recentTrips
           ..clear()
           ..addAll(data);
+        print('MY TRIPS RESULT: $data');
       },
+      showLoading: showLoading,
       showErrorDialog: false,
       onError: (e) {
         recentTrips.clear();
         AppDialogs.showError(e.message);
       },
     );
+    isLoadingTrips.value = false;
   }
 
-  Future<void> createTrip(CreateTripRequest request) async {
+  Future<bool> getTripDetail(String activityId) async {
+    var success = false;
+
     await executeApi(
-      apiCall: () => repository.createTrip(request),
+      apiCall: () => repository.getTripDetail(activityId),
       onSuccess: (data) {
-        AppDialogs.showSingleActionDialog(
-          title: 'Trip Created',
-          message: 'Your trip has been created successfully.',
-        );
+        selectedTrip = data;
+        success = true;
       },
       showErrorDialog: false,
       onError: (e) {
         AppDialogs.showError(e.message);
       },
     );
+
+    return success;
+  }
+
+  Future<bool> createTrip(CreateTripRequest request) async {
+    var success = false;
+
+    await executeApi(
+      apiCall: () => repository.createTrip(request),
+      onSuccess: (_) {
+        success = true;
+      },
+      showErrorDialog: false,
+      onError: (e) {
+        AppDialogs.showError(e.message);
+      },
+    );
+
+    return success;
+  }
+
+  Future<bool> deleteTrip(String activityId) async {
+    var success = false;
+
+    await executeApi(
+      apiCall: () => repository.deleteTrip(activityId),
+      onSuccess: (_) {
+        recentTrips.removeWhere(
+              (trip) => trip.activityId == activityId,
+        );
+
+        success = true;
+      },
+      showErrorDialog: false,
+      onError: (e) {
+        AppDialogs.showError(e.message);
+      },
+    );
+
+    return success;
+  }
+
+  Future<bool> uploadCoverPhoto(
+      String activityId,
+      dio.MultipartFile file,
+      ) async {
+    var success = false;
+
+    await executeApi(
+      apiCall: () => repository.uploadCoverPhoto(
+        activityId,
+        file,
+      ),
+      onSuccess: (_) {
+        success = true;
+      },
+      showErrorDialog: false,
+      onError: (e) {
+        AppDialogs.showError(e.message);
+      },
+    );
+
+    return success;
+  }
+
+  Future<bool> pickAndUploadCoverPhoto(
+      String activityId,
+      ) async {
+    final picker = ImagePicker();
+
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (pickedFile == null) {
+      return false;
+    }
+
+    final file = await dio.MultipartFile.fromFile(
+      pickedFile.path,
+      filename: pickedFile.name,
+    );
+
+    final success = await uploadCoverPhoto(
+      activityId,
+      file,
+    );
+
+    if (!success) {
+      return false;
+    }
+
+    await getMyTrips(
+      showLoading: false,
+    );
+
+    return true;
   }
 
 }
