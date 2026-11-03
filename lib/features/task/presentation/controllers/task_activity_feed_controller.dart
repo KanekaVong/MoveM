@@ -7,6 +7,7 @@ import '../../data/dto/response/page_activity_feed_response.dart';
 import '../../data/repositories/task_repository_impl.dart';
 import '../../data/services/task_service.dart';
 import '../../domain/repositories/task_repository.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TaskActivityFeedController extends BaseController {
   final String activityId;
@@ -78,7 +79,7 @@ class TaskActivityFeedController extends BaseController {
       state.value = ViewState.success;
       errorMessage.value = '';
     } else {
-      errorMessage.value = result.exception?.message ?? 'Failed to load history';
+      errorMessage.value = result.exception?.message ?? tr.failedToLoadHistory;
       if (!loadMore && items.isEmpty) {
         state.value = ViewState.error;
       } else {

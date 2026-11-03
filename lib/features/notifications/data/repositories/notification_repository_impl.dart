@@ -4,6 +4,7 @@ import '../../../../core/network/api_exceptions.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../dto/response/notification_response.dart';
 import '../services/notification_service.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
   final NotificationService service;
@@ -23,7 +24,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
             .toList();
         return ApiSuccess(notifications);
       }
-      return ApiError(ApiException(message: 'Invalid response format from server.'));
+      return ApiError(ApiException(message: tr.serverBadResponse));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {

@@ -12,6 +12,7 @@ import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/Formatters.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class HomeNewsFeed extends GetView<HomeController> {
   const HomeNewsFeed({super.key});
@@ -212,7 +213,7 @@ class HomeNewsFeed extends GetView<HomeController> {
       final distance = item.distanceKm;
       final distanceLabel = distance != null && distance > 0
           ? Formatters.distanceKm(distance)
-          : 'RUN';
+          : tr.activityRun;
 
       return Container(
         width: 128,

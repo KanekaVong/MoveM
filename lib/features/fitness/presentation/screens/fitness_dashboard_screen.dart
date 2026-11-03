@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,6 +15,7 @@ import '../controllers/workout_history_controller.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class FitnessDashboardScreen extends StatelessWidget {
   final FitnessProfileController controller;
@@ -133,7 +135,7 @@ class FitnessDashboardScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Today's Workout",
+                  tr.todaysWorkout,
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 15,
@@ -142,7 +144,7 @@ class FitnessDashboardScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 28),
                 Text(
-                  "Small step, big changes",
+                  tr.smallStepBigChanges,
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 13,
@@ -151,7 +153,7 @@ class FitnessDashboardScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  "Start tracking your Fitness Journey with us now",
+                  tr.startTrackingJourney,
                   style: TextStyle(
                     color: AppColors.textPrimary.withValues(alpha: 0.8),
                     fontSize: 11,
@@ -201,7 +203,7 @@ class FitnessDashboardScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Calories Burned',
+                    tr.caloriesBurnedTitle,
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
                   ),
                   SizedBox(height: 4),
@@ -263,13 +265,9 @@ class FitnessDashboardScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildDayPill('Mon', isActive: currentWeekday == 1),
-              _buildDayPill('Tue', isActive: currentWeekday == 2),
-              _buildDayPill('Wed', isActive: currentWeekday == 3),
-              _buildDayPill('Thu', isActive: currentWeekday == 4),
-              _buildDayPill('Fri', isActive: currentWeekday == 5),
-              _buildDayPill('Sat', isActive: currentWeekday == 6),
-              _buildDayPill('Sun', isActive: currentWeekday == 7),
+              // 2024-01-01 was a Monday; DateFormat gives the weekday in the app language.
+              for (var day = 1; day <= 7; day++)
+                _buildDayPill(DateFormat.E().format(DateTime(2024, 1, day)), isActive: currentWeekday == day),
             ],
           ),
         ],
@@ -340,7 +338,7 @@ class FitnessDashboardScreen extends StatelessWidget {
             ),
             SizedBox(width: 10),
             _quickActionCard(
-              label: l10n?.history ?? 'History',
+              label: tr.historyTitle.toUpperCase(),
               onTap: () {
                 if (Get.isRegistered<WorkoutHistoryController>()) {
                   Get.delete<WorkoutHistoryController>(force: true);

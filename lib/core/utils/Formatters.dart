@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class Formatters {
   static String date(DateTime date){
@@ -9,8 +10,8 @@ class Formatters {
   /// Workout distance: meters under 1 km, otherwise km with at most one decimal.
   static String distanceKm(double km) {
     if (km >= 1) {
-      return km % 1 == 0 ? '${km.toInt()}KM' : '${km.toStringAsFixed(1)}KM';
+      return tr.unitKmValue(km % 1 == 0 ? '${km.toInt()}' : km.toStringAsFixed(1));
     }
-    return '${(km * 1000).round()}M';
+    return tr.unitMeterValue('${(km * 1000).round()}');
   }
 }

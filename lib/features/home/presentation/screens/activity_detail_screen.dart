@@ -11,6 +11,7 @@ import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/Formatters.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class ActivityDetailScreen extends GetView<ActivityDetailController> {
   const ActivityDetailScreen({super.key});
@@ -134,10 +135,10 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
       children: [
         Row(
           children: [
-            _statCell('STEPS', item.stepsCount > 0 ? '${item.stepsCount}' : '--'),
+            _statCell(tr.activitySteps, item.stepsCount > 0 ? '${item.stepsCount}' : '--'),
             _statCell(
-              'DURATIONS',
-              durationMins > 0 ? '$durationMins MINS' : (item.duration ?? '--'),
+              tr.editTripDurations,
+              durationMins > 0 ? tr.activityDurationMins(durationMins) : (item.duration ?? '--'),
             ),
           ],
         ),
@@ -145,14 +146,14 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
         Row(
           children: [
             _statCell(
-              'CALORIES',
+              tr.activityCalories,
               item.caloriesCount > 0 ? '${item.caloriesCount}' : '--',
               valueColor: _Palette.calories,
               trailing: item.caloriesCount > 0
                   ? const Text(' 🔥', style: TextStyle(fontSize: 16))
                   : null,
             ),
-            _statCell('AVG PACE', item.averagePace ?? '--'),
+            _statCell(tr.activityAvgPace, item.averagePace ?? '--'),
           ],
         ),
       ],
@@ -202,7 +203,7 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
     return Column(
       children: [
         Text(
-          'CHALLENGE',
+          tr.activityChallenge,
           style: TextStyle(
             color: _Palette.muted,
             fontSize: 13,
@@ -223,7 +224,7 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
         ),
         const SizedBox(height: 6),
         Text(
-          'COMPLETED 🔥',
+          tr.activityCompleted,
           style: TextStyle(
             color: _Palette.gold,
             fontSize: 18,
@@ -249,7 +250,7 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
               ),
               const SizedBox(width: 6),
               Text(
-                '${_formatCount(item.kudosCount)} Likes',
+                tr.likesCount(_formatCount(item.kudosCount)),
                 style: TextStyle(
                   color: _Palette.accent,
                   fontSize: 14,
@@ -263,7 +264,7 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
         Icon(Icons.chat_bubble_outline_rounded, size: 18, color: _Palette.accent),
         const SizedBox(width: 6),
         Text(
-          '${_formatCount(item.commentCount)} Comments',
+          tr.commentsCount(_formatCount(item.commentCount)),
           style: TextStyle(
             color: _Palette.accent,
             fontSize: 14,
@@ -410,7 +411,7 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
   String _workoutLabel(HomeFeedItem item) {
     if (item.workoutType.contains('PUSH')) return 'PUSH';
     if (item.workoutType.contains('SQUAT')) return 'SQUAT';
-    return 'WORKOUT';
+    return tr.activityWorkout;
   }
 
   String _formatCount(int count) {

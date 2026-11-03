@@ -18,6 +18,7 @@ import 'package:flutter/gestures.dart';
 
 import 'package:movem/features/trip/data/services/google_places_service.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 /// Reusable edit form container.
 class EditTripFormPanel extends StatelessWidget {
@@ -572,7 +573,7 @@ class _DurationEditPanelState extends State<DurationEditPanel> {
 
   String _formatDate(DateTime? date) {
     if (date == null) {
-      return 'Select date and time';
+      return tr.selectDateAndTime;
     }
 
     final hour = date.hour.toString().padLeft(2, '0');
@@ -589,7 +590,7 @@ class _DurationEditPanelState extends State<DurationEditPanel> {
     if (_startActivity == null || _deadline == null) {
       AppSnack.show(
         l10n?.editTripSectionDuration ?? 'Duration',
-        'Please select both dates',
+        tr.selectBothDates,
         snackPosition: SnackPosition.BOTTOM,
       );
 
@@ -599,7 +600,7 @@ class _DurationEditPanelState extends State<DurationEditPanel> {
     if (_deadline!.isBefore(_startActivity!)) {
       AppSnack.show(
         l10n?.editTripSectionDuration ?? 'Duration',
-        'Deadline cannot be before the start date',
+        tr.endBeforeStart,
         snackPosition: SnackPosition.BOTTOM,
       );
 
@@ -614,7 +615,7 @@ class _DurationEditPanelState extends State<DurationEditPanel> {
     if (success) {
       AppSnack.show(
         l10n?.editTripUpdateSuccess ?? 'Success',
-        'Duration updated',
+        tr.durationUpdated,
         snackPosition: SnackPosition.BOTTOM,
       );
     } else {
@@ -1069,7 +1070,7 @@ class _PendingInviteItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
-              l10n?.pending ?? 'Pending',
+              tr.taskStatusPending,
               style: TextStyle(
                 color: secondaryTextColor,
                 fontSize: 11,
@@ -1446,7 +1447,7 @@ class _StopsEditPanelState extends State<StopsEditPanel> {
             ? (l10n?.editTripUpdateSuccess ?? 'Success')
             : (l10n?.error ?? 'Error'),
         success
-            ? 'Stop updated successfully'
+            ? tr.stopUpdated
             : (l10n?.editTripUpdateFailed ?? 'Failed to update stop'),
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -1529,13 +1530,13 @@ class _StopsEditPanelState extends State<StopsEditPanel> {
               onPressed: () {
                 Navigator.pop(dialogContext, false);
               },
-              child: const Text('CANCEL'),
+              child: Text(tr.cancelCaps),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(dialogContext, true);
               },
-              child: const Text('DELETE'),
+              child: Text(tr.deleteCaps),
             ),
           ],
         );
@@ -1569,8 +1570,8 @@ class _StopsEditPanelState extends State<StopsEditPanel> {
   ) async {
     if (stop.id == null || stop.lat == null || stop.lng == null) {
       Get.snackbar(
-        'Error',
-        'This stop does not have a valid location.',
+        tr.errorTitle,
+        tr.stopNoValidLocation,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -1912,7 +1913,7 @@ class _StopsEditPanelState extends State<StopsEditPanel> {
                 ),
                 label: Text(
                   _editingStopId != null
-                      ? 'Save Changes'
+                      ? tr.saveChanges
                       : (l10n?.editTripAddStop ?? 'Add Stop'),
                 ),
               ),
@@ -2050,14 +2051,14 @@ class _StopsEditPanelState extends State<StopsEditPanel> {
                                 );
                               }
                             },
-                            itemBuilder: (_) => const [
+                            itemBuilder: (_) => [
                               PopupMenuItem(
                                 value: 'edit',
-                                child: Text('Edit'),
+                                child: Text(tr.edit),
                               ),
                               PopupMenuItem(
                                 value: 'delete',
-                                child: Text('Delete'),
+                                child: Text(tr.delete),
                               ),
                             ],
                           ),
@@ -2287,7 +2288,7 @@ class _PackingEditPanelState extends State<PackingEditPanel> {
                                   if (success) {
                                     Get.snackbar(
                                       l10n?.editTripUpdateSuccess ?? 'Success',
-                                      '${item.itemName ?? 'Item'} deleted',
+                                      tr.itemDeleted(item.itemName ?? tr.editTripItem),
                                       snackPosition: SnackPosition.BOTTOM,
                                     );
                                   } else {
@@ -2348,7 +2349,7 @@ class _ChecklistEditPanelState extends State<ChecklistEditPanel> {
     if (itemName.isEmpty) {
       AppSnack.show(
         l10n?.editTripItem ?? 'Item',
-        'Please enter a checklist item',
+        tr.pleaseEnterChecklistItem,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -2482,7 +2483,7 @@ class _ChecklistEditPanelState extends State<ChecklistEditPanel> {
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: const Text('CANCEL'),
+              child: Text(tr.cancelCaps),
             ),
             ElevatedButton(
               onPressed: () {
@@ -2523,7 +2524,7 @@ class _ChecklistEditPanelState extends State<ChecklistEditPanel> {
             ? (l10n?.editTripUpdateSuccess ?? 'Success')
             : (l10n?.error ?? 'Error'),
         success
-            ? 'Checklist updated'
+            ? tr.checklistUpdated
             : (l10n?.editTripUpdateFailed ?? 'Failed to update checklist'),
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -2728,7 +2729,7 @@ class _AttachmentsEditPanelState extends State<AttachmentsEditPanel> {
           ? (l10n?.editTripUpdateSuccess ?? 'Success')
           : (l10n?.error ?? 'Error'),
       success
-          ? 'Attachment uploaded'
+          ? tr.attachmentUploaded
           : (l10n?.editTripUpdateFailed ?? 'Failed to upload attachment'),
       snackPosition: SnackPosition.BOTTOM,
     );
@@ -2854,7 +2855,7 @@ class _AttachmentsEditPanelState extends State<AttachmentsEditPanel> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                item.originalFileName ?? 'Attachment',
+                                item.originalFileName ?? tr.attachment,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(

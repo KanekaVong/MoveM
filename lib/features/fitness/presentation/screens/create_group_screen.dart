@@ -7,6 +7,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class CreateGroupScreen extends StatefulWidget {
   const CreateGroupScreen({super.key});
@@ -61,7 +62,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
     final createdClub = await _controller.createClub(
       name: name,
-      description: description.isNotEmpty ? description : 'MoveM Fitness Club',
+      description: description.isNotEmpty ? description : tr.defaultClubName,
       privacy: selectedPrivacy,
     );
 
@@ -222,7 +223,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 14),
                     border: InputBorder.none,
                     counterStyle: TextStyle(color: AppColors.textCaption, fontSize: 11),
-                    hintText: 'Describe your club and who should join...',
+                    hintText: tr.clubDescriptionHint,
                     hintStyle: TextStyle(color: AppColors.textCaption, fontSize: 14),
                   ),
                 ),
@@ -280,7 +281,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'MEMBERS ( ${_selectedMemberIds.length} )',
+                    tr.membersCountSpaced(_selectedMemberIds.length),
                     style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,

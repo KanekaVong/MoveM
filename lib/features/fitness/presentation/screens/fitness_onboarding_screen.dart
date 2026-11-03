@@ -6,6 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_button.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class FitnessOnboardingScreen extends StatefulWidget {
   final FitnessProfileController controller;
@@ -132,7 +133,7 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
               child: Column(
                 children: [
                   Text(
-                    widget.isEditing ? 'Edit your details' : 'Your details',
+                    widget.isEditing ? tr.editYourDetails : tr.yourDetails,
                     style: TextStyle(color: AppColors.textPrimary, fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
@@ -201,7 +202,7 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
     return Column(
       children: [
         Text(
-          "What's your height?",
+          tr.heightQuestion,
           style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 32),
@@ -254,13 +255,13 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
     return Column(
       children: [
         Text(
-          "What's your current weight ?",
+          tr.weightQuestion,
           style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 32),
         _buildToggleContainer(
           leftText: 'kg',
-          rightText: 'Lbs',
+          rightText: tr.lbsUnit,
           isLeftActive: _isKg,
           onLeftTap: () => setState(() => _isKg = true),
           onRightTap: () => setState(() => _isKg = false),
@@ -293,7 +294,7 @@ class _FitnessOnboardingScreenState extends State<FitnessOnboardingScreen> {
               ),
               SizedBox(width: 8),
               Text(
-                _isKg ? 'kg' : 'Lbs',
+                _isKg ? tr.kgUnit : tr.lbsUnit,
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ],

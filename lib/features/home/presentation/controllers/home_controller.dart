@@ -15,6 +15,7 @@ import '../../../friends/presentation/screens/add_friends_screen.dart';
 import '../../../main_nav/presentation/controllers/main_nav_controller.dart';
 import '../../domain/models/home_feed_item.dart';
 import '../../../../core/utils/Formatters.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class HomeController extends BaseController {
   final FitnessWorkoutRepository workoutRepository = FitnessWorkoutRepository();
@@ -24,9 +25,9 @@ class HomeController extends BaseController {
   // True until the first feed request finishes, so the empty state isn't flashed.
   final RxBool isFeedLoading = true.obs;
 
-  final RxString dailyQuote =
-      '“Success is stumbling from failure to failure with no loss of enthusiasm” - Winston Churchill'.obs;
-  final RxList<String> sloganWords = <String>['MOVE', 'EXPLORE', 'ACHIEVE'].obs;
+  // Getters, so they follow the current language.
+  String get dailyQuote => tr.homeDailyQuote;
+  List<String> get sloganWords => [tr.homeSloganMove, tr.homeSloganExplore, tr.homeSloganAchieve];
 
   @override
   void onInit() {
@@ -65,7 +66,7 @@ class HomeController extends BaseController {
     if (user != null && user.username.trim().isNotEmpty) {
       return user.username.trim();
     }
-    return 'MoveM User';
+    return tr.homeMovemUser;
   }
 
   String get userInitial {
@@ -75,7 +76,7 @@ class HomeController extends BaseController {
 
   String? get profilePicUrl => currentUser.value?.profilePic;
 
-  String get recentActivityMessage => 'Stay Active Today!';
+  String get recentActivityMessage => tr.stayActiveToday;
 
   Future<void> fetchDashboard() => fetchSocialFeed();
 
@@ -104,14 +105,14 @@ class HomeController extends BaseController {
     String title;
     if (isRunning) {
       title = post.distance > 0
-          ? 'Completed a ${Formatters.distanceKm(post.distance)} Run! 🔥'
-          : 'Completed a Run! 🔥';
+          ? tr.feedCompletedRunDistance(Formatters.distanceKm(post.distance))
+          : tr.feedCompletedRun;
     } else if (workoutType.contains('PUSH')) {
-      title = 'Completed a PushUp Challenge 🔥';
+      title = tr.feedCompletedPushUp;
     } else if (workoutType.contains('SQUAT')) {
-      title = 'Completed a Squat Challenge 🔥';
+      title = tr.feedCompletedSquat;
     } else {
-      title = 'Completed a ${post.workoutType} Challenge 🔥';
+      title = tr.feedCompletedWorkout(post.workoutType);
     }
 
     String? imageUrl;
@@ -124,7 +125,7 @@ class HomeController extends BaseController {
     return HomeFeedItem(
       id: 'social_${post.sessionId}',
       sessionId: post.sessionId,
-      userName: post.username.isNotEmpty ? post.username : 'MoveM Athlete',
+      userName: post.username.isNotEmpty ? post.username : tr.homeMovemAthlete,
       // The feed API doesn't send profilePicture yet; use our own photo on our posts.
       userAvatar: post.profilePicture ?? (post.myPost ? profilePicUrl : null),
       title: title,
@@ -133,8 +134,8 @@ class HomeController extends BaseController {
           : null,
       imageUrl: imageUrl,
       duration: durationStr,
-      calories: post.caloriesBurned > 0 ? '${post.caloriesBurned.round()}Cals' : null,
-      steps: post.steps > 0 ? '${post.steps}Steps' : null,
+      calories: post.caloriesBurned > 0 ? tr.caloriesValue(post.caloriesBurned.round()) : null,
+      steps: post.steps > 0 ? tr.stepsValue(post.steps) : null,
       distanceKm: post.distance > 0 ? post.distance : null,
       workoutType: workoutType,
       hasGpsRoute: post.points.length >= 2 || (isRunning && post.distance > 0),
@@ -162,11 +163,11 @@ class HomeController extends BaseController {
     final mins = (seconds % 3600) ~/ 60;
     final secs = seconds % 60;
     if (hours > 0) {
-      if (mins > 0) return '${hours}Hr ${mins}Mins';
-      return '${hours}Hr';
+      if (mins > 0) return tr.durHoursMins(hours, mins);
+      return tr.durHours(hours);
     }
-    if (mins > 0) return secs > 0 ? '${mins}m ${secs}s' : '${mins}Mins';
-    return '${secs}s';
+    if (mins > 0) return secs > 0 ? tr.durMinsSecs(mins, secs) : tr.durMins(mins);
+    return tr.durSecs(secs);
   }
 
   String? _formatAveragePace(int durationSeconds, double distanceKm) {
@@ -175,13 +176,13 @@ class HomeController extends BaseController {
     if (paceMin.isNaN || paceMin.isInfinite) return null;
     final minutes = paceMin.floor();
     final seconds = ((paceMin - minutes) * 60).round();
-    return '$minutes:$seconds / KM';
+    return tr.paceValue('$minutes:$seconds');
   }
 
   String? _fallbackChallengeName(String workoutType, double distanceKm) {
     if (workoutType.contains('RUN') && distanceKm > 0) {
       final km = distanceKm >= 1 ? distanceKm.round() : distanceKm;
-      return '$km KILOMETERS SPRINT';
+      return tr.runSprintName(km);
     }
     return null;
   }

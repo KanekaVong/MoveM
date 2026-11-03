@@ -5,6 +5,7 @@ import '../../data/repositories/fitness_challenge_repository.dart';
 import '../controllers/solo_challenge_detail_controller.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class SoloFitnessDetailScreen extends StatelessWidget {
   final SoloChallengeModel challenge;
@@ -138,7 +139,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                                     Row(
                                       children: [
                                         Text(
-                                          'More Activity',
+                                          tr.moreActivity,
                                           style: TextStyle(
                                             color: AppColors.textPrimary,
                                             fontSize: 16,
@@ -167,7 +168,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
                                   SizedBox(height: 22),
 
                                   AppButton(
-                                    label: 'Start',
+                                    label: tr.start,
                                     icon: Icons.play_arrow_outlined,
                                     onPressed: () => controller.startWorkout(() => _showComingSoonModal(c, controller)),
                                   ),
@@ -225,7 +226,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
   }
 
   void _showComingSoonModal(SoloChallengeModel c, [SoloChallengeDetailController? controller]) {
-    final workoutTitle = c.name.isNotEmpty ? c.name : (c.type.isNotEmpty ? c.type : 'Workout');
+    final workoutTitle = c.name.isNotEmpty ? c.name : (c.type.isNotEmpty ? c.type : tr.activityWorkout);
 
     Get.bottomSheet(
       Container(
@@ -265,7 +266,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
             ),
             SizedBox(height: 18),
             Text(
-              '$workoutTitle Tracking Coming Soon',
+              tr.trackingComingSoonTitle(workoutTitle),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.textPrimary,
@@ -276,7 +277,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
             ),
             SizedBox(height: 12),
             Text(
-              'Tracking for $workoutTitle is currently in active development and will be available in an upcoming update.',
+              tr.trackingComingSoonBody(workoutTitle),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.textSecondary,
@@ -286,7 +287,7 @@ class SoloFitnessDetailScreen extends StatelessWidget {
             ),
             SizedBox(height: 28),
             AppButton(
-              label: 'Got it',
+              label: tr.gotIt,
               onPressed: () => Get.back(),
               height: 50,
             ),
@@ -310,9 +311,9 @@ class SoloFitnessDetailScreen extends StatelessWidget {
     return items.map((item) {
       final isRunning = item.isRunning;
       final subtitle = item.sets > 0 && item.repsPerSet > 0
-          ? '${item.sets} Sets of ${item.repsPerSet} ${item.isPushUp ? 'Push Up' : (item.isSquats ? 'Squats' : (item.targetUnit.isNotEmpty ? item.targetUnit : 'Reps'))}'
+          ? tr.setsOfReps(item.sets, item.repsPerSet, item.isPushUp ? tr.workoutPushUp : (item.isSquats ? tr.workoutSquats : (item.targetUnit.isNotEmpty ? unitLabel(item.targetUnit) : tr.unitReps)))
           : (item.targetValue > 0 && item.targetUnit.isNotEmpty
-              ? '${item.targetValue} ${item.targetUnit}'
+              ? '${item.targetValue} ${unitLabel(item.targetUnit)}'
               : (item.description.isNotEmpty ? item.description : item.workoutLevel));
 
       return Padding(

@@ -11,6 +11,7 @@ import '../dto/request/reset_password_request.dart';
 import '../dto/response/auth_response.dart';
 import '../services/auth_service.dart';
 import '../../../../core/network/api_exceptions.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthService authService;
@@ -89,7 +90,7 @@ class AuthRepositoryImpl implements AuthRepository {
         } catch (_) {}
       }
 
-      return ApiError(ApiException(message: 'Invalid email verification response from server.'));
+      return ApiError(ApiException(message: tr.serverBadResponse));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
@@ -116,7 +117,7 @@ class AuthRepositoryImpl implements AuthRepository {
         } catch (_) {}
       }
 
-      return ApiError(ApiException(message: 'Invalid OTP verification response from server.'));
+      return ApiError(ApiException(message: tr.serverBadResponse));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {
@@ -176,7 +177,7 @@ class AuthRepositoryImpl implements AuthRepository {
         } catch (_) {}
       }
 
-      return ApiError(ApiException(message: 'Invalid reset password response from server.'));
+      return ApiError(ApiException(message: tr.serverBadResponse));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {

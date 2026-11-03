@@ -11,6 +11,7 @@ import '../../data/repositories/fitness_challenge_repository.dart';
 import '../screens/push_up_countdown_screen.dart';
 import '../screens/running_tracking_screen.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class SoloChallengeDetailController extends BaseController {
   final FitnessChallengeRepository _repository;
@@ -71,33 +72,33 @@ class SoloChallengeDetailController extends BaseController {
       SoloChallengeModel.pushUpChallenge,
       SoloChallengeModel(
         id: 103,
-        name: 'Squats Challenge',
+        name: tr.squatsChallenge,
         type: 'SQUATS',
         workoutLevel: 'BEGINNER',
         targetValue: 45,
-        targetUnit: 'Reps',
+        targetUnit: tr.unitReps,
         calories: 150,
-        description: 'Lower hips from standing position then stand back up.',
+        description: tr.squatsShortDescription,
         sets: 3,
         repsPerSet: 15,
         progress: 0.25,
-        category: 'Strength',
+        category: tr.strengthCategory,
         heroImagePath: AppImages.squatsActivity,
         imagePath: AppImages.squatsActivity,
       ),
       SoloChallengeModel(
         id: 104,
-        name: 'Pull ups',
+        name: tr.pullUpsName,
         type: 'PULL_UPS',
         workoutLevel: 'INTERMEDIATE',
         targetValue: 20,
-        targetUnit: 'Reps',
+        targetUnit: tr.unitReps,
         calories: 130,
-        description: 'Upper-body exercise where you pull yourself up to a bar.',
+        description: tr.pullUpsDescription,
         sets: 4,
         repsPerSet: 5,
         progress: 0.15,
-        category: 'Upper Body',
+        category: tr.upperBody,
         heroImagePath: AppImages.pullUpsActivity,
         imagePath: AppImages.pullUpsActivity,
       ),
@@ -160,29 +161,29 @@ class SoloChallengeDetailController extends BaseController {
 
     if (isRunning) {
       if (c.targetValue > 0 && c.targetUnit.isNotEmpty) {
-        return '${c.targetValue} ${c.targetUnit} Running';
+        return tr.runningTargetTitle('${c.targetValue} ${unitLabel(c.targetUnit)}');
       }
-      return 'Running Challenge';
+      return tr.runningChallenge;
     }
 
     if (c.sets > 0 && c.repsPerSet > 0) {
       final t = c.type.toUpperCase();
       final n = c.name.toLowerCase();
       final unit = isPushUp
-          ? 'Push Up'
+          ? tr.workoutPushUp
           : (isSquats
-              ? 'Squats'
+              ? tr.workoutSquats
               : (t.contains('PULL') || n.contains('pull')
-                  ? 'Pull Ups'
-                  : (c.targetUnit.isNotEmpty ? c.targetUnit : 'Reps')));
-      return '${c.sets} Sets of ${c.repsPerSet} $unit';
+                  ? tr.workoutPullUps
+                  : (c.targetUnit.isNotEmpty ? unitLabel(c.targetUnit) : tr.unitReps)));
+      return tr.setsOfReps(c.sets, c.repsPerSet, unit);
     }
 
     if (c.targetValue > 0 && c.targetUnit.isNotEmpty) {
-      return '${c.targetValue} ${c.targetUnit} ${c.type}';
+      return '${c.targetValue} ${unitLabel(c.targetUnit)} ${workoutTypeLabel(c.type)}';
     }
 
-    return 'Workout Challenge';
+    return tr.workoutChallenge;
   }
 
   String get formattedDescription {
@@ -191,15 +192,15 @@ class SoloChallengeDetailController extends BaseController {
       return c.description;
     }
     if (isRunning) {
-      return 'Run and track your route, pace, distance, and calories burned in real time.';
+      return tr.runningDescription;
     }
     if (isSquats) {
-      return 'Lower hips from standing position then stand back up to build leg and core strength.';
+      return tr.squatsDescription;
     }
     if (isPushUp) {
-      return "An exercise done to improve upper body strength, performed by resting on one's toes and hands and pushing one's weight off the floor";
+      return tr.pushUpDescription;
     }
-    return 'Challenge yourself and stay consistent to achieve your personal fitness targets.';
+    return tr.genericChallengeDescription;
   }
 
   Future<bool> checkAndRequestLocationPermission() async {
@@ -234,8 +235,8 @@ class SoloChallengeDetailController extends BaseController {
     }
 
     AppSnack.show(
-      'Location Required',
-      'Location access is needed to track your running distance, pace, and route.',
+      tr.locationRequiredTitle,
+      tr.locationNeededForRun,
       backgroundColor: AppColors.textPrimary,
       colorText: Colors.white,
       snackPosition: SnackPosition.BOTTOM,
@@ -275,7 +276,7 @@ class SoloChallengeDetailController extends BaseController {
               ),
               SizedBox(height: 18),
               Text(
-                'Location Access Required',
+                tr.locationAccessRequired,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.textPrimary,
@@ -285,7 +286,7 @@ class SoloChallengeDetailController extends BaseController {
               ),
               SizedBox(height: 10),
               Text(
-                'MoveM needs location access to track your GPS route, distance, and pace. Please enable location permissions in your device settings.',
+                tr.locationSettingsBody,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.textSecondary,
@@ -298,7 +299,7 @@ class SoloChallengeDetailController extends BaseController {
                 children: [
                   Expanded(
                     child: AppButton.secondary(
-                      label: 'Cancel',
+                      label: tr.cancel,
                       onPressed: () => Get.back(),
                       height: 46,
                     ),
@@ -306,7 +307,7 @@ class SoloChallengeDetailController extends BaseController {
                   SizedBox(width: 12),
                   Expanded(
                     child: AppButton(
-                      label: 'Settings',
+                      label: tr.settings,
                       onPressed: () {
                         Get.back();
                         openAppSettings();
@@ -352,7 +353,7 @@ class SoloChallengeDetailController extends BaseController {
               ),
               SizedBox(height: 18),
               Text(
-                'Location Service Disabled',
+                tr.locationServiceDisabled,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.textPrimary,
@@ -362,7 +363,7 @@ class SoloChallengeDetailController extends BaseController {
               ),
               SizedBox(height: 10),
               Text(
-                'Please turn on GPS / Location service on your device so MoveM can record your run.',
+                tr.turnOnGpsBody,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.textSecondary,
@@ -375,7 +376,7 @@ class SoloChallengeDetailController extends BaseController {
                 children: [
                   Expanded(
                     child: AppButton.secondary(
-                      label: 'Cancel',
+                      label: tr.cancel,
                       onPressed: () => Get.back(),
                       height: 46,
                     ),
@@ -383,7 +384,7 @@ class SoloChallengeDetailController extends BaseController {
                   SizedBox(width: 12),
                   Expanded(
                     child: AppButton(
-                      label: 'Turn On',
+                      label: tr.turnOn,
                       onPressed: () {
                         Get.back();
                         Geolocator.openLocationSettings();

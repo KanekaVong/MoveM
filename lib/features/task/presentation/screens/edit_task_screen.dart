@@ -11,6 +11,7 @@ import 'add_collaborator_screen.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class EditTaskScreen extends GetView<EditTaskController> {
   const EditTaskScreen({super.key});
@@ -71,7 +72,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'TITLE',
+          tr.titleLabel,
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 13,
@@ -91,7 +92,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
             border: InputBorder.none,
             isDense: true,
             contentPadding: EdgeInsets.zero,
-            hintText: 'Task title',
+            hintText: tr.taskTitlePlaceholder,
             hintStyle: TextStyle(color: AppColors.textCaption),
           ),
         ),
@@ -107,7 +108,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'DEADLINES',
+            tr.deadlinesLabel,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 13,
@@ -136,7 +137,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'PRIORITY',
+            tr.priorityLabel,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 13,
@@ -146,7 +147,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
           ),
           const SizedBox(height: 4),
           Obx(() => Text(
-            controller.priority.value.toUpperCase(),
+            priorityLabel(controller.priority.value).toUpperCase(),
             style: TextStyle(
               color: _getPriorityColor(controller.priority.value),
               fontSize: 12,
@@ -163,7 +164,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'DESCRIPTION',
+          tr.descriptionLabel,
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 13,
@@ -184,7 +185,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
             border: InputBorder.none,
             isDense: true,
             contentPadding: EdgeInsets.zero,
-            hintText: 'Enter task description...',
+            hintText: tr.taskDescriptionHint,
             hintStyle: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 12,
@@ -207,7 +208,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'LABEL',
+            tr.labelTitle,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 13,
@@ -221,7 +222,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
           Row(
             children: [
               Text(
-                'CHECKLIST',
+                tr.checklistLabel,
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 13,
@@ -240,7 +241,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
           _buildChecklistItems(),
           SizedBox(height: 20),
           Text(
-            'REPEAT',
+            tr.repeatLabelTitle,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 13,
@@ -252,7 +253,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
           GestureDetector(
             onTap: () => controller.cycleRepeat(),
             child: Obx(() => Text(
-              controller.repeatFrequency.value?.toUpperCase() ?? 'NONE',
+              repeatLabel(controller.repeatFrequency.value).toUpperCase(),
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 12,
@@ -269,7 +270,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                 Row(
                   children: [
                     Text(
-                      'Your Next Reminder',
+                      tr.yourNextReminder,
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 13,
@@ -314,7 +315,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            selected?.name ?? 'Select Label',
+            selected?.name ?? tr.selectLabel,
             style: TextStyle(
               color: selected != null ? Colors.white : AppColors.textSecondary,
               fontSize: 11,
@@ -346,7 +347,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                     fontSize: 13,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'Add an item',
+                    hintText: tr.addAnItem,
                     hintStyle: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 13,
@@ -397,7 +398,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Obx(() => Text(
-          'Collaborators   (${controller.collaborators.length})',
+          tr.collaboratorsCount(controller.collaborators.length),
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 13,
@@ -518,7 +519,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'ADD COLLABORATORS',
+                  tr.addCollaboratorsCaps,
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 14,
@@ -542,7 +543,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Attachments   ($totalCount)',
+            tr.attachmentsCount(totalCount),
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 13,
@@ -554,7 +555,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
             Padding(
               padding: EdgeInsets.symmetric(vertical: 4.0),
               child: Text(
-                'No attachments added',
+                tr.noAttachmentsAdded,
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 12,
@@ -578,7 +579,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                   : (att['filePath']?.toString() ?? '').split('/').last;
               rawUrl = att['url']?.toString() ?? '';
             }
-            if (fileName.isEmpty) fileName = 'Attachment';
+            if (fileName.isEmpty) fileName = tr.attachment;
 
             final bool hasUrl = rawUrl.isNotEmpty && (rawUrl.startsWith('http://') || rawUrl.startsWith('https://'));
 
@@ -631,7 +632,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          'Uploaded',
+                          tr.uploaded,
                           style: TextStyle(
                             color: Color(0xFF68B684),
                             fontSize: 11,
@@ -698,7 +699,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          'Ready to upload on save',
+                          tr.readyToUploadOnSave,
                           style: TextStyle(
                             color: Color(0xFF3B82F6),
                             fontSize: 11,
@@ -733,7 +734,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'ADD ATTACHMENTS',
+                    tr.addAttachmentsCaps,
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 14,
@@ -753,7 +754,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
 
   Widget _buildSaveButton(BuildContext context) {
     return AppButton(
-      label: 'Save Changes',
+      label: tr.saveChanges,
       onPressed: () => controller.saveChanges(),
     );
   }
@@ -773,13 +774,13 @@ class EditTaskScreen extends GetView<EditTaskController> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Upload Photo',
+                  tr.uploadPhoto,
                   style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 16),
                 ListTile(
                   leading: Icon(Icons.photo_library, color: Color(0xFF3B82F6)),
-                  title: Text('Choose from Gallery', style: TextStyle(color: AppColors.textPrimary)),
+                  title: Text(tr.chooseFromGallery, style: TextStyle(color: AppColors.textPrimary)),
                   onTap: () {
                     Get.back();
                     controller.pickAttachment(ImageSource.gallery);
@@ -787,7 +788,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
                 ),
                 ListTile(
                   leading: Icon(Icons.camera_alt, color: Color(0xFF68B684)),
-                  title: Text('Take a Photo', style: TextStyle(color: AppColors.textPrimary)),
+                  title: Text(tr.takeAPhoto, style: TextStyle(color: AppColors.textPrimary)),
                   onTap: () {
                     Get.back();
                     controller.pickAttachment(ImageSource.camera);
@@ -824,7 +825,7 @@ class EditTaskScreen extends GetView<EditTaskController> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Select Label', style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(tr.selectLabel, style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
                 SizedBox(height: 16),
                 Wrap(
                   spacing: 10,

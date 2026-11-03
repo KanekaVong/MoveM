@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import '../data/models/squat_session_model.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 enum SquatState {
   up,
@@ -44,12 +45,12 @@ class SquatStateMachine {
         _state = SquatState.down;
         _downPhaseStartTime = now;
         _minAngleInCurrentRep = angle;
-        onStateChanged?.call(_state, angle, 'Good depth! Push up through your heels!');
+        onStateChanged?.call(_state, angle, tr.cueGoodDepthSquat);
       } else {
         onStateChanged?.call(
           _state,
           angle,
-          angle < 130 ? 'Lower your hips...' : 'Stand tall and begin squatting',
+          angle < 130 ? tr.cueLowerHips : tr.cueStandTall,
         );
       }
     } else if (_state == SquatState.down) {
@@ -95,14 +96,14 @@ class SquatStateMachine {
           _state,
           angle,
           quality == SquatFormQuality.excellent
-              ? 'Deep Squat! 🏆'
-              : 'Rep #$_completedReps Complete!',
+              ? tr.cueDeepSquat
+              : tr.cueRepComplete(_completedReps),
         );
       } else {
         onStateChanged?.call(
           _state,
           angle,
-          'Stand all the way up!',
+          tr.cueStandAllTheWayUp,
         );
       }
     }

@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import '../../data/dto/response/trip_response.dart';
 import '../controllers/edit_trip_controller.dart';
@@ -12,6 +13,7 @@ import '../controllers/trip_budget_controller.dart';
 import '../../data/repositories/trip_repository_impl.dart';
 import '../../data/services/trip_service.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TripDetailScreen extends StatefulWidget {
   final String activityId;
@@ -42,12 +44,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
     final l10n = AppLocalizations.of(context);
     if (date == null) return l10n?.editTripDatesNotSet ?? 'Not set';
 
-    const months = [
-      '', 'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December',
-    ];
-
-    return '${date.day} ${months[date.month]} ${date.year}';
+    return DateFormat('d MMMM y').format(date);
   }
 
   String _formatDateRange(TripResponse trip) {
@@ -799,8 +796,8 @@ class _InviteFriendSheetState extends State<_InviteFriendSheet> {
       });
 
       Get.snackbar(
-        'Error',
-        'Failed to search users',
+        tr.errorTitle,
+        tr.failedToSearchUsers,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -826,16 +823,16 @@ class _InviteFriendSheetState extends State<_InviteFriendSheet> {
       Get.back();
 
       Get.snackbar(
-        'Invitation Sent',
-        'Invitation sent to ${user.displayName}',
+        tr.invitationSentTitle,
+        tr.invitationSentTo(user.displayName),
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
       if (!mounted) return;
 
       Get.snackbar(
-        'Invitation Failed',
-        'Could not invite ${user.displayName}',
+        tr.invitationFailedTitle,
+        tr.couldNotInviteName(user.displayName),
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {

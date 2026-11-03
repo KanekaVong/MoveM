@@ -7,6 +7,7 @@ import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class FitnessAchievementsScreen extends StatelessWidget {
   const FitnessAchievementsScreen({super.key});
@@ -58,7 +59,7 @@ class FitnessAchievementsScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '$earnedCount of $totalCount Unlocked',
+                          tr.unlockedOf(earnedCount, totalCount),
                           style: TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 6),
@@ -73,7 +74,7 @@ class FitnessAchievementsScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 6),
                         Text(
-                          '${(percent * 100).toInt()}% completed • Keep pushing!',
+                          tr.percentCompletedKeepPushing((percent * 100).toInt()),
                           style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
                         ),
                       ],
@@ -95,7 +96,7 @@ class FitnessAchievementsScreen extends StatelessWidget {
                   final isSelected = controller.selectedCategory.value == cat;
                   return ChoiceChip(
                     label: Text(
-                      cat,
+                      achievementCategoryLabel(cat),
                       style: TextStyle(
                         color: isSelected ? Colors.white : AppColors.textSecondary,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -206,7 +207,7 @@ class FitnessAchievementsScreen extends StatelessWidget {
                           children: [
                             Icon(Icons.check, color: Colors.amber, size: 12),
                             SizedBox(width: 4),
-                            Text('EARNED', style: TextStyle(color: Colors.amber, fontSize: 10, fontWeight: FontWeight.bold)),
+                            Text(tr.earnedCaps, style: TextStyle(color: Colors.amber, fontSize: 10, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),

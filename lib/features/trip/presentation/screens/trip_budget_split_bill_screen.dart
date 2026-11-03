@@ -7,6 +7,7 @@ import '../controllers/trip_budget_controller.dart';
 import '../../data/dto/response/trip_expense_response.dart';
 import 'package:movem/core/storage/user_manager.dart';
 import '../controllers/trip_budget_controller.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TripBudgetSplitBillScreen extends StatefulWidget {
   final TripExpenseResponse expense;
@@ -1040,7 +1041,7 @@ class _TripBudgetSplitBillScreenState
     final locale = Localizations.localeOf(context);
 
     return DateFormat(
-      'd MMMM yyyy | h:mma',
+      timePattern('d MMMM yyyy | h:mma'),
       locale.languageCode,
     ).format(date);
   }

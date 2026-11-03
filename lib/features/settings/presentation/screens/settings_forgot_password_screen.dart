@@ -8,6 +8,7 @@ import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 import 'package:movem/core/theme/app_colors.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class SettingsForgotPasswordScreen extends StatefulWidget {
   const SettingsForgotPasswordScreen({super.key});
@@ -80,8 +81,8 @@ class _SettingsForgotPasswordScreenState
 
     if (email.isEmpty) {
       AppSnack.show(
-        'Error',
-        'Please enter your email.',
+        tr.errorTitle,
+        tr.pleaseEnterYourEmail,
       );
       return;
     }
@@ -98,40 +99,40 @@ class _SettingsForgotPasswordScreenState
 
     if (email.isEmpty) {
       AppSnack.show(
-        'Error',
-        'Please enter your email.',
+        tr.errorTitle,
+        tr.pleaseEnterYourEmail,
       );
       return;
     }
 
     if (otp.isEmpty) {
       AppSnack.show(
-        'Error',
-        'Please enter the OTP.',
+        tr.errorTitle,
+        tr.pleaseEnterOtp,
       );
       return;
     }
 
     if (newPassword.isEmpty) {
       AppSnack.show(
-        'Error',
-        'Please enter a new password.',
+        tr.errorTitle,
+        tr.pleaseEnterNewPassword,
       );
       return;
     }
 
     if (newPassword.length < 8) {
       AppSnack.show(
-        'Error',
-        'Password must be at least 8 characters.',
+        tr.errorTitle,
+        tr.passwordMin8,
       );
       return;
     }
 
     if (newPassword != confirmPassword) {
       AppSnack.show(
-        'Error',
-        'Passwords do not match.',
+        tr.errorTitle,
+        tr.passwordsDoNotMatch,
       );
       return;
     }
@@ -197,8 +198,8 @@ class _SettingsForgotPasswordScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
-      appBar: const TopToolBar(
-        title: 'Forgot Password',
+      appBar: TopToolBar(
+        title: tr.forgotPasswordTitle,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -212,7 +213,7 @@ class _SettingsForgotPasswordScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Reset your password',
+                tr.resetYourPassword,
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 24,
@@ -221,7 +222,7 @@ class _SettingsForgotPasswordScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                'Enter your email and use the OTP sent to you to create a new password.',
+                tr.resetPasswordSub,
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 13,
@@ -229,7 +230,7 @@ class _SettingsForgotPasswordScreenState
                 ),
               ),
               const SizedBox(height: 30),
-              _buildLabel('Email'),
+              _buildLabel(tr.email),
               const SizedBox(height: 8),
               TextField(
                 controller: _emailController,
@@ -239,11 +240,11 @@ class _SettingsForgotPasswordScreenState
                   fontSize: 14,
                 ),
                 decoration: _inputDecoration(
-                  hint: 'Enter your email',
+                  hint: tr.emailHint,
                 ),
               ),
               const SizedBox(height: 20),
-              _buildLabel('OTP Code'),
+              _buildLabel(tr.otpCodeField),
               const SizedBox(height: 8),
               TextField(
                 controller: _otpController,
@@ -254,13 +255,13 @@ class _SettingsForgotPasswordScreenState
                   fontSize: 14,
                 ),
                 decoration: _inputDecoration(
-                  hint: 'Enter 6-digit OTP',
+                  hint: tr.enter6DigitOtp,
                   suffixIcon: TextButton(
                     onPressed: _isTimerActive ? null : _sendOtp,
                     child: Text(
                       _isTimerActive
                           ? '$_secondsLeft s'
-                          : (_timerFinished ? 'Resend' : 'Send OTP'),
+                          : (_timerFinished ? tr.resend : tr.sendOtp),
                       style: TextStyle(
                         color: _isTimerActive
                             ? AppColors.textCaption
@@ -274,14 +275,14 @@ class _SettingsForgotPasswordScreenState
               ),
               const SizedBox(height: 6),
               Text(
-                'The OTP expires according to your account security settings.',
+                tr.otpExpiryNote,
                 style: TextStyle(
                   color: AppColors.textCaption,
                   fontSize: 11,
                 ),
               ),
               const SizedBox(height: 20),
-              _buildLabel('New Password'),
+              _buildLabel(tr.newPasswordTitle),
               const SizedBox(height: 8),
               TextField(
                 controller: _newPasswordController,
@@ -291,7 +292,7 @@ class _SettingsForgotPasswordScreenState
                   fontSize: 14,
                 ),
                 decoration: _inputDecoration(
-                  hint: 'Enter new password',
+                  hint: tr.newPasswordHint,
                   suffixIcon: IconButton(
                     onPressed: () {
                       setState(() {
@@ -308,7 +309,7 @@ class _SettingsForgotPasswordScreenState
                 ),
               ),
               const SizedBox(height: 20),
-              _buildLabel('Confirm New Password'),
+              _buildLabel(tr.confirmNewPassword),
               const SizedBox(height: 8),
               TextField(
                 controller: _confirmPasswordController,
@@ -318,7 +319,7 @@ class _SettingsForgotPasswordScreenState
                   fontSize: 14,
                 ),
                 decoration: _inputDecoration(
-                  hint: 'Confirm new password',
+                  hint: tr.confirmNewPasswordHint,
                   suffixIcon: IconButton(
                     onPressed: () {
                       setState(() {
@@ -336,7 +337,7 @@ class _SettingsForgotPasswordScreenState
               ),
               const SizedBox(height: 12),
               Text(
-                'Password must be at least 8 characters.',
+                tr.passwordMin8,
                 style: TextStyle(
                   color: AppColors.textCaption,
                   fontSize: 11,
@@ -344,7 +345,7 @@ class _SettingsForgotPasswordScreenState
               ),
               const SizedBox(height: 30),
               AppButton(
-                label: 'Reset Password',
+                label: tr.resetPasswordAction,
                 onPressed: _resetPassword,
               ),
             ],

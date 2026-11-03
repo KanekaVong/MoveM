@@ -24,6 +24,7 @@ import '../dto/response/trip_budget_response.dart';
 import '../dto/request/trip_expense_request.dart';
 import '../dto/response/trip_expense_response.dart';
 import '../../data/dto/request/trip_expense_split_request.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TripRepositoryImpl implements TripRepository {
   final TripService tripService;
@@ -45,7 +46,7 @@ class TripRepositoryImpl implements TripRepository {
         } catch (_) {
           return ApiError(
             ApiException(
-              message: 'Invalid trip response from server.',
+              message: tr.serverBadResponse,
             ),
           );
         }
@@ -65,7 +66,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid trip response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -101,7 +102,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid trip detail response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -141,7 +142,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid trip route response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -179,7 +180,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid create trip response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -239,7 +240,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid reorder stops response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -278,7 +279,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid add stop response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -319,7 +320,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid update stop response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -385,7 +386,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid packing items response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -424,7 +425,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid packing item response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -463,7 +464,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid packing item response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -542,7 +543,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid checklist response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -656,7 +657,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid attachment response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -695,7 +696,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid attachment response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -733,7 +734,7 @@ class TripRepositoryImpl implements TripRepository {
       return ApiError(
         ApiException(
           message:
-          'Invalid cover photo response from server.',
+          tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -775,7 +776,7 @@ class TripRepositoryImpl implements TripRepository {
       return ApiError(
         ApiException(
           message:
-          'Invalid cover photo response from server.',
+          tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -820,7 +821,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid members response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -907,7 +908,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid pending invitations response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -944,7 +945,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid update trip response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -987,7 +988,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid update budget response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -1028,7 +1029,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid create trip expense response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -1067,7 +1068,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid get trip expenses response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -1129,7 +1130,7 @@ class TripRepositoryImpl implements TripRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid create split response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {

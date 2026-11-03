@@ -17,6 +17,7 @@ import '../../../../l10n/app_localizations.dart';
 import 'achievement_notice_controller.dart';
 import 'fitness_profile_controller.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TrackingController extends GetxController {
   static const double _startFixMaxAccuracyMeters = 50.0;
@@ -154,7 +155,7 @@ class TrackingController extends GetxController {
       gpsFailed.value = true;
       AppSnack.show(
         _l10n?.errorTitle ?? 'GPS',
-        'Could not get your current location. Move outdoors and try again.',
+        tr.couldNotGetLocationOutdoors,
       );
     });
 
@@ -417,8 +418,8 @@ class TrackingController extends GetxController {
 
     if (summaryModel == null) {
       AppSnack.show(
-        'Not saved',
-        'Workout couldn\'t be saved to the server. Check your connection.',
+        tr.notSaved,
+        tr.workoutNotSaved,
         snackPosition: SnackPosition.BOTTOM,
       );
     }

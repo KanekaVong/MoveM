@@ -6,6 +6,7 @@ import '../controllers/achievement_notice_controller.dart';
 import '../controllers/fitness_profile_controller.dart';
 import 'fitness_dashboard_screen.dart';
 import 'fitness_onboarding_screen.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class FitnessScreen extends StatefulWidget {
   const FitnessScreen({super.key});
@@ -120,10 +121,10 @@ class _FitnessWelcomeScreenState extends State<FitnessWelcomeScreen> {
                     ],
                   ),
                   const Spacer(),
-                  const Align(
+                  Align(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      'ONE STEP\nTODAY. A\nSTRONGER YOU\nTOMORROW.',
+                      tr.fitnessHeroTitle,
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         color: Colors.white,
@@ -199,9 +200,9 @@ class _FitnessWelcomeScreenState extends State<FitnessWelcomeScreen> {
                                         ),
                                       ],
                                     ),
-                                    child: const Center(
+                                    child: Center(
                                       child: Text(
-                                        'GO',
+                                        tr.goLabel,
                                         style: TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.w900,

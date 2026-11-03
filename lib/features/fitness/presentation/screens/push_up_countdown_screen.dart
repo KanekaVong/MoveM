@@ -7,6 +7,7 @@ import '../../data/models/solo_challenge_model.dart';
 import 'push_up_detection_screen.dart';
 import 'running_tracking_screen.dart';
 import 'squat_detection_screen.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class PushUpCountdownScreen extends StatefulWidget {
   final SoloChallengeModel challenge;
@@ -200,7 +201,7 @@ class _PushUpCountdownScreenState extends State<PushUpCountdownScreen>
             bottom: 24 + MediaQuery.paddingOf(context).bottom,
             child: SafeArea(
               child: AppButton.secondary(
-                label: 'Skip',
+                label: tr.skip,
                 onPressed: _proceedToWorkout,
                 height: 48,
               ),

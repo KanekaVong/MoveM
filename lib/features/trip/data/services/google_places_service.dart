@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 
 import '../../../../core/config/google_maps_config.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class GooglePlacePrediction {
   final String placeId;
@@ -99,7 +100,7 @@ class GooglePlacesService {
       }
     }
 
-    return formattedAddress ?? 'Selected location';
+    return formattedAddress ?? tr.tripLocationSelected;
   }
 
   // Search places while the user types.
@@ -289,7 +290,7 @@ class GooglePlacesService {
 
     if (data is! Map<String, dynamic>) {
       throw Exception(
-        'Invalid Google Place Details response.',
+        tr.serverBadResponse,
       );
     }
 
@@ -304,7 +305,7 @@ class GooglePlacesService {
 
     if (latitude == null || longitude == null) {
       throw Exception(
-        'Selected place has no coordinates.',
+        tr.placeHasNoCoordinates,
       );
     }
 
@@ -313,7 +314,7 @@ class GooglePlacesService {
 
     final name =
         displayName?['text'] as String? ??
-            'Unknown location';
+            tr.unknownLocation;
 
     final address =
     data['formattedAddress'] as String?;

@@ -16,6 +16,7 @@ import '../../../../core/storage/user_manager.dart';
 import '../../../home/presentation/controllers/home_controller.dart';
 import '../../../settings/presentation/controllers/settings_controller.dart';
 import '../../../settings/presentation/controllers/profile_controller.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class AuthController extends BaseController {
   final AuthRepository repository;
@@ -44,7 +45,7 @@ class AuthController extends BaseController {
               data.accessToken == null ||
               data.trustToken == null) {
             AppDialogs.showError(
-              'Invalid login response from server.',
+              tr.serverBadResponse,
             );
             return;
           }
@@ -83,7 +84,7 @@ class AuthController extends BaseController {
 
         // Unexpected successful response
         AppDialogs.showError(
-          data.message ?? 'Unexpected login response from server.',
+          data.message ?? tr.serverBadResponse,
         );
       },
       showErrorDialog: false,
@@ -129,7 +130,7 @@ class AuthController extends BaseController {
 
         if (data.user == null || data.accessToken == null || data.trustToken == null) {
           AppDialogs.showError(
-            'Invalid OTP verification response from server.',
+            tr.serverBadResponse,
           );
           return;
         }
@@ -144,8 +145,8 @@ class AuthController extends BaseController {
         DeviceRegistration.registerIfLoggedIn();
 
         AppDialogs.showSingleActionDialog(
-          title: 'Verified',
-          message: 'OTP Verified Successfully!',
+          title: tr.authVerifiedTitle,
+          message: tr.authOtpVerified,
           onConfirm: () => Get.offAllNamed(AppRoutes.main),
         );
       },
@@ -157,8 +158,8 @@ class AuthController extends BaseController {
       apiCall: () => repository.resendLoginOtp(username.trim()),
       onSuccess: (data) {
         AppDialogs.showSingleActionDialog(
-          title: 'Code Sent',
-          message: 'A new code has been sent to your email.',
+          title: tr.authCodeSentTitle,
+          message: tr.authNewCodeSent,
         );
       },
     );
@@ -207,7 +208,7 @@ class AuthController extends BaseController {
             data.accessToken == null ||
             data.trustToken == null) {
           AppDialogs.showError(
-            'Invalid email verification response from server.',
+            tr.serverBadResponse,
           );
           return;
         }
@@ -228,8 +229,8 @@ class AuthController extends BaseController {
         DeviceRegistration.registerIfLoggedIn();
 
         AppDialogs.showSingleActionDialog(
-          title: 'Verified',
-          message: 'Email Verified Successfully!',
+          title: tr.authVerifiedTitle,
+          message: tr.authEmailVerified,
           onConfirm: () => Get.offAllNamed(AppRoutes.main),
         );
       },
@@ -241,8 +242,8 @@ class AuthController extends BaseController {
       apiCall: () => repository.resendVerification(email),
       onSuccess: (data) {
         AppDialogs.showSingleActionDialog(
-          title: 'Code Sent',
-          message: 'A new verification code has been sent to your email.',
+          title: tr.authCodeSentTitle,
+          message: tr.authNewVerificationCodeSent,
         );
       },
     );
@@ -274,8 +275,8 @@ class AuthController extends BaseController {
       ),
       onSuccess: (data) {
         AppDialogs.showSingleActionDialog(
-          title: 'OTP Sent',
-          message: 'An OTP has been sent to $email.',
+          title: tr.authOtpSentTitle,
+          message: tr.authOtpSentTo(email),
         );
       },
     );
@@ -306,8 +307,8 @@ class AuthController extends BaseController {
         }
 
         AppDialogs.showSingleActionDialog(
-          title: 'Password Reset',
-          message: 'Your password has been reset successfully.',
+          title: tr.authPasswordResetTitle,
+          message: tr.authPasswordResetDone,
           onConfirm: () {
             Get.back();
             Get.offAllNamed(AppRoutes.main);

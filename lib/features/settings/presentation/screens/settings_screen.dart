@@ -5,6 +5,7 @@ import '../../../../shared/widgets/app_button.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/settings_controller.dart';
 import 'package:movem/features/settings/presentation/screens/change_password_screen.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 
 class SettingsScreen extends GetView<SettingsController> {
@@ -121,7 +122,7 @@ class SettingsScreen extends GetView<SettingsController> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Log Out',
+                tr.logOut,
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 22,
@@ -130,7 +131,7 @@ class SettingsScreen extends GetView<SettingsController> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Are you sure you want to log out of your account?',
+                tr.logOutConfirm,
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 15,
@@ -142,7 +143,7 @@ class SettingsScreen extends GetView<SettingsController> {
                 children: [
                   Expanded(
                     child: AppButton.secondary(
-                      label: 'Cancel',
+                      label: tr.cancel,
                       height: 46,
                       onPressed: () => Get.back(),
                     ),
@@ -150,7 +151,7 @@ class SettingsScreen extends GetView<SettingsController> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: AppButton.danger(
-                      label: 'Log Out',
+                      label: tr.logOut,
                       height: 46,
                       onPressed: () {
                         Get.back();

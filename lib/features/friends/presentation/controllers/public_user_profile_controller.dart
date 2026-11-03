@@ -6,6 +6,7 @@ import '../../../../shared/base/base_controller.dart';
 import '../../data/dto/response/public_user_profile_response.dart';
 import '../../domain/repositories/friends_repository.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class PublicUserProfileController extends BaseController {
   final FriendsRepository repository;
@@ -130,7 +131,7 @@ class PublicUserProfileController extends BaseController {
         profile.value = profile.value?.copyWith(friendStatus: 'PENDING_REQUEST');
         AppSnack.show(
           _l10n?.requestSentTitle ?? 'Request sent',
-          'Friend request sent.',
+          tr.friendRequestSent,
           backgroundColor: const Color(0xFF48A45B),
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,
@@ -149,7 +150,7 @@ class PublicUserProfileController extends BaseController {
         profile.value = profile.value?.copyWith(friendStatus: 'FRIEND');
         AppSnack.show(
           _l10n?.success ?? 'Done',
-          'You are now friends.',
+          tr.nowFriends,
           backgroundColor: const Color(0xFF48A45B),
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,

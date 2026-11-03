@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../data/models/solo_challenge_model.dart';
 import '../screens/solo_fitness_detail_screen.dart';
 import '../../../../core/theme/app_colors.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class SoloChallengeCard extends StatelessWidget {
   final SoloChallengeModel challenge;
@@ -28,7 +29,7 @@ class SoloChallengeCard extends StatelessWidget {
     if (challenge.category.trim().isNotEmpty && challenge.category != 'Step Count') {
       return challenge.category.trim();
     }
-    return challenge.type.isNotEmpty ? challenge.type : 'Fitness Challenge';
+    return challenge.type.isNotEmpty ? challenge.type : tr.fitnessChallenge;
   }
 
   @override

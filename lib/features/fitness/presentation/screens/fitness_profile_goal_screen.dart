@@ -6,6 +6,7 @@ import 'setup_goal_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class FitnessProfileGoalScreen extends StatefulWidget {
   const FitnessProfileGoalScreen({super.key});
@@ -93,7 +94,7 @@ class _FitnessProfileGoalScreenState extends State<FitnessProfileGoalScreen> {
                           child: _statCard(
                             icon: Icons.accessibility_new_rounded,
                             title: l10n?.currentHeight ?? 'Current Height',
-                            value: '$height CM',
+                            value: tr.heightCmValue(height),
                             height: 148,
                           ),
                         ),

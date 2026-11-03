@@ -14,6 +14,7 @@ import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import 'package:movem/core/utils/app_snack.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TaskScreen extends GetView<TaskController> {
   const TaskScreen({super.key});
@@ -82,7 +83,7 @@ class TaskScreen extends GetView<TaskController> {
                         children: [
                           SizedBox(height: 16),
                           Text(
-                            'PROGRESS',
+                            tr.progressTitle,
                             style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 20,
@@ -117,7 +118,7 @@ class TaskScreen extends GetView<TaskController> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            'ALL TASKS',
+                            tr.allTasksCaps,
                             style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 20,
@@ -174,7 +175,7 @@ class TaskScreen extends GetView<TaskController> {
                   ),
                   SizedBox(width: 6),
                   Text(
-                    isFiltered ? controller.filterSummary : 'Filter',
+                    isFiltered ? controller.filterSummary : tr.filter,
                     style: TextStyle(
                       color: isFiltered ? AppColors.accentBlue : AppColors.textCaption,
                       fontSize: 12,
@@ -226,21 +227,21 @@ class TaskScreen extends GetView<TaskController> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             final statusOptions = [
-              {'label': 'All', 'value': null},
-              {'label': 'Upcoming', 'value': 'UPCOMING'},
-              {'label': 'Pending', 'value': 'PENDING'},
-              {'label': 'In Progress', 'value': 'IN_PROGRESS'},
-              {'label': 'Complete', 'value': 'COMPLETE'},
-              {'label': 'Cancelled', 'value': 'CANCELLED'},
-              {'label': 'Deleted', 'value': 'DELETED'},
+              {'label': tr.allFilter, 'value': null},
+              {'label': tr.taskStatusUpcoming, 'value': 'UPCOMING'},
+              {'label': tr.taskStatusPending, 'value': 'PENDING'},
+              {'label': tr.taskStatusInProgress, 'value': 'IN_PROGRESS'},
+              {'label': tr.taskStatusComplete, 'value': 'COMPLETE'},
+              {'label': tr.taskStatusCancelled, 'value': 'CANCELLED'},
+              {'label': tr.taskStatusDeleted, 'value': 'DELETED'},
             ];
 
             final priorityOptions = [
-              {'label': 'All', 'value': null},
-              {'label': 'Urgent', 'value': 'URGENT'},
-              {'label': 'High', 'value': 'HIGH'},
-              {'label': 'Medium', 'value': 'MEDIUM'},
-              {'label': 'Low', 'value': 'LOW'},
+              {'label': tr.allFilter, 'value': null},
+              {'label': tr.priorityUrgent, 'value': 'URGENT'},
+              {'label': tr.priorityHigh, 'value': 'HIGH'},
+              {'label': tr.priorityMedium, 'value': 'MEDIUM'},
+              {'label': tr.priorityLow, 'value': 'LOW'},
             ];
 
             return SafeArea(
@@ -270,7 +271,7 @@ class TaskScreen extends GetView<TaskController> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Filter Tasks',
+                          tr.filterTasks,
                           style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 18,
@@ -286,7 +287,7 @@ class TaskScreen extends GetView<TaskController> {
                               });
                             },
                             child: Text(
-                              'Reset',
+                              tr.reset,
                               style: TextStyle(
                                 color: Color(0xFF3B82F6),
                                 fontSize: 14,
@@ -298,7 +299,7 @@ class TaskScreen extends GetView<TaskController> {
                     ),
                     SizedBox(height: 20),
                     Text(
-                      'STATUS',
+                      tr.statusLabel,
                       style: TextStyle(
                         color: AppColors.textCaption,
                         fontSize: 12,
@@ -347,7 +348,7 @@ class TaskScreen extends GetView<TaskController> {
                     ),
                     SizedBox(height: 20),
                     Text(
-                      'PRIORITY',
+                      tr.priorityLabel,
                       style: TextStyle(
                         color: AppColors.textCaption,
                         fontSize: 12,
@@ -396,7 +397,7 @@ class TaskScreen extends GetView<TaskController> {
                     ),
                     const SizedBox(height: 24),
                     AppButton(
-                      label: 'Apply Filters',
+                      label: tr.applyFilters,
                       onPressed: () {
                         Navigator.pop(bottomSheetContext);
                         controller.setFilters(
@@ -441,13 +442,13 @@ class TaskScreen extends GetView<TaskController> {
           ),
         ),
       ],
-      flexibleSpace: const FlexibleSpaceBar(
+      flexibleSpace: FlexibleSpaceBar(
         background: Align(
           alignment: Alignment.center,
           child: Padding(
             padding: EdgeInsets.only(top: 30),
             child: Text(
-              'Ready To Elevate Your\nTask To Another Level?',
+              tr.taskHeroTitle,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
@@ -494,7 +495,7 @@ class TaskScreen extends GetView<TaskController> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'COMPLETED TASKS',
+            tr.completedTasksCaps,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 13,
@@ -527,7 +528,7 @@ class TaskScreen extends GetView<TaskController> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'CREATE TASK',
+                      tr.createTaskCaps,
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 16,
@@ -545,7 +546,7 @@ class TaskScreen extends GetView<TaskController> {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'Let your brain relax, put it here.',
+                  tr.createTaskSub,
                   style: TextStyle(
                     color: AppColors.textCaption,
                     fontSize: 11,
@@ -610,7 +611,7 @@ class TaskScreen extends GetView<TaskController> {
               ),
               SizedBox(height: 2),
               Text(
-                'COMPLETED',
+                tr.completedCaps,
                 style: TextStyle(
                   color: AppColors.textCaption,
                   fontSize: 10,
@@ -642,7 +643,7 @@ class TaskScreen extends GetView<TaskController> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Upcoming Tasks',
+          tr.upcomingTasks,
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 14,
@@ -657,13 +658,13 @@ class TaskScreen extends GetView<TaskController> {
           ],
         ] else ...[
           Text(
-            'No upcoming tasks',
+            tr.noUpcomingTasks,
             style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
         ],
         SizedBox(height: 16),
         Text(
-          'On-Going Tasks',
+          tr.ongoingTasksTitle,
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 14,
@@ -675,7 +676,7 @@ class TaskScreen extends GetView<TaskController> {
           _buildOngoingItem(ongoing.first),
         ] else ...[
           Text(
-            'No ongoing tasks',
+            tr.noOngoingTasks,
             style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
         ],
@@ -693,16 +694,16 @@ class TaskScreen extends GetView<TaskController> {
     final days = DateTime(date.year, date.month, date.day)
         .difference(DateTime(now.year, now.month, now.day))
         .inDays;
-    if (days < 0) return 'Overdue';
-    if (days == 0) return 'Due Today';
-    if (days == 1) return 'Due Tomorrow';
-    if (days < 7) return 'Due in $days days';
-    if (days < 14) return 'Due Next Week';
-    return 'Due ${DateFormat('d MMM').format(date)}';
+    if (days < 0) return tr.dueOverdue;
+    if (days == 0) return tr.dueToday;
+    if (days == 1) return tr.dueTomorrow;
+    if (days < 7) return tr.dueInDays(days);
+    if (days < 14) return tr.dueNextWeek;
+    return tr.dueOnDate(DateFormat('d MMM').format(date));
   }
 
   Widget _buildUpcomingItem(dynamic task) {
-    final dueText = _dueText(task.deadline, fallback: 'Due Soon');
+    final dueText = _dueText(task.deadline, fallback: tr.dueSoon);
 
     return RichText(
       maxLines: 1,
@@ -731,7 +732,7 @@ class TaskScreen extends GetView<TaskController> {
   }
 
   Widget _buildOngoingItem(dynamic task) {
-    final dueText = _dueText(task.deadline, fallback: 'No deadline');
+    final dueText = _dueText(task.deadline, fallback: tr.noDeadline);
     final isOverdue = dueText == 'Overdue';
 
     double prog = 0.5;
@@ -999,23 +1000,12 @@ class TaskScreen extends GetView<TaskController> {
   }
 
   Widget _buildTaskTile(dynamic task) {
-    String formattedDate = 'Not set';
+    String formattedDate = tr.notSet;
     if (task.deadline != null) {
       try {
         final date = DateTime.parse(task.deadline!);
 
-        String day = DateFormat('d').format(date.toLocal());
-        String suffix = 'th';
-        if (day.endsWith('1') && !day.endsWith('11')) {
-          suffix = 'st';
-        } else if (day.endsWith('2') && !day.endsWith('12')) {
-          suffix = 'nd';
-        } else if (day.endsWith('3') && !day.endsWith('13')) {
-          suffix = 'rd';
-        }
-
-        formattedDate =
-            '$day$suffix ${DateFormat('MMMM yyyy').format(date.toLocal())}';
+        formattedDate = formatDayMonthYear(date.toLocal());
       } catch (_) {}
     }
 
@@ -1132,8 +1122,7 @@ class TaskScreen extends GetView<TaskController> {
                                 ),
                               ),
                               child: Text(
-                                priorityText.toLowerCase().capitalizeFirst ??
-                                    priorityText,
+                                priorityLabel(priorityText),
                                 style: TextStyle(
                                   color: priorityColor,
                                   fontSize: 11,
@@ -1144,7 +1133,7 @@ class TaskScreen extends GetView<TaskController> {
                             SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                isOverdue ? 'Overdue · $formattedDate' : 'Dateline : $formattedDate',
+                                isOverdue ? tr.overdueOnDate(formattedDate) : tr.deadlineOnDate(formattedDate),
                                 style: TextStyle(
                                   color: isOverdue ? const Color(0xFFEF4444) : AppColors.textSecondary,
                                   fontSize: 12,
@@ -1201,7 +1190,7 @@ class TaskScreen extends GetView<TaskController> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'Progression : $progressionPercent%',
+                    tr.progressionPercent(progressionPercent),
                     style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,

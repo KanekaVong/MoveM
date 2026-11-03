@@ -7,6 +7,7 @@ import '../services/friends_service.dart';
 import '../dto/response/friend_response.dart';
 import '../dto/response/friend_request_response.dart';
 import '../dto/response/public_user_profile_response.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class FriendsRepositoryImpl implements FriendsRepository {
   final FriendsService friendsService;
@@ -19,10 +20,10 @@ class FriendsRepositoryImpl implements FriendsRepository {
         return data['message'].toString();
       }
       if (data['status'] == 'ACCEPTED') {
-        return 'Friend request accepted';
+        return tr.friendRequestAccepted;
       }
       if (data['status'] == 'REJECTED') {
-        return 'Friend request rejected';
+        return tr.friendRequestRejected;
       }
     }
     if (data is String) {
@@ -33,10 +34,10 @@ class FriendsRepositoryImpl implements FriendsRepository {
             return decoded['message'].toString();
           }
           if (decoded['status'] == 'ACCEPTED') {
-            return 'Friend request accepted';
+            return tr.friendRequestAccepted;
           }
           if (decoded['status'] == 'REJECTED') {
-            return 'Friend request rejected';
+            return tr.friendRequestRejected;
           }
         }
       } catch (_) {}
@@ -72,7 +73,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
       final response = await friendsService.getUserById(userId);
       final map = _asMap(response.data);
       if (map == null) {
-        return ApiError(ApiException(message: 'Invalid user profile response from server.'));
+        return ApiError(ApiException(message: tr.serverBadResponse));
       }
       return ApiSuccess(PublicUserProfileResponse.fromJson(map));
     } on DioException catch (e) {

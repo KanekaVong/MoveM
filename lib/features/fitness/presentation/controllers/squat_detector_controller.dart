@@ -16,6 +16,7 @@ import '../../domain/squat_state_machine.dart';
 import '../screens/squat_summary_screen.dart';
 import 'achievement_notice_controller.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class SquatDetectorController extends GetxController {
   final SoloChallengeModel challenge;
@@ -38,7 +39,7 @@ class SquatDetectorController extends GetxController {
 
   final detectedPoses = <Pose>[].obs;
   final currentKneeAngle = 175.0.obs;
-  final currentFeedback = 'Stand in full view of the camera'.obs;
+  final currentFeedback = tr.cueFullView.obs;
   final currentState = SquatState.up.obs;
   final completedReps = 0.obs;
   final currentSet = 1.obs;
@@ -59,7 +60,7 @@ class SquatDetectorController extends GetxController {
     super.onInit();
     currentSession = SquatSession(
       challengeId: challenge.id,
-      challengeName: challenge.name.isNotEmpty ? challenge.name : 'Squats',
+      challengeName: challenge.name.isNotEmpty ? challenge.name : tr.workoutSquats,
       targetReps: challenge.repsPerSet * challenge.sets,
       sets: challenge.sets,
       startTime: DateTime.now(),
@@ -125,7 +126,7 @@ class SquatDetectorController extends GetxController {
         _availableCameras = await availableCameras();
 
         if (_availableCameras.isEmpty) {
-          _enableSimulationMode('No cameras detected on device');
+          _enableSimulationMode(tr.noCamerasOnDevice);
           return;
         }
 
@@ -138,10 +139,10 @@ class SquatDetectorController extends GetxController {
       } else {
         hasPermission.value = false;
         permissionDenied.value = true;
-        _enableSimulationMode('Camera permission not granted');
+        _enableSimulationMode(tr.cameraPermissionNotGranted);
       }
     } catch (_) {
-      _enableSimulationMode('Adjust positioning for camera tracking');
+      _enableSimulationMode(tr.adjustPosition);
     }
   }
 
@@ -160,21 +161,21 @@ class SquatDetectorController extends GetxController {
       await ctrl.initialize();
 
       if (!ctrl.value.isInitialized) {
-        _enableSimulationMode('Camera failed to initialize');
+        _enableSimulationMode(tr.cameraInitFailed);
         return;
       }
 
       isCameraInitialized.value = true;
       await ctrl.startImageStream((image) => _processCameraImage(image, camera));
     } catch (_) {
-      _enableSimulationMode('Camera stream error');
+      _enableSimulationMode(tr.cameraInitFailed);
     }
   }
 
   void _enableSimulationMode(String reason) {
     isSimulationMode.value = true;
     isCameraInitialized.value = false;
-    currentFeedback.value = 'Tap anywhere to count reps (Simulation Mode)';
+    currentFeedback.value = tr.simulationModeSquat;
   }
 
   void simulateRep() {
@@ -273,13 +274,13 @@ class SquatDetectorController extends GetxController {
         if (activeAngle != null) {
           _stateMachine.processAngle(activeAngle, confidence: confidence);
         } else {
-          currentFeedback.value = 'Step back so legs are visible';
+          currentFeedback.value = tr.cueStepBack;
         }
       } else {
-        currentFeedback.value = 'No person detected in frame';
+        currentFeedback.value = tr.noPersonInFrame;
       }
     } catch (_) {
-      currentFeedback.value = 'Adjust positioning for camera tracking';
+      currentFeedback.value = tr.adjustPosition;
     } finally {
       isProcessingFrame.value = false;
     }
@@ -356,10 +357,10 @@ class SquatDetectorController extends GetxController {
   void _onSetCompleted() {
     if (currentSet.value < challenge.sets) {
       currentSet.value++;
-      currentFeedback.value = 'Set ${currentSet.value - 1} Complete! Take a quick rest.';
+      currentFeedback.value = tr.setCompleteRest(currentSet.value - 1);
     } else {
       currentSession.isCompleted = true;
-      currentFeedback.value = 'Challenge Complete! 🏆';
+      currentFeedback.value = tr.challengeComplete;
       finishWorkout();
     }
   }
@@ -367,9 +368,9 @@ class SquatDetectorController extends GetxController {
   void togglePause() {
     isPaused.value = !isPaused.value;
     if (isPaused.value) {
-      currentFeedback.value = 'Workout Paused';
+      currentFeedback.value = tr.workoutPaused;
     } else {
-      currentFeedback.value = 'Resuming... Let\'s squat!';
+      currentFeedback.value = tr.resumingSquat;
     }
   }
 
@@ -408,8 +409,8 @@ class SquatDetectorController extends GetxController {
 
     if (summaryModel == null) {
       AppSnack.show(
-        'Not saved',
-        'Workout couldn\'t be saved to the server. Check your connection.',
+        tr.notSaved,
+        tr.workoutNotSaved,
         snackPosition: SnackPosition.BOTTOM,
       );
     }

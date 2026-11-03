@@ -10,6 +10,7 @@ import 'create_trip_stop_map_screen.dart';
 import '../../widgets/create_trip_component.dart';
 import 'package:movem/features/friends/domain/repositories/friends_repository.dart';
 import 'package:movem/features/friends/presentation/bindings/friends_binding.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class CreateTripStopScreen extends StatefulWidget {
 
@@ -68,9 +69,9 @@ class _CreateTripStopScreenState extends State<CreateTripStopScreen> {
 
     if (stop.lat == null || stop.lng == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'This stop does not have a location on the map.',
+            tr.stopNoMapLocation,
           ),
         ),
       );

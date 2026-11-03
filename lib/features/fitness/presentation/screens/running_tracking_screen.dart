@@ -9,6 +9,7 @@ import '../../data/models/run_session.dart';
 import '../../data/models/solo_challenge_model.dart';
 import 'run_summary_screen.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class RunningTrackingScreen extends StatefulWidget {
   final SoloChallengeModel? challenge;
@@ -382,8 +383,8 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
                     if (controller.isAcquiringGps.value) const SizedBox(height: 18),
                     Text(
                       controller.gpsFailed.value
-                          ? 'Waiting for GPS'
-                          : 'Getting your location',
+                          ? tr.waitingForGps
+                          : tr.gettingLocation,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -393,14 +394,14 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
                     const SizedBox(height: 8),
                     Text(
                       controller.gpsFailed.value
-                          ? 'Move outdoors and try again'
-                          : 'Run starts after GPS lock',
+                          ? tr.moveOutdoors
+                          : tr.runStartsAfterGps,
                       style: const TextStyle(color: Colors.white70, fontSize: 13),
                     ),
                     if (controller.gpsFailed.value) ...[
                       const SizedBox(height: 16),
                       AppButton(
-                        label: 'Retry GPS',
+                        label: tr.retryGps,
                         onPressed: controller.retryGpsLock,
                         width: null,
                         height: 40,
@@ -457,8 +458,8 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
                       ),
-                      child: const Text(
-                        'Tap circle to start now',
+                      child: Text(
+                        tr.tapCircleToStart,
                         style: TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                     ),
@@ -500,8 +501,8 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text(
-                                'STEP',
+                              Text(
+                                tr.stepCaps,
                                 style: TextStyle(
                                   color: Color(0xFF94A3B8),
                                   fontSize: 11,
@@ -542,8 +543,8 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text(
-                                'DURATION',
+                              Text(
+                                tr.tripStepDuration,
                                 style: TextStyle(
                                   color: Color(0xFF94A3B8),
                                   fontSize: 11,
@@ -576,8 +577,8 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text(
-                                'CALORIES',
+                              Text(
+                                tr.activityCalories,
                                 style: TextStyle(
                                   color: Color(0xFF94A3B8),
                                   fontSize: 11,
@@ -730,7 +731,7 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
   Widget _buildEndWorkoutButton() {
     return Obx(() {
       return AppButton.danger(
-        label: 'End',
+        label: tr.endAction,
         icon: Icons.stop_rounded,
         isLoading: isFinishing.value,
         onPressed: () async {
@@ -753,8 +754,8 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
           backgroundColor: const Color(0xFF0F1B36),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
           title: Text(AppLocalizations.of(Get.context!)?.exitRun ?? 'Exit Run?', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          content: const Text(
-            'Your active running challenge will be paused. Do you want to leave?',
+          content: Text(
+            tr.runPauseLeaveBody,
             style: TextStyle(color: Colors.white70),
           ),
           actions: [
@@ -770,7 +771,7 @@ class _RunningTrackingScreenState extends State<RunningTrackingScreen>
                 const SizedBox(width: 12),
                 Expanded(
                   child: AppButton.danger(
-                    label: 'Exit',
+                    label: tr.exitAction,
                     onPressed: () {
                       controller.pauseRun();
                       Get.back();

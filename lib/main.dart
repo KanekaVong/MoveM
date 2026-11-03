@@ -1,3 +1,5 @@
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -52,6 +54,9 @@ Future<void> mainCommon({required Environment environment}) async {
   } catch (_) {}
 
   final savedLocale = Locale(UserManager().languageCode);
+  // Month and weekday names in DateFormat follow the app language.
+  await initializeDateFormatting();
+  Intl.defaultLocale = savedLocale.languageCode;
   final savedTheme = UserManager().themeMode;
 
   ThemeMode initialThemeMode;

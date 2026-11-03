@@ -12,6 +12,7 @@ import 'solo_challenge_list_screen.dart';
 import 'squat_detection_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../widgets/share_workout.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class SquatSummaryScreen extends StatelessWidget {
   final SquatSession session;
@@ -31,8 +32,8 @@ class SquatSummaryScreen extends StatelessWidget {
     final duration = session.duration;
     final totalMinutes = duration.inMinutes;
     final durationDisplay = totalMinutes >= 1
-        ? '$totalMinutes MINS'
-        : '${duration.inSeconds} SECS';
+        ? tr.activityDurationMins(totalMinutes)
+        : tr.durationSecsCaps(duration.inSeconds);
 
     final calories = (summary != null && summary!.caloriesBurned > 0)
         ? summary!.caloriesBurned.round()
@@ -148,17 +149,17 @@ class SquatSummaryScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _buildMetricColumn(
-                        label: 'SET',
+                        label: tr.setLabel,
                         value: '$setsDisplay 💪',
                       ),
 
                       _buildMetricColumn(
-                        label: 'CALORIES',
+                        label: tr.activityCalories,
                         value: '$calories 🔥',
                       ),
 
                       _buildMetricColumn(
-                        label: 'DURATIONS',
+                        label: tr.editTripDurations,
                         value: durationDisplay,
                       ),
                     ],
@@ -170,7 +171,7 @@ class SquatSummaryScreen extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      'CHALLENGE',
+                      tr.activityChallenge,
                       style: TextStyle(
                         color: AppColors.textCaption,
                         fontSize: 12,
@@ -191,7 +192,7 @@ class SquatSummaryScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      isAllCompleted ? 'COMPLETED 🔥' : 'FINISHED 🔥',
+                      isAllCompleted ? tr.activityCompleted : tr.finishedFire,
                       style: const TextStyle(
                         color: Color(0xFFF59E0B),
                         fontSize: 15,
@@ -211,13 +212,13 @@ class SquatSummaryScreen extends StatelessWidget {
                     children: [
                       _buildCircleActionButton(
                         icon: Icons.share_outlined,
-                        label: 'SHARE',
+                        label: tr.shareCaps,
                         onTap: () => shareWorkout(summary?.sessionId),
                       ),
 
                       _buildCircleActionButton(
                         icon: Icons.replay_rounded,
-                        label: 'REDO',
+                        label: tr.redoCaps,
                         onTap: () {
                           Get.off(() => SquatDetectionScreen(challenge: challenge));
                         },
@@ -225,7 +226,7 @@ class SquatSummaryScreen extends StatelessWidget {
 
                       _buildCircleActionButton(
                         icon: Icons.fitness_center_rounded,
-                        label: 'MORE',
+                        label: tr.moreCaps,
                         onTap: () {
                           Get.to(() => const SoloChallengeListScreen());
                         },
@@ -233,7 +234,7 @@ class SquatSummaryScreen extends StatelessWidget {
 
                       _buildCircleActionButton(
                         icon: Icons.home_outlined,
-                        label: 'HOME',
+                        label: tr.homeCaps,
                         onTap: _goHome,
                       ),
                     ],
