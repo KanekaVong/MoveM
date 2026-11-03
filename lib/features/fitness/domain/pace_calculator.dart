@@ -1,3 +1,5 @@
+import 'package:movem/core/utils/l10n.dart';
+
 class PaceCalculator {
 
   static double paceMinPerKm(double totalMeters, Duration elapsed) {
@@ -26,9 +28,9 @@ class PaceCalculator {
   }
 
   static String formatPace(double minPerKm) {
-    if (minPerKm <= 0 || minPerKm.isNaN || minPerKm.isInfinite) return '--:-- /km';
+    if (minPerKm <= 0 || minPerKm.isNaN || minPerKm.isInfinite) return tr.paceValueShort('--:--');
     final minutes = minPerKm.floor();
     final seconds = ((minPerKm - minutes) * 60).round();
-    return '$minutes:${seconds.toString().padLeft(2, '0')} /km';
+    return tr.paceValueShort('$minutes:${seconds.toString().padLeft(2, '0')}');
   }
 }

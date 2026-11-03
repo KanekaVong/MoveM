@@ -13,6 +13,7 @@ import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class PublicUserProfileScreen extends StatefulWidget {
   final String? userId;
@@ -179,21 +180,21 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
                 icon: Icons.check_circle,
                 iconColor: const Color(0xFF22D3EE),
                 value: '${user.taskCompleted}',
-                label: 'Task Completed',
+                label: tr.taskCompleted,
               ),
               _buildStatDivider(),
               _buildStatColumn(
                 icon: Icons.directions_run,
                 iconColor: const Color(0xFFF97316),
                 value: '${user.challengesCompleted}',
-                label: 'Challenges Completed',
+                label: tr.challengesCompleted,
               ),
               _buildStatDivider(),
               _buildStatColumn(
                 icon: Icons.flight,
                 iconColor: const Color(0xFFA78BFA),
                 value: '${user.tripPlans}',
-                label: 'Trip Plans',
+                label: tr.tripPlans,
               ),
             ],
           ),
@@ -212,7 +213,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
               ),
               SizedBox(width: 6),
               Text(
-                'Friends',
+                tr.friendsTitle,
                 style: TextStyle(
                   color: AppColors.blueAccent,
                   fontSize: 14,
@@ -273,11 +274,11 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     return _sectionCard(
       title: Text.rich(
         TextSpan(
-          text: 'Recent ',
+          text: tr.recentAchievementsLead,
           style: TextStyle(color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w700),
           children: [
             TextSpan(
-              text: 'Achievements',
+              text: tr.achievementsBadges,
               style: TextStyle(color: Color(0xFFEAB308)),
             ),
           ],
@@ -323,11 +324,11 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
     return _sectionCard(
       title: Text.rich(
         TextSpan(
-          text: 'Mutual ',
+          text: tr.mutualFriendsLead,
           style: TextStyle(color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w700),
           children: [
             TextSpan(
-              text: 'Friends',
+              text: tr.friendsTitle,
               style: TextStyle(color: AppColors.blueAccent),
             ),
           ],
@@ -418,7 +419,7 @@ class _PublicUserProfileScreenState extends State<PublicUserProfileScreen> {
         ? (l10n?.friends ?? 'Friends')
         : (isIncoming
             ? (l10n?.accept ?? 'Accept')
-            : (isPending ? 'Request Sent' : (l10n?.addFriend ?? 'Add Friend')));
+            : (isPending ? tr.requestSent : (l10n?.addFriend ?? 'Add Friend')));
     final enabled = !isFriend && (isIncoming || !isPending);
 
     return Padding(

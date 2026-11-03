@@ -12,6 +12,7 @@ import '../../data/dto/request/update_profile_request.dart';
 import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class ChangeContactScreen extends StatefulWidget {
   final ContactType type;
@@ -68,7 +69,7 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
     return Scaffold(
       backgroundColor: pageColor,
       appBar: TopToolBar(
-        title: 'Your Profile',
+        title: tr.yourProfile,
         backgroundColor: pageColor,
         foregroundColor: fg,
         onBack: () => Navigator.of(context).pop(),
@@ -93,7 +94,7 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
 
               Center(
                 child: Text(
-                  isEmail ? 'Change email' : 'Add phone',
+                  isEmail ? tr.changeEmail : tr.addPhone,
                   style: TextStyle(
                     color: fg,
                     fontSize: 22,
@@ -112,7 +113,7 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
                   color: textColor,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Email address',
+                  hintText: tr.emailAddress,
                   hintStyle: TextStyle(
                     color: hintColor,
                   ),
@@ -151,7 +152,7 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
 
                 decoration: InputDecoration(
                   counterText: '',
-                  hintText: 'Phone number',
+                  hintText: tr.phoneNumberLower,
                   hintStyle: TextStyle(
                     color: hintColor,
                   ),
@@ -186,8 +187,8 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
 
               Text(
                 isEmail
-                    ? 'Your email address is linked to your account and remains private. If updated, your previous address may be kept for account recovery.'
-                    : 'Your phone number will be updated in your profile.',
+                    ? tr.emailPrivacyNote
+                    : tr.phoneUpdateNote,
                 style: TextStyle(
                   color: hintColor,
                   fontSize: 13,
@@ -198,7 +199,7 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
               const Spacer(),
 
               AppButton(
-                  label: 'Change',
+                  label: tr.change,
                   onPressed: () async {
                     String value;
                     if (widget.type == ContactType.email) {
@@ -215,10 +216,10 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
 
                     if (value.isEmpty) {
                       AppSnack.show(
-                        'Required',
+                        tr.requiredField,
                         widget.type == ContactType.email
-                            ? 'Please enter an email address'
-                            : 'Please enter a valid phone number',
+                            ? tr.pleaseEnterEmail
+                            : tr.pleaseEnterValidPhone,
                         backgroundColor: Colors.redAccent,
                         colorText: Colors.white,
                         snackPosition: SnackPosition.BOTTOM,
@@ -254,8 +255,8 @@ class _ChangeContactScreenState extends State<ChangeContactScreen> {
                       if (updatedUser != null && mounted) {
                         Get.back();
                         AppSnack.show(
-                          'Success',
-                          'Phone number updated successfully',
+                          tr.editTripUpdateSuccess,
+                          tr.phoneUpdated,
                           backgroundColor: Colors.green,
                           colorText: Colors.white,
                           snackPosition: SnackPosition.BOTTOM,

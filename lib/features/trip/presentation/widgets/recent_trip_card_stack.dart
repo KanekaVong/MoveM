@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'dart:math' as math;
 import 'package:dio/dio.dart' as dio;
 import 'package:get/get.dart';
@@ -10,6 +11,7 @@ import 'package:movem/features/trip/presentation/controllers/edit_trip_controlle
 import 'package:movem/features/trip/presentation/controllers/trip_controller.dart';
 import 'package:movem/features/trip/presentation/screens/trip_detail_screen.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class RecentTripCardStack extends StatefulWidget {
   final List<TripSummaryResponse> trips;
@@ -326,8 +328,8 @@ class _RecentTripCardStackState extends State<RecentTripCardStack>
                       ),
                     ),
                     const SizedBox(width: 10),
-                    const Text(
-                      'Delete Trip',
+                    Text(
+                      tr.deleteTrip,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 15,
@@ -339,9 +341,7 @@ class _RecentTripCardStackState extends State<RecentTripCardStack>
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Are you sure you want to delete '
-                  '"${trip.activityName}"? '
-                  'This action cannot be undone.',
+                  tr.deleteTripConfirm(trip.activityName),
                   style: const TextStyle(
                     color: Color(0xFFA0AAB2),
                     fontSize: 12,
@@ -385,8 +385,8 @@ class _RecentTripCardStackState extends State<RecentTripCardStack>
                         onPressed: () {
                           Navigator.of(dialogContext).pop(true);
                         },
-                        child: const Text(
-                          'Delete',
+                        child: Text(
+                          tr.delete,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -766,8 +766,8 @@ class _RecentTripCardStackState extends State<RecentTripCardStack>
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Trip deleted successfully.'),
+            SnackBar(
+              content: Text(tr.tripDeleted),
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -797,29 +797,7 @@ class _RecentTripCardStackState extends State<RecentTripCardStack>
   }
 
   String _formatDate(DateTime date) {
-    return '${_monthName(date.month)}, '
-        '${date.day}, '
-        '${date.year}';
-  }
-
-  String _monthName(int month) {
-    const months = [
-      '',
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-
-    return months[month];
+    return DateFormat('MMMM, d, y').format(date);
   }
 
   @override

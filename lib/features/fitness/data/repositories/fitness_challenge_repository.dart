@@ -5,6 +5,7 @@ import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../models/solo_challenge_model.dart';
 import '../models/group_challenge_model.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class FitnessChallengeRepository {
   final DioClient _dioClient = DioClient();
@@ -81,7 +82,7 @@ class FitnessChallengeRepository {
           return ApiSuccess(SoloChallengeModel.fromJson(Map<String, dynamic>.from(raw)));
         }
       }
-      return ApiError(ApiException(message: 'Challenge not found'));
+      return ApiError(ApiException(message: tr.challengeNotFound));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -146,7 +147,7 @@ class FitnessChallengeRepository {
           return ApiSuccess(match);
         }
       }
-      return ApiError(ApiException(message: 'Failed to create challenge'));
+      return ApiError(ApiException(message: tr.failedToCreateChallenge));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -174,7 +175,7 @@ class FitnessChallengeRepository {
       if (map != null) {
         return ApiSuccess(GroupFitnessChallengeModel.fromJson(map));
       }
-      return ApiError(ApiException(message: 'Failed to create challenge from catalog'));
+      return ApiError(ApiException(message: tr.failedToCreateChallenge));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -195,7 +196,7 @@ class FitnessChallengeRepository {
           return ApiSuccess(GroupFitnessChallengeModel.fromJson(Map<String, dynamic>.from(raw)));
         }
       }
-      return ApiError(ApiException(message: 'Challenge not found'));
+      return ApiError(ApiException(message: tr.challengeNotFound));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -230,7 +231,7 @@ class FitnessChallengeRepository {
       if (response.data != null) {
         return ApiSuccess(ChallengeParticipantModel.fromJson(response.data));
       }
-      return ApiError(ApiException(message: 'Failed to join challenge'));
+      return ApiError(ApiException(message: tr.failedToJoinChallenge));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {

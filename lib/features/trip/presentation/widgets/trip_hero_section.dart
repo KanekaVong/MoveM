@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'clear_glass_container.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TripHeroSection extends StatelessWidget {
   final VoidCallback onCreateTrip;
@@ -87,8 +88,8 @@ class TripHeroSection extends StatelessWidget {
                   children: [
                     const SizedBox(height: 45),
 
-                    const Text(
-                      'WHAT’S\nYOUR\nNEXT\nPLAN?',
+                    Text(
+                      tr.tripHeroTitle,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 38,
@@ -105,9 +106,8 @@ class TripHeroSection extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          const Text(
-                            'ENHANCE YOUR\n'
-                                'JOURNEY WITH US.',
+                          Text(
+                            tr.tripHeroEnhance,
                             textAlign: TextAlign.right,
                             style: TextStyle(
                               color: Colors.white,
@@ -134,13 +134,13 @@ class TripHeroSection extends StatelessWidget {
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(30),
                                   onTap: onCreateTrip,
-                                  child: const Padding(
+                                  child: Padding(
                                     padding: EdgeInsets.symmetric(
                                       horizontal: 24,
                                       vertical: 14,
                                     ),
                                     child: Text(
-                                      'PLAN YOUR JOURNEY',
+                                      tr.planYourJourney,
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 12,

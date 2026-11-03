@@ -14,6 +14,7 @@ import '../../domain/repositories/friends_repository.dart';
 import 'public_user_profile_controller.dart';
 import '../screens/public_user_profile_screen.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class QrScanController extends BaseController {
   final FriendsRepository friendsRepository = FriendsRepositoryImpl(friendsService: FriendsService());
@@ -72,14 +73,14 @@ class QrScanController extends BaseController {
       final status = await Permission.camera.request();
       if (_isClosed) return;
       if (!status.isGranted) {
-        scanStatus.value = 'Camera permission required';
+        scanStatus.value = tr.cameraPermissionRequired;
         return;
       }
 
       final cameras = await availableCameras();
       if (_isClosed) return;
       if (cameras.isEmpty) {
-        scanStatus.value = 'No camera found';
+        scanStatus.value = tr.noCameraFound;
         return;
       }
 
@@ -105,7 +106,7 @@ class QrScanController extends BaseController {
       _startLiveScan();
     } catch (_) {
       if (_isClosed) return;
-      scanStatus.value = 'Unable to initialize camera';
+      scanStatus.value = tr.cameraInitFailed;
     }
   }
 
@@ -154,19 +155,19 @@ class QrScanController extends BaseController {
       final file = File(image.path);
       final exists = await file.exists();
       if (!exists) {
-        AppSnack.show('Error', 'Could not open the selected image');
+        AppSnack.show(tr.errorTitle, tr.couldNotOpenImage);
         return;
       }
 
       final payload = await _decodeQrFromFile(file);
       if (payload == null || payload.isEmpty) {
-        AppSnack.show('Invalid QR', 'No valid QR code found in this image');
+        AppSnack.show(tr.invalidQr, tr.noQrInImage);
         return;
       }
 
       await handleQrPayload(payload);
     } catch (_) {
-      AppSnack.show('Error', 'Unable to scan QR from gallery');
+      AppSnack.show(tr.errorTitle, tr.qrGalleryScanFailed);
     } finally {
       if (!_isClosed && !isProcessing.value) {
         _pauseScanning = false;
@@ -263,7 +264,7 @@ class QrScanController extends BaseController {
         _pauseScanning = false;
         _startLiveScan();
       }
-      AppSnack.show('Invalid QR', 'No valid user found in QR code');
+      AppSnack.show(tr.invalidQr, tr.noUserInQr);
       return;
     }
 

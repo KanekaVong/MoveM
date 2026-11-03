@@ -16,6 +16,7 @@ import 'public_user_profile_screen.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class AddFriendsScreen extends GetView<FriendsController> {
   const AddFriendsScreen({super.key});
@@ -40,7 +41,7 @@ class AddFriendsScreen extends GetView<FriendsController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Find And Connect With Friends To Stay Active Together',
+                tr.addFriendsHeadline,
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
               ),
               const SizedBox(height: 24),

@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -8,6 +9,7 @@ import '../../data/models/group_challenge_model.dart';
 import '../controllers/club_challenge_detail_controller.dart';
 import '../controllers/fitness_club_controller.dart';
 import 'create_club_challenge_screen.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 /// Muscle groups highlighted on the body diagram per workout type.
 const _musclesByType = <String, Set<MuscleGroup>>{
@@ -73,18 +75,12 @@ class _ClubChallengeDetailScreenState extends State<ClubChallengeDetailScreen> {
   }
 
   String _formatTime(DateTime value) {
-    final period = value.hour >= 12 ? 'PM' : 'AM';
-    final hour = value.hour % 12 == 0 ? 12 : value.hour % 12;
-    return '$hour:${value.minute.toString().padLeft(2, '0')}$period';
+    return DateFormat(timePattern('h:mma')).format(value);
   }
 
   String get _typeLabel {
-    final type = challenge.workoutType.replaceAll('_', ' ');
-    if (type.isEmpty) return 'Workout';
-    return type
-        .split(' ')
-        .map((w) => w.isEmpty ? w : '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}')
-        .join(' ');
+    if (challenge.workoutType.isEmpty) return tr.activityWorkout;
+    return workoutTypeLabel(challenge.workoutType);
   }
 
   @override
@@ -104,7 +100,7 @@ class _ClubChallengeDetailScreenState extends State<ClubChallengeDetailScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
                 child: Text(
-                  'Challenge Has Ended',
+                  tr.challengeHasEnded,
                   style: TextStyle(
                     color: AppColors.accentBlue,
                     fontSize: 14,
@@ -118,7 +114,7 @@ class _ClubChallengeDetailScreenState extends State<ClubChallengeDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Descriptions',
+                    tr.descriptionsTitle,
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 16,
@@ -130,14 +126,13 @@ class _ClubChallengeDetailScreenState extends State<ClubChallengeDetailScreen> {
                     '\u25CF',
                     challenge.description.isNotEmpty
                         ? challenge.description
-                        : 'Complete ${challenge.targetValue.toStringAsFixed(0)} '
-                            '${challenge.targetUnit.toLowerCase()} to finish this challenge.',
+                        : tr.completeTargetToFinish('${challenge.targetValue.toStringAsFixed(0)} ${unitLabel(challenge.targetUnit).toLowerCase()}'),
                   ),
                   const SizedBox(height: 26),
                   Row(
                     children: [
                       Text(
-                        'MUSCLES BUILT BY ',
+                        tr.musclesBuiltBy,
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 14,
@@ -165,7 +160,7 @@ class _ClubChallengeDetailScreenState extends State<ClubChallengeDetailScreen> {
                     GestureDetector(
                       onTap: _createChallengeAgain,
                       child: Text(
-                        'CREATE CHALLENGE AGAIN?',
+                        tr.createChallengeAgain,
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 13,
@@ -371,7 +366,7 @@ class _ClubChallengeDetailScreenState extends State<ClubChallengeDetailScreen> {
 
   Widget _buildJoinButton() {
     return Obx(() => AppButton(
-          label: 'Join Club Challenge',
+          label: tr.joinClubChallenge,
           onPressed: _hasEnded ? _createChallengeAgain : _controller.joinChallenge,
           isLoading: _controller.isJoining.value,
         ));

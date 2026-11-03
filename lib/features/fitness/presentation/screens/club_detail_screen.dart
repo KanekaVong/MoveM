@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
@@ -15,6 +16,7 @@ import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import 'package:movem/core/utils/app_snack.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class ClubDetailScreen extends StatefulWidget {
   final FitnessClubModel club;
@@ -157,8 +159,8 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                 ),
               ),
               const SizedBox(height: 5),
-              const Text(
-                'MOVE MORE. BECOME MORE.',
+              Text(
+                tr.clubSlogan,
                 style: TextStyle(
                   color: Color(0xFFC8A265),
                   fontSize: 8.5,
@@ -278,8 +280,8 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                     GestureDetector(
                       onTap: () {
                         final shareText = club.joinToken.isNotEmpty
-                            ? 'Join my club "${club.name}" on MoveM! Code: ${club.joinToken}'
-                            : 'Join my club "${club.name}" on MoveM!';
+                            ? tr.clubShareWithCode(club.name, club.joinToken)
+                            : tr.clubShare(club.name);
                         Share.share(shareText);
                       },
                       child: Container(
@@ -340,12 +342,8 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
   }
 
   String _prettyWorkout(String type) {
-    if (type.isEmpty) return 'Workout';
-    return type
-        .replaceAll('_', ' ')
-        .split(' ')
-        .map((w) => w.isEmpty ? w : '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}')
-        .join(' ');
+    if (type.isEmpty) return tr.activityWorkout;
+    return workoutTypeLabel(type);
   }
 
   String _formatCardDate(DateTime? value) {
@@ -368,9 +366,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
   }
 
   String _formatCardTime(DateTime value) {
-    final period = value.hour >= 12 ? 'PM' : 'AM';
-    final hour = value.hour % 12 == 0 ? 12 : value.hour % 12;
-    return '$hour:${value.minute.toString().padLeft(2, '0')}$period';
+    return DateFormat(timePattern('h:mma')).format(value);
   }
 
   String _formatCardTimeRange(DateTime? start, DateTime? end) {
@@ -389,7 +385,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
             onTap: () => _openCreateChallenge(club),
             behavior: HitTestBehavior.opaque,
             child: Text(
-              'Customize Your Own Challenge +',
+              tr.customizeOwnChallenge,
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 18,
@@ -440,7 +436,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            'Featured Challenges',
+            tr.featuredChallenges,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 18,
@@ -605,7 +601,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                   ],
                   const SizedBox(height: 14),
                   AppButton(
-                    label: 'Get Started',
+                    label: tr.getStarted,
                     onPressed: onGetStarted,
                     width: null,
                     height: 40,
@@ -689,7 +685,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          club.isPrivate ? 'PRIVATE' : 'PUBLIC',
+                          (club.isPrivate ? tr.privateLabel : tr.publicLabel).toUpperCase(),
                           style: TextStyle(
                             color: club.isPrivate ? Colors.amber : Colors.greenAccent,
                             fontSize: 11,
@@ -703,7 +699,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                   Text(
                     club.description.isNotEmpty
                         ? club.description
-                        : 'Stay active, motivate each other, and complete challenges together.',
+                        : tr.clubTagline,
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4),
                   ),
                   const SizedBox(height: 16),
@@ -772,7 +768,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                               SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  member.userName ?? 'Member #${member.userId}',
+                                  member.userName ?? tr.memberNumber(member.userId),
                                   style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600, fontSize: 13),
                                 ),
                               ),

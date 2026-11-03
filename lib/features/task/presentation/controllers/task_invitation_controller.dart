@@ -6,6 +6,7 @@ import '../../../groups/data/services/group_service.dart';
 import '../../../groups/domain/repositories/group_repository.dart';
 import 'task_controller.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TaskInvitationController extends GetxController {
   final GroupRepository repository;
@@ -33,7 +34,7 @@ class TaskInvitationController extends GetxController {
         result.data.where((invite) => (invite.status ?? '').toUpperCase() == 'PENDING').toList(),
       );
     } else {
-      errorMessage.value = result.exception?.message ?? 'Failed to load invitations';
+      errorMessage.value = result.exception?.message ?? tr.failedToLoadInvitations;
     }
     isLoading.value = false;
   }
@@ -48,16 +49,16 @@ class TaskInvitationController extends GetxController {
       invitations.removeWhere((item) => item.inviteId == id);
       _refreshTasks();
       AppSnack.show(
-        'Invitation accepted',
+        tr.invitationAccepted,
         invite.activityName?.isNotEmpty == true
-            ? 'You joined ${invite.activityName}'
-            : 'You joined the task',
+            ? tr.youJoinedName(invite.activityName ?? '')
+            : tr.youJoinedTask,
         snackPosition: SnackPosition.BOTTOM,
       );
     } else {
       AppSnack.show(
-        'Could not accept',
-        result.exception?.message ?? 'Please try again',
+        tr.couldNotAccept,
+        result.exception?.message ?? tr.pleaseTryAgain,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -73,8 +74,8 @@ class TaskInvitationController extends GetxController {
       invitations.removeWhere((item) => item.inviteId == id);
     } else {
       AppSnack.show(
-        'Could not decline',
-        result.exception?.message ?? 'Please try again',
+        tr.couldNotDecline,
+        result.exception?.message ?? tr.pleaseTryAgain,
         snackPosition: SnackPosition.BOTTOM,
       );
     }

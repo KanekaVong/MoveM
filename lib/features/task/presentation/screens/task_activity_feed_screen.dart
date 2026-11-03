@@ -10,6 +10,7 @@ import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TaskActivityFeedScreen extends StatelessWidget {
   final String activityId;
@@ -169,6 +170,6 @@ class _ActivityFeedRow extends StatelessWidget {
     if (raw.isEmpty) return '';
     final parsed = DateTime.tryParse(raw);
     if (parsed == null) return raw;
-    return DateFormat('dd/MM/yyyy h:mma').format(parsed.toLocal());
+    return DateFormat(timePattern('dd/MM/yyyy h:mma')).format(parsed.toLocal());
   }
 }

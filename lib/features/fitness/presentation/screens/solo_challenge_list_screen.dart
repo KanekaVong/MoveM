@@ -11,6 +11,7 @@ import '../widgets/loading_more_label.dart';
 import '../../data/repositories/fitness_challenge_repository.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class SoloChallengeListScreen extends StatefulWidget {
   final FitnessChallengeRepository? repository;
@@ -180,7 +181,7 @@ class _SoloChallengeListScreenState extends State<SoloChallengeListScreen> {
                       label: Text(
                         cat == 'ALL'
                             ? (AppLocalizations.of(context)?.allFilter ?? 'All')
-                            : cat.replaceAll('_', ' ').capitalizeFirst ?? cat,
+                            : workoutTypeLabel(cat),
                         style: TextStyle(
                           color: isSelected ? Colors.white : AppColors.textSecondary,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -218,23 +219,19 @@ class _SoloChallengeListScreenState extends State<SoloChallengeListScreen> {
     final parts = <String>[];
 
     if (item.targetValue > 0) {
-      final unitStr = item.targetUnit.isNotEmpty ? item.targetUnit.toLowerCase() : '';
+      final unitStr = item.targetUnit.isNotEmpty ? unitLabel(item.targetUnit).toLowerCase() : '';
       parts.add('${item.targetValue} $unitStr');
     }
 
     if (item.workoutLevel.isNotEmpty) {
-      final level = item.workoutLevel
-          .replaceAll('_LEVEL', '')
-          .replaceAll('_', ' ')
-          .toLowerCase()
-          .capitalizeFirst;
-      if (level != null && level.isNotEmpty) {
+      final level = workoutLevelLabel(item.workoutLevel);
+      if (level.isNotEmpty) {
         parts.add(level);
       }
     }
 
     if (item.calories > 0) {
-      parts.add('${item.calories} kcal');
+      parts.add(tr.kcalValue(item.calories));
     }
 
     if (parts.isEmpty && item.description.isNotEmpty) {

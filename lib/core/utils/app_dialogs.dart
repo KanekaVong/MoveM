@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../shared/widgets/app_button.dart';
 import '../theme/app_colors.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class AppDialogs {
   static void showLoading() {
@@ -31,7 +32,7 @@ class AppDialogs {
 
   static void showError(String message, {VoidCallback? onConfirm}) {
     showSingleActionDialog(
-      title: 'Error',
+      title: tr.errorTitle,
       message: message,
       onConfirm: onConfirm,
     );
@@ -40,7 +41,7 @@ class AppDialogs {
   static void showSingleActionDialog({
     required String title,
     required String message,
-    String buttonText = 'OK',
+    String? buttonText,
     VoidCallback? onConfirm,
   }) {
     Get.dialog(
@@ -50,7 +51,7 @@ class AppDialogs {
         actionsAlignment: MainAxisAlignment.center,
         actions: [
           AppButton(
-            label: buttonText,
+            label: buttonText ?? tr.ok,
             height: 46,
             onPressed: () {
               Get.back();
@@ -68,8 +69,8 @@ class AppDialogs {
   static void showMultiActionDialog({
     required String title,
     required String message,
-    String confirmText = 'Confirm',
-    String cancelText = 'Cancel',
+    String? confirmText,
+    String? cancelText,
     required VoidCallback onConfirm,
     VoidCallback? onCancel,
   }) {
@@ -83,7 +84,7 @@ class AppDialogs {
             children: [
               Expanded(
                 child: AppButton.secondary(
-                  label: cancelText,
+                  label: cancelText ?? tr.cancel,
                   height: 46,
                   onPressed: () {
                     Get.back();
@@ -96,7 +97,7 @@ class AppDialogs {
               const SizedBox(width: 12),
               Expanded(
                 child: AppButton(
-                  label: confirmText,
+                  label: confirmText ?? tr.confirm,
                   height: 46,
                   onPressed: () {
                     Get.back();

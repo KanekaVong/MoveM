@@ -23,6 +23,7 @@ import '../../../groups/domain/repositories/group_repository.dart';
 import '../../../groups/data/repositories/group_repository_impl.dart';
 import '../../../groups/data/services/group_service.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class EditTaskController extends BaseController {
   AppLocalizations? get _l10n {
@@ -457,32 +458,13 @@ class EditTaskController extends BaseController {
   }
 
   String get formattedDeadlineDate {
-    if (selectedDate.value == null) return '13th August 2026';
-    final date = selectedDate.value!;
-    String day = DateFormat('d').format(date);
-    String suffix = 'th';
-    if (day.endsWith('1') && !day.endsWith('11')) {
-      suffix = 'st';
-    } else if (day.endsWith('2') && !day.endsWith('12')) {
-      suffix = 'nd';
-    } else if (day.endsWith('3') && !day.endsWith('13')) {
-      suffix = 'rd';
-    }
-    return '$day$suffix ${DateFormat('MMMM yyyy').format(date)}';
+    if (selectedDate.value == null) return tr.notSet;
+    return formatDayMonthYear(selectedDate.value!);
   }
 
   String get formattedReminderDate {
-    final date = selectedDate.value ?? DateTime(2026, 8, 6);
-    String day = DateFormat('d').format(date).padLeft(2, '0');
-    String suffix = 'TH';
-    if (day.endsWith('1') && !day.endsWith('11')) {
-      suffix = 'ST';
-    } else if (day.endsWith('2') && !day.endsWith('12')) {
-      suffix = 'ND';
-    } else if (day.endsWith('3') && !day.endsWith('13')) {
-      suffix = 'RD';
-    }
-    return '$day$suffix ${DateFormat('MMMM yyyy').format(date).toUpperCase()}';
+    if (selectedDate.value == null) return tr.notSet;
+    return formatDayMonthYear(selectedDate.value!, padDay: true).toUpperCase();
   }
 
   void cyclePriority() {
@@ -506,10 +488,10 @@ class EditTaskController extends BaseController {
   }
 
   String get formattedDeadlineTime {
-    if (selectedTime.value == null) return 'Not set';
+    if (selectedTime.value == null) return tr.notSet;
     final now = DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, selectedTime.value!.hour, selectedTime.value!.minute);
-    return DateFormat('hh:mm a').format(dt);
+    return DateFormat(timePattern('hh:mm a')).format(dt);
   }
 
   void addChecklistItem() {

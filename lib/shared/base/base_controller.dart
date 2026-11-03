@@ -5,6 +5,7 @@ import '../../core/network/api_result.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/utils/app_dialogs.dart';
 import 'dart:async';
+import 'package:movem/core/utils/l10n.dart';
 
 enum ViewState { idle, loading, success, error }
 
@@ -63,7 +64,7 @@ abstract class BaseController extends GetxController {
       state.value = ViewState.error;
       _logger.e('Unexpected API execution error', error: e, stackTrace: stack);
       if (showErrorDialog) {
-        AppDialogs.showError('An unexpected error occurred.');
+        AppDialogs.showError(tr.unexpectedError);
       }
     }
   }

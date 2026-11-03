@@ -7,6 +7,7 @@ import '../models/fitness_profile_model.dart';
 import '../models/fitness_statistics_model.dart';
 import '../models/solo_challenge_model.dart';
 import '../models/setup_goal_request.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class FitnessProfileRepository {
   final DioClient _dioClient = DioClient();
@@ -186,7 +187,7 @@ class FitnessProfileRepository {
       if (response.data != null) {
         return ApiSuccess(FitnessGoalModel.fromJson(response.data));
       }
-      return ApiError(ApiException(message: 'Goal not found'));
+      return ApiError(ApiException(message: tr.goalNotFound));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -205,7 +206,7 @@ class FitnessProfileRepository {
       if (response.data != null) {
         return ApiSuccess(FitnessGoalModel.fromJson(response.data));
       }
-      return ApiError(ApiException(message: 'Update goal failed'));
+      return ApiError(ApiException(message: tr.failedToSetGoal));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {

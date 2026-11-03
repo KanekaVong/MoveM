@@ -9,6 +9,7 @@ import '../../data/repositories/trip_repository_impl.dart';
 import '../../data/services/trip_service.dart';
 import '../controllers/trip_route_controller.dart';
 import '../../../../core/config/google_map_style.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TripRouteScreen extends StatefulWidget {
   final String activityId;
@@ -150,9 +151,7 @@ class _TripRouteScreenState extends State<TripRouteScreen> {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      controller.travelMode.value == 'CYCLING'
-                          ? 'Building cycling route...'
-                          : 'Building route...',
+                      tr.buildingRoute,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 13,
@@ -444,8 +443,8 @@ class _TripRouteScreenState extends State<TripRouteScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'ROUTE DETAILS',
+              Text(
+                tr.routeDetails,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,
@@ -455,7 +454,7 @@ class _TripRouteScreenState extends State<TripRouteScreen> {
               ),
               if (!_isExpanded)
                 Text(
-                  '${controller.totalDistanceKm.value.toStringAsFixed(1)} km • ${_formatDuration(controller.estimatedTravelTimeMinutes.value)}',
+                  tr.routeDistanceAndTime(controller.totalDistanceKm.value.toStringAsFixed(1), _formatDuration(controller.estimatedTravelTimeMinutes.value)),
                   style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 11,
@@ -521,9 +520,9 @@ class _TripRouteScreenState extends State<TripRouteScreen> {
               icon: Icons.navigation_rounded,
               iconColor: const Color(0xFF2DD4BF),
               badgeBgColor: const Color(0xFF0D9488).withValues(alpha: 0.35),
-              label: 'DISTANCE',
+              label: tr.distanceCaps,
               value:
-              '${controller.totalDistanceKm.value.toStringAsFixed(1)} km',
+              tr.kmValueLower(controller.totalDistanceKm.value.toStringAsFixed(1)),
             ),
           ),
           const SizedBox(width: 10),
@@ -532,7 +531,7 @@ class _TripRouteScreenState extends State<TripRouteScreen> {
               icon: Icons.access_time_filled_rounded,
               iconColor: const Color(0xFFFBBF24),
               badgeBgColor: const Color(0xFFD97706).withValues(alpha: 0.35),
-              label: 'EST. TIME',
+              label: tr.estTime,
               value: _formatDuration(
                 controller.estimatedTravelTimeMinutes.value,
               ),
@@ -595,8 +594,8 @@ class _TripRouteScreenState extends State<TripRouteScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'TRAVEL MODE',
+        Text(
+          tr.travelModeCaps,
           style: TextStyle(
             color: Colors.white70,
             fontSize: 11,
@@ -611,25 +610,25 @@ class _TripRouteScreenState extends State<TripRouteScreen> {
             child: Row(
               children: [
                 _buildTravelModeButton(
-                  label: 'Driving',
+                  label: tr.travelDriving,
                   icon: Icons.directions_car_rounded,
                   value: 'DRIVING',
                 ),
                 const SizedBox(width: 8),
                 _buildTravelModeButton(
-                  label: 'Walking',
+                  label: tr.travelWalking,
                   icon: Icons.directions_walk_rounded,
                   value: 'WALKING',
                 ),
                 const SizedBox(width: 8),
                 _buildTravelModeButton(
-                  label: 'Cycling',
+                  label: tr.travelCycling,
                   icon: Icons.directions_bike_rounded,
                   value: 'CYCLING',
                 ),
                 const SizedBox(width: 8),
                 _buildTravelModeButton(
-                  label: 'Riding',
+                  label: tr.travelRiding,
                   icon: Icons.two_wheeler_rounded,
                   value: 'RIDING',
                 ),
@@ -696,8 +695,8 @@ class _TripRouteScreenState extends State<TripRouteScreen> {
     final stops = trip.stops;
 
     if (stops.isEmpty) {
-      return const Text(
-        'No stops available.',
+      return Text(
+        tr.noStopsAvailable,
         style: TextStyle(color: Colors.white70),
       );
     }
@@ -705,8 +704,8 @@ class _TripRouteScreenState extends State<TripRouteScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'STOPS',
+        Text(
+          tr.stops,
           style: TextStyle(
             color: Colors.white70,
             fontSize: 11,
@@ -783,7 +782,7 @@ class _TripRouteScreenState extends State<TripRouteScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  stop.locationName ?? 'Unnamed stop',
+                  stop.locationName ?? tr.unnamedStop,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 13,
@@ -791,10 +790,10 @@ class _TripRouteScreenState extends State<TripRouteScreen> {
                   ),
                 ),
                 if (stop.lat != null && stop.lng != null)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(top: 2),
                     child: Text(
-                      'Route stop',
+                      tr.routeStop,
                       style: TextStyle(
                         color: Colors.white60,
                         fontSize: 10,
@@ -811,16 +810,16 @@ class _TripRouteScreenState extends State<TripRouteScreen> {
 
   String _formatDuration(int minutes) {
     if (minutes < 60) {
-      return '$minutes min';
+      return tr.durMins(minutes);
     }
 
     final hours = minutes ~/ 60;
     final remainingMinutes = minutes % 60;
 
     if (remainingMinutes == 0) {
-      return '$hours hr';
+      return tr.durHours(hours);
     }
 
-    return '$hours hr $remainingMinutes min';
+    return tr.durHoursMins(hours, remainingMinutes);
   }
 }

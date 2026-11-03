@@ -45,31 +45,27 @@ class HomeHeroBanner extends GetView<HomeController> {
           children: [
             SizedBox(
               width: 250,
-              child: Obx(
-                () => Text(
-                  controller.dailyQuote.value,
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.95),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    height: 1.35,
-                  ),
+              child: Text(
+                controller.dailyQuote,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.95),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  height: 1.35,
                 ),
               ),
             ),
             Align(
               alignment: Alignment.bottomRight,
-              child: Obx(
-                () => Text(
-                  controller.sloganWords.join('\n'),
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.1,
-                    height: 1.15,
-                  ),
+              child: Text(
+                controller.sloganWords.join('\n'),
+                textAlign: TextAlign.right,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.1,
+                  height: 1.15,
                 ),
               ),
             ),

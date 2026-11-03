@@ -15,6 +15,7 @@ import 'package:movem/features/trip/data/services/google_routes_service.dart';
 import 'package:movem/features/trip/domain/trip_route_calculator.dart';
 import '../../controllers/create_trip_controller.dart';
 import 'package:movem/features/trip/presentation/models/create_trip_stop_draft.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class CreateTripStopMapScreen extends StatefulWidget {
   final CreateTripStopDraft? existingStop;
@@ -416,9 +417,9 @@ class _CreateTripStopMapScreenState
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Unable to get this location.',
+            tr.unableToGetThisLocation,
           ),
         ),
       );
@@ -463,7 +464,7 @@ class _CreateTripStopMapScreenState
       }
 
       setState(() {
-        _selectedStopName = 'Selected location';
+        _selectedStopName = tr.tripLocationSelected;
         _selectedStopAddress = null;
         _selectedStopPlaceId = null;
         _isSearching = false;
@@ -491,7 +492,7 @@ class _CreateTripStopMapScreenState
       if (widget.existingStop != null) {
         final stop = CreateTripStopDraft(
           locationName:
-          _selectedStopName ?? 'Selected location',
+          _selectedStopName ?? tr.tripLocationSelected,
           locationAddress: _selectedStopAddress,
           lat: location.latitude,
           lng: location.longitude,
@@ -524,7 +525,7 @@ class _CreateTripStopMapScreenState
 
       final stop = CreateTripStopDraft(
         locationName:
-        _selectedStopName ?? 'Selected location',
+        _selectedStopName ?? tr.tripLocationSelected,
         locationAddress: _selectedStopAddress,
         lat: location.latitude,
         lng: location.longitude,
@@ -776,7 +777,7 @@ class _CreateTripStopMapScreenState
             title:
             controller.currentDraft.locationName ??
                 controller.currentDraft.destination ??
-                'Destination',
+                tr.destinationTitle,
           ),
         ),
       );
@@ -801,7 +802,7 @@ class _CreateTripStopMapScreenState
             BitmapDescriptor.hueAzure,
           ),
           infoWindow: InfoWindow(
-            title: 'Stop ${i + 1}',
+            title: tr.stopNumber(i + 1),
             snippet: stop.locationName,
           ),
         ),
@@ -818,7 +819,7 @@ class _CreateTripStopMapScreenState
             BitmapDescriptor.hueViolet,
           ),
           infoWindow: InfoWindow(
-            title: _selectedStopName ?? 'Selected stop',
+            title: _selectedStopName ?? tr.selectedStop,
           ),
         ),
       );
@@ -1041,9 +1042,9 @@ class _CreateTripStopMapScreenState
                 color: Colors.white,
               ),
               decoration:
-              const InputDecoration(
+              InputDecoration(
                 hintText:
-                'Search for a stop',
+                tr.searchForStop,
                 hintStyle: TextStyle(
                   color: Colors.white54,
                 ),
@@ -1163,8 +1164,8 @@ class _CreateTripStopMapScreenState
             BorderRadius.circular(16),
           ),
         ),
-        child: const Text(
-          'SET STOP',
+        child: Text(
+          tr.setStop,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,

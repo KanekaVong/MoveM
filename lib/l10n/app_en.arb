@@ -38,7 +38,6 @@
   "reject": "Reject",
   "addFriend": "Add Friend",
   "remove": "Remove",
-
   "welcomeBack": "WELCOME BACK!",
   "emailOrPhone": "EMAIL/PHONE NUMBER",
   "username": "USERNAME",
@@ -93,7 +92,6 @@
   "sendOtp": "Send OTP",
   "savePasswordAction": "Save Password",
   "fillAllFields": "Please fill all fields.",
-
   "greetings": "Greetings",
   "stayActiveToday": "Stay Active Today!",
   "todayProgress": "Today's Progress",
@@ -101,7 +99,6 @@
   "upcoming": "Upcoming",
   "reminders": "Reminders",
   "weeklyStats": "Weekly Stats",
-
   "allTasks": "All Tasks",
   "createTask": "Create Task",
   "editTask": "Edit Task",
@@ -110,7 +107,7 @@
   "taskTitleLabel": "TASK TITLE",
   "taskTitleHint": "Name your task...",
   "descriptionLabel": "DESCRIPTION",
-  "descriptionHint": "Add extra notes...",
+  "descriptionHint": "Enter description",
   "deadlineLabel": "DEADLINE",
   "priorityLabel": "PRIORITY",
   "labelsLabel": "LABELS",
@@ -121,8 +118,7 @@
   "suggested": "Suggested",
   "inviteCollaborators": "Invite Collaborators",
   "searchCollaboratorsHint": "Search friends by name...",
-
-  "friends": "Friends",
+  "friends": "FRIENDS",
   "addFriends": "Add Friends",
   "friendRequests": "Friend Requests",
   "friendSuggestions": "Friend Suggestions",
@@ -139,7 +135,6 @@
   "cameraStarting": "Starting Camera...",
   "alignQrHint": "Align QR code inside the frame to scan",
   "userFound": "User Found",
-
   "movemClub": "MoveM Club",
   "soloChallenges": "Solo Challenges",
   "groupActivity": "Group Activity",
@@ -158,18 +153,15 @@
   "groupNameLabel": "GROUP NAME",
   "distanceKm": "Distance (km)",
   "avgPace": "Avg Pace",
-  "duration": "Duration",
+  "duration": "DURATION",
   "caloriesBurned": "Calories",
   "setLabel": "SET",
   "repsLabel": "REPS",
   "tapToCount": "Tap screen to count rep",
   "greatJobWorkout": "Great job! Workout completed",
-
   "tripsMap": "Trips Map",
-
   "notifications": "Notifications",
   "noNotifications": "No notifications yet",
-  "settings": "Settings",
   "accountSection": "Account",
   "preferencesSection": "Preferences",
   "sessionsSection": "Sessions",
@@ -188,7 +180,6 @@
   "selectLanguage": "Select Language",
   "languageEnglish": "English (English)",
   "languageKhmer": "ភាសាខ្មែរ (Khmer)",
-
   "inviteFriends": "Invite Friends",
   "yourInviteLink": "YOUR INVITE LINK",
   "yourToken": "YOUR TOKEN",
@@ -216,7 +207,6 @@
   "deleteTask": "Delete Task",
   "deleteTaskConfirm": "Are you sure you want to delete this task? This action cannot be undone.",
   "taskDeletedSuccess": "Task deleted successfully",
-
   "createNewTrip": "Create New Trip",
   "tripStepName": "NAME",
   "tripStepLocation": "LOCATION",
@@ -229,7 +219,6 @@
   "tripNameRequired": "Please enter your trip name.",
   "tripNameTitle": "What's the Trip Called?",
   "tripNameSubtitle": "Give your adventure a name",
-
   "tripLocationTitle": "Where are you going?",
   "tripLocationSubtitle": "Search for a place or tap the map to choose it",
   "tripLocationSearchHint": "Search destination...",
@@ -240,7 +229,6 @@
   "tripLocationPermissionDenied": "Location permission is required to use your current location.",
   "tripLocationServiceDisabled": "Please turn on location services.",
   "tripLocationSearching": "Searching...",
-
   "tripDurationTitle": "Duration & Budget",
   "tripDurationSubtitle": "How long and how much?",
   "tripDurationLabel": "Trip Duration",
@@ -251,7 +239,6 @@
   "tripBudgetSubtitle": "Set the budget for your adventure",
   "tripBudgetLabel": "Budget",
   "tripBudgetHint": "0",
-
   "tripStopsTitle": "Plan your stops",
   "tripStopsSubtitle": "Add checkpoints along your route",
   "tripAddStop": "Add a stop",
@@ -259,7 +246,6 @@
   "tripUnnamedStop": "Unnamed stop",
   "tripStepPacking": "PACKING",
   "tripStepChecklist": "CHECKLIST",
-
   "tripFriendsTitle": "WHO'S COMING?",
   "tripFriendsSubtitle": "Invite friends to join your trip",
   "tripFriendsSearchHint": "Invite Friends",
@@ -273,38 +259,32 @@
   "tripDays": "DAYS",
   "tripStop": "STOP",
   "tripStops": "STOPS",
-
   "tripPackingTitle": "NEED HELP WITH WHAT TO PACK?",
   "tripPackingDescription": "Check what you and your friends need to pack!",
   "tripEssentials": "Trip Essentials",
   "packingItemsHint": "List packing items...",
-
   "tripChecklistTitle": "TRIP CHECKLIST",
   "tripChecklistDescription": "Make sure everything is ready for your trip!",
   "checklistItemsHint": "List checklist items...",
-
-   "tripSummaryTitle": "Trip Summary",
-   "readyButton": "READY",
-   "yourTrip": "YOUR TRIP",
-   "locationNotSelected": "Location not selected",
-   "destination": "DESTINATION",
-   "budget": "BUDGET",
-   "friends": "FRIENDS",
-   "duration": "DURATION",
-   "stops": "STOPS",
-   "places": "Places",
-   "essentials": "ESSENTIALS",
-   "itemsToBePacked": "Items to be packed",
-   "routes": "ROUTES",
-   "noStopsAdded": "No stops added",
-   "unnamedStop": "Unnamed stop",
-
+  "tripSummaryTitle": "Trip Summary",
+  "readyButton": "READY",
+  "yourTrip": "YOUR TRIP",
+  "locationNotSelected": "Location not selected",
+  "destination": "DESTINATION",
+  "budget": "Budget",
+  "stops": "STOPS",
+  "places": "Places",
+  "essentials": "ESSENTIALS",
+  "itemsToBePacked": "Items to be packed",
+  "routes": "ROUTES",
+  "noStopsAdded": "No stops added",
+  "unnamedStop": "Unnamed stop",
   "editTripTitle": "Edit Trip",
   "error": "Error",
   "editTripName": "Trip Name",
   "editTripDuration": "Duration",
   "editTripMembers": "Members",
-  "editTripStops": "Stops",
+  "editTripStops": "STOPS",
   "editTripPacking": "Packing Items",
   "editTripChecklist": "Checklist",
   "editTripAttachments": "Attachments",
@@ -324,7 +304,6 @@
   "editTripNoPackingItems": "No packing items yet",
   "editTripNoChecklistItems": "No checklist items yet",
   "editTripReorderStops": "Drag to reorder stops",
-
   "editTripSectionTripName": "Trip Name",
   "editTripSectionDuration": "Duration",
   "editTripSectionMembers": "Members",
@@ -334,7 +313,6 @@
   "editTripSectionAttachments": "Attachments",
   "editTripSectionBudget": "Budget",
   "editTripSectionRoutes": "Routes",
-
   "editTripDetails": "Trip Details",
   "editTripDatesNotSet": "Dates not set",
   "editTripNotSelected": "Not selected",
@@ -342,7 +320,6 @@
   "editTripBudget": "BUDGET",
   "editTripFriends": "FRIENDS",
   "editTripDurations": "DURATIONS",
-  "editTripStops": "STOPS",
   "editTripEssentials": "ESSENTIALS",
   "editTripItemsToBePacked": "Items to be packed",
   "editTripChecklists": "CHECKLISTS",
@@ -352,8 +329,6 @@
   "editTripItem": "Item",
   "editTripItems": "Items",
   "editTripToBePrepared": "to be prepared",
-
-  "taskDeletedSuccess": "Task deleted successfully",
   "createClub": "Create Club",
   "clubNameLabel": "CLUB NAME",
   "clubNameHint": "Enter club name",
@@ -428,7 +403,7 @@
   "endDateAfterStart": "End date must be after the start date.",
   "achievementsBadges": "Achievements",
   "noAchievementsFound": "No achievements yet",
-  "noAchievementsYet": "No achievements yet",
+  "noAchievementsYet": "No Achievements Yet",
   "profileTitle": "Profile",
   "noMutuals": "No mutual friends",
   "invitation": "Invitation",
@@ -490,19 +465,35 @@
   "removedTitle": "Removed",
   "clubCreatedMsg": "Club \"{name}\" is ready!",
   "@clubCreatedMsg": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "challengeCreatedMsg": "Challenge \"{name}\" is ready!",
   "@challengeCreatedMsg": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "joinedClubMsg": "You're now in {name}",
   "@joinedClubMsg": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "joinRequestSentMsg": "Your request to join {name} is waiting.",
   "@joinRequestSentMsg": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "failedToCreateClub": "Couldn't create the club. Try again.",
   "failedToJoinClub": "Couldn't join the club. Try again.",
@@ -514,12 +505,21 @@
   "couldNotCancelRequest": "Couldn't cancel that request.",
   "enterTargetInUnit": "Enter a target in {unit}.",
   "@enterTargetInUnit": {
-    "placeholders": { "unit": { "type": "String" } }
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
   },
   "loadingChallenges": "Loading challenges...",
-  "membersCount": "Members ({count})",
+  "membersCount": "{count} members",
   "@membersCount": {
-    "placeholders": { "count": { "type": "int" } }
+    "description": "Number of trip members",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "completedChallengesLabel": "Completed challenges",
   "viewAllArrow": "View all >>",
@@ -547,8 +547,12 @@
   "membersAdded": "{count} added to {name}.",
   "@membersAdded": {
     "placeholders": {
-      "count": { "type": "int" },
-      "name": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
     }
   },
   "couldNotAddMembers": "Couldn't add members. Try again.",
@@ -556,21 +560,33 @@
   "removeMemberConfirm": "Remove {name} from {club}?",
   "@removeMemberConfirm": {
     "placeholders": {
-      "name": { "type": "String" },
-      "club": { "type": "String" }
+      "name": {
+        "type": "String"
+      },
+      "club": {
+        "type": "String"
+      }
     }
   },
   "thisMember": "this member",
   "memberRemoved": "{name} was removed from {club}.",
   "@memberRemoved": {
     "placeholders": {
-      "name": { "type": "String" },
-      "club": { "type": "String" }
+      "name": {
+        "type": "String"
+      },
+      "club": {
+        "type": "String"
+      }
     }
   },
   "youJoinedChallenge": "You're in {name}.",
   "@youJoinedChallenge": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "failedToJoinChallenge": "Couldn't join this challenge.",
   "membersJoinedLabel": "Members joined",
@@ -587,13 +603,17 @@
   "requestsLabel": "REQUESTS",
   "youRequestedJoin": "You asked to join {name}",
   "@youRequestedJoin": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "aClub": "a club",
   "noTasksYet": "No tasks yet",
   "createTaskToStart": "Create a task to get started.",
   "goals": "Goals",
-  "history": "History",
+  "history": "HISTORY",
   "profileAndGoal": "PROFILE & GOAL",
   "editFitnessProfile": "Edit Fitness Profile >>",
   "editFitnessGoal": "Edit Fitness Goal >>",
@@ -609,7 +629,6 @@
   "taskCompleted": "Task Completed",
   "steps": "Steps",
   "daysUntilYourTrip": "Days Until Your Trip",
-  "noAchievementsYet": "No Achievements Yet",
   "tasksStat": "Tasks",
   "workoutsStat": "Workouts",
   "tripsStat": "Trips",
@@ -628,161 +647,936 @@
   "newAchievement": "NEW ACHIEVEMENT!",
   "awesome": "AWESOME!!!",
   "verificationFailed": "Verification Failed",
-  "notClubMember": "Join this club first to create a challenge.",
-
   "tripMembers": "Trip Members",
-  "noMembersYet": "No members yet",
   "pendingInvitations": "Pending Invitations",
   "noPendingInvitations": "No pending invitations",
   "pending": "Pending",
   "inviteFriend": "Invite Friend",
-
-  "inviteFriend": "Invite Friend",
   "searchFriends": "Search friends",
   "searchFriendsHint": "Search by username or email",
-  "noUsersFound": "No users found",
   "searchToFindFriends": "Search to find friends",
-  "invite": "Invite",
-  "invited": "Invited",
   "invitationPending": "Invitation Pending",
   "invitationSent": "Invitation sent successfully",
   "failedToSendInvitation": "Failed to send invitation",
-
   "tripInvitations": "Trip Invitations",
   "noTripInvitations": "No trip invitations",
   "invitedYouToTrip": "invited you to a trip",
-  "accept": "Accept",
-  "reject": "Reject",
   "invitationAccepted": "Invitation accepted",
   "tripAddedToYourTrips": "The trip has been added to your trips.",
   "invitationRejected": "Invitation rejected",
-
-   "addExpense": "Add Expense",
-   "addBudget": "Add Budget",
-   "budget": "Budget",
-   "expense": "Expense",
-   "amount": "Amount",
-   "description": "Description",
-   "descriptionHint": "Enter description",
-   "type": "Type",
-   "tapToEnterAmount": "Tap to enter amount",
-
-   "tripExpenses": "Trip Expenses",
-    "totalBudget": "TOTAL BUDGET",
-    "spent": "SPENT",
-    "remaining": "REMAINING",
-    "categories": "CATEGORIES",
-    "addExpenseBudget": "ADD EXPENSE / BUDGET",
-
-    "foodsAndDrinks": "Foods & Drinks",
-    "accommodations": "Accommodations",
-    "transportation": "Transportation",
-    "others": "Others",
-
-    "paidBy": "{amount} • Paid by {payerName}",
-    "@paidBy": {
-      "placeholders": {
-        "amount": {},
-        "payerName": {}
-      }
-    },
-
-    "history": "HISTORY",
-    "trackAllYourExpenses": "Track All Your Expenses",
-    "allCategories": "All Categories",
-    "filterExpenses": "Filter Expenses",
-    "splitBills": "Split Bills",
-    "noExpensesYet": "No expenses yet",
-    "expensesWillAppearHere": "Your trip expenses will appear here.",
-    "deleteExpense": "Delete Expense?",
-    "deleteExpenseConfirmation": "Are you sure you want to delete \"{description}\"?",
-    "@deleteExpenseConfirmation": {
-      "placeholders": {
-        "description": {}
-      }
-    },
-     "unknown": "Unknown",
-     "allocatedAmount": "Allocated Amount",
-     "editCategory": "Edit {category}",
-     "@editCategory": {
-       "placeholders": {
-         "category": {}
-       }
-     },
-     "addDescriptions": "Add Descriptions",
-     "descriptionDetailsHint": "Write more details on this expense so your friends know what they're for.",
-     "expensePaidBy": "{amount} is paid by {payerName}",
-     "@expensePaidBy": {
-       "placeholders": {
-         "amount": {},
-         "payerName": {}
-       }
-     },
-     "splitBetween": "Split Between",
-     "amountOwed": "Amount Owed",
-     "settled": "Settled",
-     "unsettled": "Unsettled",
-     "noSplitInformation": "No split information available.",
-     "splitBillsWithFriends": "Split Bills With Your Friends!",
-     "members": "Members",
-     "expenseAmount": "Expense Amount",
-     "splitType": "Split Type",
-     "equal": "Equal",
-     "custom": "Custom",
-     "splitAmount": "Split Amount",
-     "createSplitBill": "CREATE SPLIT BILL",
-     "comingSoon": "Coming Soon",
-     "splitBillComingSoon": "Split bill creation will be available soon.",
-     "ok": "OK",
-     "membersCount": "{count} members",
-     "@membersCount": {
-       "description": "Number of trip members",
-       "placeholders": {
-         "count": {
-           "type": "int"
-         }
-       }
-     },
-     "totalSpent": "Total Spent: {amount}$",
-     "@totalSpent": {
-       "description": "Total amount spent on a trip"
-     },
-     "addTripCover": "Add Trip Cover",
-     "changeTripCover": "Change Trip Cover",
-     "addTripCoverImage": "Add trip cover image",
-     "changeCurrentImage": "Change current image",
-     "recentTrips": "RECENT TRIPS",
-     "sortBy": "Sort By",
-     "newestDate": "Newest Date",
-     "oldestDate": "Oldest Date",
-     "highestSpent": "Highest Spent",
-     "noTripsYet": "No trips yet.",
-     "editTripDeleteStop": "Delete Stop",
-     "editTripDeleteStopConfirmation": "Are you sure you want to delete this stop?",
-     "editTripEditStop": "Edit Stop",
-     "editTripEditStopNotImplemented": "Stop editing will be available here.",
-     "editTripAddStop": "Add Stop",
-     "editTripAddStopSuccess": "Stop added successfully",
-     "editTripDeleteChecklist": "Delete Checklist",
-     "editTripDeleteChecklistConfirm": "Are you sure you want to delete this checklist item?",
-     "editTripDelete": "Delete",
-     "editTripCancel": "Cancel",
-     "editTripDeleteChecklistSuccess": "Checklist deleted successfully",
-     "editTripDeleteChecklistFailed": "Failed to delete checklist item",
-     "editTripEdit": "Edit",
-     "viewBills": "View Bills",
-     "alreadySettled": "Already settled?",
-     "pending": "Pending",
-     "paid": "Paid",
-     "confirmSettlement": "Confirm Payment",
-     "confirmSettlementMessage": "Are you sure you want to mark your share as paid?",
-     "settle": "Mark as Paid",
-     "recentTrips": "Recent Trips",
-     "noRecentTripsYet": "No recent trips yet.",
-     "changeTripCover": "Change Trip Cover",
-     "addTripCover": "Add Trip Cover",
-     "changeCurrentImage": "Change current image",
-     "addTripCoverImage": "Add trip cover image",
-     "notAvailable": "N/A"
-
+  "addExpense": "Add Expense",
+  "addBudget": "Add Budget",
+  "expense": "Expense",
+  "amount": "Amount",
+  "description": "Description",
+  "type": "Type",
+  "tapToEnterAmount": "Tap to enter amount",
+  "tripExpenses": "Trip Expenses",
+  "totalBudget": "TOTAL BUDGET",
+  "spent": "SPENT",
+  "remaining": "REMAINING",
+  "categories": "CATEGORIES",
+  "addExpenseBudget": "ADD EXPENSE / BUDGET",
+  "foodsAndDrinks": "Foods & Drinks",
+  "accommodations": "Accommodations",
+  "transportation": "Transportation",
+  "others": "Others",
+  "paidBy": "{amount} • Paid by {payerName}",
+  "@paidBy": {
+    "placeholders": {
+      "amount": {},
+      "payerName": {}
+    }
+  },
+  "trackAllYourExpenses": "Track All Your Expenses",
+  "allCategories": "All Categories",
+  "filterExpenses": "Filter Expenses",
+  "splitBills": "Split Bills",
+  "noExpensesYet": "No expenses yet",
+  "expensesWillAppearHere": "Your trip expenses will appear here.",
+  "deleteExpense": "Delete Expense?",
+  "deleteExpenseConfirmation": "Are you sure you want to delete \"{description}\"?",
+  "@deleteExpenseConfirmation": {
+    "placeholders": {
+      "description": {}
+    }
+  },
+  "unknown": "Unknown",
+  "allocatedAmount": "Allocated Amount",
+  "editCategory": "Edit {category}",
+  "@editCategory": {
+    "placeholders": {
+      "category": {}
+    }
+  },
+  "addDescriptions": "Add Descriptions",
+  "descriptionDetailsHint": "Write more details on this expense so your friends know what they're for.",
+  "expensePaidBy": "{amount} is paid by {payerName}",
+  "@expensePaidBy": {
+    "placeholders": {
+      "amount": {},
+      "payerName": {}
+    }
+  },
+  "splitBetween": "Split Between",
+  "amountOwed": "Amount Owed",
+  "settled": "Settled",
+  "unsettled": "Unsettled",
+  "noSplitInformation": "No split information available.",
+  "splitBillsWithFriends": "Split Bills With Your Friends!",
+  "members": "Members",
+  "expenseAmount": "Expense Amount",
+  "splitType": "Split Type",
+  "equal": "Equal",
+  "custom": "Custom",
+  "splitAmount": "Split Amount",
+  "createSplitBill": "CREATE SPLIT BILL",
+  "comingSoon": "Coming Soon",
+  "splitBillComingSoon": "Split bill creation will be available soon.",
+  "ok": "OK",
+  "totalSpent": "Total Spent: {amount}$",
+  "@totalSpent": {
+    "description": "Total amount spent on a trip"
+  },
+  "addTripCover": "Add Trip Cover",
+  "changeTripCover": "Change Trip Cover",
+  "addTripCoverImage": "Add trip cover image",
+  "changeCurrentImage": "Change current image",
+  "recentTrips": "Recent Trips",
+  "sortBy": "Sort By",
+  "newestDate": "Newest Date",
+  "oldestDate": "Oldest Date",
+  "highestSpent": "Highest Spent",
+  "noTripsYet": "No trips yet.",
+  "editTripDeleteStop": "Delete Stop",
+  "editTripDeleteStopConfirmation": "Are you sure you want to delete this stop?",
+  "editTripEditStop": "Edit Stop",
+  "editTripEditStopNotImplemented": "Stop editing will be available here.",
+  "editTripAddStop": "Add Stop",
+  "editTripAddStopSuccess": "Stop added successfully",
+  "editTripDeleteChecklist": "Delete Checklist",
+  "editTripDeleteChecklistConfirm": "Are you sure you want to delete this checklist item?",
+  "editTripDelete": "Delete",
+  "editTripCancel": "Cancel",
+  "editTripDeleteChecklistSuccess": "Checklist deleted successfully",
+  "editTripDeleteChecklistFailed": "Failed to delete checklist item",
+  "editTripEdit": "Edit",
+  "viewBills": "View Bills",
+  "alreadySettled": "Already settled?",
+  "paid": "Paid",
+  "confirmSettlement": "Confirm Payment",
+  "confirmSettlementMessage": "Are you sure you want to mark your share as paid?",
+  "settle": "Mark as Paid",
+  "noRecentTripsYet": "No recent trips yet.",
+  "notAvailable": "N/A",
+  "apiRequestCancelled": "The request was cancelled.",
+  "apiTimeout": "The connection is slow. Please try again.",
+  "apiNoInternet": "No internet connection. Please check your network.",
+  "serverBadResponse": "The server sent an unexpected response. Please try again.",
+  "apiUnauthorized": "Your session has ended. Please log in again.",
+  "apiForbidden": "You don't have permission to do this.",
+  "apiNotFound": "We couldn't find what you're looking for.",
+  "apiServerError": "Our server has a problem right now. Please try again later.",
+  "apiAlreadyTaken": "The {field} '{value}' is already taken. Please try another one.",
+  "@apiAlreadyTaken": {
+    "placeholders": {
+      "field": {},
+      "value": {}
+    }
+  },
+  "unitKmValue": "{value}KM",
+  "@unitKmValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "unitMeterValue": "{value}M",
+  "@unitMeterValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "homeDailyQuote": "“Success is stumbling from failure to failure with no loss of enthusiasm” - Winston Churchill",
+  "homeSloganMove": "MOVE",
+  "homeSloganExplore": "EXPLORE",
+  "homeSloganAchieve": "ACHIEVE",
+  "notifChannelImportant": "High Importance Notifications",
+  "notifChannelImportantDesc": "This channel is used for important notifications and alerts.",
+  "notifChannelTaskReminders": "Task Reminders",
+  "notifChannelTaskRemindersDesc": "Notifications for task deadlines and upcoming reminders",
+  "taskReminderTitle": "Task Reminder: {title}",
+  "@taskReminderTitle": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "taskReminderBody": "Don't forget to complete your task!",
+  "authVerifiedTitle": "Verified",
+  "authOtpVerified": "OTP Verified Successfully!",
+  "authCodeSentTitle": "Code Sent",
+  "authNewCodeSent": "A new code has been sent to your email.",
+  "authEmailVerified": "Email Verified Successfully!",
+  "authNewVerificationCodeSent": "A new verification code has been sent to your email.",
+  "authOtpSentTitle": "OTP Sent",
+  "authOtpSentTo": "An OTP has been sent to {email}.",
+  "@authOtpSentTo": {
+    "placeholders": {
+      "email": {}
+    }
+  },
+  "authPasswordResetTitle": "Password Reset",
+  "authPasswordResetDone": "Your password has been reset successfully.",
+  "authTagline": "YOUR LIFE, IN MOTION",
+  "activitySteps": "STEPS",
+  "activityDurationMins": "{mins} MINS",
+  "@activityDurationMins": {
+    "placeholders": {
+      "mins": {}
+    }
+  },
+  "activityCalories": "CALORIES",
+  "activityAvgPace": "AVG PACE",
+  "activityChallenge": "CHALLENGE",
+  "activityCompleted": "COMPLETED 🔥",
+  "likesCount": "{count} Likes",
+  "@likesCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "commentsCount": "{count} Comments",
+  "@commentsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "activityWorkout": "WORKOUT",
+  "homeMovemUser": "MoveM User",
+  "feedCompletedRunDistance": "Completed a {distance} Run! 🔥",
+  "@feedCompletedRunDistance": {
+    "placeholders": {
+      "distance": {}
+    }
+  },
+  "feedCompletedRun": "Completed a Run! 🔥",
+  "feedCompletedPushUp": "Completed a PushUp Challenge 🔥",
+  "feedCompletedSquat": "Completed a Squat Challenge 🔥",
+  "feedCompletedWorkout": "Completed a {type} Challenge 🔥",
+  "@feedCompletedWorkout": {
+    "placeholders": {
+      "type": {}
+    }
+  },
+  "homeMovemAthlete": "MoveM Athlete",
+  "caloriesValue": "{count}Cals",
+  "@caloriesValue": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "stepsValue": "{count}Steps",
+  "@stepsValue": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "durHoursMins": "{hours}Hr {mins}Mins",
+  "@durHoursMins": {
+    "placeholders": {
+      "hours": {},
+      "mins": {}
+    }
+  },
+  "durHours": "{hours}Hr",
+  "@durHours": {
+    "placeholders": {
+      "hours": {}
+    }
+  },
+  "durMins": "{mins}Mins",
+  "@durMins": {
+    "placeholders": {
+      "mins": {}
+    }
+  },
+  "paceValue": "{pace} / KM",
+  "@paceValue": {
+    "placeholders": {
+      "pace": {}
+    }
+  },
+  "runSprintName": "{km} KILOMETERS SPRINT",
+  "@runSprintName": {
+    "placeholders": {
+      "km": {}
+    }
+  },
+  "activityRun": "RUN",
+  "durMinsSecs": "{mins}m {secs}s",
+  "@durMinsSecs": {
+    "placeholders": {
+      "mins": {},
+      "secs": {}
+    }
+  },
+  "durSecs": "{secs}s",
+  "@durSecs": {
+    "placeholders": {
+      "secs": {}
+    }
+  },
+  "changeEmail": "Change email",
+  "addPhone": "Add phone",
+  "emailAddress": "Email address",
+  "phoneNumberLower": "Phone number",
+  "emailPrivacyNote": "Your email address is linked to your account and remains private. If updated, your previous address may be kept for account recovery.",
+  "phoneUpdateNote": "Your phone number will be updated in your profile.",
+  "change": "Change",
+  "pleaseEnterEmail": "Please enter an email address",
+  "pleaseEnterValidPhone": "Please enter a valid phone number",
+  "phoneUpdated": "Phone number updated successfully",
+  "logOutConfirm": "Are you sure you want to log out of your account?",
+  "region": "Region",
+  "chooseRegion": "Choose your region",
+  "chooseRegionSub": "Select your country and province, state, or region.",
+  "country": "Country",
+  "selectCountry": "Select country",
+  "searchCountry": "Search country...",
+  "regionStateProvince": "Region / State / Province",
+  "selectRegionLower": "Select region",
+  "searchRegion": "Search region...",
+  "passwordChanged": "Your password has been changed.",
+  "changeYourPassword": "Change your password",
+  "changePasswordSub": "Enter your current password and choose a new one.",
+  "currentPassword": "Current Password",
+  "enterCurrentPassword": "Enter current password",
+  "pleaseEnterCurrentPassword": "Please enter your current password.",
+  "newPasswordTitle": "New Password",
+  "pleaseEnterNewPassword": "Please enter a new password.",
+  "passwordMin8": "Password must be at least 8 characters.",
+  "confirmNewPassword": "Confirm New Password",
+  "confirmNewPasswordHint": "Confirm new password",
+  "pleaseConfirmNewPassword": "Please confirm your new password.",
+  "forgotPasswordLower": "Forgot password?",
+  "changeProfilePhoto": "Change Profile Photo",
+  "chooseFromLibrary": "Choose from Library",
+  "takePhoto": "Take Photo",
+  "removeCurrentPhoto": "Remove Current Profile",
+  "couldNotSelectImage": "Could not select image.",
+  "failedToSaveProfileChanges": "Couldn't save your changes. Please try again.",
+  "uploadFailed": "Upload failed",
+  "photoUploadFailed": "The server could not save your photo. Please try again later.",
+  "firstNameField": "First Name",
+  "lastNameField": "Last Name",
+  "bio": "Bio",
+  "male": "Male",
+  "female": "Female",
+  "other": "Other",
+  "preferNotToSay": "Prefer not to say",
+  "yourEmailAddress": "Your email address:",
+  "yourPhoneNumber": "Your phone number:",
+  "phonePrivacyNote": "Your phone number is linked to your account and remains private. If updated, your previous number may be kept for account recovery.",
+  "changePhoneNumber": "Change phone number",
+  "verifyEmail": "Verify email",
+  "verifyEmailSub": "We have sent a verification code to your registered email address to confirm your identity. Please check your inbox and enter the code.",
+  "resendCodeInSeconds": "Resend code in {seconds}s",
+  "@resendCodeInSeconds": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "resendCodeLower": "Resend code",
+  "pleaseEnter6DigitCode": "Please enter the 6-digit verification code",
+  "pleaseEnterYourEmail": "Please enter your email.",
+  "pleaseEnterOtp": "Please enter the OTP.",
+  "forgotPasswordTitle": "Forgot Password",
+  "resetYourPassword": "Reset your password",
+  "resetPasswordSub": "Enter your email and use the OTP sent to you to create a new password.",
+  "otpCodeField": "OTP Code",
+  "enter6DigitOtp": "Enter 6-digit OTP",
+  "resend": "Resend",
+  "otpExpiryNote": "The OTP expires according to your account security settings.",
+  "resetPasswordAction": "Reset Password",
+  "friendRequestAccepted": "Friend request accepted",
+  "friendRequestRejected": "Friend request rejected",
+  "challengesCompleted": "Challenges Completed",
+  "tripPlans": "Trip Plans",
+  "friendsTitle": "Friends",
+  "recentAchievementsLead": "Recent",
+  "mutualFriendsLead": "Mutual",
+  "requestSent": "Request Sent",
+  "moveWithPurpose": "MOVE WITH PURPOSE",
+  "addFriendsHeadline": "Find And Connect With Friends To Stay Active Together",
+  "inviteShareMessage": "Join me on MoveM! Move with purpose. Use my invite link: {link}",
+  "@inviteShareMessage": {
+    "placeholders": {
+      "link": {}
+    }
+  },
+  "qrCaptureFailed": "Unable to capture QR code image",
+  "qrConvertFailed": "Failed to convert QR code to image",
+  "permissionNeededTitle": "Permission Denied",
+  "allowPhotoAccessQr": "Please allow photo access to save the QR code",
+  "qrSaveFailed": "Failed to save QR code to Photos",
+  "shared": "Shared",
+  "profileLinkCopiedWithLink": "Profile link copied to clipboard: {link}",
+  "@profileLinkCopiedWithLink": {
+    "placeholders": {
+      "link": {}
+    }
+  },
+  "friendRequestSent": "Friend request sent.",
+  "nowFriends": "You are now friends.",
+  "cameraPermissionRequired": "Camera permission required",
+  "noCameraFound": "No camera found",
+  "cameraInitFailed": "Unable to initialize camera",
+  "couldNotOpenImage": "Could not open the selected image",
+  "invalidQr": "Invalid QR",
+  "noQrInImage": "No valid QR code found in this image",
+  "qrGalleryScanFailed": "Unable to scan QR from gallery",
+  "noUserInQr": "No valid user found in QR code",
+  "notSet": "Not set",
+  "priorityUrgent": "Urgent",
+  "priorityHigh": "High",
+  "priorityMedium": "Medium",
+  "priorityLow": "Low",
+  "repeatDaily": "Daily",
+  "repeatWeekly": "Weekly",
+  "repeatMonthly": "Monthly",
+  "repeatYearly": "Yearly",
+  "repeatRecurring": "REPEATS",
+  "taskStatusInProgress": "In Progress",
+  "taskStatusComplete": "Complete",
+  "taskStatusCancelled": "Cancelled",
+  "taskStatusDeleted": "Deleted",
+  "taskStatusCompleted": "Completed",
+  "deadlinePassed": "Deadline Passed",
+  "markAsComplete": "Mark as Complete",
+  "dueOverdue": "Overdue",
+  "dueToday": "Due Today",
+  "dueTomorrow": "Due Tomorrow",
+  "dueInDays": "Due in {days} days",
+  "@dueInDays": {
+    "placeholders": {
+      "days": {}
+    }
+  },
+  "dueNextWeek": "Due Next Week",
+  "dueOnDate": "Due {date}",
+  "@dueOnDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "dueSoon": "Due Soon",
+  "overdueOnDate": "Overdue · {date}",
+  "@overdueOnDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "deadlineOnDate": "Deadline: {date}",
+  "@deadlineOnDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "member": "Member",
+  "inviteQuery": "Invite \"{query}\"",
+  "@inviteQuery": {
+    "placeholders": {
+      "query": {}
+    }
+  },
+  "deadlinesLabel": "DEADLINES",
+  "repeatLabelTitle": "REPEAT",
+  "yourNextReminder": "Your Next Reminder",
+  "attachmentsCount": "Attachments   ({count})",
+  "@attachmentsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "labelTitle": "LABEL",
+  "detailsTitle": "DETAILS",
+  "collaboratorsCount": "Collaborators   ({count})",
+  "@collaboratorsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "attachment": "Attachment",
+  "titleLabel": "TITLE",
+  "taskTitlePlaceholder": "Task title",
+  "taskDescriptionHint": "Enter task description...",
+  "selectLabel": "Select Label",
+  "addAnItem": "Add an item",
+  "addCollaboratorsCaps": "ADD COLLABORATORS",
+  "noAttachmentsAdded": "No attachments added",
+  "uploaded": "Uploaded",
+  "readyToUploadOnSave": "Ready to upload on save",
+  "addAttachmentsCaps": "ADD ATTACHMENTS",
+  "saveChanges": "Save Changes",
+  "uploadPhoto": "Upload Photo",
+  "chooseFromGallery": "Choose from Gallery",
+  "takeAPhoto": "Take a Photo",
+  "taskReminderOptIn": "Get upcoming reminders about your Tasks",
+  "createCaps": "CREATE",
+  "createLabelTitle": "Create Label",
+  "enterLabelName": "Enter label name",
+  "colorLabel": "COLOR",
+  "progressTitle": "PROGRESS",
+  "allTasksCaps": "ALL TASKS",
+  "filter": "Filter",
+  "filterTasks": "Filter Tasks",
+  "reset": "Reset",
+  "statusLabel": "STATUS",
+  "applyFilters": "Apply Filters",
+  "taskHeroTitle": "Ready To Elevate Your\nTask To Another Level?",
+  "completedTasksCaps": "COMPLETED TASKS",
+  "createTaskCaps": "CREATE TASK",
+  "createTaskSub": "Let your brain relax, put it here.",
+  "completedCaps": "COMPLETED",
+  "upcomingTasks": "Upcoming Tasks",
+  "noUpcomingTasks": "No upcoming tasks",
+  "ongoingTasksTitle": "On-Going Tasks",
+  "noOngoingTasks": "No ongoing tasks",
+  "noDeadline": "No deadline",
+  "progressionPercent": "Progression : {percent}%",
+  "@progressionPercent": {
+    "placeholders": {
+      "percent": {}
+    }
+  },
+  "someone": "Someone",
+  "aTask": "a task",
+  "invitedYouToCollaborate": " has invited you to collaborate in",
+  "failedToLoadHistory": "Failed to load history",
+  "failedToSend": "Failed to Send",
+  "updatedTitle": "Updated",
+  "commentUpdated": "Comment updated successfully",
+  "updateFailed": "Update Failed",
+  "commentDeleted": "Comment deleted successfully",
+  "failedToLoadInvitations": "Failed to load invitations",
+  "youJoinedName": "You joined {name}",
+  "@youJoinedName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "youJoinedTask": "You joined the task",
+  "couldNotAccept": "Could not accept",
+  "pleaseTryAgain": "Please try again",
+  "couldNotDecline": "Could not decline",
+  "repeatNone": "None",
+  "repeatCustom": "Custom",
+  "taskStatusUpcoming": "Upcoming",
+  "taskStatusPending": "Pending",
+  "travelDriving": "Driving",
+  "travelWalking": "Walking",
+  "travelCycling": "Cycling",
+  "travelRiding": "Riding",
+  "noRouteForMode": "No {mode} route available for this trip.",
+  "@noRouteForMode": {
+    "placeholders": {
+      "mode": {}
+    }
+  },
+  "deleteTripConfirm": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+  "@deleteTripConfirm": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "tripHeroEnhance": "ENHANCE YOUR\nJOURNEY WITH US.",
+  "buildingRoute": "Building route...",
+  "placeHasNoCoordinates": "Selected place has no coordinates.",
+  "unknownLocation": "Unknown location",
+  "tripWelcomeTitle": "EXPLORE\nTHE WORLD\nWITH US",
+  "tripWelcomeSub": "Move with purpose, Always",
+  "slideToExplore": "Slide to explore",
+  "goLabel": "GO",
+  "failedToSearchUsers": "Failed to search users",
+  "invitationSentTitle": "Invitation Sent",
+  "invitationSentTo": "Invitation sent to {name}",
+  "@invitationSentTo": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "invitationFailedTitle": "Invitation Failed",
+  "couldNotInviteName": "Could not invite {name}",
+  "@couldNotInviteName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "routeDetails": "ROUTE DETAILS",
+  "routeDistanceAndTime": "{km} km • {time}",
+  "@routeDistanceAndTime": {
+    "placeholders": {
+      "km": {},
+      "time": {}
+    }
+  },
+  "distanceCaps": "DISTANCE",
+  "kmValueLower": "{km} km",
+  "@kmValueLower": {
+    "placeholders": {
+      "km": {}
+    }
+  },
+  "estTime": "EST. TIME",
+  "travelModeCaps": "TRAVEL MODE",
+  "noStopsAvailable": "No stops available.",
+  "routeStop": "Route stop",
+  "locationServicesOff": "Location services are disabled.",
+  "locationNeededForRoute": "Location permission is required to show the route.",
+  "unableToGetLocation": "Unable to get location.",
+  "tripDestinationMissing": "This trip's destination isn't on the map yet.",
+  "yourLocation": "Your location",
+  "stopNumber": "Stop {number}",
+  "@stopNumber": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "destinationTitle": "Destination",
+  "tripNameRequiredShort": "Trip name is required.",
+  "startDateRequired": "Start date is required.",
+  "tripHeroTitle": "WHAT’S\nYOUR\nNEXT\nPLAN?",
+  "planYourJourney": "PLAN YOUR JOURNEY",
+  "deleteTrip": "Delete Trip",
+  "tripDeleted": "Trip deleted successfully.",
+  "selectDateAndTime": "Select date and time",
+  "selectBothDates": "Please select both dates",
+  "endBeforeStart": "The end date can't be before the start date",
+  "durationUpdated": "Duration updated",
+  "stopUpdated": "Stop updated successfully",
+  "cancelCaps": "CANCEL",
+  "deleteCaps": "DELETE",
+  "stopNoValidLocation": "This stop does not have a valid location.",
+  "pleaseEnterChecklistItem": "Please enter a checklist item",
+  "checklistUpdated": "Checklist updated",
+  "attachmentUploaded": "Attachment uploaded",
+  "stopNoMapLocation": "This stop does not have a location on the map.",
+  "unableToGetThisLocation": "Unable to get this location.",
+  "selectedStop": "Selected stop",
+  "searchForStop": "Search for a stop",
+  "setStop": "SET STOP",
+  "workoutRunning": "Running",
+  "workoutWalking": "Walking",
+  "workoutCycling": "Cycling",
+  "workoutSwimming": "Swimming",
+  "workoutHiking": "Hiking",
+  "workoutPushUp": "Push Up",
+  "workoutSquats": "Squats",
+  "workoutPullUps": "Pull Ups",
+  "workoutStrength": "Strength Training",
+  "workoutBodyweight": "Bodyweight",
+  "workoutYoga": "Yoga",
+  "workoutStretching": "Stretching",
+  "workoutCardio": "Cardio",
+  "workoutSports": "Sports",
+  "workoutBadminton": "Badminton",
+  "workoutTennis": "Tennis",
+  "unitKm": "KM",
+  "unitMeters": "Meters",
+  "unitMinutes": "Minutes",
+  "unitSteps": "Steps",
+  "unitReps": "Reps",
+  "challengeWithName": "CHALLENGE: {name}",
+  "@challengeWithName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "finishedCaps": "FINISHED",
+  "finishedFire": "FINISHED 🔥",
+  "durationSecsCaps": "{secs} SECS",
+  "@durationSecsCaps": {
+    "placeholders": {
+      "secs": {}
+    }
+  },
+  "trackingComingSoonTitle": "{workout} Tracking Coming Soon",
+  "@trackingComingSoonTitle": {
+    "placeholders": {
+      "workout": {}
+    }
+  },
+  "trackingComingSoonBody": "Tracking for {workout} is currently in active development and will be available in an upcoming update.",
+  "@trackingComingSoonBody": {
+    "placeholders": {
+      "workout": {}
+    }
+  },
+  "gotIt": "Got it",
+  "setsOfReps": "{sets} Sets of {reps} {unit}",
+  "@setsOfReps": {
+    "placeholders": {
+      "sets": {},
+      "reps": {},
+      "unit": {}
+    }
+  },
+  "statusPaused": "Paused",
+  "statusNotStarted": "Not started",
+  "requestedToJoinClub": "{name} has requested to join {club}",
+  "@requestedToJoinClub": {
+    "placeholders": {
+      "name": {},
+      "club": {}
+    }
+  },
+  "yourClub": "your club",
+  "runningTargetTitle": "{target} Running",
+  "@runningTargetTitle": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "runningChallenge": "Running Challenge",
+  "runningDescription": "Run and track your route, pace, distance, and calories burned in real time.",
+  "squatsDescription": "Lower hips from standing position then stand back up to build leg and core strength.",
+  "pushUpDescription": "An exercise done to improve upper body strength, performed by resting on one's toes and hands and pushing one's weight off the floor",
+  "genericChallengeDescription": "Challenge yourself and stay consistent to achieve your personal fitness targets.",
+  "formExcellent": "Excellent",
+  "formGood": "Good",
+  "formShallow": "Shallow",
+  "formNoReps": "No Reps",
+  "formRatingExcellent": "Excellent Form 🏆",
+  "formRatingGood": "Good Form 💪",
+  "formRatingWorkOnDepth": "Work on Depth ⚠️",
+  "formDeepSquat": "Deep Squat",
+  "formGoodDepth": "Good Depth",
+  "levelBeginner": "Beginner",
+  "levelIntermediate": "Intermediate",
+  "levelAdvanced": "Advanced",
+  "levelElite": "Elite",
+  "completeTargetToFinish": "Complete {target} to finish this challenge.",
+  "@completeTargetToFinish": {
+    "placeholders": {
+      "target": {}
+    }
+  },
+  "close": "Close",
+  "joinedSince": "Joined since {year}",
+  "@joinedSince": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "roleOwner": "Club owner",
+  "roleAdmin": "Admin",
+  "targetWithUnit": "TARGET ({unit})",
+  "@targetWithUnit": {
+    "placeholders": {
+      "unit": {}
+    }
+  },
+  "categoryGeneral": "GENERAL",
+  "cueGoodDepthPushUp": "Good depth! Now push up!",
+  "cueLowerDown": "Lower down...",
+  "cueGetReadyToLower": "Get ready to lower",
+  "cueExcellentRep": "Excellent Rep! 🏆",
+  "cueRepComplete": "Rep #{count} Complete!",
+  "@cueRepComplete": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "cuePushAllTheWayUp": "Push all the way up!",
+  "cueGoodDepthSquat": "Good depth! Push up through your heels!",
+  "cueLowerHips": "Lower your hips...",
+  "cueStandTall": "Stand tall and begin squatting",
+  "cueDeepSquat": "Deep Squat! 🏆",
+  "cueStandAllTheWayUp": "Stand all the way up!",
+  "failedStartWorkout": "Couldn't start the workout",
+  "failedUpdateProgress": "Couldn't save your progress",
+  "failedFinishWorkout": "Couldn't finish the workout",
+  "summaryNotFound": "Workout summary not found",
+  "failedSaveAnalysis": "Couldn't save the workout analysis",
+  "goalNotFound": "Goal not found",
+  "challengeNotFound": "Challenge not found",
+  "clubNotFound": "Club not found",
+  "failedToUpdateClub": "Couldn't update the club. Try again.",
+  "skip": "Skip",
+  "challengeNameCaps": "CHALLENGE NAME",
+  "challengeNameExample": "Morning Sprint Challenge",
+  "startDateCaps": "START DATE",
+  "endDateCaps": "END DATE",
+  "descriptionsCaps": "DESCRIPTIONS",
+  "challengeDescExample": "Complete 5 continuous laps of the park track.",
+  "activityTypeCaps": "ACTIVITY TYPE",
+  "moreActivity": "More Activity",
+  "challengeHasEnded": "Challenge Has Ended",
+  "descriptionsTitle": "Descriptions",
+  "musclesBuiltBy": "MUSCLES BUILT BY",
+  "createChallengeAgain": "CREATE CHALLENGE AGAIN?",
+  "joinClubChallenge": "Join Club Challenge",
+  "editYourDetails": "Edit your details",
+  "yourDetails": "Your details",
+  "heightQuestion": "What's your height?",
+  "weightQuestion": "What's your current weight?",
+  "searchPeopleOnMovem": "Search for people on MoveM",
+  "membersCountCaps": "MEMBERS ({count})",
+  "@membersCountCaps": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "setGoal": "Set Goal",
+  "todaysWorkout": "Today's Workout",
+  "smallStepBigChanges": "Small step, big changes",
+  "startTrackingJourney": "Start tracking your Fitness Journey with us now",
+  "caloriesBurnedTitle": "Calories Burned",
+  "clubSloganSpaced": "MOVE MORE . BECOME MORE",
+  "cueGetInPushUpPosition": "Get in push-up position",
+  "noCamerasOnDevice": "No cameras detected on device",
+  "cameraPermissionNotGranted": "Camera permission not granted",
+  "simulationModePushUp": "Simulation Mode Active • Tap screen to count rep",
+  "cueShouldersInFrame": "Position shoulders and arms in frame",
+  "noPersonInFrame": "No person detected in frame",
+  "adjustPosition": "Adjust positioning for camera tracking",
+  "setCompleted": "Set Completed!",
+  "setCompletedBody": "Awesome form! You completed Set {set} of {total}. Ready for the next set?",
+  "@setCompletedBody": {
+    "placeholders": {
+      "set": {},
+      "total": {}
+    }
+  },
+  "startNextSet": "Start Next Set",
+  "notSaved": "Not saved",
+  "workoutNotSaved": "Workout couldn't be saved to the server. Check your connection.",
+  "squatsChallenge": "Squats Challenge",
+  "squatsShortDescription": "Lower hips from standing position then stand back up.",
+  "strengthCategory": "Strength",
+  "pullUpsName": "Pull ups",
+  "pullUpsDescription": "Upper-body exercise where you pull yourself up to a bar.",
+  "upperBody": "Upper Body",
+  "locationRequiredTitle": "Location Required",
+  "locationNeededForRun": "Location access is needed to track your running distance, pace, and route.",
+  "locationAccessRequired": "Location Access Required",
+  "locationSettingsBody": "MoveM needs location access to track your GPS route, distance, and pace. Please enable location permissions in your device settings.",
+  "locationServiceDisabled": "Location Service Disabled",
+  "turnOnGpsBody": "Please turn on GPS / Location service on your device so MoveM can record your run.",
+  "turnOn": "Turn On",
+  "failedLoadWorkoutHistory": "Failed to load workout history",
+  "cueFullView": "Stand in full view of the camera",
+  "simulationModeSquat": "Tap anywhere to count reps (Simulation Mode)",
+  "cueStepBack": "Step back so legs are visible",
+  "setCompleteRest": "Set {set} Complete! Take a quick rest.",
+  "@setCompleteRest": {
+    "placeholders": {
+      "set": {}
+    }
+  },
+  "challengeComplete": "Challenge Complete! 🏆",
+  "workoutPaused": "Workout Paused",
+  "resumingSquat": "Resuming... Let's squat!",
+  "fitnessChallenge": "Fitness Challenge",
+  "shareWorkout": "Share Workout",
+  "shareNotSaved": "This workout was not saved to the server, so it cannot be shared.",
+  "sharing": "Sharing…",
+  "postingWorkout": "Posting your workout to the social feed.",
+  "workoutShared": "Your workout is now on the social feed.",
+  "shareFailed": "Share failed",
+  "couldNotShareWorkout": "Could not share this workout. Please try again.",
+  "clubSlogan": "MOVE MORE. BECOME MORE.",
+  "clubShareWithCode": "Join my club \"{name}\" on MoveM! Code: {code}",
+  "@clubShareWithCode": {
+    "placeholders": {
+      "name": {},
+      "code": {}
+    }
+  },
+  "clubShare": "Join my club \"{name}\" on MoveM!",
+  "@clubShare": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "customizeOwnChallenge": "Customize Your Own Challenge +",
+  "featuredChallenges": "Featured Challenges",
+  "getStarted": "Get Started",
+  "clubTagline": "Stay active, motivate each other, and complete challenges together.",
+  "memberNumber": "Member #{id}",
+  "@memberNumber": {
+    "placeholders": {
+      "id": {}
+    }
+  },
+  "goalCaps": "GOAL",
+  "endAction": "End",
+  "viewSummary": "View Summary",
+  "shareCaps": "SHARE",
+  "redoCaps": "REDO",
+  "moreCaps": "MORE",
+  "homeCaps": "HOME",
+  "fitnessHeroTitle": "ONE STEP\nTODAY. A\nSTRONGER YOU\nTOMORROW.",
+  "challengeEndedCaps": "CHALLENGE ENDED",
+  "defaultClubName": "MoveM Fitness Club",
+  "clubDescriptionHint": "Describe your club and who should join...",
+  "membersCountSpaced": "MEMBERS ( {count} )",
+  "@membersCountSpaced": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "runningSession": "RUNNING SESSION",
+  "averagePaceCaps": "AVERAGE PACE",
+  "waitingForGps": "Waiting for GPS",
+  "gettingLocation": "Getting your location",
+  "moveOutdoors": "Move outdoors and try again",
+  "runStartsAfterGps": "Run starts after GPS lock",
+  "retryGps": "Retry GPS",
+  "tapCircleToStart": "Tap circle to start now",
+  "stepCaps": "STEP",
+  "runPauseLeaveBody": "Your active running challenge will be paused. Do you want to leave?",
+  "exitAction": "Exit",
+  "unlockedOf": "{earned} of {total} Unlocked",
+  "@unlockedOf": {
+    "placeholders": {
+      "earned": {},
+      "total": {}
+    }
+  },
+  "percentCompletedKeepPushing": "{percent}% completed • Keep pushing!",
+  "@percentCompletedKeepPushing": {
+    "placeholders": {
+      "percent": {}
+    }
+  },
+  "earnedCaps": "EARNED",
+  "kneeAngle": "KNEE ANGLE",
+  "workoutWillEnd": "Your progress for this workout will be ended.",
+  "finishAndSave": "Finish & Save",
+  "couldNotGetLocationOutdoors": "Could not get your current location. Move outdoors and try again.",
+  "heightCmValue": "{height} CM",
+  "@heightCmValue": {
+    "placeholders": {
+      "height": {}
+    }
+  },
+  "kcalValue": "{count} kcal",
+  "@kcalValue": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "you": "You",
+  "itemDeleted": "{name} deleted",
+  "@itemDeleted": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "paceValueShort": "{pace} /km",
+  "@paceValueShort": {
+    "placeholders": {
+      "pace": {}
+    }
+  }
 }

@@ -12,6 +12,7 @@ import 'package:movem/features/settings/data/repositories/setting_repository_imp
 import 'package:movem/core/storage/user_manager.dart';
 import 'package:movem/core/theme/app_colors.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -73,8 +74,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     Navigator.of(context).pop();
 
     AppSnack.show(
-      'Success',
-      'Your password has been changed.',
+      tr.editTripUpdateSuccess,
+      tr.passwordChanged,
     );
   }
 
@@ -123,8 +124,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
-      appBar: const TopToolBar(
-        title: 'Change Password',
+      appBar: TopToolBar(
+        title: tr.changePassword,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -135,7 +136,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Change your password',
+                  tr.changeYourPassword,
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 20,
@@ -144,7 +145,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Enter your current password and choose a new one.',
+                  tr.changePasswordSub,
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 12,
@@ -153,7 +154,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
                 const SizedBox(height: 30),
                 Text(
-                  'Current Password',
+                  tr.currentPassword,
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 13,
@@ -168,7 +169,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     color: AppColors.textPrimary,
                   ),
                   decoration: _passwordDecoration(
-                    hint: 'Enter current password',
+                    hint: tr.enterCurrentPassword,
                     obscured: _currentObscured,
                     onToggle: () {
                       setState(() {
@@ -178,7 +179,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your current password.';
+                      return tr.pleaseEnterCurrentPassword;
                     }
 
                     return null;
@@ -186,7 +187,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'New Password',
+                  tr.newPasswordTitle,
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 13,
@@ -201,7 +202,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     color: AppColors.textPrimary,
                   ),
                   decoration: _passwordDecoration(
-                    hint: 'Enter new password',
+                    hint: tr.newPasswordHint,
                     obscured: _newObscured,
                     onToggle: () {
                       setState(() {
@@ -211,11 +212,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a new password.';
+                      return tr.pleaseEnterNewPassword;
                     }
 
                     if (value.length < 8) {
-                      return 'Password must be at least 8 characters.';
+                      return tr.passwordMin8;
                     }
 
                     return null;
@@ -223,7 +224,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Confirm New Password',
+                  tr.confirmNewPassword,
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 13,
@@ -238,7 +239,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     color: AppColors.textPrimary,
                   ),
                   decoration: _passwordDecoration(
-                    hint: 'Confirm new password',
+                    hint: tr.confirmNewPasswordHint,
                     obscured: _confirmObscured,
                     onToggle: () {
                       setState(() {
@@ -248,11 +249,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please confirm your new password.';
+                      return tr.pleaseConfirmNewPassword;
                     }
 
                     if (value != _newPasswordController.text) {
-                      return 'Passwords do not match.';
+                      return tr.passwordsDoNotMatch;
                     }
 
                     return null;
@@ -267,8 +268,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         () => const SettingsForgotPasswordScreen(),
                       );
                     },
-                    child: const Text(
-                      'Forgot password?',
+                    child: Text(
+                      tr.forgotPasswordLower,
                       style: TextStyle(
                         color: Color(0xFF5394FF),
                         fontWeight: FontWeight.w600,
@@ -278,7 +279,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ),
                 const SizedBox(height: 30),
                 AppButton(
-                  label: 'Change Password',
+                  label: tr.changePassword,
                   onPressed: _changePassword,
                 ),
               ],

@@ -6,6 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class CreateTaskScreen extends GetView<CreateTaskController> {
   const CreateTaskScreen({super.key});
@@ -118,7 +119,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
           GestureDetector(
             onTap: () => controller.pickDeadlineDate(Get.context!),
             child: Obx(() => _buildPropertyRow(
-              'DEADLINES',
+              tr.deadlinesLabel,
               controller.formattedDeadlineDate,
               Icons.calendar_today_outlined,
             )),
@@ -129,7 +130,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
             child: Row(
               children: [
                 Text(
-                  'CHECKLIST',
+                  tr.checklistLabel,
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 13,
@@ -160,7 +161,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                         controller: textController,
                         style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
                         decoration: InputDecoration(
-                          hintText: 'Add an item',
+                          hintText: tr.addAnItem,
                           hintStyle: TextStyle(color: AppColors.textCaption, fontSize: 14),
                           border: InputBorder.none,
                           isDense: true,
@@ -196,7 +197,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
               children: [
                 Expanded(
                   child: Text(
-                    'Get upcoming reminders about your Tasks',
+                    tr.taskReminderOptIn,
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 12,
@@ -279,7 +280,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(choice, style: TextStyle(color: AppColors.textPrimary, fontSize: 14)),
+                    Text(repeatLabel(choice), style: TextStyle(color: AppColors.textPrimary, fontSize: 14)),
                     SizedBox(height: 8),
                     Container(height: 1, color: AppColors.borderLight),
                   ],
@@ -290,7 +291,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'REPEAT',
+            tr.repeatLabelTitle,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 13,
@@ -303,7 +304,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Obx(() => Text(
-                controller.repeatFrequency.value ?? 'None',
+                repeatLabel(controller.repeatFrequency.value),
                 style: TextStyle(
                   color: AppColors.textCaption,
                   fontSize: 13,
@@ -331,7 +332,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
       itemBuilder: (context) => ['URGENT', 'HIGH', 'MEDIUM', 'LOW']
           .map((choice) => PopupMenuItem<String>(
                 value: choice,
-                child: Text(choice, style: TextStyle(color: AppColors.textPrimary)),
+                child: Text(priorityLabel(choice).toUpperCase(), style: TextStyle(color: AppColors.textPrimary)),
               ))
           .toList(),
       child: Column(
@@ -340,7 +341,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
           Row(
             children: [
               Text(
-                'PRIORITY',
+                tr.priorityLabel,
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 13,
@@ -367,7 +368,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                 border: Border.all(color: pillColor.withValues(alpha: 0.4)),
               ),
               child: Text(
-                controller.priority.value,
+                priorityLabel(controller.priority.value).toUpperCase(),
                 style: TextStyle(
                   color: pillColor,
                   fontSize: 11,
@@ -427,7 +428,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
 
         items.add(
           PopupMenuItem<dynamic>(
-            value: 'CREATE',
+            value: tr.createCaps,
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -437,7 +438,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
               ),
               child: Center(
                 child: Text(
-                  'Create Label',
+                  tr.createLabelTitle,
                   style: TextStyle(color: AppColors.textPrimary, fontSize: 12),
                 ),
               ),
@@ -453,7 +454,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
           Row(
             children: [
               Text(
-                'LABEL',
+                tr.labelTitle,
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 13,
@@ -474,7 +475,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  'Select Label',
+                  tr.selectLabel,
                   style: TextStyle(
                     color: AppColors.textCaption,
                     fontSize: 11,
@@ -542,7 +543,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
               ),
               SizedBox(height: 24),
               Text(
-                'NAME',
+                tr.tripStepName,
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
@@ -550,7 +551,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                 controller: nameController,
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
                 decoration: InputDecoration(
-                  hintText: 'Enter label name',
+                  hintText: tr.enterLabelName,
                   hintStyle: TextStyle(color: AppColors.textCaption, fontSize: 14),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: AppColors.borderLight),
@@ -563,7 +564,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
               ),
               SizedBox(height: 24),
               Text(
-                'COLOR',
+                tr.colorLabel,
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 12),

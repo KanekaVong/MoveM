@@ -1,3 +1,5 @@
+import 'package:movem/core/utils/l10n.dart';
+
 import '../../../../core/utils/app_images.dart';
 
 class FeedRoutePoint {
@@ -61,7 +63,7 @@ class HomeFeedItem {
   });
 
   /// Author name for the card: "You" on the viewer's own posts.
-  String get displayName => myPost ? 'You' : userName;
+  String get displayName => myPost ? tr.you : userName;
 
   /// Image shown when the post has no uploaded attachment.
   String get fallbackImage {

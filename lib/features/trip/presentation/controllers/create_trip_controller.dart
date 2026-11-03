@@ -12,6 +12,7 @@ import '../../data/dto/request/checklist_item_request.dart';
 import '../../data/dto/request/packing_item_request.dart';
 import '../../data/dto/request/stop_request.dart';
 import 'package:flutter/foundation.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 
 class CreateTripController extends BaseController {
@@ -277,12 +278,12 @@ class CreateTripController extends BaseController {
 
     if (current.activityName == null ||
         current.activityName!.trim().isEmpty) {
-      errorMessage.value = 'Trip name is required.';
+      errorMessage.value = tr.tripNameRequiredShort;
       return false;
     }
 
     if (current.startDate == null) {
-      errorMessage.value = 'Start date is required.';
+      errorMessage.value = tr.startDateRequired;
       return false;
     }
 

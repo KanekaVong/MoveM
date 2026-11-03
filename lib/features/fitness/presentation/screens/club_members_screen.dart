@@ -11,6 +11,7 @@ import '../controllers/fitness_club_controller.dart';
 import 'invite_people_screen.dart';
 import 'package:movem/core/utils/app_snack.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class ClubMembersScreen extends StatefulWidget {
   final FitnessClubModel club;
@@ -46,15 +47,8 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
 
   String _subtitleFor(FitnessClubMemberModel member) {
     final year = member.joinedAt?.year;
-    if (year != null) return 'Joined since $year';
-    switch (member.role.toUpperCase()) {
-      case 'OWNER':
-        return 'Club owner';
-      case 'ADMIN':
-        return 'Admin';
-      default:
-        return 'Member';
-    }
+    if (year != null) return tr.joinedSince(year);
+    return memberRoleLabel(member.role);
   }
 
   Future<void> _invite() async {
@@ -184,7 +178,7 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
   }
 
   Widget _memberTile(FitnessClubMemberModel member) {
-    final name = member.userName ?? 'Member';
+    final name = member.userName ?? tr.member;
     final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
 
     return Container(

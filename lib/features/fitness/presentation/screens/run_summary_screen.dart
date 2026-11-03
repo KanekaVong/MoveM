@@ -17,6 +17,7 @@ import 'solo_challenge_list_screen.dart';
 import '../../../../core/config/google_map_style.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../widgets/share_workout.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class RunSummaryScreen extends StatelessWidget {
   final RunSession session;
@@ -59,11 +60,11 @@ class RunSummaryScreen extends StatelessWidget {
     final c = challenge!;
     switch (c.targetUnit.toUpperCase()) {
       case 'KM':
-        return '$distanceStr / ${c.targetValue}KM';
+        return '$distanceStr / ${tr.unitKmValue('${c.targetValue}')}';
       case 'STEPS':
-        return '$steps / ${c.targetValue} steps';
+        return '$steps / ${tr.stepsValue(c.targetValue)}';
       case 'MINUTES':
-        return '${duration.inMinutes} / ${c.targetValue} min';
+        return '${duration.inMinutes} / ${tr.durMins(c.targetValue)}';
       default:
         return '';
     }
@@ -71,27 +72,27 @@ class RunSummaryScreen extends StatelessWidget {
 
   String _formatDurationText(Duration duration) {
     final totalSecs = duration.inSeconds;
-    if (totalSecs == 0) return '0MIN';
+    if (totalSecs == 0) return tr.durMins(0).toUpperCase();
     final hours = totalSecs ~/ 3600;
     final mins = (totalSecs % 3600) ~/ 60;
     final secs = totalSecs % 60;
 
     if (hours > 0) {
-      return '${hours}HR ${mins}MIN';
+      return tr.durHoursMins(hours, mins).toUpperCase();
     } else if (mins > 0) {
-      return '$mins' 'MIN ${secs > 0 ? '$secs' 'S' : ''}'.trim();
+      return (secs > 0 ? tr.durMinsSecs(mins, secs) : tr.durMins(mins)).toUpperCase();
     } else {
-      return '$secs' 'S';
+      return tr.durSecs(secs).toUpperCase();
     }
   }
 
   String _formatPace(double paceMinPerKm) {
     if (paceMinPerKm <= 0 || paceMinPerKm.isInfinite || paceMinPerKm.isNaN) {
-      return '--:-- / KM';
+      return tr.paceValue('--:--');
     }
     final minutes = paceMinPerKm.toInt();
     final seconds = ((paceMinPerKm - minutes) * 60).toInt();
-    return '$minutes:${seconds.toString().padLeft(2, '0')} / KM';
+    return tr.paceValue('$minutes:${seconds.toString().padLeft(2, '0')}');
   }
 
   @override
@@ -103,8 +104,8 @@ class RunSummaryScreen extends StatelessWidget {
             : session.totalDistanceMeters / 1000.0);
 
     final distanceStr = distanceKm >= 1
-        ? '${distanceKm % 1 == 0 ? distanceKm.toInt() : distanceKm.toStringAsFixed(1)}KM'
-        : '${(distanceKm * 1000).toInt()}M';
+        ? tr.unitKmValue('${distanceKm % 1 == 0 ? distanceKm.toInt() : distanceKm.toStringAsFixed(1)}')
+        : tr.unitMeterValue('${(distanceKm * 1000).toInt()}');
 
     final duration = session.elapsedDurationMilliseconds > 0
         ? session.elapsedDuration
@@ -132,7 +133,7 @@ class RunSummaryScreen extends StatelessWidget {
             weightKg: profile?.weight ?? 0,
           );
 
-    final challengeTitle = challenge?.name ?? 'RUNNING SESSION';
+    final challengeTitle = challenge?.name ?? tr.runningSession;
     final isChallengeCompleted = _isChallengeCompleted(
       distanceKm: distanceKm,
       steps: steps,
@@ -185,7 +186,7 @@ class RunSummaryScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Workout Details',
+                    tr.workoutDetails,
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 20,
@@ -236,14 +237,14 @@ class RunSummaryScreen extends StatelessWidget {
                         children: [
                           Expanded(
                             child: _buildMetricTile(
-                              label: 'STEPS',
+                              label: tr.activitySteps,
                               value: '$steps 👟',
                               crossAxisAlignment: CrossAxisAlignment.start,
                             ),
                           ),
                           Expanded(
                             child: _buildMetricTile(
-                              label: 'DURATIONS',
+                              label: tr.editTripDurations,
                               value: durationText,
                               crossAxisAlignment: CrossAxisAlignment.end,
                             ),
@@ -258,14 +259,14 @@ class RunSummaryScreen extends StatelessWidget {
                         children: [
                           Expanded(
                             child: _buildMetricTile(
-                              label: 'CALORIES',
+                              label: tr.activityCalories,
                               value: '$calories 🔥',
                               crossAxisAlignment: CrossAxisAlignment.start,
                             ),
                           ),
                           Expanded(
                             child: _buildMetricTile(
-                              label: 'AVERAGE PACE',
+                              label: tr.averagePaceCaps,
                               value: _formatPace(avgPace),
                               crossAxisAlignment: CrossAxisAlignment.end,
                             ),
@@ -286,11 +287,11 @@ class RunSummaryScreen extends StatelessWidget {
                           ),
                           children: [
                             TextSpan(
-                              text: 'CHALLENGE: ${challengeTitle.toUpperCase()} ',
+                              text: '${tr.challengeWithName(challengeTitle.toUpperCase())} ',
                               style: TextStyle(color: AppColors.textPrimary),
                             ),
                             TextSpan(
-                              text: isChallengeCompleted ? 'COMPLETED 🔥' : 'FINISHED',
+                              text: isChallengeCompleted ? tr.activityCompleted : tr.finishedCaps,
                               style: TextStyle(
                                 color: isChallengeCompleted ? const Color(0xFFFFA000) : AppColors.textSecondary,
                               ),
@@ -316,7 +317,7 @@ class RunSummaryScreen extends StatelessWidget {
                           children: [
                             _buildCircleActionButton(
                               icon: Icons.share_outlined,
-                              label: 'SHARE',
+                              label: tr.shareCaps,
                               onTap: () => shareWorkout(
                                 summary?.sessionId,
                                 captureImage: _mapHandle.snapshot,
@@ -325,7 +326,7 @@ class RunSummaryScreen extends StatelessWidget {
 
                             _buildCircleActionButton(
                               icon: Icons.replay_rounded,
-                              label: 'REDO',
+                              label: tr.redoCaps,
                               onTap: () {
                                 Get.off(() => RunningTrackingScreen(challenge: challenge));
                               },
@@ -333,7 +334,7 @@ class RunSummaryScreen extends StatelessWidget {
 
                             _buildCircleActionButton(
                               icon: Icons.fitness_center_rounded,
-                              label: 'MORE',
+                              label: tr.moreCaps,
                               onTap: () {
                                 Get.to(() => const SoloChallengeListScreen());
                               },
@@ -341,7 +342,7 @@ class RunSummaryScreen extends StatelessWidget {
 
                             _buildCircleActionButton(
                               icon: Icons.home_outlined,
-                              label: 'HOME',
+                              label: tr.homeCaps,
                               onTap: _goHome,
                             ),
                           ],

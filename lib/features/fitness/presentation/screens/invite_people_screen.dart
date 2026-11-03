@@ -9,6 +9,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class InvitePeopleScreen extends StatefulWidget {
   final Set<int>? initialSelectedIds;
@@ -76,7 +77,7 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                 TextField(
                   style: TextStyle(color: AppColors.textPrimary),
                   decoration: InputDecoration(
-                    hintText: 'Search for people on MoveM',
+                    hintText: tr.searchPeopleOnMovem,
                     hintStyle: TextStyle(color: AppColors.textCaption),
                     prefixIcon: Icon(Icons.search, color: AppColors.textCaption),
                     filled: true,
@@ -90,7 +91,7 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                 ),
                 SizedBox(height: 24),
                 if (selectedFriends.isNotEmpty) ...[
-                  Text('MEMBERS (${selectedFriends.length})',
+                  Text(tr.membersCountCaps(selectedFriends.length),
                       style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,
@@ -155,7 +156,7 @@ class _InvitePeopleScreenState extends State<InvitePeopleScreen> {
                   ),
                   SizedBox(height: 24),
                 ],
-                Text('Suggested',
+                Text(tr.suggested,
                     style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,

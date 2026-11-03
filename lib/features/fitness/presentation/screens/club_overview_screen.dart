@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -11,6 +12,7 @@ import '../controllers/fitness_club_controller.dart';
 import 'club_challenge_detail_screen.dart';
 import 'club_members_screen.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class ClubOverviewScreen extends StatefulWidget {
   final FitnessClubModel club;
@@ -41,14 +43,14 @@ class _ClubOverviewScreenState extends State<ClubOverviewScreen> {
         title: Text(club.name, style: TextStyle(color: AppColors.textPrimary)),
         content: Text(
           [
-            club.isPrivate ? 'PRIVATE' : 'PUBLIC',
+            (club.isPrivate ? tr.privateLabel : tr.publicLabel).toUpperCase(),
             if (club.description.isNotEmpty) club.description,
           ].join('\n\n'),
           style: TextStyle(color: AppColors.textSecondary, height: 1.4),
         ),
         actions: [
           AppButton.secondary(
-            label: 'Close',
+            label: tr.close,
             onPressed: () => Get.back(),
             height: 46,
           ),
@@ -59,7 +61,7 @@ class _ClubOverviewScreenState extends State<ClubOverviewScreen> {
 
   String _joinedSince(FitnessClubMemberModel member) {
     final year = member.joinedAt?.year;
-    return year != null ? 'Joined since $year' : member.role;
+    return year != null ? tr.joinedSince(year) : memberRoleLabel(member.role);
   }
 
   String _formatDate(DateTime? value) {
@@ -70,9 +72,7 @@ class _ClubOverviewScreenState extends State<ClubOverviewScreen> {
   }
 
   String _formatTime(DateTime value) {
-    final period = value.hour >= 12 ? 'PM' : 'AM';
-    final hour = value.hour % 12 == 0 ? 12 : value.hour % 12;
-    return '$hour:${value.minute.toString().padLeft(2, '0')}$period';
+    return DateFormat(timePattern('h:mma')).format(value);
   }
 
   String _formatTimeRange(GroupFitnessChallengeModel challenge) {
@@ -182,7 +182,7 @@ class _ClubOverviewScreenState extends State<ClubOverviewScreen> {
   }
 
   Widget _memberRow(FitnessClubMemberModel member) {
-    final name = member.userName ?? 'Member #${member.userId}';
+    final name = member.userName ?? tr.memberNumber(member.userId);
     final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -291,11 +291,11 @@ class _ClubOverviewScreenState extends State<ClubOverviewScreen> {
                   ],
                 ),
               ),
-              const Positioned(
+              Positioned(
                 right: 12,
                 bottom: 12,
                 child: Text(
-                  'CHALLENGE ENDED',
+                  tr.challengeEndedCaps,
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 10,

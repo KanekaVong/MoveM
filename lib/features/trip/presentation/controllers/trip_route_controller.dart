@@ -9,6 +9,7 @@ import '../../data/dto/response/trip_response.dart';
 import '../../data/services/google_routes_service.dart';
 import '../../domain/repositories/trip_repository.dart';
 import 'package:flutter/foundation.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TripRouteController extends BaseController {
   final TripRepository tripRepository;
@@ -69,7 +70,7 @@ class TripRouteController extends BaseController {
 
       if (!serviceEnabled) {
         throw Exception(
-          'Location services are disabled.',
+          tr.locationServicesOff,
         );
       }
 
@@ -87,7 +88,7 @@ class TripRouteController extends BaseController {
           permission ==
               LocationPermission.deniedForever) {
         throw Exception(
-          'Location permission is required to show the route.',
+          tr.locationNeededForRoute,
         );
       }
 
@@ -113,7 +114,7 @@ class TripRouteController extends BaseController {
 
       if (e is DioException) {
         errorMessage.value =
-            e.message ?? 'Unable to get location.';
+            e.message ?? tr.unableToGetLocation;
       }
     }
   }
@@ -132,7 +133,7 @@ class TripRouteController extends BaseController {
 
     if (destinationLat == null || destinationLng == null) {
       routeErrorMessage.value =
-      'Trip destination coordinates are missing.';
+      tr.tripDestinationMissing;
       return;
     }
 
@@ -202,13 +203,7 @@ class TripRouteController extends BaseController {
       debugPrint('Travel mode: ${travelMode.value}');
       debugPrint('Error: $e');
 
-      if (travelMode.value == 'CYCLING') {
-        routeErrorMessage.value =
-        'No cycling route available for this trip.';
-      } else {
-        routeErrorMessage.value =
-        'No ${travelMode.value.toLowerCase()} route available for this trip.';
-      }
+      routeErrorMessage.value = tr.noRouteForMode(travelModeLabel(travelMode.value).toLowerCase());
     }
   }
 
@@ -236,8 +231,8 @@ class TripRouteController extends BaseController {
           BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueAzure,
           ),
-          infoWindow: const InfoWindow(
-            title: 'Your location',
+          infoWindow: InfoWindow(
+            title: tr.yourLocation,
           ),
         ),
       );
@@ -268,7 +263,7 @@ class TripRouteController extends BaseController {
             BitmapDescriptor.hueAzure,
           ),
           infoWindow: InfoWindow(
-            title: 'Stop ${i + 1}',
+            title: tr.stopNumber(i + 1),
             snippet: stop.locationName,
           ),
         ),
@@ -294,7 +289,7 @@ class TripRouteController extends BaseController {
             title:
             currentTrip.locationName ??
                 currentTrip.destination ??
-                'Destination',
+                tr.destinationTitle,
           ),
         ),
       );

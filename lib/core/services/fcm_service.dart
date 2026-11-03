@@ -8,6 +8,7 @@ import '../../features/task/presentation/screens/task_detail_screen.dart';
 import '../../firebase_options.dart';
 import '../routes/app_routes.dart';
 import '../storage/user_manager.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -18,10 +19,10 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   } catch (_) {}
 }
 
-const AndroidNotificationChannel highImportanceChannel = AndroidNotificationChannel(
+final AndroidNotificationChannel highImportanceChannel = AndroidNotificationChannel(
   'high_importance_channel',
-  'High Importance Notifications',
-  description: 'This channel is used for important notifications and alerts.',
+  tr.notifChannelImportant,
+  description: tr.notifChannelImportantDesc,
   importance: Importance.max,
   playSound: true,
   enableVibration: true,

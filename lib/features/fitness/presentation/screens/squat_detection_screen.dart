@@ -10,6 +10,7 @@ import '../../data/models/solo_challenge_model.dart';
 import '../controllers/squat_detector_controller.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/camera_pose_painter.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class SquatDetectionScreen extends StatelessWidget {
   final SoloChallengeModel challenge;
@@ -212,21 +213,21 @@ class SquatDetectionScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _buildMetricPill(
-                          label: 'REPS',
+                          label: tr.repsLabel,
                           value: '${controller.completedReps.value}',
                           target: '${challenge.repsPerSet}',
                           color: const Color(0xFF10B981),
                         ),
                         const SizedBox(width: 12),
                         _buildMetricPill(
-                          label: 'SET',
+                          label: tr.setLabel,
                           value: '${controller.currentSet.value}',
                           target: '${challenge.sets}',
                           color: const Color(0xFF38BDF8),
                         ),
                         const SizedBox(width: 12),
                         _buildMetricPill(
-                          label: 'KNEE ANGLE',
+                          label: tr.kneeAngle,
                           value: '${controller.currentKneeAngle.value.toInt()}°',
                           target: null,
                           color: controller.currentKneeAngle.value <= 95
@@ -277,7 +278,7 @@ class SquatDetectionScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 14),
                     AppButton.danger(
-                      label: 'End',
+                      label: tr.endAction,
                       icon: Icons.stop_rounded,
                       onPressed: () => controller.finishWorkout(),
                     ),
@@ -388,8 +389,8 @@ class SquatDetectionScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF0F172A),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(AppLocalizations.of(context)?.endWorkout ?? 'Exit Squats Workout?', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: const Text(
-          'Your progress for this workout will be ended.',
+        content: Text(
+          tr.workoutWillEnd,
           style: TextStyle(color: Colors.white70),
         ),
         actions: [
@@ -405,7 +406,7 @@ class SquatDetectionScreen extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: AppButton.danger(
-                  label: 'Finish & Save',
+                  label: tr.finishAndSave,
                   onPressed: () {
                     Get.back();
                     controller.finishWorkout();

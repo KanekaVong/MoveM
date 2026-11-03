@@ -8,6 +8,7 @@ import '../controllers/add_collaborator_controller.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
   const AddCollaboratorScreen({super.key});
@@ -150,13 +151,13 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(color: const Color(0xFF4B9D62).withOpacity(0.3)),
                                     ),
-                                    child: const Row(
+                                    child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Icon(Icons.check_circle_outline, size: 13, color: Color(0xFF4B9D62)),
                                         SizedBox(width: 4),
                                         Text(
-                                          'Member',
+                                          tr.member,
                                           style: TextStyle(
                                             color: Color(0xFF4B9D62),
                                             fontSize: 11,
@@ -174,13 +175,13 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(color: const Color(0xFFEAB308).withOpacity(0.3)),
                                     ),
-                                    child: const Row(
+                                    child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Icon(Icons.schedule, size: 13, color: Color(0xFFEAB308)),
                                         SizedBox(width: 4),
                                         Text(
-                                          'Invited',
+                                          tr.invited,
                                           style: TextStyle(
                                             color: Color(0xFFEAB308),
                                             fontSize: 11,
@@ -297,7 +298,7 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
                   SizedBox(width: 14),
                   Expanded(
                     child: Text(
-                      'Invite "$query"',
+                      tr.inviteQuery(query),
                       style: TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -309,13 +310,13 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: const Color(0xFF4B9D62).withOpacity(0.3)),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.check_circle_outline, size: 13, color: Color(0xFF4B9D62)),
                           SizedBox(width: 4),
                           Text(
-                            'Member',
+                            tr.member,
                             style: TextStyle(
                               color: Color(0xFF4B9D62),
                               fontSize: 11,
@@ -333,13 +334,13 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: const Color(0xFFEAB308).withOpacity(0.3)),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.schedule, size: 13, color: Color(0xFFEAB308)),
                           SizedBox(width: 4),
                           Text(
-                            'Invited',
+                            tr.invited,
                             style: TextStyle(
                               color: Color(0xFFEAB308),
                               fontSize: 11,

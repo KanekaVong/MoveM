@@ -5,6 +5,7 @@ import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../../../../core/network/fitness_endpoints.dart';
 import '../models/workout_model.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class FitnessWorkoutRepository {
   final DioClient _dioClient = DioClient();
@@ -18,7 +19,7 @@ class FitnessWorkoutRepository {
       if (response.data != null) {
         return ApiSuccess(FitnessWorkoutSessionModel.fromJson(response.data));
       }
-      return ApiError(ApiException(message: 'Failed to start workout session'));
+      return ApiError(ApiException(message: tr.failedStartWorkout));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -37,7 +38,7 @@ class FitnessWorkoutRepository {
       if (response.data != null) {
         return ApiSuccess(FitnessWorkoutSessionModel.fromJson(response.data));
       }
-      return ApiError(ApiException(message: 'Failed to update progress'));
+      return ApiError(ApiException(message: tr.failedUpdateProgress));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -89,7 +90,7 @@ class FitnessWorkoutRepository {
       if (response.data != null) {
         return ApiSuccess(FitnessWorkoutSessionModel.fromJson(response.data));
       }
-      return ApiError(ApiException(message: 'Failed to finish workout'));
+      return ApiError(ApiException(message: tr.failedFinishWorkout));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -105,7 +106,7 @@ class FitnessWorkoutRepository {
       if (response.data != null) {
         return ApiSuccess(FitnessWorkoutSummaryModel.fromJson(response.data));
       }
-      return ApiError(ApiException(message: 'Summary not found'));
+      return ApiError(ApiException(message: tr.summaryNotFound));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -216,7 +217,7 @@ class FitnessWorkoutRepository {
       if (response.data != null) {
         return ApiSuccess(FitnessWorkoutAnalysisResponse.fromJson(response.data));
       }
-      return ApiError(ApiException(message: 'Failed to save workout analysis'));
+      return ApiError(ApiException(message: tr.failedSaveAnalysis));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {

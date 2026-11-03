@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -8,6 +9,7 @@ import '../../data/models/fitness_club_model.dart';
 import '../../data/models/group_challenge_model.dart';
 import '../controllers/fitness_club_controller.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 /// Activity types offered when building a custom club challenge.
 /// Values match the backend `workoutType` enum.
@@ -88,11 +90,7 @@ class _CreateClubChallengeScreenState extends State<CreateClubChallengeScreen> {
   String _formatDateTime(DateTime value) {
     final day = value.day.toString().padLeft(2, '0');
     final month = value.month.toString().padLeft(2, '0');
-    final hour24 = value.hour;
-    final period = hour24 >= 12 ? 'PM' : 'AM';
-    final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
-    final minute = value.minute.toString().padLeft(2, '0');
-    return '$month / $day /${value.year} ${hour12.toString().padLeft(2, '0')}:$minute  $period';
+    return '$month / $day /${value.year} ${DateFormat(timePattern('hh:mm  a')).format(value)}';
   }
 
   Future<void> _pickDateTime({required bool isStart}) async {
@@ -147,7 +145,7 @@ class _CreateClubChallengeScreenState extends State<CreateClubChallengeScreen> {
     if (targetValue <= 0) {
       AppSnack.show(
         l10n?.targetTitle ?? 'Target',
-        l10n?.enterTargetInUnit(_targetUnit) ?? 'Enter a target in $_targetUnit.',
+        l10n?.enterTargetInUnit(unitLabel(_targetUnit)) ?? 'Enter a target in $_targetUnit.',
       );
       return;
     }
@@ -183,22 +181,22 @@ class _CreateClubChallengeScreenState extends State<CreateClubChallengeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _label('CHALLENGE NAME'),
+                    _label(tr.challengeNameCaps),
                     _fieldBox(
                       child: TextField(
                         controller: _nameController,
                         style: _inputStyle,
-                        decoration: _inputDecoration('Morning Sprint Challenge'),
+                        decoration: _inputDecoration(tr.challengeNameExample),
                       ),
                     ),
                     const SizedBox(height: 18),
-                    _label('START DATE'),
+                    _label(tr.startDateCaps),
                     _dateField(value: _startAt, onTap: () => _pickDateTime(isStart: true)),
                     const SizedBox(height: 18),
-                    _label('END DATE'),
+                    _label(tr.endDateCaps),
                     _dateField(value: _endAt, onTap: () => _pickDateTime(isStart: false)),
                     const SizedBox(height: 18),
-                    _label('TARGET ($_targetUnit)'),
+                    _label(tr.targetWithUnit(unitLabel(_targetUnit).toUpperCase())),
                     _fieldBox(
                       child: TextField(
                         controller: _targetController,
@@ -208,7 +206,7 @@ class _CreateClubChallengeScreenState extends State<CreateClubChallengeScreen> {
                       ),
                     ),
                     const SizedBox(height: 18),
-                    _label('DESCRIPTIONS'),
+                    _label(tr.descriptionsCaps),
                     _fieldBox(
                       height: 104,
                       child: TextField(
@@ -218,22 +216,22 @@ class _CreateClubChallengeScreenState extends State<CreateClubChallengeScreen> {
                         textAlignVertical: TextAlignVertical.top,
                         style: _inputStyle,
                         decoration: _inputDecoration(
-                          'Complete 5 continuous laps of the park track.',
+                          tr.challengeDescExample,
                         ),
                       ),
                     ),
                     const SizedBox(height: 18),
-                    _label('ACTIVITY TYPE'),
+                    _label(tr.activityTypeCaps),
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
                       children: _activityTypes.entries
-                          .map((entry) => _typeChip(entry.key, entry.value))
+                          .map((entry) => _typeChip(entry.key, workoutTypeLabel(entry.key)))
                           .toList(),
                     ),
                     const SizedBox(height: 32),
                     AppButton(
-                      label: 'Create Challenge',
+                      label: tr.createChallenge,
                       icon: Icons.play_arrow_outlined,
                       onPressed: _submit,
                       isLoading: _isSubmitting,

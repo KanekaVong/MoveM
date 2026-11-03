@@ -9,6 +9,7 @@ import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TaskInvitationScreen extends StatelessWidget {
   const TaskInvitationScreen({super.key});
@@ -63,7 +64,7 @@ class TaskInvitationScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 12),
                           AppButton.secondary(
-                            label: 'Retry',
+                            label: tr.retry,
                             onPressed: controller.fetchInvitations,
                             width: null,
                             height: 40,
@@ -124,10 +125,10 @@ class _InvitationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final name = invite.inviterUsername?.trim().isNotEmpty == true
         ? invite.inviterUsername!.trim()
-        : 'Someone';
+        : tr.someone;
     final taskName = invite.activityName?.trim().isNotEmpty == true
         ? invite.activityName!.trim()
-        : 'a task';
+        : tr.aTask;
     final avatarUrl =
         'https://ui-avatars.com/api/?name=${Uri.encodeComponent(name)}&background=334155&color=fff';
 
@@ -167,7 +168,7 @@ class _InvitationCard extends StatelessWidget {
                     ),
                   ),
                   TextSpan(
-                    text: ' has invited you collaborate in ',
+                    text: tr.invitedYouToCollaborate,
                     style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 13,

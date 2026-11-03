@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/routes/app_routes.dart';
@@ -116,6 +117,7 @@ class SettingsController extends BaseController {
             currentLanguage.value = code;
             Get.back();
             await UserManager().setLanguage(code);
+            Intl.defaultLocale = code;
             await Get.updateLocale(Locale(code));
           } else {
             Get.back();

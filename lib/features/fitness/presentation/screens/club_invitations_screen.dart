@@ -7,6 +7,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../data/models/fitness_club_model.dart';
 import '../controllers/fitness_club_controller.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class ClubInvitationsScreen extends StatefulWidget {
   const ClubInvitationsScreen({super.key});
@@ -89,7 +90,7 @@ class _ClubInvitationsScreenState extends State<ClubInvitationsScreen> {
                             child: _row(
                               request: r,
                               message:
-                                  '${r.requesterName ?? 'Someone'} has requested to join ${r.clubName ?? 'your club'}',
+                                  tr.requestedToJoinClub(r.requesterName ?? tr.someone, r.clubName ?? tr.yourClub),
                               onReject: () => _controller.rejectJoinRequest(r),
                               onAccept: () => _controller.approveJoinRequest(r),
                             ),

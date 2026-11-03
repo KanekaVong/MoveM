@@ -9,6 +9,7 @@ import '../../data/dto/response/friend_response.dart';
 import '../../data/dto/response/friend_request_response.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class FriendsController extends BaseController {
   AppLocalizations? get _l10n {
@@ -51,7 +52,7 @@ class FriendsController extends BaseController {
         .where((v) => v != null && v.trim().isNotEmpty)
         .join(' ');
     if (fullName.isNotEmpty) return fullName;
-    return u?.username.isNotEmpty == true ? u!.username : 'Your Profile';
+    return u?.username.isNotEmpty == true ? u!.username : tr.yourProfile;
   }
 
   String get profileUsername => currentUser.value?.username.isNotEmpty == true ? currentUser.value!.username : 'user';

@@ -6,6 +6,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../controllers/trip_invitation_controller.dart';
 import '../../../groups/data/dto/response/group_invite_response.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TripInvitationsScreen extends StatefulWidget {
   const TripInvitationsScreen({super.key});
@@ -155,12 +156,12 @@ class _TripInvitationsScreenState
     final activityName =
     invitation.activityName?.trim().isNotEmpty == true
         ? invitation.activityName!
-        : 'Trip';
+        : tr.trip;
 
     final inviter =
     invitation.inviterUsername?.trim().isNotEmpty == true
         ? '@${invitation.inviterUsername}'
-        : 'Someone';
+        : tr.someone;
 
     return Container(
       padding: const EdgeInsets.all(16),

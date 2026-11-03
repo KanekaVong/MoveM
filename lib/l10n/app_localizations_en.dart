@@ -1989,4 +1989,1643 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notAvailable => 'N/A';
+
+  @override
+  String get apiRequestCancelled => 'The request was cancelled.';
+
+  @override
+  String get apiTimeout => 'The connection is slow. Please try again.';
+
+  @override
+  String get apiNoInternet =>
+      'No internet connection. Please check your network.';
+
+  @override
+  String get serverBadResponse =>
+      'The server sent an unexpected response. Please try again.';
+
+  @override
+  String get apiUnauthorized => 'Your session has ended. Please log in again.';
+
+  @override
+  String get apiForbidden => 'You don\'t have permission to do this.';
+
+  @override
+  String get apiNotFound => 'We couldn\'t find what you\'re looking for.';
+
+  @override
+  String get apiServerError =>
+      'Our server has a problem right now. Please try again later.';
+
+  @override
+  String apiAlreadyTaken(Object field, Object value) {
+    return 'The $field \'$value\' is already taken. Please try another one.';
+  }
+
+  @override
+  String unitKmValue(Object value) {
+    return '${value}KM';
+  }
+
+  @override
+  String unitMeterValue(Object value) {
+    return '${value}M';
+  }
+
+  @override
+  String get homeDailyQuote =>
+      '“Success is stumbling from failure to failure with no loss of enthusiasm” - Winston Churchill';
+
+  @override
+  String get homeSloganMove => 'MOVE';
+
+  @override
+  String get homeSloganExplore => 'EXPLORE';
+
+  @override
+  String get homeSloganAchieve => 'ACHIEVE';
+
+  @override
+  String get notifChannelImportant => 'High Importance Notifications';
+
+  @override
+  String get notifChannelImportantDesc =>
+      'This channel is used for important notifications and alerts.';
+
+  @override
+  String get notifChannelTaskReminders => 'Task Reminders';
+
+  @override
+  String get notifChannelTaskRemindersDesc =>
+      'Notifications for task deadlines and upcoming reminders';
+
+  @override
+  String taskReminderTitle(Object title) {
+    return 'Task Reminder: $title';
+  }
+
+  @override
+  String get taskReminderBody => 'Don\'t forget to complete your task!';
+
+  @override
+  String get authVerifiedTitle => 'Verified';
+
+  @override
+  String get authOtpVerified => 'OTP Verified Successfully!';
+
+  @override
+  String get authCodeSentTitle => 'Code Sent';
+
+  @override
+  String get authNewCodeSent => 'A new code has been sent to your email.';
+
+  @override
+  String get authEmailVerified => 'Email Verified Successfully!';
+
+  @override
+  String get authNewVerificationCodeSent =>
+      'A new verification code has been sent to your email.';
+
+  @override
+  String get authOtpSentTitle => 'OTP Sent';
+
+  @override
+  String authOtpSentTo(Object email) {
+    return 'An OTP has been sent to $email.';
+  }
+
+  @override
+  String get authPasswordResetTitle => 'Password Reset';
+
+  @override
+  String get authPasswordResetDone =>
+      'Your password has been reset successfully.';
+
+  @override
+  String get authTagline => 'YOUR LIFE, IN MOTION';
+
+  @override
+  String get activitySteps => 'STEPS';
+
+  @override
+  String activityDurationMins(Object mins) {
+    return '$mins MINS';
+  }
+
+  @override
+  String get activityCalories => 'CALORIES';
+
+  @override
+  String get activityAvgPace => 'AVG PACE';
+
+  @override
+  String get activityChallenge => 'CHALLENGE';
+
+  @override
+  String get activityCompleted => 'COMPLETED 🔥';
+
+  @override
+  String likesCount(Object count) {
+    return '$count Likes';
+  }
+
+  @override
+  String commentsCount(Object count) {
+    return '$count Comments';
+  }
+
+  @override
+  String get activityWorkout => 'WORKOUT';
+
+  @override
+  String get homeMovemUser => 'MoveM User';
+
+  @override
+  String feedCompletedRunDistance(Object distance) {
+    return 'Completed a $distance Run! 🔥';
+  }
+
+  @override
+  String get feedCompletedRun => 'Completed a Run! 🔥';
+
+  @override
+  String get feedCompletedPushUp => 'Completed a PushUp Challenge 🔥';
+
+  @override
+  String get feedCompletedSquat => 'Completed a Squat Challenge 🔥';
+
+  @override
+  String feedCompletedWorkout(Object type) {
+    return 'Completed a $type Challenge 🔥';
+  }
+
+  @override
+  String get homeMovemAthlete => 'MoveM Athlete';
+
+  @override
+  String caloriesValue(Object count) {
+    return '${count}Cals';
+  }
+
+  @override
+  String stepsValue(Object count) {
+    return '${count}Steps';
+  }
+
+  @override
+  String durHoursMins(Object hours, Object mins) {
+    return '${hours}Hr ${mins}Mins';
+  }
+
+  @override
+  String durHours(Object hours) {
+    return '${hours}Hr';
+  }
+
+  @override
+  String durMins(Object mins) {
+    return '${mins}Mins';
+  }
+
+  @override
+  String paceValue(Object pace) {
+    return '$pace / KM';
+  }
+
+  @override
+  String runSprintName(Object km) {
+    return '$km KILOMETERS SPRINT';
+  }
+
+  @override
+  String get activityRun => 'RUN';
+
+  @override
+  String durMinsSecs(Object mins, Object secs) {
+    return '${mins}m ${secs}s';
+  }
+
+  @override
+  String durSecs(Object secs) {
+    return '${secs}s';
+  }
+
+  @override
+  String get changeEmail => 'Change email';
+
+  @override
+  String get addPhone => 'Add phone';
+
+  @override
+  String get emailAddress => 'Email address';
+
+  @override
+  String get phoneNumberLower => 'Phone number';
+
+  @override
+  String get emailPrivacyNote =>
+      'Your email address is linked to your account and remains private. If updated, your previous address may be kept for account recovery.';
+
+  @override
+  String get phoneUpdateNote =>
+      'Your phone number will be updated in your profile.';
+
+  @override
+  String get change => 'Change';
+
+  @override
+  String get pleaseEnterEmail => 'Please enter an email address';
+
+  @override
+  String get pleaseEnterValidPhone => 'Please enter a valid phone number';
+
+  @override
+  String get phoneUpdated => 'Phone number updated successfully';
+
+  @override
+  String get logOutConfirm =>
+      'Are you sure you want to log out of your account?';
+
+  @override
+  String get region => 'Region';
+
+  @override
+  String get chooseRegion => 'Choose your region';
+
+  @override
+  String get chooseRegionSub =>
+      'Select your country and province, state, or region.';
+
+  @override
+  String get country => 'Country';
+
+  @override
+  String get selectCountry => 'Select country';
+
+  @override
+  String get searchCountry => 'Search country...';
+
+  @override
+  String get regionStateProvince => 'Region / State / Province';
+
+  @override
+  String get selectRegionLower => 'Select region';
+
+  @override
+  String get searchRegion => 'Search region...';
+
+  @override
+  String get passwordChanged => 'Your password has been changed.';
+
+  @override
+  String get changeYourPassword => 'Change your password';
+
+  @override
+  String get changePasswordSub =>
+      'Enter your current password and choose a new one.';
+
+  @override
+  String get currentPassword => 'Current Password';
+
+  @override
+  String get enterCurrentPassword => 'Enter current password';
+
+  @override
+  String get pleaseEnterCurrentPassword =>
+      'Please enter your current password.';
+
+  @override
+  String get newPasswordTitle => 'New Password';
+
+  @override
+  String get pleaseEnterNewPassword => 'Please enter a new password.';
+
+  @override
+  String get passwordMin8 => 'Password must be at least 8 characters.';
+
+  @override
+  String get confirmNewPassword => 'Confirm New Password';
+
+  @override
+  String get confirmNewPasswordHint => 'Confirm new password';
+
+  @override
+  String get pleaseConfirmNewPassword => 'Please confirm your new password.';
+
+  @override
+  String get forgotPasswordLower => 'Forgot password?';
+
+  @override
+  String get changeProfilePhoto => 'Change Profile Photo';
+
+  @override
+  String get chooseFromLibrary => 'Choose from Library';
+
+  @override
+  String get takePhoto => 'Take Photo';
+
+  @override
+  String get removeCurrentPhoto => 'Remove Current Profile';
+
+  @override
+  String get couldNotSelectImage => 'Could not select image.';
+
+  @override
+  String get failedToSaveProfileChanges =>
+      'Couldn\'t save your changes. Please try again.';
+
+  @override
+  String get uploadFailed => 'Upload failed';
+
+  @override
+  String get photoUploadFailed =>
+      'The server could not save your photo. Please try again later.';
+
+  @override
+  String get firstNameField => 'First Name';
+
+  @override
+  String get lastNameField => 'Last Name';
+
+  @override
+  String get bio => 'Bio';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get preferNotToSay => 'Prefer not to say';
+
+  @override
+  String get yourEmailAddress => 'Your email address:';
+
+  @override
+  String get yourPhoneNumber => 'Your phone number:';
+
+  @override
+  String get phonePrivacyNote =>
+      'Your phone number is linked to your account and remains private. If updated, your previous number may be kept for account recovery.';
+
+  @override
+  String get changePhoneNumber => 'Change phone number';
+
+  @override
+  String get verifyEmail => 'Verify email';
+
+  @override
+  String get verifyEmailSub =>
+      'We have sent a verification code to your registered email address to confirm your identity. Please check your inbox and enter the code.';
+
+  @override
+  String resendCodeInSeconds(Object seconds) {
+    return 'Resend code in ${seconds}s';
+  }
+
+  @override
+  String get resendCodeLower => 'Resend code';
+
+  @override
+  String get pleaseEnter6DigitCode =>
+      'Please enter the 6-digit verification code';
+
+  @override
+  String get pleaseEnterYourEmail => 'Please enter your email.';
+
+  @override
+  String get pleaseEnterOtp => 'Please enter the OTP.';
+
+  @override
+  String get forgotPasswordTitle => 'Forgot Password';
+
+  @override
+  String get resetYourPassword => 'Reset your password';
+
+  @override
+  String get resetPasswordSub =>
+      'Enter your email and use the OTP sent to you to create a new password.';
+
+  @override
+  String get otpCodeField => 'OTP Code';
+
+  @override
+  String get enter6DigitOtp => 'Enter 6-digit OTP';
+
+  @override
+  String get resend => 'Resend';
+
+  @override
+  String get otpExpiryNote =>
+      'The OTP expires according to your account security settings.';
+
+  @override
+  String get resetPasswordAction => 'Reset Password';
+
+  @override
+  String get friendRequestAccepted => 'Friend request accepted';
+
+  @override
+  String get friendRequestRejected => 'Friend request rejected';
+
+  @override
+  String get challengesCompleted => 'Challenges Completed';
+
+  @override
+  String get tripPlans => 'Trip Plans';
+
+  @override
+  String get friendsTitle => 'Friends';
+
+  @override
+  String get recentAchievementsLead => 'Recent';
+
+  @override
+  String get mutualFriendsLead => 'Mutual';
+
+  @override
+  String get requestSent => 'Request Sent';
+
+  @override
+  String get moveWithPurpose => 'MOVE WITH PURPOSE';
+
+  @override
+  String get addFriendsHeadline =>
+      'Find And Connect With Friends To Stay Active Together';
+
+  @override
+  String inviteShareMessage(Object link) {
+    return 'Join me on MoveM! Move with purpose. Use my invite link: $link';
+  }
+
+  @override
+  String get qrCaptureFailed => 'Unable to capture QR code image';
+
+  @override
+  String get qrConvertFailed => 'Failed to convert QR code to image';
+
+  @override
+  String get permissionNeededTitle => 'Permission Denied';
+
+  @override
+  String get allowPhotoAccessQr =>
+      'Please allow photo access to save the QR code';
+
+  @override
+  String get qrSaveFailed => 'Failed to save QR code to Photos';
+
+  @override
+  String get shared => 'Shared';
+
+  @override
+  String profileLinkCopiedWithLink(Object link) {
+    return 'Profile link copied to clipboard: $link';
+  }
+
+  @override
+  String get friendRequestSent => 'Friend request sent.';
+
+  @override
+  String get nowFriends => 'You are now friends.';
+
+  @override
+  String get cameraPermissionRequired => 'Camera permission required';
+
+  @override
+  String get noCameraFound => 'No camera found';
+
+  @override
+  String get cameraInitFailed => 'Unable to initialize camera';
+
+  @override
+  String get couldNotOpenImage => 'Could not open the selected image';
+
+  @override
+  String get invalidQr => 'Invalid QR';
+
+  @override
+  String get noQrInImage => 'No valid QR code found in this image';
+
+  @override
+  String get qrGalleryScanFailed => 'Unable to scan QR from gallery';
+
+  @override
+  String get noUserInQr => 'No valid user found in QR code';
+
+  @override
+  String get notSet => 'Not set';
+
+  @override
+  String get priorityUrgent => 'Urgent';
+
+  @override
+  String get priorityHigh => 'High';
+
+  @override
+  String get priorityMedium => 'Medium';
+
+  @override
+  String get priorityLow => 'Low';
+
+  @override
+  String get repeatDaily => 'Daily';
+
+  @override
+  String get repeatWeekly => 'Weekly';
+
+  @override
+  String get repeatMonthly => 'Monthly';
+
+  @override
+  String get repeatYearly => 'Yearly';
+
+  @override
+  String get repeatRecurring => 'REPEATS';
+
+  @override
+  String get taskStatusInProgress => 'In Progress';
+
+  @override
+  String get taskStatusComplete => 'Complete';
+
+  @override
+  String get taskStatusCancelled => 'Cancelled';
+
+  @override
+  String get taskStatusDeleted => 'Deleted';
+
+  @override
+  String get taskStatusCompleted => 'Completed';
+
+  @override
+  String get deadlinePassed => 'Deadline Passed';
+
+  @override
+  String get markAsComplete => 'Mark as Complete';
+
+  @override
+  String get dueOverdue => 'Overdue';
+
+  @override
+  String get dueToday => 'Due Today';
+
+  @override
+  String get dueTomorrow => 'Due Tomorrow';
+
+  @override
+  String dueInDays(Object days) {
+    return 'Due in $days days';
+  }
+
+  @override
+  String get dueNextWeek => 'Due Next Week';
+
+  @override
+  String dueOnDate(Object date) {
+    return 'Due $date';
+  }
+
+  @override
+  String get dueSoon => 'Due Soon';
+
+  @override
+  String overdueOnDate(Object date) {
+    return 'Overdue · $date';
+  }
+
+  @override
+  String deadlineOnDate(Object date) {
+    return 'Deadline: $date';
+  }
+
+  @override
+  String get member => 'Member';
+
+  @override
+  String inviteQuery(Object query) {
+    return 'Invite \"$query\"';
+  }
+
+  @override
+  String get deadlinesLabel => 'DEADLINES';
+
+  @override
+  String get repeatLabelTitle => 'REPEAT';
+
+  @override
+  String get yourNextReminder => 'Your Next Reminder';
+
+  @override
+  String attachmentsCount(Object count) {
+    return 'Attachments   ($count)';
+  }
+
+  @override
+  String get labelTitle => 'LABEL';
+
+  @override
+  String get detailsTitle => 'DETAILS';
+
+  @override
+  String collaboratorsCount(Object count) {
+    return 'Collaborators   ($count)';
+  }
+
+  @override
+  String get attachment => 'Attachment';
+
+  @override
+  String get titleLabel => 'TITLE';
+
+  @override
+  String get taskTitlePlaceholder => 'Task title';
+
+  @override
+  String get taskDescriptionHint => 'Enter task description...';
+
+  @override
+  String get selectLabel => 'Select Label';
+
+  @override
+  String get addAnItem => 'Add an item';
+
+  @override
+  String get addCollaboratorsCaps => 'ADD COLLABORATORS';
+
+  @override
+  String get noAttachmentsAdded => 'No attachments added';
+
+  @override
+  String get uploaded => 'Uploaded';
+
+  @override
+  String get readyToUploadOnSave => 'Ready to upload on save';
+
+  @override
+  String get addAttachmentsCaps => 'ADD ATTACHMENTS';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get uploadPhoto => 'Upload Photo';
+
+  @override
+  String get chooseFromGallery => 'Choose from Gallery';
+
+  @override
+  String get takeAPhoto => 'Take a Photo';
+
+  @override
+  String get taskReminderOptIn => 'Get upcoming reminders about your Tasks';
+
+  @override
+  String get createCaps => 'CREATE';
+
+  @override
+  String get createLabelTitle => 'Create Label';
+
+  @override
+  String get enterLabelName => 'Enter label name';
+
+  @override
+  String get colorLabel => 'COLOR';
+
+  @override
+  String get progressTitle => 'PROGRESS';
+
+  @override
+  String get allTasksCaps => 'ALL TASKS';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get filterTasks => 'Filter Tasks';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get statusLabel => 'STATUS';
+
+  @override
+  String get applyFilters => 'Apply Filters';
+
+  @override
+  String get taskHeroTitle => 'Ready To Elevate Your\nTask To Another Level?';
+
+  @override
+  String get completedTasksCaps => 'COMPLETED TASKS';
+
+  @override
+  String get createTaskCaps => 'CREATE TASK';
+
+  @override
+  String get createTaskSub => 'Let your brain relax, put it here.';
+
+  @override
+  String get completedCaps => 'COMPLETED';
+
+  @override
+  String get upcomingTasks => 'Upcoming Tasks';
+
+  @override
+  String get noUpcomingTasks => 'No upcoming tasks';
+
+  @override
+  String get ongoingTasksTitle => 'On-Going Tasks';
+
+  @override
+  String get noOngoingTasks => 'No ongoing tasks';
+
+  @override
+  String get noDeadline => 'No deadline';
+
+  @override
+  String progressionPercent(Object percent) {
+    return 'Progression : $percent%';
+  }
+
+  @override
+  String get someone => 'Someone';
+
+  @override
+  String get aTask => 'a task';
+
+  @override
+  String get invitedYouToCollaborate => ' has invited you to collaborate in';
+
+  @override
+  String get failedToLoadHistory => 'Failed to load history';
+
+  @override
+  String get failedToSend => 'Failed to Send';
+
+  @override
+  String get updatedTitle => 'Updated';
+
+  @override
+  String get commentUpdated => 'Comment updated successfully';
+
+  @override
+  String get updateFailed => 'Update Failed';
+
+  @override
+  String get commentDeleted => 'Comment deleted successfully';
+
+  @override
+  String get failedToLoadInvitations => 'Failed to load invitations';
+
+  @override
+  String youJoinedName(Object name) {
+    return 'You joined $name';
+  }
+
+  @override
+  String get youJoinedTask => 'You joined the task';
+
+  @override
+  String get couldNotAccept => 'Could not accept';
+
+  @override
+  String get pleaseTryAgain => 'Please try again';
+
+  @override
+  String get couldNotDecline => 'Could not decline';
+
+  @override
+  String get repeatNone => 'None';
+
+  @override
+  String get repeatCustom => 'Custom';
+
+  @override
+  String get taskStatusUpcoming => 'Upcoming';
+
+  @override
+  String get taskStatusPending => 'Pending';
+
+  @override
+  String get travelDriving => 'Driving';
+
+  @override
+  String get travelWalking => 'Walking';
+
+  @override
+  String get travelCycling => 'Cycling';
+
+  @override
+  String get travelRiding => 'Riding';
+
+  @override
+  String noRouteForMode(Object mode) {
+    return 'No $mode route available for this trip.';
+  }
+
+  @override
+  String deleteTripConfirm(Object name) {
+    return 'Are you sure you want to delete \"$name\"? This action cannot be undone.';
+  }
+
+  @override
+  String get tripHeroEnhance => 'ENHANCE YOUR\nJOURNEY WITH US.';
+
+  @override
+  String get buildingRoute => 'Building route...';
+
+  @override
+  String get placeHasNoCoordinates => 'Selected place has no coordinates.';
+
+  @override
+  String get unknownLocation => 'Unknown location';
+
+  @override
+  String get tripWelcomeTitle => 'EXPLORE\nTHE WORLD\nWITH US';
+
+  @override
+  String get tripWelcomeSub => 'Move with purpose, Always';
+
+  @override
+  String get slideToExplore => 'Slide to explore';
+
+  @override
+  String get goLabel => 'GO';
+
+  @override
+  String get failedToSearchUsers => 'Failed to search users';
+
+  @override
+  String get invitationSentTitle => 'Invitation Sent';
+
+  @override
+  String invitationSentTo(Object name) {
+    return 'Invitation sent to $name';
+  }
+
+  @override
+  String get invitationFailedTitle => 'Invitation Failed';
+
+  @override
+  String couldNotInviteName(Object name) {
+    return 'Could not invite $name';
+  }
+
+  @override
+  String get routeDetails => 'ROUTE DETAILS';
+
+  @override
+  String routeDistanceAndTime(Object km, Object time) {
+    return '$km km • $time';
+  }
+
+  @override
+  String get distanceCaps => 'DISTANCE';
+
+  @override
+  String kmValueLower(Object km) {
+    return '$km km';
+  }
+
+  @override
+  String get estTime => 'EST. TIME';
+
+  @override
+  String get travelModeCaps => 'TRAVEL MODE';
+
+  @override
+  String get noStopsAvailable => 'No stops available.';
+
+  @override
+  String get routeStop => 'Route stop';
+
+  @override
+  String get locationServicesOff => 'Location services are disabled.';
+
+  @override
+  String get locationNeededForRoute =>
+      'Location permission is required to show the route.';
+
+  @override
+  String get unableToGetLocation => 'Unable to get location.';
+
+  @override
+  String get tripDestinationMissing =>
+      'This trip\'s destination isn\'t on the map yet.';
+
+  @override
+  String get yourLocation => 'Your location';
+
+  @override
+  String stopNumber(Object number) {
+    return 'Stop $number';
+  }
+
+  @override
+  String get destinationTitle => 'Destination';
+
+  @override
+  String get tripNameRequiredShort => 'Trip name is required.';
+
+  @override
+  String get startDateRequired => 'Start date is required.';
+
+  @override
+  String get tripHeroTitle => 'WHAT’S\nYOUR\nNEXT\nPLAN?';
+
+  @override
+  String get planYourJourney => 'PLAN YOUR JOURNEY';
+
+  @override
+  String get deleteTrip => 'Delete Trip';
+
+  @override
+  String get tripDeleted => 'Trip deleted successfully.';
+
+  @override
+  String get selectDateAndTime => 'Select date and time';
+
+  @override
+  String get selectBothDates => 'Please select both dates';
+
+  @override
+  String get endBeforeStart => 'The end date can\'t be before the start date';
+
+  @override
+  String get durationUpdated => 'Duration updated';
+
+  @override
+  String get stopUpdated => 'Stop updated successfully';
+
+  @override
+  String get cancelCaps => 'CANCEL';
+
+  @override
+  String get deleteCaps => 'DELETE';
+
+  @override
+  String get stopNoValidLocation => 'This stop does not have a valid location.';
+
+  @override
+  String get pleaseEnterChecklistItem => 'Please enter a checklist item';
+
+  @override
+  String get checklistUpdated => 'Checklist updated';
+
+  @override
+  String get attachmentUploaded => 'Attachment uploaded';
+
+  @override
+  String get stopNoMapLocation =>
+      'This stop does not have a location on the map.';
+
+  @override
+  String get unableToGetThisLocation => 'Unable to get this location.';
+
+  @override
+  String get selectedStop => 'Selected stop';
+
+  @override
+  String get searchForStop => 'Search for a stop';
+
+  @override
+  String get setStop => 'SET STOP';
+
+  @override
+  String get workoutRunning => 'Running';
+
+  @override
+  String get workoutWalking => 'Walking';
+
+  @override
+  String get workoutCycling => 'Cycling';
+
+  @override
+  String get workoutSwimming => 'Swimming';
+
+  @override
+  String get workoutHiking => 'Hiking';
+
+  @override
+  String get workoutPushUp => 'Push Up';
+
+  @override
+  String get workoutSquats => 'Squats';
+
+  @override
+  String get workoutPullUps => 'Pull Ups';
+
+  @override
+  String get workoutStrength => 'Strength Training';
+
+  @override
+  String get workoutBodyweight => 'Bodyweight';
+
+  @override
+  String get workoutYoga => 'Yoga';
+
+  @override
+  String get workoutStretching => 'Stretching';
+
+  @override
+  String get workoutCardio => 'Cardio';
+
+  @override
+  String get workoutSports => 'Sports';
+
+  @override
+  String get workoutBadminton => 'Badminton';
+
+  @override
+  String get workoutTennis => 'Tennis';
+
+  @override
+  String get unitKm => 'KM';
+
+  @override
+  String get unitMeters => 'Meters';
+
+  @override
+  String get unitMinutes => 'Minutes';
+
+  @override
+  String get unitSteps => 'Steps';
+
+  @override
+  String get unitReps => 'Reps';
+
+  @override
+  String challengeWithName(Object name) {
+    return 'CHALLENGE: $name';
+  }
+
+  @override
+  String get finishedCaps => 'FINISHED';
+
+  @override
+  String get finishedFire => 'FINISHED 🔥';
+
+  @override
+  String durationSecsCaps(Object secs) {
+    return '$secs SECS';
+  }
+
+  @override
+  String trackingComingSoonTitle(Object workout) {
+    return '$workout Tracking Coming Soon';
+  }
+
+  @override
+  String trackingComingSoonBody(Object workout) {
+    return 'Tracking for $workout is currently in active development and will be available in an upcoming update.';
+  }
+
+  @override
+  String get gotIt => 'Got it';
+
+  @override
+  String setsOfReps(Object sets, Object reps, Object unit) {
+    return '$sets Sets of $reps $unit';
+  }
+
+  @override
+  String get statusPaused => 'Paused';
+
+  @override
+  String get statusNotStarted => 'Not started';
+
+  @override
+  String requestedToJoinClub(Object name, Object club) {
+    return '$name has requested to join $club';
+  }
+
+  @override
+  String get yourClub => 'your club';
+
+  @override
+  String runningTargetTitle(Object target) {
+    return '$target Running';
+  }
+
+  @override
+  String get runningChallenge => 'Running Challenge';
+
+  @override
+  String get runningDescription =>
+      'Run and track your route, pace, distance, and calories burned in real time.';
+
+  @override
+  String get squatsDescription =>
+      'Lower hips from standing position then stand back up to build leg and core strength.';
+
+  @override
+  String get pushUpDescription =>
+      'An exercise done to improve upper body strength, performed by resting on one\'s toes and hands and pushing one\'s weight off the floor';
+
+  @override
+  String get genericChallengeDescription =>
+      'Challenge yourself and stay consistent to achieve your personal fitness targets.';
+
+  @override
+  String get formExcellent => 'Excellent';
+
+  @override
+  String get formGood => 'Good';
+
+  @override
+  String get formShallow => 'Shallow';
+
+  @override
+  String get formNoReps => 'No Reps';
+
+  @override
+  String get formRatingExcellent => 'Excellent Form 🏆';
+
+  @override
+  String get formRatingGood => 'Good Form 💪';
+
+  @override
+  String get formRatingWorkOnDepth => 'Work on Depth ⚠️';
+
+  @override
+  String get formDeepSquat => 'Deep Squat';
+
+  @override
+  String get formGoodDepth => 'Good Depth';
+
+  @override
+  String get levelBeginner => 'Beginner';
+
+  @override
+  String get levelIntermediate => 'Intermediate';
+
+  @override
+  String get levelAdvanced => 'Advanced';
+
+  @override
+  String get levelElite => 'Elite';
+
+  @override
+  String completeTargetToFinish(Object target) {
+    return 'Complete $target to finish this challenge.';
+  }
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String joinedSince(Object year) {
+    return 'Joined since $year';
+  }
+
+  @override
+  String get roleOwner => 'Club owner';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String targetWithUnit(Object unit) {
+    return 'TARGET ($unit)';
+  }
+
+  @override
+  String get categoryGeneral => 'GENERAL';
+
+  @override
+  String get cueGoodDepthPushUp => 'Good depth! Now push up!';
+
+  @override
+  String get cueLowerDown => 'Lower down...';
+
+  @override
+  String get cueGetReadyToLower => 'Get ready to lower';
+
+  @override
+  String get cueExcellentRep => 'Excellent Rep! 🏆';
+
+  @override
+  String cueRepComplete(Object count) {
+    return 'Rep #$count Complete!';
+  }
+
+  @override
+  String get cuePushAllTheWayUp => 'Push all the way up!';
+
+  @override
+  String get cueGoodDepthSquat => 'Good depth! Push up through your heels!';
+
+  @override
+  String get cueLowerHips => 'Lower your hips...';
+
+  @override
+  String get cueStandTall => 'Stand tall and begin squatting';
+
+  @override
+  String get cueDeepSquat => 'Deep Squat! 🏆';
+
+  @override
+  String get cueStandAllTheWayUp => 'Stand all the way up!';
+
+  @override
+  String get failedStartWorkout => 'Couldn\'t start the workout';
+
+  @override
+  String get failedUpdateProgress => 'Couldn\'t save your progress';
+
+  @override
+  String get failedFinishWorkout => 'Couldn\'t finish the workout';
+
+  @override
+  String get summaryNotFound => 'Workout summary not found';
+
+  @override
+  String get failedSaveAnalysis => 'Couldn\'t save the workout analysis';
+
+  @override
+  String get goalNotFound => 'Goal not found';
+
+  @override
+  String get challengeNotFound => 'Challenge not found';
+
+  @override
+  String get clubNotFound => 'Club not found';
+
+  @override
+  String get failedToUpdateClub => 'Couldn\'t update the club. Try again.';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get challengeNameCaps => 'CHALLENGE NAME';
+
+  @override
+  String get challengeNameExample => 'Morning Sprint Challenge';
+
+  @override
+  String get startDateCaps => 'START DATE';
+
+  @override
+  String get endDateCaps => 'END DATE';
+
+  @override
+  String get descriptionsCaps => 'DESCRIPTIONS';
+
+  @override
+  String get challengeDescExample =>
+      'Complete 5 continuous laps of the park track.';
+
+  @override
+  String get activityTypeCaps => 'ACTIVITY TYPE';
+
+  @override
+  String get moreActivity => 'More Activity';
+
+  @override
+  String get challengeHasEnded => 'Challenge Has Ended';
+
+  @override
+  String get descriptionsTitle => 'Descriptions';
+
+  @override
+  String get musclesBuiltBy => 'MUSCLES BUILT BY';
+
+  @override
+  String get createChallengeAgain => 'CREATE CHALLENGE AGAIN?';
+
+  @override
+  String get joinClubChallenge => 'Join Club Challenge';
+
+  @override
+  String get editYourDetails => 'Edit your details';
+
+  @override
+  String get yourDetails => 'Your details';
+
+  @override
+  String get heightQuestion => 'What\'s your height?';
+
+  @override
+  String get weightQuestion => 'What\'s your current weight?';
+
+  @override
+  String get searchPeopleOnMovem => 'Search for people on MoveM';
+
+  @override
+  String membersCountCaps(Object count) {
+    return 'MEMBERS ($count)';
+  }
+
+  @override
+  String get setGoal => 'Set Goal';
+
+  @override
+  String get todaysWorkout => 'Today\'s Workout';
+
+  @override
+  String get smallStepBigChanges => 'Small step, big changes';
+
+  @override
+  String get startTrackingJourney =>
+      'Start tracking your Fitness Journey with us now';
+
+  @override
+  String get caloriesBurnedTitle => 'Calories Burned';
+
+  @override
+  String get clubSloganSpaced => 'MOVE MORE . BECOME MORE';
+
+  @override
+  String get cueGetInPushUpPosition => 'Get in push-up position';
+
+  @override
+  String get noCamerasOnDevice => 'No cameras detected on device';
+
+  @override
+  String get cameraPermissionNotGranted => 'Camera permission not granted';
+
+  @override
+  String get simulationModePushUp =>
+      'Simulation Mode Active • Tap screen to count rep';
+
+  @override
+  String get cueShouldersInFrame => 'Position shoulders and arms in frame';
+
+  @override
+  String get noPersonInFrame => 'No person detected in frame';
+
+  @override
+  String get adjustPosition => 'Adjust positioning for camera tracking';
+
+  @override
+  String get setCompleted => 'Set Completed!';
+
+  @override
+  String setCompletedBody(Object set, Object total) {
+    return 'Awesome form! You completed Set $set of $total. Ready for the next set?';
+  }
+
+  @override
+  String get startNextSet => 'Start Next Set';
+
+  @override
+  String get notSaved => 'Not saved';
+
+  @override
+  String get workoutNotSaved =>
+      'Workout couldn\'t be saved to the server. Check your connection.';
+
+  @override
+  String get squatsChallenge => 'Squats Challenge';
+
+  @override
+  String get squatsShortDescription =>
+      'Lower hips from standing position then stand back up.';
+
+  @override
+  String get strengthCategory => 'Strength';
+
+  @override
+  String get pullUpsName => 'Pull ups';
+
+  @override
+  String get pullUpsDescription =>
+      'Upper-body exercise where you pull yourself up to a bar.';
+
+  @override
+  String get upperBody => 'Upper Body';
+
+  @override
+  String get locationRequiredTitle => 'Location Required';
+
+  @override
+  String get locationNeededForRun =>
+      'Location access is needed to track your running distance, pace, and route.';
+
+  @override
+  String get locationAccessRequired => 'Location Access Required';
+
+  @override
+  String get locationSettingsBody =>
+      'MoveM needs location access to track your GPS route, distance, and pace. Please enable location permissions in your device settings.';
+
+  @override
+  String get locationServiceDisabled => 'Location Service Disabled';
+
+  @override
+  String get turnOnGpsBody =>
+      'Please turn on GPS / Location service on your device so MoveM can record your run.';
+
+  @override
+  String get turnOn => 'Turn On';
+
+  @override
+  String get failedLoadWorkoutHistory => 'Failed to load workout history';
+
+  @override
+  String get cueFullView => 'Stand in full view of the camera';
+
+  @override
+  String get simulationModeSquat =>
+      'Tap anywhere to count reps (Simulation Mode)';
+
+  @override
+  String get cueStepBack => 'Step back so legs are visible';
+
+  @override
+  String setCompleteRest(Object set) {
+    return 'Set $set Complete! Take a quick rest.';
+  }
+
+  @override
+  String get challengeComplete => 'Challenge Complete! 🏆';
+
+  @override
+  String get workoutPaused => 'Workout Paused';
+
+  @override
+  String get resumingSquat => 'Resuming... Let\'s squat!';
+
+  @override
+  String get fitnessChallenge => 'Fitness Challenge';
+
+  @override
+  String get shareWorkout => 'Share Workout';
+
+  @override
+  String get shareNotSaved =>
+      'This workout was not saved to the server, so it cannot be shared.';
+
+  @override
+  String get sharing => 'Sharing…';
+
+  @override
+  String get postingWorkout => 'Posting your workout to the social feed.';
+
+  @override
+  String get workoutShared => 'Your workout is now on the social feed.';
+
+  @override
+  String get shareFailed => 'Share failed';
+
+  @override
+  String get couldNotShareWorkout =>
+      'Could not share this workout. Please try again.';
+
+  @override
+  String get clubSlogan => 'MOVE MORE. BECOME MORE.';
+
+  @override
+  String clubShareWithCode(Object name, Object code) {
+    return 'Join my club \"$name\" on MoveM! Code: $code';
+  }
+
+  @override
+  String clubShare(Object name) {
+    return 'Join my club \"$name\" on MoveM!';
+  }
+
+  @override
+  String get customizeOwnChallenge => 'Customize Your Own Challenge +';
+
+  @override
+  String get featuredChallenges => 'Featured Challenges';
+
+  @override
+  String get getStarted => 'Get Started';
+
+  @override
+  String get clubTagline =>
+      'Stay active, motivate each other, and complete challenges together.';
+
+  @override
+  String memberNumber(Object id) {
+    return 'Member #$id';
+  }
+
+  @override
+  String get goalCaps => 'GOAL';
+
+  @override
+  String get endAction => 'End';
+
+  @override
+  String get viewSummary => 'View Summary';
+
+  @override
+  String get shareCaps => 'SHARE';
+
+  @override
+  String get redoCaps => 'REDO';
+
+  @override
+  String get moreCaps => 'MORE';
+
+  @override
+  String get homeCaps => 'HOME';
+
+  @override
+  String get fitnessHeroTitle => 'ONE STEP\nTODAY. A\nSTRONGER YOU\nTOMORROW.';
+
+  @override
+  String get challengeEndedCaps => 'CHALLENGE ENDED';
+
+  @override
+  String get defaultClubName => 'MoveM Fitness Club';
+
+  @override
+  String get clubDescriptionHint => 'Describe your club and who should join...';
+
+  @override
+  String membersCountSpaced(Object count) {
+    return 'MEMBERS ( $count )';
+  }
+
+  @override
+  String get runningSession => 'RUNNING SESSION';
+
+  @override
+  String get averagePaceCaps => 'AVERAGE PACE';
+
+  @override
+  String get waitingForGps => 'Waiting for GPS';
+
+  @override
+  String get gettingLocation => 'Getting your location';
+
+  @override
+  String get moveOutdoors => 'Move outdoors and try again';
+
+  @override
+  String get runStartsAfterGps => 'Run starts after GPS lock';
+
+  @override
+  String get retryGps => 'Retry GPS';
+
+  @override
+  String get tapCircleToStart => 'Tap circle to start now';
+
+  @override
+  String get stepCaps => 'STEP';
+
+  @override
+  String get runPauseLeaveBody =>
+      'Your active running challenge will be paused. Do you want to leave?';
+
+  @override
+  String get exitAction => 'Exit';
+
+  @override
+  String unlockedOf(Object earned, Object total) {
+    return '$earned of $total Unlocked';
+  }
+
+  @override
+  String percentCompletedKeepPushing(Object percent) {
+    return '$percent% completed • Keep pushing!';
+  }
+
+  @override
+  String get earnedCaps => 'EARNED';
+
+  @override
+  String get kneeAngle => 'KNEE ANGLE';
+
+  @override
+  String get workoutWillEnd => 'Your progress for this workout will be ended.';
+
+  @override
+  String get finishAndSave => 'Finish & Save';
+
+  @override
+  String get couldNotGetLocationOutdoors =>
+      'Could not get your current location. Move outdoors and try again.';
+
+  @override
+  String heightCmValue(Object height) {
+    return '$height CM';
+  }
+
+  @override
+  String kcalValue(Object count) {
+    return '$count kcal';
+  }
+
+  @override
+  String get you => 'You';
+
+  @override
+  String itemDeleted(Object name) {
+    return '$name deleted';
+  }
+
+  @override
+  String paceValueShort(Object pace) {
+    return '$pace /km';
+  }
 }

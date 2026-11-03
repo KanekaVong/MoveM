@@ -3,6 +3,7 @@ import '../../../../core/network/api_result.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/api_exceptions.dart';
 import '../models/fitness_club_model.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class FitnessClubRepository {
   final DioClient _dioClient = DioClient();
@@ -71,7 +72,7 @@ class FitnessClubRepository {
       if (map != null) {
         return ApiSuccess(FitnessClubModel.fromJson(map));
       }
-      return ApiError(ApiException(message: 'Club not found'));
+      return ApiError(ApiException(message: tr.clubNotFound));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -91,7 +92,7 @@ class FitnessClubRepository {
       if (map != null) {
         return ApiSuccess(FitnessClubModel.fromJson(map));
       }
-      return ApiError(ApiException(message: 'Failed to create club'));
+      return ApiError(ApiException(message: tr.failedToCreateClub));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -111,7 +112,7 @@ class FitnessClubRepository {
       if (map != null) {
         return ApiSuccess(FitnessClubModel.fromJson(map));
       }
-      return ApiError(ApiException(message: 'Failed to update club'));
+      return ApiError(ApiException(message: tr.failedToUpdateClub));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -148,7 +149,7 @@ class FitnessClubRepository {
           role: 'MEMBER',
         ));
       }
-      return ApiError(ApiException(message: 'Failed to join club'));
+      return ApiError(ApiException(message: tr.failedToJoinClub));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -165,7 +166,7 @@ class FitnessClubRepository {
       if (map != null) {
         return ApiSuccess(ClubJoinRequestModel.fromJson(map));
       }
-      return ApiError(ApiException(message: 'Failed to submit join request'));
+      return ApiError(ApiException(message: tr.failedToSubmitJoinRequest));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -201,7 +202,7 @@ class FitnessClubRepository {
       if (map != null) {
         return ApiSuccess(FitnessClubMemberModel.fromJson(map));
       }
-      return ApiError(ApiException(message: 'Failed to add member'));
+      return ApiError(ApiException(message: tr.couldNotAddMembers));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -249,7 +250,7 @@ class FitnessClubRepository {
       if (map != null) {
         return ApiSuccess(ClubJoinRequestModel.fromJson(map));
       }
-      return ApiError(ApiException(message: 'Failed to approve request'));
+      return ApiError(ApiException(message: tr.couldNotApproveRequest));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {
@@ -266,7 +267,7 @@ class FitnessClubRepository {
       if (map != null) {
         return ApiSuccess(ClubJoinRequestModel.fromJson(map));
       }
-      return ApiError(ApiException(message: 'Failed to reject request'));
+      return ApiError(ApiException(message: tr.couldNotRejectRequest));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {

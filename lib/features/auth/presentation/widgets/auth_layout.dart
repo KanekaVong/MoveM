@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'auth_glass_button.dart';
 import 'inner_shadow_text.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class AuthColors {
   AuthColors._();
@@ -98,7 +99,7 @@ class _AuthHeader extends StatelessWidget {
                 colors: [Colors.white, AuthColors.lightBlue],
               ).createShader(bounds),
               child: Text(
-                'YOUR LIFE, IN MOTION',
+                tr.authTagline,
                 style: GoogleFonts.robotoCondensed(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,

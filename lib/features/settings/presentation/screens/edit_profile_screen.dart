@@ -17,6 +17,7 @@ import 'package:movem/shared/widgets/top_tool_bar.dart';
 import 'package:movem/core/utils/app_dialogs.dart';
 import '../controllers/setting_controller.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -99,7 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Change Profile Photo',
+                  tr.changeProfilePhoto,
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 18,
@@ -109,7 +110,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 20),
                 _buildImageOption(
                   icon: Icons.photo_library_outlined,
-                  title: 'Choose from Library',
+                  title: tr.chooseFromLibrary,
                   onTap: () async {
                     Navigator.of(context).pop();
                     await _pickProfileImage(ImageSource.gallery);
@@ -117,7 +118,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 _buildImageOption(
                   icon: Icons.camera_alt_outlined,
-                  title: 'Take Photo',
+                  title: tr.takePhoto,
                   onTap: () async {
                     Navigator.of(context).pop();
                     await _pickProfileImage(ImageSource.camera);
@@ -126,7 +127,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 if (hasCurrentImage)
                   _buildImageOption(
                     icon: Icons.delete_outline,
-                    title: 'Remove Current Profile',
+                    title: tr.removeCurrentPhoto,
                     isDestructive: true,
                     onTap: () {
                       Navigator.of(context).pop();
@@ -161,8 +162,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
     } catch (e) {
       AppSnack.show(
-        'Error',
-        'Could not select image.',
+        tr.errorTitle,
+        tr.couldNotSelectImage,
       );
     }
   }
@@ -314,9 +315,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (updatedProfile == null) {
           AppDialogs.hideLoading();
           AppSnack.show(
-            'Error',
+            tr.errorTitle,
             _settingController.errorMessage.value.isEmpty
-                ? 'Failed to save profile changes.'
+                ? tr.failedToSaveProfileChanges
                 : _settingController.errorMessage.value,
           );
           return;
@@ -339,9 +340,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           if (uploadedUser == null) {
             AppDialogs.hideLoading();
             AppSnack.show(
-              'Upload failed',
+              tr.uploadFailed,
               _settingController.errorMessage.value.isEmpty
-                  ? 'The server could not save your photo. Please try again later.'
+                  ? tr.photoUploadFailed
                   : _settingController.errorMessage.value,
             );
             return;
@@ -358,9 +359,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           if (updatedUser == null) {
             AppDialogs.hideLoading();
             AppSnack.show(
-              'Error',
+              tr.errorTitle,
               _settingController.errorMessage.value.isEmpty
-                  ? 'Failed to save profile changes.'
+                  ? tr.failedToSaveProfileChanges
                   : _settingController.errorMessage.value,
             );
             return;
@@ -377,7 +378,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     } catch (e) {
       AppDialogs.hideLoading();
-      AppSnack.show('Error', 'Failed to save profile changes.');
+      AppSnack.show(tr.errorTitle, tr.failedToSaveProfileChanges);
     }
   }
 
@@ -398,7 +399,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       backgroundColor: pageColor,
       appBar: TopToolBar(
-        title: 'Edit Profile',
+        title: tr.editProfile,
         backgroundColor: pageColor,
         foregroundColor: onPage,
         onBack: () => Navigator.of(context).pop(),
@@ -461,21 +462,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
               // First Name
               CustomMuiTextField(
-                label: 'First Name',
+                label: tr.firstNameField,
                 controller: _firstNameController,
               ),
               const SizedBox(height: 20),
 
               // Last Name
               CustomMuiTextField(
-                label: 'Last Name',
+                label: tr.lastNameField,
                 controller: _lastNameController,
               ),
               const SizedBox(height: 20),
 
               // Bio
               CustomMuiTextField(
-                label: 'Bio',
+                label: tr.bio,
                 controller: _bioController,
                 maxLength: 90,
                 showRemainingCount: true,
@@ -484,7 +485,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
               // Username
               CustomMuiTextField(
-                label: 'Username',
+                label: tr.usernameHint,
                 controller: _usernameController,
               ),
               const SizedBox(height: 20),
@@ -493,7 +494,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               DropdownMenu<String>(
                 initialSelection: _selectedGender,
                 expandedInsets: EdgeInsets.zero,
-                label: const Text('Gender'),
+                label: Text(tr.gender),
                 textStyle: TextStyle(color: onPage, fontSize: 15),
                 trailingIcon: Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
                 selectedTrailingIcon: Icon(Icons.keyboard_arrow_up, color: AppColors.textSecondary),
@@ -528,28 +529,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 dropdownMenuEntries: [
                   DropdownMenuEntry<String>(
                     value: 'MALE',
-                    label: 'Male',
+                    label: tr.male,
                     style: ButtonStyle(
                       foregroundColor: WidgetStatePropertyAll(AppColors.textPrimary),
                     ),
                   ),
                   DropdownMenuEntry<String>(
                     value: 'FEMALE',
-                    label: 'Female',
+                    label: tr.female,
                     style: ButtonStyle(
                       foregroundColor: WidgetStatePropertyAll(AppColors.textPrimary),
                     ),
                   ),
                   DropdownMenuEntry<String>(
                     value: 'OTHER',
-                    label: 'Other',
+                    label: tr.other,
                     style: ButtonStyle(
                       foregroundColor: WidgetStatePropertyAll(AppColors.textPrimary),
                     ),
                   ),
                   DropdownMenuEntry<String>(
                     value: 'PREFER_NOT_TO_SAY',
-                    label: 'Prefer not to say',
+                    label: tr.preferNotToSay,
                     style: ButtonStyle(
                       foregroundColor: WidgetStatePropertyAll(AppColors.textPrimary),
                     ),

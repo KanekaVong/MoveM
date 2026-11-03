@@ -12,6 +12,7 @@ import 'task_activity_feed_screen.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TaskDetailScreen extends StatelessWidget {
   final String activityId;
@@ -64,7 +65,7 @@ class TaskDetailScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'DEADLINES',
+                                      tr.deadlinesLabel,
                                       style: TextStyle(
                                         color: AppColors.textPrimary,
                                         fontSize: 13,
@@ -97,7 +98,7 @@ class TaskDetailScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      task.priority!.toUpperCase(),
+                                      priorityLabel(task.priority).toUpperCase(),
                                       style: TextStyle(
                                         color: _getPriorityColor(task.priority),
                                         fontSize: 12,
@@ -208,7 +209,7 @@ class TaskDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'CHECKLISTS',
+              tr.editTripChecklists,
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 13,
@@ -229,7 +230,7 @@ class TaskDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'REPEAT',
+              tr.repeatLabelTitle,
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 13,
@@ -239,7 +240,7 @@ class TaskDetailScreen extends StatelessWidget {
             ),
             SizedBox(height: 6),
             Text(
-              task.recurringType ?? 'RECURRING',
+              task.recurringType != null ? repeatLabel(task.recurringType).toUpperCase() : tr.repeatRecurring,
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 12,
@@ -258,7 +259,7 @@ class TaskDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              'Your Next Reminder',
+              tr.yourNextReminder,
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 13,
@@ -279,7 +280,7 @@ class TaskDetailScreen extends StatelessWidget {
       sections.add(
         _CollapsibleSection(
           title: Text(
-            'Attachments   (${task.attachments!.length})',
+            tr.attachmentsCount(task.attachments!.length),
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 13,
@@ -301,7 +302,7 @@ class TaskDetailScreen extends StatelessWidget {
       ),
       child: _CollapsibleSection(
         title: Text(
-          hasLabels ? 'LABEL' : 'DETAILS',
+          hasLabels ? tr.labelTitle : tr.detailsTitle,
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 13,
@@ -456,7 +457,7 @@ class TaskDetailScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Collaborators   (${taskCollaborators.length})',
+          tr.collaboratorsCount(taskCollaborators.length),
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 13,
@@ -511,7 +512,7 @@ class TaskDetailScreen extends StatelessWidget {
 
     for (final attachment in task.attachments!) {
       String url = '';
-        String fileName = 'Attachment';
+        String fileName = tr.attachment;
         if (attachment is Map) {
           url = attachment['url']?.toString() ?? '';
           final orig = attachment['originalFileName'] ?? attachment['fileName'];
@@ -522,7 +523,7 @@ class TaskDetailScreen extends StatelessWidget {
           url = attachment.toString();
           fileName = url.split('/').last;
         }
-        if (fileName.isEmpty) fileName = 'Attachment';
+        if (fileName.isEmpty) fileName = tr.attachment;
 
         final bool hasValidUrl = url.isNotEmpty &&
             (url.startsWith('http://') || url.startsWith('https://'));
@@ -607,41 +608,18 @@ class TaskDetailScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
       child: AppButton(
-        label: isCompleted ? 'Completed' : (isOverdue ? 'Deadline Passed' : 'Mark as Complete'),
+        label: isCompleted ? tr.taskStatusCompleted : (isOverdue ? tr.deadlinePassed : tr.markAsComplete),
         onPressed: isCompleted || isOverdue ? null : () => controller.markAsComplete(),
       ),
     );
   }
 
-  String _formatDayMonth(DateTime date) {
-    String day = DateFormat('d').format(date);
-    String suffix = 'th';
-    if (day.endsWith('1') && !day.endsWith('11')) {
-      suffix = 'st';
-    } else if (day.endsWith('2') && !day.endsWith('12')) {
-      suffix = 'nd';
-    } else if (day.endsWith('3') && !day.endsWith('13')) {
-      suffix = 'rd';
-    }
-    String paddedDay = day.padLeft(2, '0');
-    return '$paddedDay$suffix ${DateFormat('MMMM').format(date)}';
-  }
+  String _formatDayMonth(DateTime date) => formatDayMonth(date, padDay: true);
 
   String _formatDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return 'Not set';
+    if (dateStr == null || dateStr.isEmpty) return tr.notSet;
     try {
-      final date = DateTime.parse(dateStr).toLocal();
-      String day = DateFormat('d').format(date);
-      String suffix = 'th';
-      if (day.endsWith('1') && !day.endsWith('11')) {
-        suffix = 'st';
-      } else if (day.endsWith('2') && !day.endsWith('12')) {
-        suffix = 'nd';
-      } else if (day.endsWith('3') && !day.endsWith('13')) {
-        suffix = 'rd';
-      }
-
-      return '$day$suffix ${DateFormat('MMMM yyyy').format(date)}';
+      return formatDayMonthYear(DateTime.parse(dateStr).toLocal());
     } catch (_) {
       return dateStr;
     }

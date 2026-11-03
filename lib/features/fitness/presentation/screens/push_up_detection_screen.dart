@@ -10,6 +10,7 @@ import '../../data/models/solo_challenge_model.dart';
 import '../controllers/push_up_detector_controller.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/camera_pose_painter.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class PushUpDetectionScreen extends StatelessWidget {
   final SoloChallengeModel challenge;
@@ -139,8 +140,8 @@ class PushUpDetectionScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const Text(
-                                'REPS',
+                              Text(
+                                tr.repsLabel,
                                 style: TextStyle(
                                   color: Color(0xFF0A1E3F),
                                   fontSize: 16,
@@ -289,8 +290,8 @@ class PushUpDetectionScreen extends StatelessWidget {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Text(
-                                        'SET',
+                                      Text(
+                                        tr.setLabel,
                                         style: TextStyle(
                                           color: Colors.white70,
                                           fontSize: 12,
@@ -322,8 +323,8 @@ class PushUpDetectionScreen extends StatelessWidget {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Text(
-                                        'DURATION',
+                                      Text(
+                                        tr.tripStepDuration,
                                         style: TextStyle(
                                           color: Colors.white70,
                                           fontSize: 12,
@@ -390,8 +391,8 @@ class PushUpDetectionScreen extends StatelessWidget {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Text(
-                                        'GOAL',
+                                      Text(
+                                        tr.goalCaps,
                                         style: TextStyle(
                                           color: Colors.white70,
                                           fontSize: 12,
@@ -416,7 +417,7 @@ class PushUpDetectionScreen extends StatelessWidget {
 
                             const SizedBox(height: 14),
                             AppButton.danger(
-                              label: 'End',
+                              label: tr.endAction,
                               icon: Icons.stop_rounded,
                               onPressed: () => controller.finishWorkout(),
                               height: 48,
@@ -481,8 +482,8 @@ class PushUpDetectionScreen extends StatelessWidget {
           side: const BorderSide(color: Color(0xFF38BDF8), width: 1.2),
         ),
         title: Text(AppLocalizations.of(context)?.endWorkout ?? 'End Workout?', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: const Text(
-          'Would you like to stop this session and see your summary?',
+        content: Text(
+          tr.endSessionBody,
           style: TextStyle(color: Colors.white70),
         ),
         actions: [
@@ -498,7 +499,7 @@ class PushUpDetectionScreen extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: AppButton(
-                  label: 'View Summary',
+                  label: tr.viewSummary,
                   onPressed: () {
                     Get.back();
                     controller.finishWorkout();

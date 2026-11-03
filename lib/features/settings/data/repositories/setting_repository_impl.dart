@@ -10,6 +10,7 @@ import '../dto/request/update_profile_request.dart';
 import '../services/setting_service.dart';
 import '../../../auth/data/dto/response/user_response.dart';
 import '../../../auth/data/dto/response/auth_response.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class SettingRepositoryImpl implements SettingRepository {
   final SettingService settingService;
@@ -53,7 +54,7 @@ class SettingRepositoryImpl implements SettingRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid update profile response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -82,7 +83,7 @@ class SettingRepositoryImpl implements SettingRepository {
       return ApiError(
         ApiException(
           message:
-          'Invalid profile picture response from server.',
+          tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -108,7 +109,7 @@ class SettingRepositoryImpl implements SettingRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid profile picture response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -131,7 +132,7 @@ class SettingRepositoryImpl implements SettingRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid unlink phone response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -158,7 +159,7 @@ class SettingRepositoryImpl implements SettingRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid email change response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -181,7 +182,7 @@ class SettingRepositoryImpl implements SettingRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid email verification response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -206,7 +207,7 @@ class SettingRepositoryImpl implements SettingRepository {
 
       return ApiError(
         ApiException(
-          message: 'Invalid resend code response from server.',
+          message: tr.serverBadResponse,
         ),
       );
     } on DioException catch (e) {
@@ -247,7 +248,7 @@ class SettingRepositoryImpl implements SettingRepository {
       final response = await settingService.getCurrentUser();
       final user = _parseUserResponse(response.data);
       if (user != null) return ApiSuccess(user);
-      return ApiError(ApiException(message: 'Invalid get current user response from server.'));
+      return ApiError(ApiException(message: tr.serverBadResponse));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } catch (e) {

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:movem/shared/widgets/app_button.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class RegionSelectionScreen extends StatefulWidget {
   final String? currentRegion;
@@ -307,7 +308,7 @@ class _RegionSelectionScreenState
           ? const Color(0xFF0F172A)
           : const Color(0xFFF8FAFC),
       appBar: TopToolBar(
-        title: 'Region',
+        title: tr.region,
         backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
         foregroundColor: isDark ? Colors.white : const Color(0xFF0F172A),
         onBack: () => Navigator.of(context).pop(),
@@ -332,7 +333,7 @@ class _RegionSelectionScreenState
             CrossAxisAlignment.start,
             children: [
               Text(
-                'Choose your region',
+                tr.chooseRegion,
                 style: TextStyle(
                   color: _primaryTextColor(context),
                   fontSize: 24,
@@ -343,7 +344,7 @@ class _RegionSelectionScreenState
               const SizedBox(height: 8),
 
               Text(
-                'Select your country and province, state, or region.',
+                tr.chooseRegionSub,
                 style: TextStyle(
                   color: _secondaryTextColor(context),
                   fontSize: 13,
@@ -369,7 +370,7 @@ class _RegionSelectionScreenState
                   CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Country',
+                      tr.country,
                       style: TextStyle(
                         color: _primaryTextColor(context),
                         fontSize: 13,
@@ -381,10 +382,10 @@ class _RegionSelectionScreenState
 
                     _buildPicker<String>(
                       context: context,
-                      hint: 'Select country',
+                      hint: tr.selectCountry,
                       items: _countryNames,
                       selectedItem: _selectedCountry,
-                      searchHint: 'Search country...',
+                      searchHint: tr.searchCountry,
                       enabled: true,
                       itemAsString: (country) =>
                           _countryDisplayName(country),
@@ -404,7 +405,7 @@ class _RegionSelectionScreenState
                     const SizedBox(height: 20),
 
                     Text(
-                      'Region / State / Province',
+                      tr.regionStateProvince,
                       style: TextStyle(
                         color: _primaryTextColor(context),
                         fontSize: 13,
@@ -416,10 +417,10 @@ class _RegionSelectionScreenState
 
                     _buildPicker<String>(
                       context: context,
-                      hint: 'Select region',
+                      hint: tr.selectRegionLower,
                       items: _regionNames,
                       selectedItem: _selectedRegion,
-                      searchHint: 'Search region...',
+                      searchHint: tr.searchRegion,
                       enabled: _selectedCountry != null &&
                           _regionNames.isNotEmpty,
                       itemAsString: (region) => region,
@@ -436,7 +437,7 @@ class _RegionSelectionScreenState
               const Spacer(),
 
               AppButton(
-                label: 'Save',
+                label: tr.save,
                 onPressed: _selectedRegion == null ||
                     _selectedRegion!
                         .trim()

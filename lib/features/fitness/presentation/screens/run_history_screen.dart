@@ -11,6 +11,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class RunHistoryScreen extends StatelessWidget {
   const RunHistoryScreen({super.key});
@@ -90,11 +91,11 @@ class _RemoteWorkoutTile extends StatelessWidget {
           ),
         ),
         title: Text(
-          workout.workoutType.replaceAll('_', ' '),
+          workoutTypeLabel(workout.workoutType),
           style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
         ),
         subtitle: Text(
-          '$dateStr\n${workout.distance > 0 ? '${workout.distance.toStringAsFixed(2)} km • ' : ''}$timeFormatted • ${workout.caloriesBurned.toInt()} kcal',
+          '$dateStr\n${workout.distance > 0 ? '${tr.kmValueLower(workout.distance.toStringAsFixed(2))} • ' : ''}$timeFormatted • ${tr.kcalValue(workout.caloriesBurned.toInt())}',
           style: TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.3),
         ),
         trailing: Container(
@@ -143,7 +144,7 @@ class _LocalSessionTile extends StatelessWidget {
           style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
         ),
         subtitle: Text(
-          '${distanceKm.toStringAsFixed(2)} km • ${PaceCalculator.formatPace(avgPace)}',
+          '${tr.kmValueLower(distanceKm.toStringAsFixed(2))} • ${PaceCalculator.formatPace(avgPace)}',
           style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
         trailing: Icon(Icons.chevron_right, color: AppColors.textCaption),

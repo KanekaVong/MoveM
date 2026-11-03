@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 enum SquatFormQuality {
   excellent,
@@ -30,11 +31,11 @@ class SquatRepData {
   String get formQualityLabel {
     switch (formQuality) {
       case SquatFormQuality.excellent:
-        return 'Deep Squat';
+        return tr.formDeepSquat;
       case SquatFormQuality.good:
-        return 'Good Depth';
+        return tr.formGoodDepth;
       case SquatFormQuality.shallow:
-        return 'Shallow';
+        return tr.formShallow;
     }
   }
 

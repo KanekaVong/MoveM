@@ -11,6 +11,7 @@ import '../controllers/setting_controller.dart';
 import '../models/contact_type.dart';
 import 'package:movem/core/utils/app_snack.dart';
 import 'package:movem/l10n/app_localizations.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class VerifyContactScreen extends StatefulWidget {
   final ContactType type;
@@ -91,7 +92,7 @@ class _VerifyContactScreenState extends State<VerifyContactScreen> {
     return Scaffold(
       backgroundColor: pageColor,
       appBar: TopToolBar(
-        title: 'Your Profile',
+        title: tr.yourProfile,
         backgroundColor: pageColor,
         foregroundColor: fg,
         onBack: () => Navigator.of(context).pop(),
@@ -132,7 +133,7 @@ class _VerifyContactScreenState extends State<VerifyContactScreen> {
 
               Center(
                 child: Text(
-                  'Verify email',
+                  tr.verifyEmail,
                   style: TextStyle(
                     color: fg,
                     fontSize: 22,
@@ -145,7 +146,7 @@ class _VerifyContactScreenState extends State<VerifyContactScreen> {
 
               Center(
                 child: Text(
-                  'We have sent a verification code to your registered email address to confirm your identity. Please check your inbox and enter the code.',
+                  tr.verifyEmailSub,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: hintColor,
@@ -261,8 +262,8 @@ class _VerifyContactScreenState extends State<VerifyContactScreen> {
                   ),
                   label: Text(
                     _resendSeconds > 0
-                        ? 'Resend code in ${_resendSeconds}s'
-                        : 'Resend code',
+                        ? tr.resendCodeInSeconds(_resendSeconds)
+                        : tr.resendCodeLower,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: _resendSeconds > 0
@@ -276,15 +277,15 @@ class _VerifyContactScreenState extends State<VerifyContactScreen> {
               const Spacer(),
 
               AppButton(
-                label: 'Change',
+                label: tr.change,
                 onPressed: () async {
                   final code = _codeController.text.trim();
                   final failedTitle = AppLocalizations.of(context)?.verificationFailed ?? 'Verification Failed';
 
                   if (code.isEmpty) {
                     AppSnack.show(
-                      'Required',
-                      'Please enter the 6-digit verification code',
+                      tr.requiredField,
+                      tr.pleaseEnter6DigitCode,
                       backgroundColor: Colors.redAccent,
                       colorText: Colors.white,
                       snackPosition: SnackPosition.BOTTOM,

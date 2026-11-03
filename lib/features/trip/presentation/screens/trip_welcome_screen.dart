@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class TripWelcomeScreen extends StatefulWidget {
   final VoidCallback onCompleted;
@@ -75,9 +76,9 @@ class _TripWelcomeScreenState extends State<TripWelcomeScreen> {
                     alignment: Alignment.centerRight,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
-                      children: const [
+                      children: [
                         Text(
-                          'EXPLORE\nTHE WORLD\nWITH US',
+                          tr.tripWelcomeTitle,
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             color: Colors.white,
@@ -89,7 +90,7 @@ class _TripWelcomeScreenState extends State<TripWelcomeScreen> {
                         ),
                         SizedBox(height: 12),
                         Text(
-                          'Move with purpose, Always',
+                          tr.tripWelcomeSub,
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             color: Colors.white70,
@@ -122,7 +123,7 @@ class _TripWelcomeScreenState extends State<TripWelcomeScreen> {
                             children: [
                               Center(
                                 child: Text(
-                                  "Slide to explore",
+                                  tr.slideToExplore,
                                   style: TextStyle(
                                     color: Colors.black.withOpacity(0.35),
                                     fontWeight: FontWeight.bold,
@@ -171,9 +172,9 @@ class _TripWelcomeScreenState extends State<TripWelcomeScreen> {
                                         ),
                                       ],
                                     ),
-                                    child: const Center(
+                                    child: Center(
                                       child: Text(
-                                        'GO',
+                                        tr.goLabel,
                                         style: TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.w900,

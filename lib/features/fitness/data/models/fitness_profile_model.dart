@@ -1,3 +1,5 @@
+import 'package:movem/core/utils/l10n.dart';
+
 class FitnessGoalModel {
   final int id;
   final int userId;
@@ -61,16 +63,16 @@ class FitnessGoalModel {
     switch (workoutLevel.toUpperCase()) {
       case 'NOVICE_LEVEL':
       case 'NOVICE':
-        return 'Beginner';
+        return tr.levelBeginner;
       case 'INTERMEDIATE_LEVEL':
       case 'INTERMEDIATE':
-        return 'Intermediate';
+        return tr.levelIntermediate;
       case 'ADVANCED_LEVEL':
       case 'ADVANCED':
-        return 'Advanced';
+        return tr.levelAdvanced;
       case 'ELITE_LEVEL':
       case 'ELITE':
-        return 'Elite';
+        return tr.levelElite;
       default:
         if (workoutLevel.isNotEmpty) {
           return workoutLevel
@@ -80,7 +82,7 @@ class FitnessGoalModel {
               .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}' : '')
               .join(' ');
         }
-        return 'Beginner';
+        return tr.levelBeginner;
     }
   }
 

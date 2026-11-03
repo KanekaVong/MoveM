@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/network/api_result.dart';
@@ -11,6 +12,7 @@ import '../../data/repositories/comment_repository_impl.dart';
 import '../../data/services/comment_service.dart';
 import '../../domain/repositories/comment_repository.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class CommentController extends BaseController {
   final String activityId;
@@ -100,7 +102,7 @@ class CommentController extends BaseController {
       state.value = ViewState.error;
       errorMessage.value = result.exception.message;
       AppSnack.show(
-        'Error',
+        tr.errorTitle,
         result.exception.message,
         backgroundColor: Colors.red.withOpacity(0.85),
         colorText: Colors.white,
@@ -125,7 +127,7 @@ class CommentController extends BaseController {
     } else if (result is ApiError<CommentResponse>) {
       textController.text = text;
       AppSnack.show(
-        'Failed to Send',
+        tr.failedToSend,
         result.exception.message,
         backgroundColor: Colors.red.withOpacity(0.85),
         colorText: Colors.white,
@@ -156,15 +158,15 @@ class CommentController extends BaseController {
       }
       cancelEditing();
       AppSnack.show(
-        'Updated',
-        'Comment updated successfully',
+        tr.updatedTitle,
+        tr.commentUpdated,
         backgroundColor: Colors.green.withOpacity(0.85),
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
     } else if (result is ApiError<CommentResponse>) {
       AppSnack.show(
-        'Update Failed',
+        tr.updateFailed,
         result.exception.message,
         backgroundColor: Colors.red.withOpacity(0.85),
         colorText: Colors.white,
@@ -181,15 +183,15 @@ class CommentController extends BaseController {
     if (result is ApiSuccess<void>) {
       comments.removeWhere((c) => c.id == commentId);
       AppSnack.show(
-        'Deleted',
-        'Comment deleted successfully',
+        tr.taskStatusDeleted,
+        tr.commentDeleted,
         backgroundColor: AppColors.textPrimary,
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
     } else if (result is ApiError<void>) {
       AppSnack.show(
-        'Error',
+        tr.errorTitle,
         result.exception.message,
         backgroundColor: Colors.red.withOpacity(0.85),
         colorText: Colors.white,
@@ -227,13 +229,13 @@ class CommentController extends BaseController {
       final date = DateTime.parse(dateStr).toLocal();
       final now = DateTime.now();
       if (date.year == now.year && date.month == now.month && date.day == now.day) {
-        return 'Today';
+        return tr.today;
       }
       final yesterday = now.subtract(const Duration(days: 1));
       if (date.year == yesterday.year && date.month == yesterday.month && date.day == yesterday.day) {
-        return 'Yesterday';
+        return tr.yesterday;
       }
-      return '${_getMonthName(date.month)} ${date.day}, ${date.year}';
+      return DateFormat('MMMM d, y').format(date);
     } catch (_) {
       return dateStr;
     }
@@ -242,23 +244,10 @@ class CommentController extends BaseController {
   String formatTime(String dateStr) {
     try {
       final date = DateTime.parse(dateStr).toLocal();
-      final hour = date.hour == 0 ? 12 : (date.hour > 12 ? date.hour - 12 : date.hour);
-      final minute = date.minute.toString().padLeft(2, '0');
-      final period = date.hour >= 12 ? 'PM' : 'AM';
-      return '$hour:$minute $period';
+      return DateFormat(timePattern('h:mm a')).format(date);
     } catch (_) {
       return dateStr;
     }
   }
 
-  String _getMonthName(int month) {
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    if (month >= 1 && month <= 12) {
-      return months[month - 1];
-    }
-    return '';
-  }
 }

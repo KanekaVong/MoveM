@@ -15,6 +15,7 @@ import '../../data/services/task_service.dart';
 import '../../data/repositories/task_repository_impl.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class CreateTaskController extends BaseController {
   AppLocalizations? get _l10n {
@@ -229,15 +230,15 @@ class CreateTaskController extends BaseController {
   }
 
   String get formattedDeadlineDate {
-    if (selectedDate.value == null) return 'Not set';
+    if (selectedDate.value == null) return tr.notSet;
     return DateFormat('d MMMM yyyy').format(selectedDate.value!);
   }
 
   String get formattedDeadlineTime {
-    if (selectedTime.value == null) return 'Not set';
+    if (selectedTime.value == null) return tr.notSet;
     final now = DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, selectedTime.value!.hour, selectedTime.value!.minute);
-    return DateFormat('hh:mm a').format(dt);
+    return DateFormat(timePattern('hh:mm a')).format(dt);
   }
 
   void addChecklistItem() {

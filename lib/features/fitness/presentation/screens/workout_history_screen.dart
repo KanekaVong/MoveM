@@ -9,6 +9,7 @@ import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class WorkoutHistoryScreen extends StatelessWidget {
   const WorkoutHistoryScreen({super.key});
@@ -87,7 +88,7 @@ class _WorkoutHistoryCard extends StatelessWidget {
     final accent = _workoutColor(item.workoutType);
     final status = _statusLabel(item.status);
     final statusColor = _statusColor(item.status);
-    final date = DateFormat('d MMM yyyy • h:mm a').format(item.startedAt.toLocal());
+    final date = DateFormat(timePattern('d MMM yyyy • h:mm a')).format(item.startedAt.toLocal());
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -161,7 +162,7 @@ class _WorkoutHistoryCard extends StatelessWidget {
               _stat(Icons.timer_outlined, _formatDuration(item.durationSeconds)),
               if (item.distance > 0)
                 _stat(Icons.route_outlined, _formatDistance(item.distance)),
-              _stat(Icons.local_fire_department_rounded, '${item.caloriesBurned.round()}Cals'),
+              _stat(Icons.local_fire_department_rounded, tr.caloriesValue(item.caloriesBurned.round())),
             ],
           ),
         ],
@@ -217,13 +218,13 @@ class _WorkoutHistoryCard extends StatelessWidget {
       case 'COMPLETED':
       case 'COMPLETE':
       case 'FINISHED':
-        return 'Completed';
+        return tr.taskStatusCompleted;
       case 'IN_PROGRESS':
-        return 'In progress';
+        return tr.taskStatusInProgress;
       case 'PAUSED':
-        return 'Paused';
+        return tr.statusPaused;
       case 'NOT_STARTED':
-        return 'Not started';
+        return tr.statusNotStarted;
       default:
         return status.replaceAll('_', ' ');
     }
@@ -245,19 +246,19 @@ class _WorkoutHistoryCard extends StatelessWidget {
   }
 
   String _formatDuration(int seconds) {
-    if (seconds <= 0) return '0Mins';
+    if (seconds <= 0) return tr.durMins(0);
     final hours = seconds ~/ 3600;
     final mins = ((seconds % 3600) / 60).round();
     if (hours > 0) {
-      if (mins > 0) return '${hours}Hr ${mins}Mins';
-      return '${hours}Hr';
+      if (mins > 0) return tr.durHoursMins(hours, mins);
+      return tr.durHours(hours);
     }
-    if (mins > 0) return '${mins}Mins';
-    return '${seconds}s';
+    if (mins > 0) return tr.durMins(mins);
+    return tr.durSecs(seconds);
   }
 
   String _formatDistance(double distance) {
-    if (distance >= 1) return '${distance.toStringAsFixed(distance == distance.roundToDouble() ? 0 : 1)}KM';
-    return '${distance.toStringAsFixed(2)}KM';
+    if (distance >= 1) return tr.unitKmValue(distance.toStringAsFixed(distance == distance.roundToDouble() ? 0 : 1));
+    return tr.unitKmValue(distance.toStringAsFixed(2));
   }
 }

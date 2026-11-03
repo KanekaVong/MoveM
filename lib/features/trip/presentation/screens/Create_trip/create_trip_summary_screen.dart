@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:movem/l10n/app_localizations.dart';
@@ -6,6 +7,7 @@ import 'package:movem/core/routes/app_routes.dart';
 import 'package:movem/features/main_nav/presentation/controllers/main_nav_controller.dart';
 import 'package:movem/features/trip/presentation/controllers/create_trip_controller.dart';
 import 'package:movem/features/trip/presentation/widgets/create_trip_component.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class CreateTripSummaryScreen extends StatelessWidget {
   const CreateTripSummaryScreen({super.key});
@@ -29,21 +31,15 @@ class CreateTripSummaryScreen extends StatelessWidget {
   }
 
   String _formatDate(DateTime? date) {
-    if (date == null) return 'Not set';
-
-    const months = [
-      '', 'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December',
-    ];
-
-    return '${date.day} ${months[date.month]} ${date.year}';
+    if (date == null) return tr.notSet;
+    return DateFormat('d MMMM y').format(date);
   }
 
   String _formatDateRange() {
     final draft = controller.currentDraft;
 
     if (draft.startDate == null) {
-      return 'Dates not set';
+      return tr.editTripDatesNotSet;
     }
 
     if (draft.endDate == null) {

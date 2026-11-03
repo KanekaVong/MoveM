@@ -7,6 +7,7 @@ import '../controllers/setup_goal_controller.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class SetupGoalScreen extends StatelessWidget {
   const SetupGoalScreen({super.key});
@@ -86,7 +87,7 @@ class SetupGoalScreen extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(24.0),
                           child: AppButton(
-                            label: step == 3 ? 'Set Goal' : 'Next',
+                            label: step == 3 ? tr.setGoal : tr.next,
                             isLoading: controller.isLoading,
                             onPressed: controller.nextStep,
                           ),

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../../data/models/workout_model.dart';
 import '../../data/repositories/fitness_workout_repository.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class WorkoutHistoryController extends GetxController {
   final FitnessWorkoutRepository _repository = FitnessWorkoutRepository();
@@ -26,7 +27,7 @@ class WorkoutHistoryController extends GetxController {
       items.assignAll(list);
     } else {
       items.clear();
-      errorMessage.value = result.exception?.message ?? 'Failed to load workout history';
+      errorMessage.value = result.exception?.message ?? tr.failedLoadWorkoutHistory;
     }
 
     isLoading.value = false;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../models/contact_type.dart';
 import '../../../../shared/widgets/app_button.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class ContactInfoOverlay extends StatelessWidget {
   final ContactType type;
@@ -48,7 +49,7 @@ class ContactInfoOverlay extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              isEmail ? 'Your email address:' : 'Your phone number:',
+              isEmail ? tr.yourEmailAddress : tr.yourPhoneNumber,
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 16,
@@ -66,8 +67,8 @@ class ContactInfoOverlay extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               isEmail
-                  ? 'Your email address is linked to your account and remains private. If updated, your previous address may be kept for account recovery.'
-                  : 'Your phone number is linked to your account and remains private. If updated, your previous number may be kept for account recovery.',
+                  ? tr.emailPrivacyNote
+                  : tr.phonePrivacyNote,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.textCaption,
@@ -76,7 +77,7 @@ class ContactInfoOverlay extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             AppButton(
-              label: isEmail ? 'Change email' : 'Change phone number',
+              label: isEmail ? tr.changeEmail : tr.changePhoneNumber,
               onPressed: onChange,
             ),
           ],

@@ -12,6 +12,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
+import 'package:movem/core/utils/l10n.dart';
 
 class HexagonClipper extends CustomClipper<Path> {
   @override
@@ -322,7 +323,7 @@ class _ClubCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        '${club.memberCount} Members',
+                        tr.membersCount(club.memberCount),
                         style: TextStyle(color: muted, fontSize: 12),
                       ),
                       const SizedBox(width: 4),
@@ -353,7 +354,7 @@ class _MovemBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DecoratedBox(
+    return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -382,7 +383,7 @@ class _MovemBanner extends StatelessWidget {
           ),
           SizedBox(height: 4),
           Text(
-            'MOVE MORE . BECOME MORE',
+            tr.clubSloganSpaced,
             style: TextStyle(
               color: Color(0xFF9A9A9A),
               fontSize: 6,
