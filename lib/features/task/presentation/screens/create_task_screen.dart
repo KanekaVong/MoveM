@@ -37,7 +37,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
                       l10n?.descriptionLabel ?? 'DESCRIPTION',
                       l10n?.descriptionHint ?? 'Write down a note',
                       controller.descriptionController,
-                      maxLines: 3,
+                      maxLines: 5,
                     ),
                     SizedBox(height: 32),
                     _buildPropertiesCard(context),
@@ -79,7 +79,10 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
         SizedBox(height: 10),
         TextField(
           controller: textController,
+          // Start at one line and grow up to maxLines as the user types.
+          minLines: 1,
           maxLines: maxLines,
+          keyboardType: maxLines > 1 ? TextInputType.multiline : TextInputType.text,
           style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
           decoration: InputDecoration(
             hintText: hint,
@@ -263,14 +266,14 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
 
   Widget _buildRepeatDropdown() {
     return PopupMenuButton<String>(
-      onSelected: (value) => controller.repeatFrequency.value = value,
+      onSelected: (value) => controller.repeatFrequency.value = value == 'None' ? null : value,
       offset: const Offset(0, 40),
       color: AppColors.cardSurface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: AppColors.borderLight),
       ),
-      itemBuilder: (context) => ['Daily', 'Weekly', 'Monthly', 'Yearly']
+      itemBuilder: (context) => ['None', 'Daily', 'Weekly', 'Monthly', 'Yearly']
           .map((choice) => PopupMenuItem<String>(
                 value: choice,
                 child: Column(
@@ -300,7 +303,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Obx(() => Text(
-                controller.repeatFrequency.value ?? '',
+                controller.repeatFrequency.value ?? 'None',
                 style: TextStyle(
                   color: AppColors.textCaption,
                   fontSize: 13,
@@ -325,7 +328,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: AppColors.borderLight),
       ),
-      itemBuilder: (context) => ['URGENT', 'HIGH', 'NORMAL', 'LOW']
+      itemBuilder: (context) => ['URGENT', 'HIGH', 'MEDIUM', 'LOW']
           .map((choice) => PopupMenuItem<String>(
                 value: choice,
                 child: Text(choice, style: TextStyle(color: AppColors.textPrimary)),
@@ -352,7 +355,7 @@ class CreateTaskScreen extends GetView<CreateTaskController> {
           Obx(() {
             Color pillColor = AppColors.textCaption;
             if (controller.priority.value == 'LOW') pillColor = const Color(0xFF22C55E);
-            if (controller.priority.value == 'NORMAL') pillColor = const Color(0xFFF59E0B);
+            if (controller.priority.value == 'MEDIUM') pillColor = const Color(0xFFF59E0B);
             if (controller.priority.value == 'HIGH') pillColor = const Color(0xFFEF4444);
             if (controller.priority.value == 'URGENT') pillColor = const Color(0xFFDC2626);
 

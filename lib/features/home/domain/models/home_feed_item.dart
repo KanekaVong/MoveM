@@ -1,3 +1,5 @@
+import '../../../../core/utils/app_images.dart';
+
 class FeedRoutePoint {
   final double latitude;
   final double longitude;
@@ -57,6 +59,16 @@ class HomeFeedItem {
     this.challengeName,
     this.routePoints = const [],
   });
+
+  /// Author name for the card: "You" on the viewer's own posts.
+  String get displayName => myPost ? 'You' : userName;
+
+  /// Image shown when the post has no uploaded attachment.
+  String get fallbackImage {
+    if (workoutType.contains('PUSH')) return AppImages.pushUpCard;
+    if (workoutType.contains('SQUAT')) return AppImages.squatsActivity;
+    return AppImages.taskScreenBackground;
+  }
 
   HomeFeedItem copyWith({
     String? id,

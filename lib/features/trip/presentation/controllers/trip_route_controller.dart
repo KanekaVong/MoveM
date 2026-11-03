@@ -53,6 +53,8 @@ class TripRouteController extends BaseController {
 
           await _getCurrentLocation();
         },
+        // The route screen already shows its own map loading state.
+        showLoading: false,
       );
     } finally {
       isRouteLoading.value = false;

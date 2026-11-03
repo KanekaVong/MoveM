@@ -120,7 +120,7 @@ class EditTaskController extends BaseController {
     }
 
     isRecurring.value = initialTask.recurring;
-    repeatFrequency.value = initialTask.recurringType ?? 'DAILY';
+    repeatFrequency.value = initialTask.recurring ? initialTask.recurringType : null;
     remindersEnabled.value = (initialTask.reminders != null && initialTask.reminders!.isNotEmpty);
 
     if (initialTask.checklists != null && initialTask.checklists!.isNotEmpty) {
@@ -492,8 +492,8 @@ class EditTaskController extends BaseController {
   }
 
   void cycleRepeat() {
-    const list = ['DAILY', 'WEEKLY', 'MONTHLY', 'NONE'];
-    final current = repeatFrequency.value?.toUpperCase() ?? 'DAILY';
+    const list = ['NONE', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'];
+    final current = repeatFrequency.value?.toUpperCase() ?? 'NONE';
     final idx = list.indexOf(current);
     final next = list[(idx + 1) % list.length];
     if (next == 'NONE') {

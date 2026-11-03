@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/trip_invitation_controller.dart';
 import '../../../groups/data/dto/response/group_invite_response.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class TripInvitationsScreen extends StatefulWidget {
   const TripInvitationsScreen({super.key});
@@ -69,13 +70,12 @@ class _TripInvitationsScreenState
         ),
       ),
       body: Obx(() {
-        if (controller.isLoading) {
-          return Center(
-            child: CircularProgressIndicator(
-              color: isDark
-                  ? Colors.white
-                  : AppColors.commentBarBg,
-            ),
+        if (controller.isLoading && controller.invitations.isEmpty) {
+          return SkeletonListView.tiles(
+            itemCount: 4,
+            trailing: true,
+            dark: isDark,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           );
         }
 

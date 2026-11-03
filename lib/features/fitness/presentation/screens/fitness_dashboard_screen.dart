@@ -13,6 +13,7 @@ import 'workout_history_screen.dart';
 import '../controllers/workout_history_controller.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/no_data_component.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class FitnessDashboardScreen extends StatelessWidget {
   final FitnessProfileController controller;
@@ -82,7 +83,13 @@ class FitnessDashboardScreen extends StatelessWidget {
 
                 Obx(() {
                   if (controller.isLoadingChallenges.value && controller.soloChallenges.isEmpty) {
-                    return Center(child: CircularProgressIndicator(color: Colors.blueAccent));
+                    return const Column(
+                      children: [
+                        SkeletonMediaCard(mediaFirst: true, mediaSize: 92, lines: 2),
+                        SizedBox(height: 12),
+                        SkeletonMediaCard(mediaFirst: true, mediaSize: 92, lines: 2),
+                      ],
+                    );
                   }
                   if (controller.soloChallenges.isEmpty) {
                     return NoDataComponent(
@@ -200,6 +207,14 @@ class FitnessDashboardScreen extends StatelessWidget {
                   SizedBox(height: 4),
                   Obx(() {
                     final stats = controller.statistics.value;
+                    if (stats == null && controller.isLoadingStatistics.value) {
+                      return const AppShimmer(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4),
+                          child: SkeletonBox(width: 96, height: 26),
+                        ),
+                      );
+                    }
                     final calories = stats != null && stats.caloriesToday > 0
                         ? stats.caloriesToday.toInt()
                         : (stats != null && stats.totalCalories > 0

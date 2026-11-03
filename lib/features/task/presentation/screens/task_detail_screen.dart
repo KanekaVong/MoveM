@@ -11,6 +11,7 @@ import 'task_comment_screen.dart';
 import 'task_activity_feed_screen.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class TaskDetailScreen extends StatelessWidget {
   final String activityId;
@@ -27,9 +28,7 @@ class TaskDetailScreen extends StatelessWidget {
       body: SafeArea(
         child: Obx(() {
               if (controller.isLoading && controller.task.value == null) {
-                return Center(
-                  child: CircularProgressIndicator(color: AppColors.taskBluePrimary),
-                );
+                return const SkeletonDetail();
               }
 
               final task = controller.task.value;
@@ -604,11 +603,12 @@ class TaskDetailScreen extends StatelessWidget {
 
   Widget _buildBottomButton(BuildContext context, TaskResponse task, TaskDetailController controller) {
     final isCompleted = task.status == 'COMPLETE';
+    final isOverdue = !isCompleted && task.isPastDeadline;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
       child: AppButton(
-        label: isCompleted ? 'Completed' : 'Mark as Complete',
-        onPressed: isCompleted ? null : () => controller.markAsComplete(),
+        label: isCompleted ? 'Completed' : (isOverdue ? 'Deadline Passed' : 'Mark as Complete'),
+        onPressed: isCompleted || isOverdue ? null : () => controller.markAsComplete(),
       ),
     );
   }

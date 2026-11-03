@@ -24,6 +24,7 @@ import 'package:movem/features/settings/presentation/controllers/profile_overvie
 import 'package:movem/shared/widgets/auth_image.dart';
 import 'package:movem/shared/widgets/no_data_component.dart';
 import 'package:movem/shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 
 class ProfileScreen extends StatelessWidget {
@@ -567,6 +568,19 @@ class ProfileScreen extends StatelessWidget {
             style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
+          if (overview.isLoading.value && overview.taskStats.value == null && overview.fitness.value == null)
+            const AppShimmer(
+              child: Row(
+                children: [
+                  Expanded(child: SkeletonBox(height: 160, radius: 20)),
+                  SizedBox(width: 12),
+                  Expanded(child: SkeletonBox(height: 160, radius: 20)),
+                  SizedBox(width: 12),
+                  Expanded(child: SkeletonBox(height: 160, radius: 20)),
+                ],
+              ),
+            )
+          else
           Row(
             children: [
               Expanded(
@@ -758,9 +772,19 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           if (overview.isLoading.value && items.isEmpty)
-            const SettingsCard(
-              padding: EdgeInsets.symmetric(vertical: 28),
-              child: Center(child: CircularProgressIndicator(color: Color(0xFF8FB4FF))),
+            const SizedBox(
+              height: 140,
+              child: AppShimmer(
+                child: Row(
+                  children: [
+                    Expanded(child: SkeletonBox(height: 140, radius: 16)),
+                    SizedBox(width: 12),
+                    Expanded(child: SkeletonBox(height: 140, radius: 16)),
+                    SizedBox(width: 12),
+                    Expanded(child: SkeletonBox(height: 140, radius: 16)),
+                  ],
+                ),
+              ),
             )
           else if (items.isEmpty)
             SettingsCard(

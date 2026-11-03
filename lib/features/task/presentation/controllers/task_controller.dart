@@ -14,6 +14,8 @@ class TaskController extends BaseController {
   final NotificationSchedulerService schedulerService = NotificationSchedulerService();
 
   final RxList<TaskResponse> tasks = <TaskResponse>[].obs;
+  // Unfiltered tasks for the progress summary, so filtering the list doesn't change it.
+  final RxList<TaskResponse> allTasks = <TaskResponse>[].obs;
   final RxnString selectedStatus = RxnString(null);
   final RxnString selectedPriority = RxnString(null);
 
@@ -69,9 +71,14 @@ class TaskController extends BaseController {
         apiCall: () => repository.getTasks(
           queryParameters: queryParams.isNotEmpty ? queryParams : null,
         ),
-        onSuccess: (data) {
+        onSuccess: (data) async {
           tasks.value = data;
-          _syncReminders(data);
+          if (!hasActiveFilter) {
+            allTasks.value = data;
+            _syncReminders(data);
+          } else {
+            await _fetchAllTasks();
+          }
         },
         onError: (_) {
           if (tasks.isEmpty) {
@@ -84,6 +91,15 @@ class TaskController extends BaseController {
       if (state.value == ViewState.loading) {
         state.value = ViewState.idle;
       }
+    }
+  }
+
+  Future<void> _fetchAllTasks() async {
+    final result = await repository.getTasks();
+    final data = result.data;
+    if (data != null) {
+      allTasks.value = data;
+      _syncReminders(data);
     }
   }
 
@@ -132,15 +148,15 @@ class TaskController extends BaseController {
   }
 
   int get completedTasksCount {
-    return tasks.where((t) => t.status == 'COMPLETE').length;
+    return allTasks.where((t) => t.status == 'COMPLETE').length;
   }
 
   int get upcomingTasksCount {
-    return tasks.where((t) => t.status != 'COMPLETE' && t.status != 'CANCELLED' && t.deadline != null).length;
+    return allTasks.where((t) => t.status != 'COMPLETE' && t.status != 'CANCELLED' && t.deadline != null).length;
   }
 
   int get ongoingTasksCount {
-    return tasks.where((t) => t.status == 'IN_PROGRESS' || t.status == 'PENDING').length;
+    return allTasks.where((t) => t.status == 'IN_PROGRESS' || t.status == 'PENDING').length;
   }
 
   Future<bool> deleteTask(String activityId) async {
@@ -152,6 +168,7 @@ class TaskController extends BaseController {
     if (index != -1) {
       tasks.removeAt(index);
     }
+    allTasks.removeWhere((t) => t.activityId == activityId);
 
     bool isSuccess = false;
     await executeApi<void>(

@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,19 +16,58 @@ import 'running_tracking_screen.dart';
 import 'solo_challenge_list_screen.dart';
 import '../../../../core/config/google_map_style.dart';
 import '../../../../core/theme/app_colors.dart';
-import 'package:movem/core/utils/app_snack.dart';
+import '../widgets/share_workout.dart';
 
 class RunSummaryScreen extends StatelessWidget {
   final RunSession session;
   final FitnessWorkoutSummaryModel? summary;
   final SoloChallengeModel? challenge;
+  final _RouteMapHandle _mapHandle = _RouteMapHandle();
 
-  const RunSummaryScreen({
+  RunSummaryScreen({
     super.key,
     required this.session,
     this.summary,
     this.challenge,
   });
+
+  /// A run only counts as completed when it reaches the challenge target.
+  bool _isChallengeCompleted({
+    required double distanceKm,
+    required int steps,
+    required Duration duration,
+  }) {
+    final c = challenge;
+    if (c == null || c.targetValue <= 0) return false;
+    switch (c.targetUnit.toUpperCase()) {
+      case 'KM':
+        return distanceKm >= c.targetValue;
+      case 'STEPS':
+        return steps >= c.targetValue;
+      case 'MINUTES':
+        return duration.inMinutes >= c.targetValue;
+      default:
+        return false;
+    }
+  }
+
+  String _progressText({
+    required String distanceStr,
+    required int steps,
+    required Duration duration,
+  }) {
+    final c = challenge!;
+    switch (c.targetUnit.toUpperCase()) {
+      case 'KM':
+        return '$distanceStr / ${c.targetValue}KM';
+      case 'STEPS':
+        return '$steps / ${c.targetValue} steps';
+      case 'MINUTES':
+        return '${duration.inMinutes} / ${c.targetValue} min';
+      default:
+        return '';
+    }
+  }
 
   String _formatDurationText(Duration duration) {
     final totalSecs = duration.inSeconds;
@@ -85,12 +125,19 @@ class RunSummaryScreen extends StatelessWidget {
       heightCm: profile?.height ?? 0,
     );
 
-    final calories = PaceCalculator.caloriesForRun(
-      distanceKm * 1000,
-      weightKg: profile?.weight ?? 0,
-    );
+    final calories = (summary != null && summary!.caloriesBurned > 0)
+        ? summary!.caloriesBurned.round()
+        : PaceCalculator.caloriesForRun(
+            distanceKm * 1000,
+            weightKg: profile?.weight ?? 0,
+          );
 
     final challengeTitle = challenge?.name ?? 'RUNNING SESSION';
+    final isChallengeCompleted = _isChallengeCompleted(
+      distanceKm: distanceKm,
+      steps: steps,
+      duration: duration,
+    );
     final routePoints = session.points
         .where((p) => p.latitude != 0 || p.longitude != 0)
         .toList();
@@ -163,7 +210,7 @@ class RunSummaryScreen extends StatelessWidget {
                             ? CustomPaint(
                                 painter: RoutePolygonPainter(points: session.points),
                               )
-                            : _WorkoutRouteMap(points: routePoints),
+                            : _WorkoutRouteMap(points: routePoints, handle: _mapHandle),
                       ),
 
                       const SizedBox(height: 16),
@@ -242,13 +289,23 @@ class RunSummaryScreen extends StatelessWidget {
                               text: 'CHALLENGE: ${challengeTitle.toUpperCase()} ',
                               style: TextStyle(color: AppColors.textPrimary),
                             ),
-                            const TextSpan(
-                              text: 'COMPLETED 🔥',
-                              style: TextStyle(color: Color(0xFFFFA000)),
+                            TextSpan(
+                              text: isChallengeCompleted ? 'COMPLETED 🔥' : 'FINISHED',
+                              style: TextStyle(
+                                color: isChallengeCompleted ? const Color(0xFFFFA000) : AppColors.textSecondary,
+                              ),
                             ),
                           ],
                         ),
                       ),
+                      if (!isChallengeCompleted && challenge != null && challenge!.targetValue > 0) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          _progressText(distanceStr: distanceStr, steps: steps, duration: duration),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                        ),
+                      ],
 
                       const SizedBox(height: 48),
 
@@ -260,15 +317,10 @@ class RunSummaryScreen extends StatelessWidget {
                             _buildCircleActionButton(
                               icon: Icons.share_outlined,
                               label: 'SHARE',
-                              onTap: () {
-                                AppSnack.show(
-                                  'Share Workout',
-                                  'Sharing $distanceStr running workout details...',
-                                  backgroundColor: AppColors.textPrimary,
-                                  colorText: Colors.white,
-                                  snackPosition: SnackPosition.BOTTOM,
-                                );
-                              },
+                              onTap: () => shareWorkout(
+                                summary?.sessionId,
+                                captureImage: _mapHandle.snapshot,
+                              ),
                             ),
 
                             _buildCircleActionButton(
@@ -538,10 +590,24 @@ class RoutePolygonPainter extends CustomPainter {
       oldDelegate.points.length != points.length;
 }
 
+/// Lets the summary screen snapshot the route map when sharing.
+class _RouteMapHandle {
+  GoogleMapController? controller;
+
+  Future<Uint8List?> snapshot() async {
+    try {
+      return await controller?.takeSnapshot();
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
 class _WorkoutRouteMap extends StatefulWidget {
   final List<TrackPoint> points;
+  final _RouteMapHandle? handle;
 
-  const _WorkoutRouteMap({required this.points});
+  const _WorkoutRouteMap({required this.points, this.handle});
 
   @override
   State<_WorkoutRouteMap> createState() => _WorkoutRouteMapState();
@@ -555,7 +621,14 @@ class _WorkoutRouteMapState extends State<_WorkoutRouteMap> {
       .toList();
 
   @override
+  void didUpdateWidget(covariant _WorkoutRouteMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    widget.handle?.controller = _controller;
+  }
+
+  @override
   void dispose() {
+    if (widget.handle?.controller == _controller) widget.handle?.controller = null;
     _controller?.dispose();
     super.dispose();
   }
@@ -627,6 +700,7 @@ class _WorkoutRouteMapState extends State<_WorkoutRouteMap> {
       },
       onMapCreated: (controller) async {
         _controller = controller;
+        widget.handle?.controller = controller;
         await Future<void>.delayed(const Duration(milliseconds: 250));
         if (!mounted) return;
         await _fit(controller);

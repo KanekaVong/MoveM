@@ -7,6 +7,7 @@ import '../controllers/notification_controller.dart';
 import '../../data/dto/response/notification_response.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class NotificationScreen extends GetView<NotificationController> {
   const NotificationScreen({super.key});
@@ -21,8 +22,8 @@ class NotificationScreen extends GetView<NotificationController> {
         title: l10n?.notifications ?? 'Notifications',
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.blueAccent));
+        if (controller.isLoading.value && controller.notifications.isEmpty) {
+          return SkeletonListView.tiles(itemCount: 8, padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8));
         }
 
         if (controller.error.value.isNotEmpty) {

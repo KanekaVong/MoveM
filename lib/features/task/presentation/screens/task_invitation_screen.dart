@@ -8,6 +8,7 @@ import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class TaskInvitationScreen extends StatelessWidget {
   const TaskInvitationScreen({super.key});
@@ -46,9 +47,7 @@ class TaskInvitationScreen extends StatelessWidget {
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value && controller.invitations.isEmpty) {
-                  return Center(
-                    child: CircularProgressIndicator(color: AppColors.taskBluePrimary),
-                  );
+                  return SkeletonListView.tiles(itemCount: 4, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8));
                 }
                 if (controller.errorMessage.value.isNotEmpty && controller.invitations.isEmpty) {
                   return Center(

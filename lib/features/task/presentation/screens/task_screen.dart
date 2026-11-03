@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/utils/app_images.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/task_controller.dart';
+import '../../data/dto/response/task_response.dart';
 import 'create_task_screen.dart';
 import 'task_detail_screen.dart';
 import 'task_invitation_screen.dart';
@@ -12,6 +13,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class TaskScreen extends GetView<TaskController> {
   const TaskScreen({super.key});
@@ -138,23 +140,6 @@ class TaskScreen extends GetView<TaskController> {
               child: _buildTaskList(),
             ),
           ),
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 8,
-            right: 20,
-            child: GestureDetector(
-              onTap: () => Get.to(() => const TaskInvitationScreen()),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.black.withValues(alpha: 0.28),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
-                ),
-                child: Icon(Icons.mail_outline, color: Colors.white, size: 20),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -166,10 +151,10 @@ class TaskScreen extends GetView<TaskController> {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: isFiltered ? AppColors.chipSurface : AppColors.cardSurface,
+          color: isFiltered ? AppColors.accentBlue.withValues(alpha: 0.12) : AppColors.cardSurface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isFiltered ? Color(0xFF3B82F6) : AppColors.chipSurface,
+            color: isFiltered ? AppColors.accentBlue : AppColors.chipSurface,
             width: 1.2,
           ),
         ),
@@ -184,14 +169,14 @@ class TaskScreen extends GetView<TaskController> {
                 children: [
                   Icon(
                     Icons.filter_list_rounded,
-                    color: isFiltered ? Color(0xFF60A5FA) : AppColors.textCaption,
+                    color: isFiltered ? AppColors.accentBlue : AppColors.textCaption,
                     size: 16,
                   ),
                   SizedBox(width: 6),
                   Text(
                     isFiltered ? controller.filterSummary : 'Filter',
                     style: TextStyle(
-                      color: isFiltered ? Colors.white : AppColors.textCaption,
+                      color: isFiltered ? AppColors.accentBlue : AppColors.textCaption,
                       fontSize: 12,
                       fontWeight: isFiltered ? FontWeight.bold : FontWeight.w500,
                     ),
@@ -209,12 +194,12 @@ class TaskScreen extends GetView<TaskController> {
                 child: Container(
                   padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
-                    color: Color(0xFF2563EB),
+                    color: AppColors.accentBlue,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.close,
-                    color: AppColors.textPrimary,
+                    color: Colors.white,
                     size: 10,
                   ),
                 ),
@@ -436,6 +421,26 @@ class TaskScreen extends GetView<TaskController> {
       backgroundColor: Colors.transparent,
       elevation: 0,
       pinned: false,
+      automaticallyImplyLeading: false,
+      // Lives in the scrolling header so it never covers the pinned Filter button.
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 20),
+          child: GestureDetector(
+            onTap: () => Get.to(() => const TaskInvitationScreen()),
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.black.withValues(alpha: 0.28),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
+              ),
+              child: const Icon(Icons.mail_outline, color: Colors.white, size: 20),
+            ),
+          ),
+        ),
+      ],
       flexibleSpace: const FlexibleSpaceBar(
         background: Align(
           alignment: Alignment.center,
@@ -556,7 +561,7 @@ class TaskScreen extends GetView<TaskController> {
   }
 
   Widget _buildCircularProgressRing() {
-    final total = controller.tasks.length;
+    final total = controller.allTasks.length;
     final completed = controller.completedTasksCount;
     final progress = total > 0 ? (completed / total).clamp(0.0, 1.0) : 0.0;
 
@@ -621,14 +626,14 @@ class TaskScreen extends GetView<TaskController> {
   }
 
   Widget _buildTasksSummaryRight() {
-    final upcoming = controller.tasks
+    final upcoming = controller.allTasks
         .where((t) =>
             t.status != 'COMPLETE' &&
             t.status != 'CANCELLED' &&
             t.deadline != null)
         .toList();
 
-    final ongoing = controller.tasks
+    final ongoing = controller.allTasks
         .where((t) => t.status == 'IN_PROGRESS' || t.status == 'PENDING')
         .toList();
 
@@ -678,27 +683,26 @@ class TaskScreen extends GetView<TaskController> {
     );
   }
 
+  /// Due label based on calendar days, so a task due the day after tomorrow
+  /// isn't reported as "tomorrow".
+  String _dueText(String? deadline, {required String fallback}) {
+    if (deadline == null) return fallback;
+    final date = DateTime.tryParse(deadline)?.toLocal();
+    if (date == null) return fallback;
+    final now = DateTime.now();
+    final days = DateTime(date.year, date.month, date.day)
+        .difference(DateTime(now.year, now.month, now.day))
+        .inDays;
+    if (days < 0) return 'Overdue';
+    if (days == 0) return 'Due Today';
+    if (days == 1) return 'Due Tomorrow';
+    if (days < 7) return 'Due in $days days';
+    if (days < 14) return 'Due Next Week';
+    return 'Due ${DateFormat('d MMM').format(date)}';
+  }
+
   Widget _buildUpcomingItem(dynamic task) {
-    String dueText = 'Due Soon';
-    if (task.deadline != null) {
-      try {
-        final date = DateTime.parse(task.deadline!);
-        final diff = date.difference(DateTime.now()).inDays;
-        if (diff < 0) {
-          dueText = 'Overdue';
-        } else if (diff == 0) {
-          dueText = 'Due Today';
-        } else if (diff == 1) {
-          dueText = 'Due Tomorrow';
-        } else if (diff <= 7) {
-          dueText = 'Due Next Week';
-        } else if (diff <= 30) {
-          dueText = 'Due Next Month';
-        } else {
-          dueText = 'Due ${DateFormat('d MMM').format(date)}';
-        }
-      } catch (_) {}
-    }
+    final dueText = _dueText(task.deadline, fallback: 'Due Soon');
 
     return RichText(
       maxLines: 1,
@@ -727,18 +731,8 @@ class TaskScreen extends GetView<TaskController> {
   }
 
   Widget _buildOngoingItem(dynamic task) {
-    String dueText = 'Due Next Month';
-    if (task.deadline != null) {
-      try {
-        final date = DateTime.parse(task.deadline!);
-        final diff = date.difference(DateTime.now()).inDays;
-        if (diff <= 30) {
-          dueText = 'Due Next Month';
-        } else {
-          dueText = 'Due ${DateFormat('d MMM').format(date)}';
-        }
-      } catch (_) {}
-    }
+    final dueText = _dueText(task.deadline, fallback: 'No deadline');
+    final isOverdue = dueText == 'Overdue';
 
     double prog = 0.5;
     if (task.totalChecklistItems != null && task.totalChecklistItems > 0) {
@@ -767,7 +761,7 @@ class TaskScreen extends GetView<TaskController> {
               TextSpan(
                 text: dueText,
                 style: TextStyle(
-                  color: Color(0xFF4ADE80),
+                  color: isOverdue ? const Color(0xFFEF4444) : const Color(0xFF4ADE80),
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                 ),
@@ -800,14 +794,29 @@ class TaskScreen extends GetView<TaskController> {
       if (controller.isLoading && controller.tasks.isEmpty) {
         return Container(
           color: AppColors.pageBackground,
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              SizedBox(height: 80),
-              Center(
-                child: CircularProgressIndicator(color: Color(0xFF3B82F6)),
+          child: SkeletonListView(
+            itemCount: 4,
+            padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 160.0),
+            itemBuilder: (_, __) => SkeletonCard(
+              radius: 20,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Row(
+                    children: [
+                      Expanded(child: SkeletonLines(lines: 2)),
+                      SizedBox(width: 12),
+                      SkeletonBox(width: 44, height: 44, radius: 12),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  SkeletonBox(height: 6),
+                  SizedBox(height: 10),
+                  SkeletonBox(width: 110, height: 10),
+                ],
               ),
-            ],
+            ),
           ),
         );
       }
@@ -1040,18 +1049,18 @@ class TaskScreen extends GetView<TaskController> {
     }
 
     double progression = 0.0;
-    if (task.totalChecklistItems != null && task.totalChecklistItems > 0) {
+    if (task.status == 'COMPLETE') {
+      progression = 1.0;
+    } else if (task.totalChecklistItems != null && task.totalChecklistItems > 0) {
       progression = task.completedChecklistItems / task.totalChecklistItems;
     } else if (task.checklistProgress != null) {
       progression = task.checklistProgress;
-    } else if (task.status == 'COMPLETE') {
-      progression = 1.0;
     }
     int progressionPercent = (progression * 100).toInt();
 
     final isComplete = task.status == 'COMPLETE';
-    final isPastDeadline = _isPastDeadline(task);
-    final isFaded = isComplete || isPastDeadline;
+    final isOverdue = !isComplete && _isPastDeadline(task);
+    final isFaded = isComplete;
 
     return Opacity(
       opacity: isFaded ? 0.65 : 1.0,
@@ -1135,9 +1144,9 @@ class TaskScreen extends GetView<TaskController> {
                             SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                'Dateline : $formattedDate',
+                                isOverdue ? 'Overdue · $formattedDate' : 'Dateline : $formattedDate',
                                 style: TextStyle(
-                                  color: AppColors.textSecondary,
+                                  color: isOverdue ? const Color(0xFFEF4444) : AppColors.textSecondary,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -1247,15 +1256,7 @@ class TaskScreen extends GetView<TaskController> {
     );
   }
 
-  bool _isPastDeadline(dynamic task) {
-    final deadline = task.deadline;
-    if (deadline == null || deadline.toString().isEmpty) return false;
-    try {
-      return DateTime.parse(deadline.toString()).toLocal().isBefore(DateTime.now());
-    } catch (_) {
-      return false;
-    }
-  }
+  bool _isPastDeadline(dynamic task) => task is TaskResponse && task.isPastDeadline;
 }
 
 class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {

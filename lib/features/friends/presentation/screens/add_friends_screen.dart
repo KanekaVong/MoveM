@@ -15,6 +15,7 @@ import '../../data/dto/response/public_user_profile_response.dart';
 import 'public_user_profile_screen.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class AddFriendsScreen extends GetView<FriendsController> {
   const AddFriendsScreen({super.key});
@@ -214,6 +215,15 @@ class AddFriendsScreen extends GetView<FriendsController> {
   }
 
   Widget _buildRequestsList() {
+    if (controller.incomingRequests.isEmpty && controller.isLoadingRequests.value) {
+      return const Column(
+        children: [
+          SkeletonTile(trailing: true),
+          SizedBox(height: 12),
+          SkeletonTile(trailing: true),
+        ],
+      );
+    }
     if (controller.incomingRequests.isEmpty) {
       return NoDataComponent(
         compact: true,
@@ -262,6 +272,17 @@ class AddFriendsScreen extends GetView<FriendsController> {
     final isSearching = controller.searchQuery.value.trim().isNotEmpty;
     final list = isSearching ? controller.searchResults : controller.suggestedFriends;
 
+    if (list.isEmpty && !isSearching && controller.isLoadingSuggestions.value) {
+      return const Column(
+        children: [
+          SkeletonTile(trailing: true),
+          SizedBox(height: 12),
+          SkeletonTile(trailing: true),
+          SizedBox(height: 12),
+          SkeletonTile(trailing: true),
+        ],
+      );
+    }
     if (list.isEmpty) {
       return NoDataComponent(
         compact: true,

@@ -7,6 +7,7 @@ import '../widgets/clear_glass_container.dart';
 import '../../data/dto/response/trip_budget_response.dart';
 import '../../data/dto/response/trip_expense_response.dart';
 import 'trip_budget_split_bill_screen.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class TripBudgetHistoryScreen extends StatefulWidget {
   final TripBudgetController budgetController;
@@ -74,6 +75,14 @@ class _TripBudgetHistoryScreenState
                     final expenses = _getFilteredExpenses(
                       controller.expenses,
                     );
+                    if (controller.isLoadingExpenses.value && controller.expenses.isEmpty) {
+                      return SkeletonListView.tiles(
+                        itemCount: 6,
+                        circleAvatar: false,
+                        dark: true,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      );
+                    }
 
                     return RefreshIndicator(
                       onRefresh: controller.loadExpenses,

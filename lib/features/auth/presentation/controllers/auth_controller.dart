@@ -75,6 +75,7 @@ class AuthController extends BaseController {
             arguments: {
               'mode': 'otp',
               'identifier': trimmedUsername,
+              'email': data.email ?? _savedEmailFor(trimmedUsername),
             },
           );
           return;
@@ -101,6 +102,18 @@ class AuthController extends BaseController {
         }
       },
     );
+  }
+
+  /// Email of the account last signed in on this device, if [username]
+  /// (or its email) matches it. Used to show where the login OTP went.
+  String? _savedEmailFor(String username) {
+    final saved = UserManager().getUser();
+    if (saved == null || saved.email.isEmpty) return null;
+    final name = username.toLowerCase();
+    if (saved.username.toLowerCase() == name || saved.email.toLowerCase() == name) {
+      return saved.email;
+    }
+    return null;
   }
 
   Future<void> verifyOtp(String username, String otp) async {

@@ -6,6 +6,7 @@ import '../widgets/clear_glass_container.dart';
 import '../../data/dto/response/trip_budget_response.dart';
 import '../controllers/trip_budget_controller.dart';
 import 'trip_budget_history_screen.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class TripBudgetScreen extends StatefulWidget {
   final TripBudgetController budgetController;
@@ -63,6 +64,17 @@ class _TripBudgetScreenState extends State<TripBudgetScreen> {
 
                 Expanded(
                   child: Obx(() {
+                    if (controller.isLoadingBudget.value && controller.trip.value == null) {
+                      return SkeletonListView(
+                        itemCount: 3,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        spacing: 16,
+                        itemBuilder: (_, i) => AppShimmer(
+                          dark: true,
+                          child: SkeletonBox(height: i == 0 ? 160 : 220, radius: 24),
+                        ),
+                      );
+                    }
                     return RefreshIndicator(
                       onRefresh: controller.loadBudget,
                       color: Colors.white,

@@ -1,15 +1,16 @@
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/config/app_config.dart';
-import '../../../../core/utils/app_images.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../task/data/dto/response/comment_response.dart';
 import '../../domain/models/home_feed_item.dart';
 import '../controllers/activity_detail_controller.dart';
 import '../widgets/gps_route_painter.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/Formatters.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class ActivityDetailScreen extends GetView<ActivityDetailController> {
   const ActivityDetailScreen({super.key});
@@ -17,14 +18,14 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF070F20),
+      backgroundColor: _Palette.background,
       body: SafeArea(
         child: Column(
           children: [
-            const TopToolBar(
+            TopToolBar(
               title: 'MoveM',
-              backgroundColor: Color(0xFF070F20),
-              foregroundColor: Colors.white,
+              backgroundColor: _Palette.background,
+              foregroundColor: _Palette.text,
             ),
             Expanded(
               child: Obx(() {
@@ -37,8 +38,8 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
                       const SizedBox(height: 14),
                       Text(
                         '"${item.caption!.trim()}"',
-                        style: const TextStyle(
-                          color: Color(0xFF94A3B8),
+                        style: TextStyle(
+                          color: _Palette.muted,
                           fontSize: 14,
                         ),
                       ),
@@ -52,6 +53,11 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
                     const SizedBox(height: 24),
                     _buildSocialRow(item),
                     const SizedBox(height: 16),
+                    if (controller.isLoadingComments.value && controller.comments.isEmpty && item.commentCount > 0)
+                      for (var i = 0; i < item.commentCount.clamp(1, 3); i++) ...[
+                        const SkeletonTile(avatarSize: 36),
+                        const SizedBox(height: 10),
+                      ],
                     ...controller.comments.map(_buildCommentBubble),
                   ],
                 );
@@ -71,9 +77,9 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
         const SizedBox(width: 10),
         Expanded(
           child: Text(
-            item.userName,
-            style: const TextStyle(
-              color: Colors.white,
+            item.displayName,
+            style: TextStyle(
+              color: _Palette.text,
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
@@ -86,23 +92,24 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
   Widget _buildRouteHero(HomeFeedItem item) {
     final distance = item.distanceKm;
     final distanceLabel = distance != null && distance > 0
-        ? (distance >= 1 ? '${distance.round()}KM' : '${distance.toStringAsFixed(1)}KM')
+        ? Formatters.distanceKm(distance)
         : _workoutLabel(item);
 
     return SizedBox(
       height: 250,
-      child: item.hasGpsRoute
+      child: item.hasGpsRoute && (item.imageUrl == null || item.imageUrl!.isEmpty)
           ? CustomPaint(
               painter: GpsRoutePainter(
                 routePoints: item.routePoints,
                 colorfulDots: true,
                 strokeWidth: 3.2,
+                lineColor: _Palette.gold,
               ),
               child: Center(
                 child: Text(
                   distanceLabel,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: _Palette.text,
                     fontSize: 34,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.2,
@@ -113,10 +120,8 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
           : ClipRRect(
               borderRadius: BorderRadius.circular(18),
               child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-                  ? (item.imageUrl!.startsWith('http')
-                      ? CachedNetworkImage(imageUrl: item.imageUrl!, fit: BoxFit.cover)
-                      : Image.file(File(item.imageUrl!), fit: BoxFit.cover))
-                  : Image.asset(AppImages.taskScreenBackground, fit: BoxFit.cover),
+                  ? CachedNetworkImage(imageUrl: AppConfig.resolveMediaUrl(item.imageUrl!), fit: BoxFit.cover)
+                  : Image.asset(item.fallbackImage, fit: BoxFit.cover),
             ),
     );
   }
@@ -142,7 +147,7 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
             _statCell(
               'CALORIES',
               item.caloriesCount > 0 ? '${item.caloriesCount}' : '--',
-              valueColor: const Color(0xFFF97316),
+              valueColor: _Palette.calories,
               trailing: item.caloriesCount > 0
                   ? const Text(' 🔥', style: TextStyle(fontSize: 16))
                   : null,
@@ -157,7 +162,7 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
   Widget _statCell(
     String label,
     String value, {
-    Color valueColor = Colors.white,
+    Color? valueColor,
     Widget? trailing,
   }) {
     return Expanded(
@@ -165,8 +170,8 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
         children: [
           Text(
             label,
-            style: const TextStyle(
-              color: Color(0xFF94A3B8),
+            style: TextStyle(
+              color: _Palette.muted,
               fontSize: 12,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.4,
@@ -179,7 +184,7 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
               Text(
                 value,
                 style: TextStyle(
-                  color: valueColor,
+                  color: valueColor ?? _Palette.text,
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
                 ),
@@ -196,10 +201,10 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
     final name = (item.challengeName ?? item.title).toUpperCase();
     return Column(
       children: [
-        const Text(
+        Text(
           'CHALLENGE',
           style: TextStyle(
-            color: Color(0xFF94A3B8),
+            color: _Palette.muted,
             fontSize: 13,
             fontWeight: FontWeight.w600,
             letterSpacing: 2.4,
@@ -209,18 +214,18 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
         Text(
           name,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: _Palette.text,
             fontSize: 20,
             fontWeight: FontWeight.w800,
             letterSpacing: 0.6,
           ),
         ),
         const SizedBox(height: 6),
-        const Text(
+        Text(
           'COMPLETED 🔥',
           style: TextStyle(
-            color: Color(0xFFFBBF24),
+            color: _Palette.gold,
             fontSize: 18,
             fontWeight: FontWeight.w800,
             letterSpacing: 1.1,
@@ -240,13 +245,13 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
               Icon(
                 item.myKudos ? Icons.favorite : Icons.favorite_border,
                 size: 20,
-                color: const Color(0xFF38BDF8),
+                color: _Palette.accent,
               ),
               const SizedBox(width: 6),
               Text(
                 '${_formatCount(item.kudosCount)} Likes',
-                style: const TextStyle(
-                  color: Color(0xFF38BDF8),
+                style: TextStyle(
+                  color: _Palette.accent,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -255,12 +260,12 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
           ),
         ),
         const SizedBox(width: 18),
-        const Icon(Icons.chat_bubble_outline_rounded, size: 18, color: Color(0xFF38BDF8)),
+        Icon(Icons.chat_bubble_outline_rounded, size: 18, color: _Palette.accent),
         const SizedBox(width: 6),
         Text(
           '${_formatCount(item.commentCount)} Comments',
-          style: const TextStyle(
-            color: Color(0xFF38BDF8),
+          style: TextStyle(
+            color: _Palette.accent,
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -282,16 +287,17 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: const Color(0xFF2A3447),
+                color: _Palette.bubble,
                 borderRadius: BorderRadius.circular(16),
+                border: _Palette.isDark ? null : Border.all(color: AppColors.borderLight),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     comment.displayName,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: _Palette.text,
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                     ),
@@ -299,8 +305,8 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
                   const SizedBox(height: 2),
                   Text(
                     comment.content,
-                    style: const TextStyle(
-                      color: Color(0xFFCBD5E1),
+                    style: TextStyle(
+                      color: _Palette.bubbleText,
                       fontSize: 12.5,
                     ),
                   ),
@@ -323,21 +329,22 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
               height: 46,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
+                color: _Palette.input,
                 borderRadius: BorderRadius.circular(24),
+                border: _Palette.isDark ? null : Border.all(color: AppColors.borderLight),
               ),
               alignment: Alignment.centerLeft,
               child: TextField(
                 controller: controller.textController,
                 focusNode: controller.inputFocusNode,
-                style: const TextStyle(color: Colors.white, fontSize: 14),
+                style: TextStyle(color: _Palette.text, fontSize: 14),
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => controller.sendComment(),
                 decoration: InputDecoration(
                   isCollapsed: true,
                   border: InputBorder.none,
                   hintText: AppLocalizations.of(Get.context!)?.writeAComment ?? 'Write a Comment',
-                  hintStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 14),
+                  hintStyle: TextStyle(color: _Palette.hint, fontSize: 14),
                 ),
               ),
             ),
@@ -348,8 +355,8 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
             child: Container(
               width: 46,
               height: 46,
-              decoration: const BoxDecoration(
-                color: Color(0xFF38BDF8),
+              decoration: BoxDecoration(
+                color: _Palette.accent,
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
@@ -368,22 +375,15 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
     String? initial,
   }) {
     final letter = initial ?? (name.isNotEmpty ? name[0].toUpperCase() : 'M');
-    var resolved = pic;
-    if (resolved != null && resolved.isNotEmpty && !resolved.startsWith('http') && !resolved.startsWith('/')) {
-      resolved = resolved;
-    } else if (resolved != null && resolved.isNotEmpty && !resolved.startsWith('http')) {
-      final base = AppConfig.baseUrl.endsWith('/')
-          ? AppConfig.baseUrl.substring(0, AppConfig.baseUrl.length - 1)
-          : AppConfig.baseUrl;
-      resolved = resolved.startsWith('/') ? '$base$resolved' : '$base/$resolved';
-    }
+    final resolved = pic != null && pic.isNotEmpty ? AppConfig.resolveMediaUrl(pic) : null;
 
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
+        color: _Palette.avatar,
         borderRadius: BorderRadius.circular(radius),
+        border: Border.all(color: AppColors.borderLight, width: 1),
       ),
       clipBehavior: Clip.antiAlias,
       child: resolved != null && resolved.isNotEmpty
@@ -398,11 +398,11 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
 
   Widget _initialBox(String letter) {
     return Container(
-      color: const Color(0xFF334155),
+      color: const Color(0x2E5B8CFF),
       alignment: Alignment.center,
       child: Text(
         letter,
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+        style: TextStyle(color: AppColors.accentBlue, fontWeight: FontWeight.w800),
       ),
     );
   }
@@ -424,4 +424,24 @@ class ActivityDetailScreen extends GetView<ActivityDetailController> {
     }
     return '$count';
   }
+}
+
+/// Colors for this screen. Dark keeps the original navy look; light uses the
+/// app's light tokens with darker accents so they stay readable on white.
+class _Palette {
+  _Palette._();
+
+  static bool get isDark => AppColors.isDark;
+
+  static Color get background => isDark ? const Color(0xFF070F20) : AppColors.pageBackground;
+  static Color get text => isDark ? Colors.white : AppColors.textPrimary;
+  static Color get muted => isDark ? const Color(0xFF94A3B8) : AppColors.textSecondary;
+  static Color get hint => isDark ? const Color(0xFF64748B) : AppColors.textCaption;
+  static Color get bubble => isDark ? const Color(0xFF2A3447) : AppColors.cardSurface;
+  static Color get bubbleText => isDark ? const Color(0xFFCBD5E1) : const Color(0xFF374151);
+  static Color get input => isDark ? const Color(0xFF1E293B) : AppColors.cardSurface;
+  static Color get avatar => isDark ? const Color(0xFF1E293B) : AppColors.chipSurface;
+  static Color get accent => isDark ? const Color(0xFF38BDF8) : const Color(0xFF0284C7);
+  static Color get gold => isDark ? const Color(0xFFFBBF24) : const Color(0xFFD97706);
+  static Color get calories => isDark ? const Color(0xFFF97316) : const Color(0xFFEA580C);
 }

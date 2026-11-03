@@ -15,6 +15,7 @@ import '../../domain/squat_angle_calculator.dart';
 import '../../domain/squat_state_machine.dart';
 import '../screens/squat_summary_screen.dart';
 import 'achievement_notice_controller.dart';
+import 'package:movem/core/utils/app_snack.dart';
 
 class SquatDetectorController extends GetxController {
   final SoloChallengeModel challenge;
@@ -359,6 +360,7 @@ class SquatDetectorController extends GetxController {
     } else {
       currentSession.isCompleted = true;
       currentFeedback.value = 'Challenge Complete! 🏆';
+      finishWorkout();
     }
   }
 
@@ -402,6 +404,14 @@ class SquatDetectorController extends GetxController {
           AchievementNoticeController.ensure().enqueue(finishRes.data!.currentAchievements);
         }
       } catch (_) {}
+    }
+
+    if (summaryModel == null) {
+      AppSnack.show(
+        'Not saved',
+        'Workout couldn\'t be saved to the server. Check your connection.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
 
     Get.off(() => SquatSummaryScreen(

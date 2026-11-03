@@ -44,7 +44,7 @@ class TaskDetailController extends BaseController {
     isAttachmentsExpanded.value = !isAttachmentsExpanded.value;
   }
 
-  Future<void> fetchTaskDetail({bool showLoading = true}) async {
+  Future<void> fetchTaskDetail({bool showLoading = false}) async {
     await executeApi<TaskResponse>(
       apiCall: () => repository.getTaskDetail(activityId),
       showLoading: showLoading,
@@ -56,7 +56,7 @@ class TaskDetailController extends BaseController {
 
   Future<void> markAsComplete() async {
     final currentTask = task.value;
-    if (currentTask == null) return;
+    if (currentTask == null || currentTask.isPastDeadline) return;
 
     await executeApi<TaskResponse>(
       apiCall: () => repository.markTaskComplete(currentTask.activityId),

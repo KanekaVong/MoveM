@@ -10,6 +10,7 @@ import '../../data/models/group_challenge_model.dart';
 import '../controllers/fitness_club_controller.dart';
 import 'club_challenge_detail_screen.dart';
 import 'club_members_screen.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class ClubOverviewScreen extends StatefulWidget {
   final FitnessClubModel club;
@@ -98,9 +99,7 @@ class _ClubOverviewScreenState extends State<ClubOverviewScreen> {
                 if (_controller.isLoadingClubDetails.value &&
                     _controller.clubMembers.isEmpty &&
                     _controller.clubChallenges.isEmpty) {
-                  return Center(
-                    child: CircularProgressIndicator(color: AppColors.accentBlue),
-                  );
+                  return const SkeletonDetail();
                 }
 
                 final members = _controller.clubMembers;

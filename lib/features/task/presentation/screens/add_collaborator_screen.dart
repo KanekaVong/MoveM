@@ -1,10 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/add_collaborator_controller.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
   const AddCollaboratorScreen({super.key});
@@ -46,9 +49,12 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
             ),
             Expanded(
               child: Obx(() {
-                if (controller.isLoading) {
-                  return Center(
-                    child: CircularProgressIndicator(color: Color(0xFF4B9D62)),
+                if (controller.isLoading && controller.friends.isEmpty) {
+                  return SkeletonListView.tiles(
+                    itemCount: 6,
+                    avatarSize: 40,
+                    trailing: true,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   );
                 }
 
@@ -101,12 +107,13 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
                               children: [
                                 if (friend.profilePic.isNotEmpty)
                                   ClipOval(
-                                    child: Image.network(
-                                      friend.profilePic,
+                                    child: CachedNetworkImage(
+                                      imageUrl: AppConfig.resolveMediaUrl(friend.profilePic),
                                       width: 40,
                                       height: 40,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => _buildAvatarPlaceholder(initial),
+                                      placeholder: (_, __) => _buildAvatarPlaceholder(initial),
+                                      errorWidget: (_, __, ___) => _buildAvatarPlaceholder(initial),
                                     ),
                                   )
                                 else
@@ -218,7 +225,7 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
   Widget _buildAvatarPlaceholder(String initial) {
     return CircleAvatar(
       radius: 20,
-      backgroundColor: AppColors.cardSurface,
+      backgroundColor: AppColors.chipSurface,
       child: Text(
         initial,
         style: TextStyle(

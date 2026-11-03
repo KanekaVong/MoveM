@@ -10,6 +10,7 @@ import '../../data/models/fitness_club_model.dart';
 import '../controllers/fitness_club_controller.dart';
 import 'invite_people_screen.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class ClubMembersScreen extends StatefulWidget {
   final FitnessClubModel club;
@@ -150,9 +151,7 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
               child: Obx(() {
                 if (_controller.isLoadingClubDetails.value &&
                     _controller.clubMembers.isEmpty) {
-                  return Center(
-                    child: CircularProgressIndicator(color: AppColors.accentBlue),
-                  );
+                  return SkeletonListView.tiles(itemCount: 7, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8));
                 }
 
                 final members = _controller.clubMembers;

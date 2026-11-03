@@ -11,6 +11,7 @@ import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
 import 'package:movem/core/utils/app_snack.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class TaskCommentScreen extends StatelessWidget {
   final String activityId;
@@ -66,9 +67,7 @@ class TaskCommentScreen extends StatelessWidget {
                   Expanded(
                     child: Obx(() {
                       if (controller.isLoading && controller.comments.isEmpty) {
-                        return const Center(
-                          child: CircularProgressIndicator(color: AppColors.taskBluePrimary),
-                        );
+                        return const SkeletonChatList();
                       }
 
                       if (controller.comments.isEmpty) {

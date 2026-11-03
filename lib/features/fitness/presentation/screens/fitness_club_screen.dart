@@ -11,6 +11,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class HexagonClipper extends CustomClipper<Path> {
   @override
@@ -224,11 +225,14 @@ class _FitnessClubScreenState extends State<FitnessClubScreen> {
           : clubs.where((club) => club.name.toLowerCase().contains(query)).toList();
 
       if (_controller.isLoadingClubs.value && clubs.isEmpty) {
-        return const Center(
-          child: Padding(
-            padding: EdgeInsets.all(32.0),
-            child: CircularProgressIndicator(color: Colors.blueAccent),
-          ),
+        return const Column(
+          children: [
+            SkeletonMediaCard(mediaFirst: true, mediaSize: 72, lines: 2),
+            SizedBox(height: 12),
+            SkeletonMediaCard(mediaFirst: true, mediaSize: 72, lines: 2),
+            SizedBox(height: 12),
+            SkeletonMediaCard(mediaFirst: true, mediaSize: 72, lines: 2),
+          ],
         );
       }
 

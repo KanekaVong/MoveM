@@ -6,6 +6,7 @@ import '../../../../shared/widgets/top_tool_bar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/fitness_club_model.dart';
 import '../controllers/fitness_club_controller.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class ClubInvitationsScreen extends StatefulWidget {
   const ClubInvitationsScreen({super.key});
@@ -39,9 +40,7 @@ class _ClubInvitationsScreenState extends State<ClubInvitationsScreen> {
                 if (_controller.isLoadingInbox.value &&
                     _controller.inboxInvitations.isEmpty &&
                     _controller.inboxJoinRequests.isEmpty) {
-                  return Center(
-                    child: CircularProgressIndicator(color: AppColors.accentBlue),
-                  );
+                  return SkeletonListView.tiles(itemCount: 4, trailing: true, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8));
                 }
 
                 return RefreshIndicator(

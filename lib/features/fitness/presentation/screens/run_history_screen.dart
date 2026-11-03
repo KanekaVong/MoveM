@@ -10,6 +10,7 @@ import '../controllers/run_history_controller.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class RunHistoryScreen extends StatelessWidget {
   const RunHistoryScreen({super.key});
@@ -23,8 +24,8 @@ class RunHistoryScreen extends StatelessWidget {
       backgroundColor: AppColors.pageBackground,
       appBar: TopToolBar(title: l10n?.runHistory ?? 'Workout History'),
       body: Obx(() {
-        if (controller.isLoading.value) {
-          return Center(child: CircularProgressIndicator(color: AppColors.accentBlue));
+        if (controller.isLoading.value && controller.totalCount == 0) {
+          return SkeletonListView.tiles(itemCount: 7, circleAvatar: false);
         }
 
         if (controller.totalCount == 0) {

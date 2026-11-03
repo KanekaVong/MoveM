@@ -9,6 +9,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class TaskActivityFeedScreen extends StatelessWidget {
   final String activityId;
@@ -33,8 +34,11 @@ class TaskActivityFeedScreen extends StatelessWidget {
             Expanded(
               child: Obx(() {
                 if (controller.isLoading && controller.items.isEmpty) {
-                  return Center(
-                    child: CircularProgressIndicator(color: AppColors.taskBluePrimary),
+                  return SkeletonListView(
+                    itemCount: 8,
+                    spacing: 22,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    itemBuilder: (_, __) => const AppShimmer(child: SkeletonLines(lines: 1)),
                   );
                 }
 

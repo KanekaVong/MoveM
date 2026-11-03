@@ -12,6 +12,9 @@ import 'package:dio/dio.dart' as dio;
 import 'package:image_picker/image_picker.dart';
 
 class TripController extends BaseController {
+  // True while the recent trips list loads, so screens can show a shimmer.
+  final RxBool isLoadingTrips = true.obs;
+
   static const String _tripWelcomeSeenKey = 'trip_welcome_seen';
   TripResponse? selectedTrip;
   final TripRepository repository;
@@ -35,8 +38,9 @@ class TripController extends BaseController {
   }
 
   Future<void> getMyTrips({
-    bool showLoading = true,
+    bool showLoading = false,
   }) async {
+    isLoadingTrips.value = true;
     await executeApi(
       apiCall: () => repository.getMyTrips(),
       onSuccess: (data) {
@@ -52,6 +56,7 @@ class TripController extends BaseController {
         AppDialogs.showError(e.message);
       },
     );
+    isLoadingTrips.value = false;
   }
 
   Future<bool> getTripDetail(String activityId) async {

@@ -1,10 +1,8 @@
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/config/app_config.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/app_images.dart';
 import '../../domain/models/home_feed_item.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/activity_detail_controller.dart';
@@ -12,6 +10,8 @@ import '../screens/activity_detail_screen.dart';
 import 'gps_route_painter.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/Formatters.dart';
+import 'package:movem/shared/widgets/skeletons.dart';
 
 class HomeNewsFeed extends GetView<HomeController> {
   const HomeNewsFeed({super.key});
@@ -19,50 +19,58 @@ class HomeNewsFeed extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n?.newsFeed ?? 'News Feed',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.2,
+    return SliverMainAxisGroup(
+      slivers: [
+        PinnedHeaderSliver(
+          child: Container(
+            color: AppColors.pageBackground,
+            padding: const EdgeInsets.only(top: 4, bottom: 14),
+            child: Text(
+              l10n?.newsFeed ?? 'News Feed',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.2,
+              ),
+            ),
           ),
         ),
-        const SizedBox(height: 14),
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: controller.fetchSocialFeed,
-            color: AppColors.accentBlue,
-            backgroundColor: AppColors.cardSurface,
-            child: Obx(() {
-              final items = controller.feedItems;
-              if (items.isEmpty) {
-                return ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
+        Obx(() {
+          final items = controller.feedItems;
+          if (items.isEmpty) {
+            if (controller.isFeedLoading.value) {
+              return const SliverToBoxAdapter(
+                child: Column(
                   children: [
-                    NoDataComponent(
-                      compact: true,
-                      title: l10n?.noActivityYet ?? 'No activity yet',
-                      subtitle: l10n?.feedEmptySub ??
-                          'Workouts and updates from your circle will show up here.',
-                    ),
+                    SkeletonMediaCard(mediaSize: 128),
+                    SizedBox(height: 16),
+                    SkeletonMediaCard(mediaSize: 128),
+                    SizedBox(height: 16),
+                    SkeletonMediaCard(mediaSize: 128),
                   ],
-                );
-              }
-
-              return ListView.separated(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.only(bottom: 120),
-                itemCount: items.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 16),
-                itemBuilder: (context, index) => _buildFeedCard(items[index]),
+                ),
               );
-            }),
-          ),
-        ),
+            }
+            return SliverToBoxAdapter(
+              child: NoDataComponent(
+                compact: true,
+                title: l10n?.noActivityYet ?? 'No activity yet',
+                subtitle: l10n?.feedEmptySub ??
+                    'Workouts and updates from your circle will show up here.',
+              ),
+            );
+          }
+
+          return SliverPadding(
+            padding: const EdgeInsets.only(bottom: 120),
+            sliver: SliverList.separated(
+              itemCount: items.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              itemBuilder: (context, index) => _buildFeedCard(items[index]),
+            ),
+          );
+        }),
       ],
     );
   }
@@ -74,6 +82,14 @@ class HomeNewsFeed extends GetView<HomeController> {
       decoration: BoxDecoration(
         color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.borderLight, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: AppColors.isDark ? 0.25 : 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       padding: const EdgeInsets.all(14),
       child: Column(
@@ -92,7 +108,7 @@ class HomeNewsFeed extends GetView<HomeController> {
                         SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            item.userName,
+                            item.displayName,
                             style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 16,
@@ -191,32 +207,40 @@ class HomeNewsFeed extends GetView<HomeController> {
   }
 
   Widget _buildRightMedia(HomeFeedItem item) {
-    if (item.hasGpsRoute) {
+    final hasImage = item.imageUrl != null && item.imageUrl!.isNotEmpty;
+    if (item.hasGpsRoute && !hasImage) {
       final distance = item.distanceKm;
       final distanceLabel = distance != null && distance > 0
-          ? (distance >= 1.0 ? '${distance.toStringAsFixed(0)}KM' : '${distance.toStringAsFixed(1)}KM')
+          ? Formatters.distanceKm(distance)
           : 'RUN';
 
       return Container(
         width: 128,
         height: 128,
         decoration: BoxDecoration(
-          color: const Color(0xFFE6EBF3),
+          color: AppColors.isDark ? AppColors.chipSurface : const Color(0xFFE6EBF3),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: CustomPaint(
-          painter: GpsRoutePainter(routePoints: item.routePoints),
-          child: Center(
-            child: Text(
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+        child: Column(
+          children: [
+            Expanded(
+              child: CustomPaint(
+                size: Size.infinite,
+                painter: GpsRoutePainter(routePoints: item.routePoints),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
               distanceLabel,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: AppColors.textPrimary,
                 fontSize: 17,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.6,
               ),
             ),
-          ),
+          ],
         ),
       );
     }
@@ -229,19 +253,13 @@ class HomeNewsFeed extends GetView<HomeController> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15),
-        child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-            ? (item.imageUrl!.startsWith('http')
-                ? CachedNetworkImage(
-                    imageUrl: item.imageUrl!,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => Image.asset(AppImages.taskScreenBackground, fit: BoxFit.cover),
-                  )
-                : Image.file(
-                    File(item.imageUrl!),
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Image.asset(AppImages.taskScreenBackground, fit: BoxFit.cover),
-                  ))
-            : Image.asset(AppImages.taskScreenBackground, fit: BoxFit.cover),
+        child: hasImage
+            ? CachedNetworkImage(
+                imageUrl: AppConfig.resolveMediaUrl(item.imageUrl!),
+                fit: BoxFit.cover,
+                errorWidget: (_, __, ___) => Image.asset(item.fallbackImage, fit: BoxFit.cover),
+              )
+            : Image.asset(item.fallbackImage, fit: BoxFit.cover),
       ),
     );
   }
@@ -266,52 +284,39 @@ class HomeNewsFeed extends GetView<HomeController> {
 
   Widget _buildUserAvatar(HomeFeedItem item) {
     final initial = item.userName.isNotEmpty ? item.userName[0].toUpperCase() : 'M';
-    var pic = item.userAvatar;
-    if (pic != null && pic.isNotEmpty && !pic.startsWith('http')) {
-      final base = AppConfig.baseUrl.endsWith('/')
-          ? AppConfig.baseUrl.substring(0, AppConfig.baseUrl.length - 1)
-          : AppConfig.baseUrl;
-      pic = pic.startsWith('/') ? '$base$pic' : '$base/$pic';
-    }
+    final avatar = item.userAvatar;
+    final pic = avatar != null && avatar.isNotEmpty ? AppConfig.resolveMediaUrl(avatar) : null;
 
     return Container(
       width: 36,
       height: 36,
       decoration: BoxDecoration(
-        color: const Color(0xFFE5E7EB),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: const Color(0xFFD1D5DB),
-          width: 1,
-        ),
+        color: AppColors.chipSurface,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.borderLight, width: 1),
       ),
       clipBehavior: Clip.antiAlias,
-      child: pic != null && pic.isNotEmpty
-          ? (pic.startsWith('http')
-              ? CachedNetworkImage(
-                  imageUrl: pic,
-                  fit: BoxFit.cover,
-                  errorWidget: (_, __, ___) => _buildAvatarInitial(initial),
-                )
-              : Image.file(
-                  File(pic),
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _buildAvatarInitial(initial),
-                ))
+      child: pic != null
+          ? CachedNetworkImage(
+              imageUrl: pic,
+              fit: BoxFit.cover,
+              placeholder: (_, __) => _buildAvatarInitial(initial),
+              errorWidget: (_, __, ___) => _buildAvatarInitial(initial),
+            )
           : _buildAvatarInitial(initial),
     );
   }
 
   Widget _buildAvatarInitial(String initial) {
     return Container(
-      color: const Color(0xFF1E293B),
+      color: AppColors.isDark ? AppColors.accentBlue.withValues(alpha: 0.18) : const Color(0xFF1E293B),
       child: Center(
         child: Text(
           initial,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
+          style: TextStyle(
+            color: AppColors.isDark ? AppColors.accentBlue : Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
           ),
         ),
       ),

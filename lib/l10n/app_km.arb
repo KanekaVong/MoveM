@@ -44,6 +44,8 @@
   "verifyOtpTitle": "ផ្ទៀងផ្ទាត់លេខកូដ",
   "otpCodeLabel": "លេខកូដ ៦ ខ្ទង់",
   "resendCode": "ផ្ញើលេខកូដម្ដងទៀត",
+  "didntGetCode": "មិនបានទទួលលេខកូដ?",
+  "resendCodeIn": "ផ្ញើម្ដងទៀតក្នុង {time}",
   "verifyBtn": "ផ្ទៀងផ្ទាត់",
   "resetPasswordTitle": "កំណត់ពាក្យសម្ងាត់ថ្មី",
   "newPassword": "ពាក្យសម្ងាត់ថ្មី",

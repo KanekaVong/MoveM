@@ -82,7 +82,12 @@ class TaskResponse {
   bool get isPastDeadline {
     if (deadline == null || deadline!.isEmpty) return false;
     try {
-      return DateTime.parse(deadline!).toLocal().isBefore(DateTime.now());
+      var due = DateTime.parse(deadline!).toLocal();
+      // A date-only deadline (midnight) lasts until the end of that day.
+      if (due.hour == 0 && due.minute == 0 && due.second == 0) {
+        due = DateTime(due.year, due.month, due.day + 1);
+      }
+      return due.isBefore(DateTime.now());
     } catch (_) {
       return false;
     }

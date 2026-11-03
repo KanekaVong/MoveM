@@ -65,7 +65,7 @@ abstract class FitnessEndpoints {
   static String workoutRoute(dynamic sessionId) => 'fitness/workouts/$sessionId/route';
   static String workoutRoutePoints(dynamic sessionId) => 'fitness/workouts/$sessionId/route-points';
   static String workoutAnalysis(dynamic sessionId) => 'fitness/workouts/$sessionId/analysis';
-  static String workoutAttachments(dynamic sessionId) => 'fitness/workouts/$sessionId/attachments';
+  static String workoutAttachments(dynamic sessionId) => 'workouts/$sessionId/attachments';
   static String shareWorkout(dynamic sessionId) => 'fitness/workouts/$sessionId/share';
   static String socialWorkout(dynamic sessionId) => 'fitness/workouts/$sessionId/social';
   static String workoutKudos(dynamic sessionId) => 'fitness/workouts/$sessionId/kudos';
