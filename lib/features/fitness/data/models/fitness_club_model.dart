@@ -1,3 +1,6 @@
+import '../../../../core/config/app_config.dart';
+import '../../../../core/storage/user_manager.dart';
+
 class FitnessClubModel {
   final int id;
   final String name;
@@ -10,6 +13,8 @@ class FitnessClubModel {
   final int memberCount;
   final bool isMember;
   final String? userRole; // 'OWNER', 'ADMIN', 'MEMBER' or null
+  final String? profilePic;
+  final String? coverPic;
 
   FitnessClubModel({
     required this.id,
@@ -23,10 +28,28 @@ class FitnessClubModel {
     this.memberCount = 1,
     this.isMember = false,
     this.userRole,
+    this.profilePic,
+    this.coverPic,
   });
 
   bool get isPrivate => privacy.toUpperCase() == 'PRIVATE';
-  bool get isOwner => userRole?.toUpperCase() == 'OWNER';
+
+  /// `FitnessClubResponse` has no role for the caller, so the owner is the
+  /// user in `createdBy`.
+  bool get isOwner {
+    if (userRole?.toUpperCase() == 'OWNER') return true;
+    final currentUserId = int.tryParse(UserManager().userId ?? '');
+    return currentUserId != null && createdBy != 0 && createdBy == currentUserId;
+  }
+
+  String? get coverUrl => _mediaUrl(coverPic);
+  String? get profileUrl => _mediaUrl(profilePic);
+
+  static String? _mediaUrl(String? path) {
+    if (path == null || path.trim().isEmpty) return null;
+    return AppConfig.resolveMediaUrl(path.trim());
+  }
+
   bool get canCreateChallenges =>
       isMember || isOwner || (userRole != null && userRole!.isNotEmpty);
 
@@ -48,12 +71,17 @@ class FitnessClubModel {
       memberCount: (json['memberCount'] as num?)?.toInt() ?? 1,
       isMember: member,
       userRole: role,
+      profilePic: json['profilePic']?.toString(),
+      coverPic: json['coverPic']?.toString(),
     );
   }
 
   FitnessClubModel copyWith({
     bool? isMember,
     String? userRole,
+    int? memberCount,
+    String? profilePic,
+    String? coverPic,
   }) {
     return FitnessClubModel(
       id: id,
@@ -64,9 +92,11 @@ class FitnessClubModel {
       joinToken: joinToken,
       createdAt: createdAt,
       updatedAt: updatedAt,
-      memberCount: memberCount,
+      memberCount: memberCount ?? this.memberCount,
       isMember: isMember ?? this.isMember,
       userRole: userRole ?? this.userRole,
+      profilePic: profilePic ?? this.profilePic,
+      coverPic: coverPic ?? this.coverPic,
     );
   }
 
@@ -83,6 +113,8 @@ class FitnessClubModel {
       'memberCount': memberCount,
       'isMember': isMember,
       'userRole': userRole,
+      'profilePic': profilePic,
+      'coverPic': coverPic,
     };
   }
 }
@@ -113,6 +145,7 @@ class FitnessClubMemberModel {
   final String role; // 'OWNER', 'ADMIN', 'MEMBER'
   final DateTime? joinedAt;
   final String? userName;
+  final String? username;
   final String? avatarUrl;
 
   FitnessClubMemberModel({
@@ -121,6 +154,7 @@ class FitnessClubMemberModel {
     required this.role,
     this.joinedAt,
     this.userName,
+    this.username,
     this.avatarUrl,
   });
 
@@ -137,17 +171,23 @@ class FitnessClubMemberModel {
       userName: fullName.isNotEmpty
           ? fullName
           : (username.isNotEmpty ? username : 'Member #${json['userId'] ?? ''}'),
+      username: username.isNotEmpty ? username : null,
       avatarUrl: json['avatarUrl']?.toString() ?? json['profilePic']?.toString(),
     );
   }
 
-  FitnessClubMemberModel copyWith({String? userName, String? avatarUrl}) {
+  FitnessClubMemberModel copyWith({
+    String? userName,
+    String? username,
+    String? avatarUrl,
+  }) {
     return FitnessClubMemberModel(
       clubId: clubId,
       userId: userId,
       role: role,
       joinedAt: joinedAt,
       userName: userName ?? this.userName,
+      username: username ?? this.username,
       avatarUrl: avatarUrl ?? this.avatarUrl,
     );
   }
@@ -159,6 +199,7 @@ class FitnessClubMemberModel {
       'role': role,
       'joinedAt': joinedAt?.toIso8601String(),
       'userName': userName,
+      'username': username,
       'avatarUrl': avatarUrl,
     };
   }

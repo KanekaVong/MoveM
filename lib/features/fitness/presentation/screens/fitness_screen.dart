@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_images.dart';
+import '../../../../shared/widgets/skeletons.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../controllers/achievement_notice_controller.dart';
 import '../controllers/fitness_profile_controller.dart';
@@ -35,6 +37,12 @@ class _FitnessScreenState extends State<FitnessScreen> {
     return Obx(() {
       if (controller.hasProfile.value) {
         return FitnessDashboardScreen(controller: controller);
+      }
+      if (!controller.isProfileChecked.value) {
+        return Scaffold(
+          backgroundColor: AppColors.pageBackground,
+          body: const SafeArea(child: SkeletonDetail()),
+        );
       }
       return FitnessWelcomeScreen(controller: controller);
     });

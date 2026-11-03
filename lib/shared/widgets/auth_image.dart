@@ -14,11 +14,13 @@ class AuthImage extends StatefulWidget {
     required this.url,
     required this.fallback,
     this.fit = BoxFit.cover,
+    this.alignment = Alignment.center,
   });
 
   final String url;
   final Widget fallback;
   final BoxFit fit;
+  final Alignment alignment;
 
   @override
   State<AuthImage> createState() => _AuthImageState();
@@ -63,6 +65,12 @@ class _AuthImageState extends State<AuthImage> {
   Widget build(BuildContext context) {
     final image = _image;
     if (image == null) return widget.fallback;
-    return Image(image: image, fit: widget.fit, width: double.infinity, height: double.infinity);
+    return Image(
+      image: image,
+      fit: widget.fit,
+      alignment: widget.alignment,
+      width: double.infinity,
+      height: double.infinity,
+    );
   }
 }

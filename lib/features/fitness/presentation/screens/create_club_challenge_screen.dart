@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
@@ -145,7 +146,8 @@ class _CreateClubChallengeScreenState extends State<CreateClubChallengeScreen> {
     }
 
     final targetValue = double.tryParse(_targetController.text.trim()) ?? 0;
-    if (targetValue <= 0) {
+    // The API rejects targets below 0.01.
+    if (targetValue < 0.01) {
       AppSnack.show(
         l10n?.targetTitle ?? 'Target',
         l10n?.enterTargetInUnit(unitLabel(_targetUnit)) ?? 'Enter a target in $_targetUnit.',
@@ -167,7 +169,9 @@ class _CreateClubChallengeScreenState extends State<CreateClubChallengeScreen> {
     if (!mounted) return;
     setState(() => _isSubmitting = false);
 
-    if (created) Get.back(result: true);
+    // Pop this route directly: Get.back() would only dismiss the success
+    // snackbar the controller just showed and leave this screen open.
+    if (created) Navigator.of(context).pop(true);
   }
 
   @override
@@ -189,6 +193,8 @@ class _CreateClubChallengeScreenState extends State<CreateClubChallengeScreen> {
                       child: TextField(
                         controller: _nameController,
                         style: _inputStyle,
+                        // API limit for the challenge name.
+                        inputFormatters: [LengthLimitingTextInputFormatter(150)],
                         decoration: _inputDecoration(tr.challengeNameExample),
                       ),
                     ),

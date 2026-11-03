@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/storage/user_manager.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../data/models/group_challenge_model.dart';
@@ -16,6 +17,26 @@ class ClubChallengeDetailController extends BaseController {
   final participants = <ChallengeParticipantModel>[].obs;
   final isJoined = false.obs;
   final isJoining = false.obs;
+  // False until the caller's participation is known, so the join button is
+  // not offered to someone who has already joined.
+  final isParticipationLoaded = false.obs;
+
+  int? get _currentUserId => int.tryParse(UserManager().userId ?? '');
+
+  /// The user who created the challenge cannot join it.
+  bool get isOwner {
+    final userId = _currentUserId;
+    return userId != null &&
+        challenge.value.createdBy != 0 &&
+        challenge.value.createdBy == userId;
+  }
+
+  bool get canJoin => !isOwner && !isJoined.value && isParticipationLoaded.value;
+
+  static bool _isJoinedStatus(String status) {
+    final value = status.toUpperCase();
+    return value == 'ACTIVE' || value == 'COMPLETED';
+  }
 
   AppLocalizations? get _l10n {
     final ctx = Get.context;
@@ -44,13 +65,19 @@ class ClubChallengeDetailController extends BaseController {
       participants.value = res.data!;
     }
 
+    final userId = _currentUserId;
+    final inParticipants = userId != null &&
+        participants.any((p) => p.userId == userId && _isJoinedStatus(p.status));
+
     final mine = await _repository.getMyParticipation(challenge.value.id);
     isJoined.value = challenge.value.isJoined ||
-        (mine.isSuccess && mine.data != null && mine.data!.status == 'ACTIVE');
+        inParticipants ||
+        (mine.isSuccess && mine.data != null && _isJoinedStatus(mine.data!.status));
+    isParticipationLoaded.value = true;
   }
 
   Future<void> joinChallenge() async {
-    if (isJoining.value) return;
+    if (isJoining.value || !canJoin) return;
     isJoining.value = true;
     final res = await _repository.joinChallenge(challenge.value.id);
     isJoining.value = false;

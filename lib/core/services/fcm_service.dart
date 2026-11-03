@@ -4,7 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import '../../features/task/presentation/screens/task_detail_screen.dart';
+import '../../features/notifications/presentation/notification_navigator.dart';
 import '../../firebase_options.dart';
 import '../routes/app_routes.dart';
 import '../storage/user_manager.dart';
@@ -222,38 +222,33 @@ class FcmService {
       return;
     }
 
-    final route = data['route'] as String?;
-    final type = data['type'] as String? ?? data['notificationType'] as String?;
+    final route = data['route']?.toString();
+    final type = (data['notificationType'] ?? data['type'])?.toString();
+    final referenceType = data['referenceType']?.toString();
+    final referenceId = (data['referenceId'] ?? data['activityId'])?.toString();
 
     if (route != null && route.isNotEmpty) {
       Get.toNamed(route);
       return;
     }
 
-    if (type != null) {
-      switch (type.toLowerCase()) {
-        case 'friends':
-        case 'friend_request':
-          Get.toNamed(AppRoutes.main, arguments: {'tab': 2});
-          break;
-        case 'task':
-        case 'task_reminder':
-          final activityId = data['activityId'] as String?;
-          if (activityId != null && activityId.isNotEmpty) {
-            Get.to(() => TaskDetailScreen(activityId: activityId));
-          } else {
-            Get.toNamed(AppRoutes.main, arguments: {'tab': 1});
-          }
-          break;
-        case 'fitness':
-        case 'workout':
-          Get.toNamed(AppRoutes.main, arguments: {'tab': 0});
-          break;
-        case 'notification':
-        default:
-          _navigateToNotifications();
-          break;
-      }
+    // Local task reminders are scheduled with type 'task_reminder'.
+    if (type?.toLowerCase() == 'task_reminder') {
+      NotificationNavigator.open(
+        notificationType: 'TASK_REMINDER',
+        referenceId: referenceId,
+      );
+      return;
+    }
+
+    if ((type != null && type.isNotEmpty) ||
+        (referenceType != null && referenceType.isNotEmpty)) {
+      NotificationNavigator.open(
+        notificationType: type,
+        referenceType: referenceType,
+        referenceId: referenceId,
+        title: data['title']?.toString(),
+      );
       return;
     }
 

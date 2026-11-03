@@ -3172,6 +3172,21 @@ class AppLocalizationsKm extends AppLocalizations {
   }
 
   @override
+  String joinedOn(String date) {
+    return 'ចូលរួមនៅ $date';
+  }
+
+  @override
+  String selectedCountCaps(int count) {
+    return 'បានជ្រើសរើស ($count)';
+  }
+
+  @override
+  String inviteCount(int count) {
+    return 'អញ្ជើញ ($count)';
+  }
+
+  @override
   String get roleOwner => 'ម្ចាស់ក្លឹប';
 
   @override

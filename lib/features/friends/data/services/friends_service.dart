@@ -5,7 +5,8 @@ class FriendsService {
   final Dio dio = DioClient().dio;
 
   Future<Response> getUserById(String userId) async {
-    return await dio.get('users/$userId');
+    // API: GET user/{id} -> UserProfileResponse
+    return await dio.get('user/$userId');
   }
 
   Future<Response> getFriends() async {

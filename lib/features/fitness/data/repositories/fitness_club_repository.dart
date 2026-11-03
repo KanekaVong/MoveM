@@ -30,6 +30,23 @@ class FitnessClubRepository {
         .toList();
   }
 
+  /// Clubs the user owns or has joined, private ones included.
+  Future<ApiResult<List<FitnessClubModel>>> getMyClubs() async {
+    try {
+      final response = await _dioClient.dio.get('fitness/clubs/my');
+      final list = _asMapList(response.data)
+          .map(FitnessClubModel.fromJson)
+          .toList();
+      return ApiSuccess(list);
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } on ApiException catch (e) {
+      return ApiError(e);
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
   Future<ApiResult<List<FitnessClubModel>>> getPublicClubs() async {
     try {
       final response = await _dioClient.dio.get('fitness/clubs/public');
@@ -50,7 +67,7 @@ class FitnessClubRepository {
     try {
       final response = await _dioClient.dio.get(
         'fitness/clubs/search',
-        queryParameters: {'query': query},
+        queryParameters: {'keyword': query},
       );
       final list = _asMapList(response.data)
           .map(FitnessClubModel.fromJson)
@@ -113,6 +130,38 @@ class FitnessClubRepository {
         return ApiSuccess(FitnessClubModel.fromJson(map));
       }
       return ApiError(ApiException(message: tr.failedToUpdateClub));
+    } on DioException catch (e) {
+      return ApiError(ApiException.fromDioError(e));
+    } on ApiException catch (e) {
+      return ApiError(e);
+    } catch (e) {
+      return ApiError(ApiException(message: e.toString()));
+    }
+  }
+
+  /// `POST workouts/clubs/{clubId}/cover` (multipart `file`). Returns the
+  /// stored path or URL of the new cover.
+  Future<ApiResult<String>> uploadClubCover(
+    int clubId,
+    List<int> bytes,
+    String fileName,
+  ) async {
+    try {
+      final response = await _dioClient.dio.post(
+        'workouts/clubs/$clubId/cover',
+        data: FormData.fromMap({
+          'file': MultipartFile.fromBytes(bytes, filename: fileName),
+        }),
+      );
+      final map = _asMap(response.data);
+      // Prefer filePath: the server's `url` repeats the storage prefix twice
+      // (e.g. "https://storage.../bucket/https://storage.../bucket/file.jpg").
+      final filePath = map?['filePath']?.toString() ?? '';
+      final path = filePath.isNotEmpty ? filePath : map?['url']?.toString();
+      if (path != null && path.isNotEmpty) {
+        return ApiSuccess(path);
+      }
+      return ApiError(ApiException(message: tr.serverBadResponse));
     } on DioException catch (e) {
       return ApiError(ApiException.fromDioError(e));
     } on ApiException catch (e) {

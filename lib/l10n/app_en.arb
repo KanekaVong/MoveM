@@ -1367,6 +1367,30 @@
       "year": {}
     }
   },
+  "joinedOn": "Joined {date}",
+  "@joinedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedCountCaps": "SELECTED ({count})",
+  "@selectedCountCaps": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inviteCount": "Invite ({count})",
+  "@inviteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "roleOwner": "Club owner",
   "roleAdmin": "Admin",
   "targetWithUnit": "TARGET ({unit})",

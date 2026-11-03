@@ -3183,6 +3183,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String joinedOn(String date) {
+    return 'Joined $date';
+  }
+
+  @override
+  String selectedCountCaps(int count) {
+    return 'SELECTED ($count)';
+  }
+
+  @override
+  String inviteCount(int count) {
+    return 'Invite ($count)';
+  }
+
+  @override
   String get roleOwner => 'Club owner';
 
   @override
