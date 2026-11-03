@@ -10,6 +10,7 @@ import '../../data/models/group_challenge_model.dart';
 import '../controllers/fitness_club_controller.dart';
 import 'package:movem/core/utils/app_snack.dart';
 import 'package:movem/core/utils/l10n.dart';
+import 'package:movem/shared/widgets/picker_theme.dart';
 
 /// Activity types offered when building a custom club challenge.
 /// Values match the backend `workoutType` enum.
@@ -98,6 +99,7 @@ class _CreateClubChallengeScreenState extends State<CreateClubChallengeScreen> {
 
     final date = await showDatePicker(
       context: context,
+      builder: pickerThemeBuilder,
       initialDate: initial,
       firstDate: DateTime.now().subtract(const Duration(days: 1)),
       lastDate: DateTime.now().add(const Duration(days: 730)),
@@ -106,6 +108,7 @@ class _CreateClubChallengeScreenState extends State<CreateClubChallengeScreen> {
 
     final time = await showTimePicker(
       context: context,
+      builder: pickerThemeBuilder,
       initialTime: TimeOfDay.fromDateTime(initial),
     );
     if (time == null) return;

@@ -39,14 +39,14 @@ class AddCollaboratorScreen extends GetView<AddCollaboratorController> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-              child: Text(
-                l10n?.suggested ?? 'Suggested',
+              child: Obx(() => Text(
+                controller.searchQuery.value.trim().isNotEmpty ? tr.searchResults : tr.suggested,
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
+              )),
             ),
             Expanded(
               child: Obx(() {

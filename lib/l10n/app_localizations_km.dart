@@ -3613,4 +3613,14 @@ class AppLocalizationsKm extends AppLocalizations {
   String paceValueShort(Object pace) {
     return '$pace /គ.ម';
   }
+
+  @override
+  String attachmentsNotUploaded(Object count) {
+    return 'មានការកែឯកសារភ្ជាប់ $count មិនអាចរក្សាទុកបានទេ។';
+  }
+
+  @override
+  String invitesNotSent(Object count) {
+    return 'មានការអញ្ជើញ $count មិនអាចផ្ញើបានទេ។';
+  }
 }

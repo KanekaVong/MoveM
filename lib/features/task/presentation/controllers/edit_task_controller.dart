@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import '../../../../core/network/api_result.dart';
 import '../../../../core/services/notification_scheduler_service.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_dialogs.dart';
 import '../../../../shared/base/base_controller.dart';
 import '../../domain/repositories/task_repository.dart';
@@ -24,6 +23,7 @@ import '../../../groups/data/repositories/group_repository_impl.dart';
 import '../../../groups/data/services/group_service.dart';
 import 'package:movem/core/utils/app_snack.dart';
 import 'package:movem/core/utils/l10n.dart';
+import 'package:movem/shared/widgets/picker_theme.dart';
 
 class EditTaskController extends BaseController {
   AppLocalizations? get _l10n {
@@ -138,8 +138,8 @@ class EditTaskController extends BaseController {
       existingAttachments.addAll(initialTask.attachments!);
     }
 
-    if (initialTask.collaborators != null && initialTask.collaborators!.isNotEmpty) {
-      collaborators.assignAll(initialTask.collaborators!.map((c) {
+    if (initialTask.otherCollaborators.isNotEmpty) {
+      collaborators.assignAll(initialTask.otherCollaborators.map((c) {
         if (c is Map) {
           final displayName = '${c['firstname'] ?? ''} ${c['lastname'] ?? ''}'.trim();
           return {
@@ -271,6 +271,8 @@ class EditTaskController extends BaseController {
     }
 
     AppDialogs.showLoading();
+    var failedUploads = 0;
+    var failedInvites = 0;
 
     try {
       if (pickedAttachments.isNotEmpty) {
@@ -278,6 +280,7 @@ class EditTaskController extends BaseController {
           final file = pickedAttachments[i];
           final uploadResult = await repository.uploadTaskAttachment(initialTask.activityId, file.path);
           if (uploadResult is ApiError) {
+            failedUploads++;
             _logger.e('Failed to upload task attachment: ${uploadResult.exception?.message}');
           }
         }
@@ -285,7 +288,8 @@ class EditTaskController extends BaseController {
 
       if (attachmentsToDelete.isNotEmpty) {
         for (final attId in attachmentsToDelete) {
-          await repository.deleteAttachment(attId);
+          final deleteResult = await repository.deleteAttachment(attId);
+          if (deleteResult is ApiError) failedUploads++;
         }
       }
 
@@ -298,7 +302,8 @@ class EditTaskController extends BaseController {
             identifier = c.trim();
           }
           if (identifier.isNotEmpty) {
-            await groupRepository.inviteMember(initialTask.activityId, identifier);
+            final inviteResult = await groupRepository.inviteMember(initialTask.activityId, identifier);
+            if (inviteResult is ApiError) failedInvites++;
           }
         }
       }
@@ -340,7 +345,20 @@ class EditTaskController extends BaseController {
       if (updateResult is ApiSuccess<TaskResponse>) {
         final data = updateResult.data;
         Get.back(result: true);
-        AppSnack.show(_l10n?.success ?? 'Done', _l10n?.taskUpdatedSuccess ?? 'Task updated successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        if (failedUploads > 0 || failedInvites > 0) {
+          // The task saved, but say what didn't go through instead of a plain success.
+          AppSnack.show(
+            tr.taskUpdatedSuccess,
+            [
+              if (failedUploads > 0) tr.attachmentsNotUploaded(failedUploads),
+              if (failedInvites > 0) tr.invitesNotSent(failedInvites),
+            ].join('\n'),
+            backgroundColor: Colors.orange,
+            colorText: Colors.white,
+          );
+        } else {
+          AppSnack.show(_l10n?.success ?? 'Done', _l10n?.taskUpdatedSuccess ?? 'Task updated successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+        }
         _processBackgroundUpdates(data.activityId, activityName, description);
       } else if (updateResult is ApiError<TaskResponse>) {
         _logger.e('Update task failed: ${updateResult.exception.message}');
@@ -412,19 +430,7 @@ class EditTaskController extends BaseController {
       initialDate: initialDate,
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.accentBlue,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: AppColors.textPrimary,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: pickerThemeBuilder,
     );
 
     if (pickedDate != null) {
@@ -437,19 +443,7 @@ class EditTaskController extends BaseController {
     final pickedTime = await showTimePicker(
       context: context,
       initialTime: initialTime,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.accentBlue,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: AppColors.textPrimary,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: pickerThemeBuilder,
     );
 
     if (pickedTime != null) {
@@ -463,8 +457,15 @@ class EditTaskController extends BaseController {
   }
 
   String get formattedReminderDate {
-    if (selectedDate.value == null) return tr.notSet;
-    return formatDayMonthYear(selectedDate.value!, padDay: true).toUpperCase();
+    // Show the saved reminder like the detail screen does; fall back to the
+    // deadline (where a new reminder would go) when there isn't one yet.
+    // Read selectedDate first: the Obx showing this needs an observable read.
+    final deadline = selectedDate.value;
+    final reminders = initialTask.reminders;
+    final saved = reminders != null && reminders.isNotEmpty ? DateTime.tryParse(reminders.first.remindAt) : null;
+    final date = saved?.toLocal() ?? deadline;
+    if (date == null) return tr.notSet;
+    return formatDayMonthYear(date, padDay: true).toUpperCase();
   }
 
   void cyclePriority() {

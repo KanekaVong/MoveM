@@ -154,7 +154,7 @@ class TaskService {
 
   Future<Response> deleteAttachment(dynamic attachmentId) async {
     return await dio.delete(
-      'attachments/$attachmentId',
+      'attachments/$attachmentId/deleteAnyAttachment',
       options: Options(responseType: ResponseType.json),
     );
   }
