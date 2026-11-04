@@ -156,7 +156,7 @@ class _ClubChallengeDetailScreenState extends State<ClubChallengeDetailScreen> {
                   const SizedBox(height: 28),
                   _buildMembersJoined(),
                   const SizedBox(height: 28),
-                  if (_hasEnded) ...[
+                  if (_hasEnded && _canCreateAgain) ...[
                     GestureDetector(
                       onTap: _createChallengeAgain,
                       child: Text(
@@ -365,21 +365,51 @@ class _ClubChallengeDetailScreenState extends State<ClubChallengeDetailScreen> {
   }
 
   Widget _buildJoinButton() {
-    return Obx(() => AppButton(
+    return Obx(() {
+      if (_hasEnded) {
+        if (!_canCreateAgain) return const SizedBox.shrink();
+        return AppButton(
           label: tr.joinClubChallenge,
-          onPressed: _hasEnded ? _createChallengeAgain : _controller.joinChallenge,
-          isLoading: _controller.isJoining.value,
-        ));
+          onPressed: _createChallengeAgain,
+        );
+      }
+
+      // The challenge owner never joins their own challenge.
+      if (_controller.isOwner) return const SizedBox.shrink();
+
+      if (_controller.isJoined.value) {
+        return AppButton(label: tr.joinedTitle, onPressed: null);
+      }
+
+      return AppButton(
+        label: tr.joinClubChallenge,
+        onPressed: _controller.canJoin ? _controller.joinChallenge : null,
+        isLoading: _controller.isJoining.value ||
+            !_controller.isParticipationLoaded.value,
+      );
+    });
   }
 
-  void _createChallengeAgain() {
-    final club = Get.isRegistered<FitnessClubController>()
-        ? Get.find<FitnessClubController>().selectedClub.value
-        : null;
-    if (club == null) return;
-    Get.to(
+  FitnessClubController? get _clubController =>
+      Get.isRegistered<FitnessClubController>()
+          ? Get.find<FitnessClubController>()
+          : null;
+
+  /// Creating club challenges is an owner action.
+  bool get _canCreateAgain =>
+      _clubController?.selectedClub.value?.isOwner == true;
+
+  Future<void> _createChallengeAgain() async {
+    final clubController = _clubController;
+    final club = clubController?.selectedClub.value;
+    if (clubController == null || club == null || !club.isOwner) return;
+    final created = await Get.to(
       () => CreateClubChallengeScreen(club: club, draft: challenge),
     );
+    if (created == true && mounted) {
+      await clubController.loadClubDetails(club.id);
+      if (mounted) Navigator.of(context).pop();
+    }
   }
 
   Widget _buildMembersJoined() {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../core/storage/user_manager.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/base/base_controller.dart';
@@ -47,11 +48,27 @@ class FitnessClubController extends BaseController {
     await fetchClubs();
   }
 
+  /// The user's own and joined clubs (`fitness/clubs/my`, which includes
+  /// private ones) first, then public clubs they are not in yet.
   Future<void> fetchClubs() async {
     isLoadingClubs.value = true;
-    final result = await _clubRepo.getPublicClubs();
-    if (result.isSuccess && result.data != null) {
-      clubs.value = result.data!;
+    final results = await Future.wait([
+      _clubRepo.getMyClubs(),
+      _clubRepo.getPublicClubs(),
+    ]);
+    final mine = results[0];
+    final public = results[1];
+
+    if (mine.isSuccess || public.isSuccess) {
+      final myClubs = (mine.data ?? const <FitnessClubModel>[])
+          .map((club) => club.isMember ? club : club.copyWith(isMember: true))
+          .toList();
+      final myIds = myClubs.map((club) => club.id).toSet();
+      clubs.value = [
+        ...myClubs,
+        ...(public.data ?? const <FitnessClubModel>[])
+            .where((club) => !myIds.contains(club.id)),
+      ];
     }
     isLoadingClubs.value = false;
   }
@@ -141,15 +158,7 @@ class FitnessClubController extends BaseController {
     await executeApi<FitnessClubMemberModel>(
       apiCall: () => _clubRepo.joinClub(club.id),
       onSuccess: (member) {
-        final updated = FitnessClubModel(
-          id: club.id,
-          name: club.name,
-          description: club.description,
-          createdBy: club.createdBy,
-          privacy: club.privacy,
-          joinToken: club.joinToken,
-          createdAt: club.createdAt,
-          updatedAt: club.updatedAt,
+        final updated = club.copyWith(
           memberCount: club.memberCount + 1,
           isMember: true,
           userRole: 'MEMBER',
@@ -240,6 +249,36 @@ class FitnessClubController extends BaseController {
     }
 
     isLoadingClubDetails.value = false;
+  }
+
+  final isUploadingCover = false.obs;
+
+  /// Uploads a new club cover. Only the club owner can change it.
+  Future<bool> uploadClubCover(FitnessClubModel club, XFile file) async {
+    if (!club.isOwner || isUploadingCover.value) return false;
+    isUploadingCover.value = true;
+    final res = await _clubRepo.uploadClubCover(
+      club.id,
+      await file.readAsBytes(),
+      file.name,
+    );
+    isUploadingCover.value = false;
+
+    if (res.isSuccess && res.data != null) {
+      final current = selectedClub.value ?? club;
+      selectedClub.value = current.copyWith(coverPic: res.data);
+      final idx = clubs.indexWhere((c) => c.id == club.id);
+      if (idx >= 0) clubs[idx] = clubs[idx].copyWith(coverPic: res.data);
+      return true;
+    }
+    AppSnack.show(
+      _l10n?.errorTitle ?? 'Error',
+      res.exception?.message ?? _l10n?.pleaseTryAgain ?? 'Please try again.',
+      backgroundColor: const Color(0xFFEF4444),
+      colorText: Colors.white,
+      snackPosition: SnackPosition.BOTTOM,
+    );
+    return false;
   }
 
   Future<bool> createClubChallenge({
@@ -495,6 +534,7 @@ class FitnessClubController extends BaseController {
           name: '${f.firstname} ${f.lastname}'.trim().isNotEmpty
               ? '${f.firstname} ${f.lastname}'.trim()
               : f.username,
+          username: f.username,
           avatar: f.profilePic,
         );
       }
@@ -503,14 +543,16 @@ class FitnessClubController extends BaseController {
     final enriched = <FitnessClubMemberModel>[];
     for (final member in members) {
       var name = member.userName;
+      var username = member.username;
       var avatar = member.avatarUrl;
       final friend = friendsById[member.userId];
       if (friend != null) {
         if (name == null || name.startsWith('Member #')) name = friend.name;
+        if (friend.username.isNotEmpty) username ??= friend.username;
         avatar ??= friend.avatar.isEmpty ? null : friend.avatar;
       }
 
-      if (name == null || name.startsWith('Member #')) {
+      if (name == null || name.startsWith('Member #') || username == null) {
         try {
           final response = await FriendsService().getUserById(member.userId.toString());
           final data = response.data is Map
@@ -521,14 +563,21 @@ class FitnessClubController extends BaseController {
               : data;
           final first = user['firstname']?.toString() ?? user['firstName']?.toString() ?? '';
           final last = user['lastname']?.toString() ?? user['lastName']?.toString() ?? '';
-          final username = user['username']?.toString() ?? '';
+          final handle = user['username']?.toString() ?? '';
           final full = '$first $last'.trim();
-          name = full.isNotEmpty ? full : (username.isNotEmpty ? username : name);
+          if (name == null || name.startsWith('Member #')) {
+            name = full.isNotEmpty ? full : (handle.isNotEmpty ? handle : name);
+          }
+          if (handle.isNotEmpty) username ??= handle;
           avatar ??= user['profilePic']?.toString();
         } catch (_) {}
       }
 
-      enriched.add(member.copyWith(userName: name, avatarUrl: avatar));
+      enriched.add(member.copyWith(
+        userName: name,
+        username: username,
+        avatarUrl: avatar,
+      ));
     }
     return enriched;
   }
@@ -542,6 +591,7 @@ class FitnessClubController extends BaseController {
 
 class _FriendLike {
   final String name;
+  final String username;
   final String avatar;
-  _FriendLike({required this.name, required this.avatar});
+  _FriendLike({required this.name, required this.username, required this.avatar});
 }

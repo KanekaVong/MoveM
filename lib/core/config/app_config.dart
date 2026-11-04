@@ -28,6 +28,11 @@ class AppConfig {
 
   /// Turns a stored path such as `profile-pics/photo.jpg` into a loadable URL.
   static String resolveMediaUrl(String path) {
+    // Some API responses prefix an already absolute URL with the storage
+    // root again ("https://host/bucket/https://host/bucket/file.jpg"), so
+    // keep only the last absolute URL.
+    final nested = path.lastIndexOf(RegExp(r'https?://'));
+    if (nested > 0) path = path.substring(nested);
     if (path.startsWith('http://') || path.startsWith('https://')) return path;
     final root = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
     var relative = path.startsWith('/') ? path.substring(1) : path;

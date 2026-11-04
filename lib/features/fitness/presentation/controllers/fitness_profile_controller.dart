@@ -19,6 +19,9 @@ class FitnessProfileController extends BaseController {
 
   final profile = Rxn<FitnessProfileModel>();
   final hasProfile = false.obs;
+  // False until the first profile request finishes, so the screen does not
+  // show the welcome page before it knows whether a profile exists.
+  final isProfileChecked = false.obs;
 
   final soloChallenges = <SoloChallengeModel>[].obs;
   final isLoadingChallenges = false.obs;
@@ -83,6 +86,7 @@ class FitnessProfileController extends BaseController {
         hasProfile.value = false;
       },
     );
+    isProfileChecked.value = true;
   }
 
   Future<void> fetchStatistics() async {

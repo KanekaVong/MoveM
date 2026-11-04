@@ -1,7 +1,9 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../../../core/storage/user_manager.dart';
 import '../controllers/fitness_club_controller.dart';
 import '../../data/models/fitness_club_model.dart';
 import '../../data/models/group_challenge_model.dart';
@@ -13,6 +15,7 @@ import 'invite_people_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_button.dart';
+import '../../../../shared/widgets/auth_image.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import 'package:movem/core/utils/app_snack.dart';
 import 'package:movem/shared/widgets/skeletons.dart';
@@ -65,17 +68,30 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     );
   }
 
+  Widget _buildDefaultHero() {
+    return Image.asset(
+      'assets/images/club_hero_banner.jpg',
+      fit: BoxFit.cover,
+      alignment: Alignment.topCenter,
+    );
+  }
+
   Widget _buildHeroHeader(FitnessClubModel club) {
+    final coverUrl = club.coverUrl;
     return Stack(
       children: [
         SizedBox(
           height: 280,
           width: double.infinity,
-          child: Image.asset(
-            'assets/images/club_hero_banner.jpg',
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
-          ),
+          child: coverUrl != null
+              // Uploaded covers are protected, so load them with the token.
+              ? AuthImage(
+                  url: coverUrl,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  fallback: _buildDefaultHero(),
+                )
+              : _buildDefaultHero(),
         ),
         Container(
           height: 280,
@@ -116,61 +132,96 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                     ),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () => Get.to(() => ClubOverviewScreen(club: club)),
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.black.withValues(alpha: 0.35),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (club.isOwner) ...[
+                      GestureDetector(
+                        onTap: () => _changeCover(club),
+                        child: Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.black.withValues(alpha: 0.35),
+                          ),
+                          child: Obx(
+                            () => _controller.isUploadingCover.value
+                                ? const Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Icon(
+                                    Icons.photo_camera_outlined,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                    ],
+                    GestureDetector(
+                      onTap: () => Get.to(() => ClubOverviewScreen(club: club)),
+                      child: Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.black.withValues(alpha: 0.35),
+                        ),
+                        child: const Icon(
+                          Icons.info_outline,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.info_outline,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
+                  ],
                 ),
               ],
             ),
           ),
         ),
-        Positioned(
-          top: 64,
-          left: 0,
-          right: 0,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.auto_awesome,
-                color: Color(0xFFC8A265),
-                size: 28,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'M O V E M',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 9,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                tr.clubSlogan,
-                style: TextStyle(
+        if (coverUrl == null)
+          Positioned(
+            top: 64,
+            left: 0,
+            right: 0,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.auto_awesome,
                   color: Color(0xFFC8A265),
-                  fontSize: 8.5,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 2.2,
+                  size: 28,
                 ),
-              ),
-            ],
+                const SizedBox(height: 8),
+                const Text(
+                  'M O V E M',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 9,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  tr.clubSlogan,
+                  style: TextStyle(
+                    color: Color(0xFFC8A265),
+                    fontSize: 8.5,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 2.2,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
       ],
     );
   }
@@ -213,9 +264,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                 Row(
                   children: [
                     Flexible(
-                      child: GestureDetector(
-                        onTap: () => _showClubInfoModal(context, club),
-                        child: Text(
+                      child: Text(
                         club.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -225,7 +274,6 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                           fontWeight: FontWeight.w700,
                           letterSpacing: -0.2,
                         ),
-                      ),
                       ),
                     ),
                     SizedBox(width: 8),
@@ -256,27 +304,29 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                 SizedBox(height: 8),
                 Row(
                   children: [
-                    GestureDetector(
-                      onTap: () => _inviteMembers(club),
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.chipSurface,
-                          border: Border.all(
-                            color: AppColors.textPrimary.withValues(alpha: 0.15),
-                            width: 1,
+                    if (club.isOwner) ...[
+                      GestureDetector(
+                        onTap: () => _inviteMembers(club),
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.chipSurface,
+                            border: Border.all(
+                              color: AppColors.textPrimary.withValues(alpha: 0.15),
+                              width: 1,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.person_add_alt_outlined,
+                            color: AppColors.textPrimary,
+                            size: 16,
                           ),
                         ),
-                        child: Icon(
-                          Icons.person_add_alt_outlined,
-                          color: AppColors.textPrimary,
-                          size: 16,
-                        ),
                       ),
-                    ),
-                    SizedBox(width: 10),
+                      SizedBox(width: 10),
+                    ],
                     GestureDetector(
                       onTap: () {
                         final shareText = club.joinToken.isNotEmpty
@@ -304,6 +354,23 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                     ),
                   ],
                 ),
+                if (_canJoin(club)) ...[
+                  SizedBox(height: 12),
+                  AppButton(
+                    height: 40,
+                    width: null,
+                    onPressed: () async {
+                      if (club.isPrivate) {
+                        await _controller.requestToJoin(club);
+                      } else {
+                        await _controller.joinClub(club);
+                        // Reload members so the join button disappears.
+                        await _controller.loadClubDetails(club.id);
+                      }
+                    },
+                    label: club.isPrivate ? tr.requestJoin : tr.joinClub,
+                  ),
+                ],
               ],
             ),
           ),
@@ -312,10 +379,22 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     );
   }
 
+  Future<void> _changeCover(FitnessClubModel club) async {
+    if (!club.isOwner) return;
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1600,
+      imageQuality: 85,
+    );
+    if (picked == null) return;
+    await _controller.uploadClubCover(club, picked);
+  }
+
   Future<void> _inviteMembers(FitnessClubModel club) async {
+    if (!club.isOwner) return;
     final existingIds = _controller.clubMembers.map((m) => m.userId).toSet();
     final result = await Get.to(
-      () => InvitePeopleScreen(initialSelectedIds: existingIds),
+      () => InvitePeopleScreen(lockedIds: existingIds),
     );
     if (result is! List<int>) return;
 
@@ -382,10 +461,13 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: GestureDetector(
-            onTap: () => _openCreateChallenge(club),
+            onTap: club.isOwner ? () => _openCreateChallenge(club) : null,
             behavior: HitTestBehavior.opaque,
             child: Text(
-              tr.customizeOwnChallenge,
+              // Only the owner can create challenges, so drop the "+" for others.
+              club.isOwner
+                  ? tr.customizeOwnChallenge
+                  : tr.customizeOwnChallenge.replaceAll('+', '').trim(),
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 18,
@@ -516,7 +598,9 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                       ? c.description
                       : _prettyWorkout(c.workoutType),
                 ],
-                onGetStarted: () => _startCatalogChallenge(club, c),
+                onGetStarted: club.isOwner
+                    ? () => _startCatalogChallenge(club, c)
+                    : null,
               );
             },
           );
@@ -528,7 +612,7 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
   Widget _buildChallengeCard({
     required String title,
     required List<String> lines,
-    required VoidCallback onGetStarted,
+    required VoidCallback? onGetStarted,
   }) {
     final meta = lines.where((line) => line.trim().isNotEmpty).toList();
     return Container(
@@ -599,13 +683,15 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
                       ),
                     ),
                   ],
-                  const SizedBox(height: 14),
-                  AppButton(
-                    label: tr.getStarted,
-                    onPressed: onGetStarted,
-                    width: null,
-                    height: 40,
-                  ),
+                  if (onGetStarted != null) ...[
+                    const SizedBox(height: 14),
+                    AppButton(
+                      label: tr.getStarted,
+                      onPressed: onGetStarted,
+                      width: null,
+                      height: 40,
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -632,179 +718,17 @@ class _ClubDetailScreenState extends State<ClubDetailScreen> {
     Get.to(() => ClubChallengeDetailScreen(challenge: challenge));
   }
 
-  void _showClubInfoModal(BuildContext context, FitnessClubModel club) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.cardSurface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.6,
-          minChildSize: 0.4,
-          maxChildSize: 0.9,
-          expand: false,
-          builder: (_, scrollController) {
-            return Padding(
-              padding: const EdgeInsets.all(20),
-              child: ListView(
-                controller: scrollController,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: AppColors.borderLight,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          club.name,
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: club.isPrivate
-                              ? Colors.amber.withValues(alpha: 0.2)
-                              : Colors.green.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          (club.isPrivate ? tr.privateLabel : tr.publicLabel).toUpperCase(),
-                          style: TextStyle(
-                            color: club.isPrivate ? Colors.amber : Colors.greenAccent,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    club.description.isNotEmpty
-                        ? club.description
-                        : tr.clubTagline,
-                    style: TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4),
-                  ),
-                  const SizedBox(height: 16),
-                  if (!club.isMember)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: AppButton(
-                        height: 44,
-                        onPressed: () {
-                          Navigator.pop(ctx);
-                          if (club.isPrivate) {
-                            _controller.requestToJoin(club);
-                          } else {
-                            _controller.joinClub(club);
-                          }
-                        },
-                        label: club.isPrivate
-                            ? (AppLocalizations.of(Get.context!)?.requestJoin ?? 'Request')
-                            : (AppLocalizations.of(Get.context!)?.joinClub ?? 'Join Club'),
-                      ),
-                    ),
-                  Divider(color: AppColors.borderLight),
-                  SizedBox(height: 8),
-                  Text(
-                    AppLocalizations.of(Get.context!)?.membersCount(club.memberCount) ?? 'Members (${club.memberCount})',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  Obx(() {
-                    if (_controller.clubMembers.isEmpty) {
-                      return NoDataComponent(
-                        compact: true,
-                        title: AppLocalizations.of(Get.context!)?.noMembersJoined ?? 'No members found',
-                      );
-                    }
-
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _controller.clubMembers.length,
-                      separatorBuilder: (_, __) => SizedBox(height: 8),
-                      itemBuilder: (context, index) {
-                        final member = _controller.clubMembers[index];
-                        return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF17233D),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 16,
-                                backgroundColor: const Color(0xFF2563EB),
-                                child: Text(
-                                  member.userName != null && member.userName!.isNotEmpty
-                                      ? member.userName![0].toUpperCase()
-                                      : 'M',
-                                  style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  member.userName ?? tr.memberNumber(member.userId),
-                                  style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600, fontSize: 13),
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color: member.role == 'OWNER'
-                                      ? Colors.purple.withValues(alpha: 0.2)
-                                      : Colors.blue.withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  member.role,
-                                  style: TextStyle(
-                                    color: member.role == 'OWNER' ? Colors.purpleAccent : Colors.blueAccent,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  }),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
+  /// `FitnessClubResponse` has no membership flag, so the caller is a member
+  /// if they own the club or appear in the loaded member list.
+  bool _canJoin(FitnessClubModel club) {
+    if (_controller.isLoadingClubDetails.value) return false;
+    if (club.isOwner || club.isMember) return false;
+    final userId = int.tryParse(UserManager().userId ?? '');
+    return !_controller.clubMembers.any((m) => m.userId == userId);
   }
 
   Future<void> _openCreateChallenge(FitnessClubModel club) async {
+    if (!club.isOwner) return;
     final created = await Get.to(() => CreateClubChallengeScreen(club: club));
     if (created == true) {
       await _controller.loadClubDetails(club.id);

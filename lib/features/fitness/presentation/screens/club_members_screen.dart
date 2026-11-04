@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/storage/user_manager.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/no_data_component.dart';
 import '../../../../shared/widgets/top_tool_bar.dart';
+import '../../../../shared/widgets/user_avatar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/fitness_club_model.dart';
 import '../controllers/fitness_club_controller.dart';
@@ -45,16 +47,80 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
     return widget.club.isOwner;
   }
 
-  String _subtitleFor(FitnessClubMemberModel member) {
-    final year = member.joinedAt?.year;
-    if (year != null) return tr.joinedSince(year);
-    return memberRoleLabel(member.role);
+  /// Full join date, e.g. "November 10, 2026". Null when the API sent none.
+  String? _joinedLabel(FitnessClubMemberModel member) {
+    final joinedAt = member.joinedAt;
+    if (joinedAt == null) return null;
+    return tr.joinedOn(DateFormat.yMMMMd().format(joinedAt.toLocal()));
+  }
+
+  static const _ownerGold = Color(0xFFB45309);
+  static const _ownerGoldDark = Color(0xFFFBBF24);
+
+  static int _roleRank(String role) => switch (role.toUpperCase()) {
+        'OWNER' => 0,
+        'ADMIN' => 1,
+        _ => 2,
+      };
+
+  /// Owner first, then admins, then members by name.
+  List<FitnessClubMemberModel> _sorted(List<FitnessClubMemberModel> members) {
+    return [...members]..sort((a, b) {
+        final byRole = _roleRank(a.role).compareTo(_roleRank(b.role));
+        if (byRole != 0) return byRole;
+        return (a.userName ?? '').toLowerCase().compareTo((b.userName ?? '').toLowerCase());
+      });
+  }
+
+  Widget _roleBadge(String role) {
+    final upper = role.toUpperCase();
+    final (Color background, Color foreground, IconData? icon) = switch (upper) {
+      'OWNER' => (
+          AppColors.amber.withValues(alpha: AppColors.isDark ? 0.18 : 0.14),
+          AppColors.isDark ? _ownerGoldDark : _ownerGold,
+          Icons.workspace_premium_rounded,
+        ),
+      'ADMIN' => (
+          AppColors.accentBlue.withValues(alpha: 0.14),
+          AppColors.accentBlue,
+          Icons.shield_outlined,
+        ),
+      _ => (AppColors.pageBackground, AppColors.textSecondary, null),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(20),
+        border: upper == 'OWNER' || upper == 'ADMIN'
+            ? null
+            : Border.all(color: AppColors.borderLight),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 13, color: foreground),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            memberRoleLabel(role),
+            style: TextStyle(
+              color: foreground,
+              fontSize: 11.5,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _invite() async {
+    if (!widget.club.isOwner) return;
     final existingIds = _controller.clubMembers.map((m) => m.userId).toSet();
     final result = await Get.to(
-      () => InvitePeopleScreen(initialSelectedIds: existingIds),
+      () => InvitePeopleScreen(lockedIds: existingIds),
     );
     if (result is! List<int>) return;
 
@@ -137,7 +203,8 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
             TopToolBar(
               title: AppLocalizations.of(context)?.clubMembers ?? 'Members',
               actions: [
-                TopToolBarAction(icon: Icons.person_add_alt, onTap: _invite),
+                if (widget.club.isOwner)
+                  TopToolBarAction(icon: Icons.person_add_alt, onTap: _invite),
               ],
             ),
             const SizedBox(height: 12),
@@ -157,16 +224,34 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
                   );
                 }
 
+                final sorted = _sorted(members);
                 return RefreshIndicator(
                   color: AppColors.accentBlue,
                   backgroundColor: AppColors.chipSurface,
                   onRefresh: () => _controller.loadClubDetails(widget.club.id),
                   child: ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 32),
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
                     physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: members.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 4),
-                    itemBuilder: (context, index) => _memberTile(members[index]),
+                    itemCount: sorted.length + 1,
+                    separatorBuilder: (_, index) =>
+                        SizedBox(height: index == 0 ? 12 : 10),
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 4),
+                          child: Text(
+                            tr.membersCount(sorted.length).toUpperCase(),
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.6,
+                            ),
+                          ),
+                        );
+                      }
+                      return _memberTile(sorted[index - 1]);
+                    },
                   ),
                 );
               }),
@@ -179,31 +264,40 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
 
   Widget _memberTile(FitnessClubMemberModel member) {
     final name = member.userName ?? tr.member;
-    final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+    final isMe = member.userId == _currentUserId;
+    final isOwner = member.role.toUpperCase() == 'OWNER';
+    final joined = _joinedLabel(member);
+    final hasUsername = member.username != null && member.username!.isNotEmpty;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
         color: AppColors.cardSurface,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isMe
+              ? AppColors.accentBlue.withValues(alpha: 0.35)
+              : AppColors.borderLight,
+        ),
+        boxShadow: AppColors.isDark
+            ? const []
+            : const [
+                BoxShadow(
+                  color: Color(0x0F000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 3),
+                ),
+              ],
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 19,
-            backgroundColor: AppColors.chipSurface,
-            backgroundImage: (member.avatarUrl != null && member.avatarUrl!.isNotEmpty)
-                ? NetworkImage(member.avatarUrl!)
-                : null,
-            child: (member.avatarUrl == null || member.avatarUrl!.isEmpty)
-                ? Text(
-                    initial,
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  )
+          UserAvatar(
+            name: name,
+            imageUrl: member.avatarUrl,
+            seed: member.userId,
+            radius: 22,
+            ringColor: isOwner
+                ? (AppColors.isDark ? _ownerGoldDark : AppColors.amber)
                 : null,
           ),
           const SizedBox(width: 14),
@@ -211,38 +305,85 @@ class _ClubMembersScreenState extends State<ClubMembersScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
+                Text.rich(
+                  TextSpan(
+                    text: name,
+                    children: [
+                      if (isMe)
+                        TextSpan(
+                          text: '  (${tr.you})',
+                          style: TextStyle(
+                            color: AppColors.accentBlue,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                    ],
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: AppColors.textPrimary,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  _subtitleFor(member),
-                  style: TextStyle(color: AppColors.textCaption, fontSize: 12),
-                ),
+                if (hasUsername) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    '@${member.username}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: AppColors.textSecondary, fontSize: 12.5),
+                  ),
+                ],
+                if (joined != null) ...[
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_today_outlined, size: 12, color: AppColors.textCaption),
+                      const SizedBox(width: 5),
+                      Flexible(
+                        child: Text(
+                          joined,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: AppColors.textCaption, fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
-          if (_canRemove(member))
-            GestureDetector(
-              onTap: () => _confirmRemove(member),
-              behavior: HitTestBehavior.opaque,
-              child: Container(
-                width: 26,
-                height: 26,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFFEF4444).withValues(alpha: 0.16),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _roleBadge(member.role),
+              if (_canRemove(member)) ...[
+                const SizedBox(height: 10),
+                GestureDetector(
+                  onTap: () => _confirmRemove(member),
+                  behavior: HitTestBehavior.opaque,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.redError.withValues(alpha: 0.12),
+                    ),
+                    child: const Icon(
+                      Icons.person_remove_outlined,
+                      color: AppColors.redError,
+                      size: 16,
+                    ),
+                  ),
                 ),
-                child: const Icon(Icons.remove, color: Color(0xFFEF4444), size: 16),
-              ),
-            ),
+              ],
+            ],
+          ),
         ],
       ),
     );

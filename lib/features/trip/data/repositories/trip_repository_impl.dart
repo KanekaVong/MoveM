@@ -53,13 +53,12 @@ class TripRepositoryImpl implements TripRepository {
       }
 
       if (data is List) {
-        final trips = data
-            .map(
-              (item) => TripSummaryResponse.fromJson(
-            Map<String, dynamic>.from(item),
+        final items = await Future.wait(
+          data.map(
+            (item) => _withLiveStats(Map<String, dynamic>.from(item)),
           ),
-        )
-            .toList();
+        );
+        final trips = items.map(TripSummaryResponse.fromJson).toList();
 
         return ApiSuccess(trips);
       }
@@ -96,7 +95,9 @@ class TripRepositoryImpl implements TripRepository {
 
       if (data is Map<String, dynamic>) {
         return ApiSuccess(
-          TripResponse.fromJson(data),
+          TripResponse.fromJson(
+            await _withLiveStats(data, includeSpent: false),
+          ),
         );
       }
 
@@ -114,6 +115,40 @@ class TripRepositoryImpl implements TripRepository {
         ),
       );
     }
+  }
+
+  /// The trip list and detail payloads report `memberCount` and `totalSpent`
+  /// as 0 even when the trip has members and logged expenses, so take them
+  /// from `groups/{activityId}/members` and `trips/{activityId}/expenses`.
+  /// The payload values are kept if either request fails.
+  Future<Map<String, dynamic>> _withLiveStats(
+    Map<String, dynamic> json, {
+    bool includeSpent = true,
+  }) async {
+    final activityId = json['activityId']?.toString() ?? '';
+    if (activityId.isEmpty) return json;
+
+    final results = await Future.wait<ApiResult<dynamic>>([
+      getTripMembers(activityId),
+      if (includeSpent) getTripExpenses(activityId),
+    ]);
+
+    final members = results[0];
+    if (members is ApiSuccess<List<TripMemberResponse>>) {
+      json['memberCount'] = members.data.length;
+    }
+
+    if (includeSpent) {
+      final expenses = results[1];
+      if (expenses is ApiSuccess<List<TripExpenseResponse>>) {
+        json['totalSpent'] = expenses.data.fold<double>(
+          0,
+          (sum, expense) => sum + (expense.amount ?? 0),
+        );
+      }
+    }
+
+    return json;
   }
 
 

@@ -6050,6 +6050,24 @@ abstract class AppLocalizations {
   /// **'Joined since {year}'**
   String joinedSince(Object year);
 
+  /// No description provided for @joinedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {date}'**
+  String joinedOn(String date);
+
+  /// No description provided for @selectedCountCaps.
+  ///
+  /// In en, this message translates to:
+  /// **'SELECTED ({count})'**
+  String selectedCountCaps(int count);
+
+  /// No description provided for @inviteCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite ({count})'**
+  String inviteCount(int count);
+
   /// No description provided for @roleOwner.
   ///
   /// In en, this message translates to:
