@@ -44,7 +44,7 @@ android {
         manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
         ndk {
             abiFilters.clear()
-            abiFilters.add("arm64-v8a")
+            abiFilters.addAll(listOf("arm64-v8a", "x86_64"))
         }
     }
 
@@ -102,7 +102,6 @@ android {
                 "lib/armeabi/**",
                 "lib/armeabi-v7a/**",
                 "lib/x86/**",
-                "lib/x86_64/**",
             )
         }
     }
